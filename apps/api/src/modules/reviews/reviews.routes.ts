@@ -47,7 +47,7 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
       }>(
         `select j.id, j.customer_id, j.provider_id, j.status, p.user_id as provider_user_id
          from jobs j left join providers p on p.id = j.provider_id
-         where j.id = $1 for update`,
+         where j.id = $1 for update of j`,
         [b.jobId],
       );
       if (!job) throw notFound('Job');
@@ -59,23 +59,31 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
       const isProvider = job.provider_user_id === auth.userId;
       if (!isCustomer && !isProvider) throw forbidden();
 
-      const direction = isCustomer ? 'CUSTOMER_TO_PROVIDER' : 'PROVIDER_TO_CUSTOMER';
-      const revieweeId = isCustomer ? job.provider_user_id : job.customer_id;
-      if (!revieweeId) throw businessRule('The job has no counterparty to review.');
+      const direction = isCustomer ? 'CUSTOMER' : 'PROVIDER';
+      const subjectId = isCustomer ? job.provider_user_id : job.customer_id;
+      if (!subjectId) throw businessRule('The job has no counterparty to review.');
 
+      // One review per direction per job (matches the unique index).
       const existing = await c.one<{ id: string }>(
-        `select id from reviews where job_id = $1 and author_id = $2`,
-        [b.jobId, auth.userId],
+        `select id from reviews where job_id = $1 and direction = $2::bidly_actor_side`,
+        [b.jobId, direction],
       );
       if (existing) throw conflict('You have already reviewed this job.');
 
+      const tags: string[] = [];
+      if (b.punctuality != null) tags.push(`punctuality:${b.punctuality}`);
+      if (b.quality != null) tags.push(`quality:${b.quality}`);
+      if (b.communication != null) tags.push(`communication:${b.communication}`);
+      if (b.value != null) tags.push(`value:${b.value}`);
+
       const review = await c.one<{ id: string }>(
-        `insert into reviews (job_id, author_id, reviewee_id, direction, rating, comment,
-                              punctuality, quality, communication, value, is_visible)
-         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true) returning id`,
+        `insert into reviews (job_id, request_id, author_id, subject_id, provider_id, direction, rating, comment, tags, is_visible)
+         values ($1, (select request_id from jobs where id = $1), $2, $3, $4, $5::bidly_actor_side, $6, $7, $8::text[], true)
+         returning id`,
         [
-          b.jobId, auth.userId, revieweeId, direction, b.rating, b.comment ?? null,
-          b.punctuality ?? null, b.quality ?? null, b.communication ?? null, b.value ?? null,
+          b.jobId, auth.userId, subjectId,
+          isCustomer ? job.provider_id : null,
+          direction, b.rating, b.comment ?? null, tags,
         ],
       );
 
@@ -88,10 +96,10 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
              updated_at = now()
            from (
              select round(avg(rating)::numeric, 2) as avg_rating, count(*)::int as cnt
-             from reviews where reviewee_id = $1 and direction = 'CUSTOMER_TO_PROVIDER' and is_visible = true
+             from reviews where subject_id = $1 and direction = 'CUSTOMER' and is_visible = true
            ) sub
            where p.id = $2`,
-          [revieweeId, job.provider_id],
+          [subjectId, job.provider_id],
         );
       }
 
@@ -110,10 +118,19 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
     },
   }, async (request, reply) => {
     const { jobId } = request.params as { jobId: string };
+    // Only the two parties to the job (or an admin) may read a job's reviews.
+    const auth = request.auth!;
+    const party = await queryOne<{ ok: boolean }>(
+      `select true as ok from jobs j join providers p on p.id = j.provider_id
+       where j.id = $1 and (j.customer_id = $2 or p.user_id = $2 or $3 = 'ADMIN')`,
+      [jobId, auth.userId, auth.role],
+    );
+    if (!party) throw forbidden();
     const rows = await queryMany(
-      `select r.id, r.direction, r.rating, r.comment, r.punctuality, r.quality, r.communication, r.value,
-              r.created_at, u.id as author_id, u.display_name as author_name
+      `select r.id, r.direction, r.rating, r.comment, r.tags, r.would_recommend,
+              r.created_at, u.id as author_id, coalesce(up.display_name, u.email) as author_name
        from reviews r join users u on u.id = r.author_id
+       left join user_profiles up on up.user_id = u.id
        where r.job_id = $1 and r.is_visible = true order by r.created_at`,
       [jobId],
     );
@@ -133,12 +150,14 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
     const { providerId } = request.params as { providerId: string };
     const page = parsePagination(request.query as Record<string, unknown>);
     const rows = await queryMany(
-      `select r.id, r.rating, r.comment, r.punctuality, r.quality, r.communication, r.value,
-              r.created_at, u.display_name as author_name, u.avatar_url as author_avatar_url
+      `select r.id, r.rating, r.comment, r.tags, r.would_recommend,
+              r.created_at, coalesce(up.display_name, u.email) as author_name,
+              up.avatar_url as author_avatar_url
        from reviews r
-       join providers p on p.user_id = r.reviewee_id
+       join providers p on p.user_id = r.subject_id
        join users u on u.id = r.author_id
-       where p.id = $1 and r.direction = 'CUSTOMER_TO_PROVIDER' and r.is_visible = true
+       left join user_profiles up on up.user_id = u.id
+       where p.id = $1 and r.direction = 'CUSTOMER' and r.is_visible = true
        order by r.created_at desc limit $2 offset $3`,
       [providerId, page.limit, page.offset],
     );
@@ -159,11 +178,23 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
     const auth = request.auth!;
     const { id } = request.params as { id: string };
     const { reason } = request.body as { reason: string };
-    await queryOne(
-      `insert into review_reports (review_id, reporter_id, reason) values ($1,$2,$3)
-       on conflict (review_id, reporter_id) do nothing returning id`,
-      [id, auth.userId, reason],
-    );
+    // There is no separate `review_reports` table: a report flags the review
+    // for moderation (columns live on `reviews`) and is recorded in the audit
+    // log so repeated reports by different users are still traceable.
+    const review = await queryOne<{ id: string }>(`select id from reviews where id = $1`, [id]);
+    if (!review) throw notFound('Review');
+    await transaction(async (client) => {
+      const c = clientQuery(client);
+      await c.query(
+        `update reviews set is_flagged = true, flag_reason = coalesce($2, flag_reason), updated_at = now() where id = $1`,
+        [id, reason],
+      );
+      await c.query(
+        `insert into audit_logs (actor_id, actor_type, action, entity_type, entity_id, after_state)
+         values ($1,'USER','REVIEW_REPORTED','review',$2,$3::jsonb)`,
+        [auth.userId, id, JSON.stringify({ reason })],
+      );
+    });
     return reply.send({ success: true, data: { reported: true } });
   });
 }

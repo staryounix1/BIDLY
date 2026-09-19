@@ -80,6 +80,7 @@ export async function registerMessageRoutes(app: FastifyInstance): Promise<void>
 
       if (!counterpart) throw notFound('Counterpart');
 
+
       const existing = await c.one(
         `select * from conversations
          where ((participant_a = $1 and participant_b = $2) or (participant_a = $2 and participant_b = $1))

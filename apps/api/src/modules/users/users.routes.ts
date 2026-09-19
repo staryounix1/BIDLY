@@ -228,7 +228,7 @@ export async function registerUserRoutes(app: FastifyInstance): Promise<void> {
     const row = await transaction(async (client) =>
       clientQuery(client).one(
         `insert into devices (user_id, platform, push_token, device_id, app_version, last_seen_at)
-         values ($1, coalesce($2,'WEB'), $3, $4, $5, now())
+         values ($1, coalesce($2,'WEB')::bidly_os_platform, $3, $4, $5, now())
          on conflict (user_id, platform, push_token) do update set last_seen_at = now(), is_active = true
          returning *`,
         [request.auth!.userId, b.platform ?? null, b.pushToken, b.deviceId ?? null, b.appVersion ?? null],

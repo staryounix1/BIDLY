@@ -68,15 +68,16 @@ export async function registerSupportRoutes(app: FastifyInstance): Promise<void>
 
     const ticket = await transaction(async (client) => {
       const c = clientQuery(client);
+      const senderRole = auth.role === 'ADMIN' ? 'ADMIN' : auth.role === 'PROVIDER' ? 'PROVIDER' : 'CUSTOMER';
       const row = await c.insert<{ id: string }>(
-        `insert into support_tickets (user_id, subject, category, priority, job_id, status)
-         values ($1,$2,coalesce($3,'OTHER'),coalesce($4,'NORMAL'),$5,'OPEN') returning id`,
-        [auth.userId, b.subject, b.category ?? null, b.priority ?? null, b.jobId ?? null],
+        `insert into support_tickets (user_id, requester_role, subject, category, priority, job_id, status)
+         values ($1,$2::bidly_user_role,$3,coalesce($4,'OTHER'),coalesce($5,'NORMAL')::bidly_priority,$6,'OPEN') returning id`,
+        [auth.userId, senderRole, b.subject, b.category ?? null, b.priority ?? null, b.jobId ?? null],
       );
       await c.query(
         `insert into support_messages (ticket_id, sender_id, sender_role, body, attachment_url)
-         values ($1,$2,$3,$4,$5)`,
-        [row.id, auth.userId, 'USER', b.message, b.attachmentUrl ?? null],
+         values ($1,$2,$3::bidly_actor_role,$4,$5)`,
+        [row.id, auth.userId, senderRole, b.message, b.attachmentUrl ?? null],
       );
       logEvent(LOG_EVENTS.SUPPORT_TICKET_CREATED, { userId: auth.userId, ticketId: row.id, category: b.category });
       return row;
@@ -121,8 +122,9 @@ export async function registerSupportRoutes(app: FastifyInstance): Promise<void>
     if (ticket.user_id !== auth.userId && auth.role !== 'ADMIN') throw forbidden();
     const messages = await queryMany(
       `select m.id, m.sender_id, m.sender_role, m.body, m.attachment_url, m.created_at,
-              u.display_name as sender_name
+              coalesce(up.display_name, u.email) as sender_name
        from support_messages m left join users u on u.id = m.sender_id
+       left join user_profiles up on up.user_id = u.id
        where m.ticket_id = $1 and m.is_internal = false order by m.created_at`,
       [id],
     );
@@ -150,13 +152,14 @@ export async function registerSupportRoutes(app: FastifyInstance): Promise<void>
     if (ticket.user_id !== auth.userId && auth.role !== 'ADMIN') throw forbidden();
     if (['CLOSED', 'RESOLVED'].includes(ticket.status)) throw businessRule('This ticket is closed.');
 
+    const senderRole = auth.role === 'ADMIN' ? 'ADMIN' : auth.role === 'PROVIDER' ? 'PROVIDER' : 'CUSTOMER';
     const row = await queryOne(
       `insert into support_messages (ticket_id, sender_id, sender_role, body, attachment_url)
-       values ($1,$2,$3,$4,$5) returning id, body, created_at`,
-      [id, auth.userId, auth.role === 'ADMIN' ? 'ADMIN' : 'USER', b.message, b.attachmentUrl ?? null],
+       values ($1,$2,$3::bidly_actor_role,$4,$5) returning id, body, created_at`,
+      [id, auth.userId, senderRole, b.message, b.attachmentUrl ?? null],
     );
     await queryOne(
-      `update support_tickets set status = case when status = 'OPEN' then 'PENDING_USER' else status end,
+      `update support_tickets set status = case when status = 'OPEN' then 'PENDING' else status end,
               updated_at = now() where id = $1 returning id`,
       [id],
     );

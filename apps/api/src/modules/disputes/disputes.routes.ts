@@ -45,7 +45,7 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
       }>(
         `select j.id, j.customer_id, j.provider_id, j.status, j.provider_id, p.user_id as provider_user_id
          from jobs j left join providers p on p.id = j.provider_id
-         where j.id = $1 for update`,
+         where j.id = $1 for update of j`,
         [b.jobId],
       );
       if (!job) throw notFound('Job');
@@ -63,10 +63,11 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
       if (open) throw conflict('This job already has an open dispute.');
 
       const row = await c.insert<{ id: string }>(
-        `insert into disputes (job_id, opened_by, against_user_id, category, description, desired_resolution, status, priority)
-         values ($1,$2,$3,$4,$5,$6,'OPEN','NORMAL') returning id`,
+        `insert into disputes (job_id, opened_by, opened_by_role, against_id, reason_code, description, resolution_type, status, priority)
+         values ($1,$2,$3::bidly_actor_role,$4,$5,$6,$7,'OPEN','NORMAL') returning id`,
         [
-          b.jobId, auth.userId, isCustomer ? job.provider_user_id : job.customer_id,
+          b.jobId, auth.userId, isCustomer ? 'CUSTOMER' : 'PROVIDER',
+          isCustomer ? job.provider_user_id : job.customer_id,
           b.category, b.description, b.desiredResolution ?? null,
         ],
       );
@@ -77,8 +78,8 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
       );
 
       await c.query(
-        `update jobs set status = 'DISPUTED', disputed_at = now(), updated_at = now() where id = $1`,
-        [b.jobId],
+        `update jobs set status = 'DISPUTED', dispute_id = $2, updated_at = now() where id = $1`,
+        [b.jobId, row.id],
       );
 
       logEvent(LOG_EVENTS.DISPUTE_OPENED, { userId: auth.userId, jobId: b.jobId, disputeId: row.id, category: b.category });
@@ -101,11 +102,14 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
     const auth = request.auth!;
     const page = parsePagination(request.query as Record<string, unknown>);
     const rows = await queryMany(
-      `select d.id, d.job_id, d.category, d.status, d.priority, d.description, d.desired_resolution,
+      `select d.id, d.job_id, d.reason_code as category, d.status, d.priority, d.description,
+              d.resolution_type as desired_resolution,
               d.resolution, d.opened_by, d.created_at, d.resolved_at,
-              j.title as job_title, j.status as job_status
-       from disputes d join jobs j on j.id = d.job_id
-       where d.opened_by = $1 or d.against_user_id = $1
+              r.title as job_title, j.status as job_status
+       from disputes d
+       join jobs j on j.id = d.job_id
+       left join requests r on r.id = j.request_id
+       where d.opened_by = $1 or d.against_id = $1
        order by d.created_at desc limit $2 offset $3`,
       [auth.userId, page.limit, page.offset],
     );
@@ -122,8 +126,11 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
     const auth = request.auth!;
     const { id } = request.params as { id: string };
     const dispute = await queryOne<Record<string, unknown>>(
-      `select d.*, j.title as job_title, j.status as job_status, j.customer_id, j.provider_id
-       from disputes d join jobs j on j.id = d.job_id where d.id = $1`,
+      `select d.*, r.title as job_title, j.status as job_status, j.customer_id, j.provider_id
+       from disputes d
+       join jobs j on j.id = d.job_id
+       left join requests r on r.id = j.request_id
+       where d.id = $1`,
       [id],
     );
     if (!dispute) throw notFound('Dispute');
@@ -132,14 +139,15 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
       ? await queryOne<{ user_id: string }>('select user_id from providers where id = $1', [dispute.provider_id])
       : null;
     const involved = dispute.opened_by === auth.userId
-      || dispute.against_user_id === auth.userId
+      || dispute.against_id === auth.userId
       || dispute.customer_id === auth.userId
       || providerRow?.user_id === auth.userId;
     if (!involved && auth.role !== 'ADMIN') throw forbidden();
 
     const events = await queryMany(
-      `select e.id, e.type, e.note, e.actor_id, u.display_name as actor_name, e.created_at
+      `select e.id, e.type, e.note, e.actor_id, coalesce(up.display_name, u.email) as actor_name, e.created_at
        from dispute_events e left join users u on u.id = e.actor_id
+       left join user_profiles up on up.user_id = u.id
        where e.dispute_id = $1 order by e.created_at`,
       [id],
     );
@@ -160,12 +168,12 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
     const auth = request.auth!;
     const { id } = request.params as { id: string };
     const b = request.body as { message: string; attachmentUrl?: string };
-    const dispute = await queryOne<{ id: string; opened_by: string; against_user_id: string | null; status: string }>(
-      `select id, opened_by, against_user_id, status from disputes where id = $1`,
+    const dispute = await queryOne<{ id: string; opened_by: string; against_id: string | null; status: string }>(
+      `select id, opened_by, against_id, status from disputes where id = $1`,
       [id],
     );
     if (!dispute) throw notFound('Dispute');
-    if (dispute.opened_by !== auth.userId && dispute.against_user_id !== auth.userId && auth.role !== 'ADMIN') {
+    if (dispute.opened_by !== auth.userId && dispute.against_id !== auth.userId && auth.role !== 'ADMIN') {
       throw forbidden();
     }
     if (['RESOLVED', 'CLOSED', 'CANCELLED'].includes(dispute.status)) {
@@ -193,12 +201,12 @@ export async function registerDisputeRoutes(app: FastifyInstance): Promise<void>
     const auth = request.auth!;
     const { id } = request.params as { id: string };
     const b = (request.body ?? {}) as { reason?: string };
-    const dispute = await queryOne<{ opened_by: string; against_user_id: string | null; status: string }>(
-      `select opened_by, against_user_id, status from disputes where id = $1`,
+    const dispute = await queryOne<{ opened_by: string; against_id: string | null; status: string }>(
+      `select opened_by, against_id, status from disputes where id = $1`,
       [id],
     );
     if (!dispute) throw notFound('Dispute');
-    if (dispute.opened_by !== auth.userId && dispute.against_user_id !== auth.userId) throw forbidden();
+    if (dispute.opened_by !== auth.userId && dispute.against_id !== auth.userId) throw forbidden();
     if (!['OPEN', 'UNDER_REVIEW'].includes(dispute.status)) throw businessRule('Only open disputes can be escalated.');
 
     await transaction(async (client) => {

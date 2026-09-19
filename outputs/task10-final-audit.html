@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BIDLY — Task 10 Final Audit Report</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#121c30; --panel2:#0f172a; --line:#243354;
+    --text:#e8eefc; --muted:#9fb0d0; --green:#34d399; --amber:#fbbf24;
+    --red:#f87171; --blue:#60a5fa; --violet:#a78bfa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 20% -10%,#16233f,transparent),var(--bg);
+    color:var(--text);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);
+    display:grid;place-items:center;font-weight:800;font-size:22px;box-shadow:0 10px 30px #2563eb55}
+  h1{font-size:26px;margin:0}
+  .sub{color:var(--muted);margin-top:4px}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:#0e2b22;color:var(--green);
+    border:1px solid #1d5b47;padding:8px 14px;border-radius:999px;font-weight:600;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:26px 0}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:16px;padding:16px}
+  .kpi .v{font-size:28px;font-weight:800}
+  .kpi .l{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+  h2{font-size:18px;margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:4px;height:18px;border-radius:2px;background:linear-gradient(#60a5fa,#a78bfa)}
+  table{width:100%;border-collapse:collapse;background:var(--panel2);border:1px solid var(--line);
+    border-radius:14px;overflow:hidden;font-size:14px}
+  th,td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#16213b;color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em}
+  tr:last-child td{border-bottom:none}
+  code{background:#0a1426;border:1px solid #223357;border-radius:6px;padding:1px 6px;font-size:12.5px;color:#cfe1ff}
+  .ok{color:var(--green);font-weight:700}
+  .warn{color:var(--amber);font-weight:700}
+  .fix{color:var(--blue);font-weight:700}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid}
+  .p-green{background:#0e2b22;color:var(--green);border-color:#1d5b47}
+  .p-blue{background:#0e1e3a;color:var(--blue);border-color:#264a86}
+  .p-amber{background:#332711;color:var(--amber);border-color:#6b5417}
+  .p-red{background:#33151a;color:var(--red);border-color:#7a2b34}
+  ul{margin:8px 0 0;padding-left:20px;color:var(--muted)}
+  li{margin:5px 0}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  footer{margin-top:34px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">B</div>
+      <div>
+        <h1>BIDLY — Task 10 · Final Audit</h1>
+        <div class="sub">Testing, security hardening &amp; production readiness · 10 of 10</div>
+      </div>
+    </div>
+    <div class="badge">✔ PROJECT READY FOR FINAL REVIEW</div>
+  </header>
+
+  <div class="grid">
+    <div class="card kpi"><div class="v">10/10</div><div class="l">Tasks complete</div></div>
+    <div class="card kpi"><div class="v" style="color:var(--green)">171</div><div class="l">Automated tests passing</div></div>
+    <div class="card kpi"><div class="v" style="color:var(--green)">96/96</div><div class="l">Live E2E checks</div></div>
+    <div class="card kpi"><div class="v" style="color:var(--blue)">7/7</div><div class="l">Packages typecheck clean</div></div>
+    <div class="card kpi"><div class="v" style="color:var(--violet)">63</div><div class="l">Static web pages built</div></div>
+    <div class="card kpi"><div class="v" style="color:var(--amber)">10</div><div class="l">Real bugs fixed</div></div>
+  </div>
+
+  <h2>What this task covered</h2>
+  <div class="card">
+    A full audit of the nine previous tasks: integration verification, real-bug hunting
+    (including route modules that had no test coverage), security/least-privilege hardening,
+    a clean build, and live end-to-end runs against a real Postgres and a running API server.
+    No features were added and no working behaviour was redesigned.
+  </div>
+
+  <h2>Bugs found &amp; fixed</h2>
+  <table>
+    <thead><tr><th>Module</th><th>Defect</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>reviews</code></td>
+        <td>Dead module — wrote <code>reviewee_id</code> and four non-existent sub-rating columns; read <code>users.display_name</code>; illegal <code>FOR UPDATE</code> on a left join.</td>
+        <td class="fix">Mapped to <code>subject_id</code>, <code>provider_id</code>, <code>tags[]</code>; direction is <span class="pill p-blue">CUSTOMER / PROVIDER</span>; fixed join lock &amp; name joins.</td></tr>
+      <tr><td><code>disputes</code></td>
+        <td>Entire module unrunnable — referenced a missing <code>dispute_events</code> table plus non-existent <code>against_user_id</code>, <code>category</code>, <code>jobs.disputed_at</code>, <code>j.title</code>.</td>
+        <td class="fix">Added <code>dispute_events</code> (migration 0003); corrected all columns; title now from <code>requests</code>; job link set via <code>dispute_id</code>.</td></tr>
+      <tr><td><code>support</code></td>
+        <td>Public FAQ route never registered → 404; <code>faq_articles</code> table missing; <code>sender_role</code> written as <code>'USER'</code> (invalid enum); bad priority/status casts.</td>
+        <td class="fix">Registered public routes; added <code>faq_articles</code> (migration 0004 + 5 seeded articles); correct role + enum casts; <code>PENDING_USER</code>→<code>PENDING</code>.</td></tr>
+      <tr><td><code>admin</code></td>
+        <td><code>/admin/disputes</code> and <code>/admin/commission-rules</code> returned 500 on non-existent columns.</td>
+        <td class="fix">Now 200 — corrected to <code>reason_code</code>, <code>requests.title</code>, <code>final_price_minor</code>, <code>name_en</code>.</td></tr>
+      <tr><td><code>users</code></td>
+        <td>Device registration returned 500 (platform enum written as text).</td>
+        <td class="fix">Cast to <code>::bidly_os_platform</code>.</td></tr>
+      <tr><td><code>jobs</code></td>
+        <td>OTP-hash leak fix had broken the start-work flow: the internal loader was over-sanitised, so the job looked like it had no start code.</td>
+        <td class="fix">Loader returns the raw row; sanitisation applied only at response boundaries.</td></tr>
+    </tbody>
+  </table>
+  <p style="color:var(--muted);margin-top:10px">Ten distinct defects across six modules — every one reproduced against the live database before and after the fix.</p>
+
+  <h2>Security &amp; least-privilege hardening</h2>
+  <div class="two">
+    <div class="card">
+      <div><span class="pill p-green">PATTERN FIXED</span></div>
+      <ul>
+        <li><b>Wallet adjustment</b> was gated by a <em>read</em> permission — now a new <code>payments:write</code> (SUPER_ADMIN / ADMIN / FINANCE).</li>
+        <li><b>Force-cancel request</b> used <code>jobs:read</code> — now <code>jobs:intervene</code>.</li>
+        <li>Every <code>/admin/*</code> route remains permission-gated; MODERATOR/SUPPORT cannot touch money mutations.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div><span class="pill p-blue">HARDENED</span></div>
+      <ul>
+        <li>Log redaction expanded to nested keys (<code>body.*</code>, <code>payload.*</code>, headers…).</li>
+        <li>Production boot now <b>rejects</b> <code>EMAIL_PROVIDER=log</code> / <code>SMS_PROVIDER=log</code>, which print OTPs and message bodies.</li>
+        <li>OTP hashes never leave the API — verified in the live response body.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Verification results</h2>
+  <table>
+    <thead><tr><th>Check</th><th>Command / scope</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>API integration tests</td><td><code>apps/api</code></td><td class="ok">88 / 88 pass</td></tr>
+      <tr><td>Web unit tests</td><td><code>apps/web</code></td><td class="ok">12 / 12 pass</td></tr>
+      <tr><td>Validation</td><td><code>packages/validation</code></td><td class="ok">21 / 21 pass</td></tr>
+      <tr><td>State machines</td><td><code>packages/state-machines</code></td><td class="ok">18 / 18 pass</td></tr>
+      <tr><td>i18n</td><td><code>packages/i18n</code></td><td class="ok">14 / 14 pass</td></tr>
+      <tr><td>Money</td><td><code>packages/money</code></td><td class="ok">18 / 18 pass</td></tr>
+      <tr><td>Typecheck</td><td>all 7 packages</td><td class="ok">clean</td></tr>
+      <tr><td>API production build</td><td><code>tsc -p tsconfig.build.json</code></td><td class="ok">ok</td></tr>
+      <tr><td>Web production build</td><td><code>next build</code></td><td class="ok">63 static pages</td></tr>
+      <tr><td>Realtime E2E</td><td>live server + Postgres</td><td class="ok">30 / 30 pass</td></tr>
+      <tr><td>Payments E2E</td><td>live server + Postgres</td><td class="ok">31 / 31 pass</td></tr>
+      <tr><td>Provider E2E</td><td>live server + Postgres</td><td class="ok">35 / 35 pass</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Database &amp; deployment readiness</h2>
+  <div class="card">
+    <ul>
+      <li><b>4 migrations</b> apply cleanly from empty (<code>0001</code>→<code>0004</code>), then seed runs.</li>
+      <li>Multi-locale (ar / fr / en) throughout; 63 statically-generated web pages.</li>
+      <li>Env validation fails fast in production on missing secrets, S3 creds, and dev-only e-mail/SMS providers.</li>
+      <li><span class="pill p-amber">KNOWN</span> Cloud browser cannot reach the local dev server, so UI is verified via build + server-rendered output + the live API E2E contract rather than by clicking.</li>
+    </ul>
+  </div>
+
+  <h2>Status</h2>
+  <div class="card" style="border-color:#1d5b47">
+    <span class="pill p-green">TASK 10 COMPLETE</span>
+    <span class="pill p-green" style="margin-left:8px">PROJECT READY FOR FINAL REVIEW</span>
+    <p style="color:var(--muted);margin:12px 0 0">
+      All ten tasks are implemented, audited and green. The only remaining step is the user's own
+      review and any deployment decisions they want to make.
+    </p>
+  </div>
+
+  <footer>BIDLY reverse-services marketplace · Task 10 final audit · generated from live test &amp; E2E runs.</footer>
+</div>
+</body>
+</html>
