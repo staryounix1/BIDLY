@@ -1,0 +1,29 @@
+{
+  "name": "@bidly/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "test:unit": "BIDLY_TEST_SCOPE=packages/i18n/src vitest run --config ../../vitest.config.ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@bidly/config": "workspace:*"
+  }
+}
