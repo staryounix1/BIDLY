@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BIDLY — المهمة 7: واجهة المزوّد</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .glow { box-shadow: 0 0 0 1px rgba(56,189,248,.25), 0 8px 30px -12px rgba(56,189,248,.45); }
+  .grain { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0); background-size: 22px 22px; }
+</style>
+</head>
+<body class="min-h-screen bg-[#080d14] text-slate-100 grain">
+  <main class="mx-auto max-w-6xl px-6 py-8">
+
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-500/20 pb-6">
+      <div class="flex items-center gap-4">
+        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-600 text-2xl font-bold text-sky-950">B</div>
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">المهمة 7 — واجهة المزوّد / السائق</h1>
+          <p class="text-sm text-sky-300/80">BIDLY · ربط كامل ببيانات حقيقية من الواجهة الخلفية</p>
+        </div>
+      </div>
+      <span class="glow rounded-full bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-300">✓ مكتملة</span>
+    </header>
+
+    <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">فحوصات E2E الحيّة</p>
+        <p class="mt-2 text-4xl font-bold text-sky-400">35<span class="text-xl text-slate-500">/35</span></p>
+        <p class="mt-1 text-xs text-slate-500">خادم حقيقي + PostgreSQL</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">مهام البناء والاختبار</p>
+        <p class="mt-2 text-4xl font-bold text-sky-400">27<span class="text-xl text-slate-500">/27</span></p>
+        <p class="mt-1 text-xs text-slate-500">build + typecheck + test</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">اختبارات وحدة وتكامل</p>
+        <p class="mt-2 text-4xl font-bold text-sky-400">121</p>
+        <p class="mt-1 text-xs text-slate-500">منها 22 اختبار مزوّد جديد</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">شاشات المزوّد</p>
+        <p class="mt-2 text-4xl font-bold text-sky-400">7</p>
+        <p class="mt-1 text-xs text-slate-500">3 لغات (ar / fr / en)</p>
+      </div>
+    </section>
+
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-sky-300">تدفق المزوّد الكامل — مُتحقَّق منه عبر HTTP حقيقي</h2>
+      <p class="mt-1 text-sm text-slate-400">تسجيل ← ملف ← خدمة ← تغطية ← توفر ← تغذية ← عرض ← قبول ← تعيين ← دورة المهمة ← سجل</p>
+      <div class="mt-5 grid gap-2 md:grid-cols-2" id="flow"></div>
+    </section>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-sky-300">الشاشات المُنجَزة</h2>
+        <div class="mt-4 space-y-3" id="screens"></div>
+      </section>
+
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-sky-300">واجهات API المرتبطة</h2>
+        <div class="mt-4 space-y-3" id="apis"></div>
+      </section>
+    </div>
+
+    <section class="mt-6 rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-6">
+      <h2 class="text-lg font-bold text-rose-300">أخطاء حقيقية اكتُشفت وأُصلحت</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-300">
+        <li class="flex gap-3"><span class="text-rose-400">1.</span><span><span class="mono text-rose-200">providers.languages</span> كان يُمرَّر كنص بدل <span class="mono">text[]</span> — إنشاء أي ملف مزوّد كان يفشل بـ 500. أُضيف <span class="mono">$7::text[]</span>.</span></li>
+        <li class="flex gap-3"><span class="text-rose-400">2.</span><span><span class="mono">availability.start_time/end_time</span> من نوع <span class="mono">time</span> و<span class="mono">period</span> من نوع enum — حفظ فترة التوفر كان يفشل بـ 500. أُضيفت التحويلات <span class="mono">::time</span> و<span class="mono">::bidly_period_type</span>.</span></li>
+        <li class="flex gap-3"><span class="text-rose-400">3.</span><span>زر «إكمال العمل» كان يمكن أن يظهر مرتين — الآن كل زر مربوط بانتقال واحد يسمح به الـ state machine على الخادم.</span></li>
+      </ul>
+      <p class="mt-3 text-xs text-slate-400">ملاحظة: الإصلاحان الأول والثاني كانا يمنعان عمل واجهة المزوّد بالكامل، ولم يظهرا في اختبارات المهام 1–6 لأن الـ seed يكتب القيم مباشرة في SQL.</p>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-sky-300">المتطلبات الثلاثة عشر — الحالة</h2>
+      <div class="mt-4 grid gap-2 md:grid-cols-2" id="reqs"></div>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-6">
+      <h2 class="text-lg font-bold text-amber-300">ملاحظات نطاق</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-300">
+        <li>• <strong>المركبة/المعدات:</strong> لا يوجد جدول <span class="mono">vehicles</span> في قاعدة البيانات — المواصفة تعرّفها كإجابة قدرة أثناء التحقق، لا ككيان. الشاشة تعرض توضيحًا وتربط وثائق التحقق الفعلية، ولم نخترع جدولًا جديدًا.</li>
+        <li>• <strong>تفعيل الحساب (ACTIVE):</strong> خطوة تحقق إدارية تخصّ المهمة 10. واجهة المزوّد تعرض الحالة ولا تضبطها؛ اختبارات E2E تضبطها كـ fixture.</li>
+        <li>• <strong>خارج النطاق كما طُلب:</strong> لا مطابقة جديدة، لا دردشة، لا إشعارات، لا realtime، لا دفع/محفظة، لا لوحة أدمن.</li>
+      </ul>
+    </section>
+
+    <footer class="mt-8 border-t border-white/10 pt-5 text-xs text-slate-500">
+      <span class="mono">2026-09-19</span> · turbo run build typecheck test:unit → 27/27 · اختبارات → 121 · E2E حيّ → 35/35
+    </footer>
+  </main>
+
+<script>
+const flow = [
+  ['إنشاء ملف المزوّد', 'DRAFT'],
+  ['تفعيل خدمة من الكتالوج', 'provider_services'],
+  ['إضافة منطقة تغطية', 'radius 25km'],
+  ['الاتصال (Online)', 'محفوظ في DB'],
+  ['فترة توفر أسبوعية', '08:00–17:00'],
+  ['الطلب يظهر في التغذية', 'مؤهَّل فقط'],
+  ['إرسال عرض', '30,000 MAD'],
+  ['منع العرض المكرر', '409'],
+  ['قبول العميل → تعيين', 'JOB-XXXXXX'],
+  ['في الطريق → وصلت', 'EN_ROUTE → ARRIVED'],
+  ['بدء العمل برمز العميل', 'IN_PROGRESS'],
+  ['إكمال العمل', 'COMPLETED'],
+  ['السجل يعرض المهمة', 'net 29,750'],
+];
+document.getElementById('flow').innerHTML = flow.map(([label, val], i) => `
+  <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5">
+    <span class="grid h-7 w-7 flex-none place-items-center rounded-lg bg-sky-500/15 text-xs font-bold text-sky-300">${i+1}</span>
+    <span class="flex-1 text-sm">${label}</span>
+    <span class="mono text-xs text-sky-300/80">${val}</span>
+  </div>
+`).join('');
+
+const screens = [
+  ['لوحة تحكم المزوّد', '/[locale]/provider/dashboard', 'مفتاح الاتصال · إحصاءات · مهمة نشطة · طلبات قريبة · عروض · سجل'],
+  ['طلبات متاحة', '/[locale]/provider/requests', 'التغذية المطابقة (مؤهَّلة فقط، بلا عنوان دقيق)'],
+  ['تفاصيل الطلب + عرض', '/[locale]/provider/requests/[id]', 'الوجهة · الموعد · أجوبة العميل · نموذج العرض/السحب'],
+  ['عروضي', '/[locale]/provider/offers', 'كل عرض وحالته مع فلترة'],
+  ['مهامي', '/[locale]/provider/jobs', 'نشطة / سجل + الإجراء التالي'],
+  ['تفاصيل المهمة النشطة', '/[locale]/provider/jobs/[id]', 'الانتقالات · رمز البدء · الجدول الزمني · الدفع'],
+  ['سجل المهام', '/[locale]/provider/history', 'المكتملة والملغاة + إجمالي الأرباح'],
+  ['ملف المزوّد', '/[locale]/provider/profile', 'الهوية · الخدمات · التغطية · التوفر · الوثائق'],
+];
+document.getElementById('screens').innerHTML = screens.map(([name, path, desc]) => `
+  <div class="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <span class="font-semibold text-sm">${name}</span>
+      <span class="mono text-[11px] text-sky-300/70">${path}</span>
+    </div>
+    <p class="mt-1 text-xs text-slate-400">${desc}</p>
+  </div>
+`).join('');
+
+const apis = [
+  ['الملف', 'GET/PATCH /providers/me', 'POST /providers'],
+  ['الخدمات', 'GET/PUT /providers/me/services', 'DELETE /providers/me/services/:id'],
+  ['التغطية', 'GET/POST /providers/me/areas'],
+  ['التوفر', 'GET/PUT /providers/me/availability'],
+  ['الوثائق', 'GET/POST /providers/me/documents'],
+  ['التغذية', 'GET /requests/feed', 'GET /requests/:id'],
+  ['العروض', 'POST /offers · /offers/mine', 'POST /offers/:id/withdraw'],
+  ['المهام', 'GET /jobs/mine?role=provider', 'GET /jobs/:id'],
+  ['دورة المهمة', 'en-route · arrived · start', 'complete · cancel'],
+];
+document.getElementById('apis').innerHTML = apis.map(([name, ...eps]) => `
+  <div class="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3">
+    <div class="text-sm font-semibold">${name}</div>
+    <div class="mt-1 space-y-0.5">${eps.map(e => `<div class="mono text-[11px] text-sky-300/70">${e}</div>`).join('')}</div>
+  </div>
+`).join('');
+
+const reqs = [
+  ['1. لوحة تحكم المزوّد', true],
+  ['2. توفر مربوط بالخادم', true],
+  ['3. طلبات متاحة (مؤهَّلة فقط)', true],
+  ['4. تفاصيل الطلب', true],
+  ['5. العروض + منع التكرار', true],
+  ['6. الطلب المُعيَّن', true],
+  ['7. انتقالات الحالة (خادم مصدر الحكم)', true],
+  ['8. سجل المزوّد (له فقط)', true],
+  ['9. الملف / المركبة', true],
+  ['10. واجهة متجاوبة', true],
+  ['11. حالات التحميل/الفراغ/الخطأ/النجاح', true],
+  ['12. المصادقة والتفويض', true],
+  ['13. الاختبارات', true],
+];
+document.getElementById('reqs').innerHTML = reqs.map(([label, ok]) => `
+  <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5">
+    <span class="grid h-6 w-6 flex-none place-items-center rounded-full bg-emerald-500/15 text-xs font-bold text-emerald-400">✓</span>
+    <span class="text-sm">${label}</span>
+  </div>
+`).join('');
+</script>
+</body>
+</html>

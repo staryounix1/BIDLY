@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIDLY — الجزء 3/10 مكتمل</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<style>
+  body{font-family:'Segoe UI',Tahoma,system-ui,sans-serif}
+  .card{border:1px solid #e5e7eb;border-radius:16px;background:#fff}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div class="max-w-5xl mx-auto p-6 md:p-10">
+
+  <div class="flex items-center justify-between flex-wrap gap-4">
+    <div>
+      <div class="text-xs font-bold tracking-widest text-emerald-600">BIDLY · مرحلة البناء</div>
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 mt-1">الجزء 3/10 — المصادقة والمستخدمون والأدوار</h1>
+      <p class="text-slate-500 mt-2">مكتمل ومُختبر · تسجيل، دخول، جلسات، أدوار، صلاحيات، ملف شخصي، وواجهة متصلة</p>
+    </div>
+    <div class="text-center bg-emerald-600 text-white rounded-2xl px-6 py-4 shadow">
+      <div class="text-3xl font-black">100%</div>
+      <div class="text-xs opacity-90">مُتحقق منه</div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-4 gap-4 mt-8">
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">13</div><div class="text-sm text-slate-500">اختبار تكامل ناجح</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">27/27</div><div class="text-sm text-slate-500">مهام البناء ناجحة</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">3</div><div class="text-sm text-slate-500">صفحات واجهة جديدة</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-emerald-600">0</div><div class="text-sm text-slate-500">انحدار في الجزئين 1 و2</div></div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الحالة عند البدء</h2>
+  <div class="card p-5 text-sm text-slate-700 leading-7">
+    كانت المصادقة في الواجهة الخلفية <b>مكتملة تقريبًا</b> (تسجيل بالبريد والهاتف، جلسات، تدوير الرموز، كشف
+    إعادة الاستخدام، إعادة تعيين كلمة المرور). النواقص الحقيقية كانت: <b>الواجهة الأمامية بلا أي مصادقة</b>
+    (صفحة هبوط فقط بأزرار وهمية)، و<b>دور المسؤول لا يُقرأ من جدول <span class="mono text-xs">admins</span></b>
+    (كان يُعاد دائمًا <span class="mono text-xs">null</span>)، ولا توجد اختبارات مصادقة على مستوى الـAPI.
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">ما أُنجز في هذا الجزء</h2>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">الواجهة الأمامية للمصادقة (جديد)</div>
+      <p class="text-sm text-slate-600 mt-1">صفحات <span class="mono text-xs">/login</span> و<span class="mono text-xs">/register</span> و<span class="mono text-xs">/profile</span> بثلاث لغات (ar/fr/en)، مربوطة بالـAPI الحقيقي عبر <span class="mono text-xs">AuthProvider</span> مع استعادة الجلسة بعد التحديث وتدوير تلقائي للرمز عند 401.</p>
+    </div>
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">حلّ دور المسؤول والصلاحيات</div>
+      <p class="text-sm text-slate-600 mt-1">يُقرأ الآن <span class="mono text-xs">admin_role</span> والصلاحيات من جدول <span class="mono text-xs">admins</span>. مستخدم بدور ADMIN بلا صف موظّف نشط لا يحصل على أي صلاحية إدارية. أُضيف حارس <span class="mono text-xs">requirePermission</span>.</p>
+    </div>
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">قواعد تحقق مشتركة</div>
+      <p class="text-sm text-slate-600 mt-1">حزمة <span class="mono text-xs">@bidly/validation</span> صارت مصدرًا واحدًا لقواعد التسجيل والدخول وكلمة المرور — تستخدمها الـAPI والنماذج معًا، فلا تُقبل قيمة في الخادم يرفضها العميل أو العكس.</p>
+    </div>
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">اختبارات مصادقة تكاملية</div>
+      <p class="text-sm text-slate-600 mt-1">13 اختبارًا تشغّل التطبيق الحقيقي على قاعدة بيانات حقيقية: تسجيل، تكرار الحساب، كلمة مرور ضعيفة، دخول خاطئ، طلب محمي بلا رمز، أدوار، ملف شخصي، تدوير الرموز، وتسجيل الخروج.</p>
+    </div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الأمان — نتائج الفحص</h2>
+  <div class="card overflow-hidden">
+    <table class="w-full text-sm">
+      <tbody class="divide-y">
+        <tr><td class="p-3">تخزين كلمات المرور</td><td class="p-3 font-bold text-emerald-600">Argon2id (تجزئة فقط)</td></tr>
+        <tr><td class="p-3">إرجاع كلمة المرور/التجزئة عبر الـAPI</td><td class="p-3 font-bold text-emerald-600">غير موجود إطلاقًا</td></tr>
+        <tr><td class="p-3">طلب محمي بدون رمز</td><td class="p-3 font-bold text-emerald-600">401</td></tr>
+        <tr><td class="p-3">دور غير مصرّح به (عميل على مسار إدارة)</td><td class="p-3 font-bold text-emerald-600">403</td></tr>
+        <tr><td class="p-3">رمز معدّل/جلسة ملغاة</td><td class="p-3 font-bold text-emerald-600">401 فورًا</td></tr>
+        <tr><td class="p-3">إعادة استخدام رمز تحديث مسروق</td><td class="p-3 font-bold text-emerald-600">إبطال العائلة كاملة</td></tr>
+        <tr><td class="p-3">أسرار في حزمة الواجهة</td><td class="p-3 font-bold text-emerald-600">لا شيء (NEXT_PUBLIC فقط)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">تحقق مسار المصادقة (حي)</h2>
+  <div class="card p-5 text-sm mono text-slate-600 leading-7" dir="ltr">
+    <div>POST /api/v1/register &nbsp;→ 201 (لا كلمة مرور في الرد)</div>
+    <div>POST /api/v1/register (مكرر) → 409 DUPLICATE_EMAIL</div>
+    <div>POST /api/v1/register (كلمة ضعيفة) → 400</div>
+    <div>POST /api/v1/login → 200 + access/refresh</div>
+    <div>GET&nbsp; /api/v1/me (بلا رمز) → 401</div>
+    <div>GET&nbsp; /api/v1/me (برمز) → 200 · role=ADMIN · admin_role=SUPER_ADMIN</div>
+    <div>GET&nbsp; /api/v1/users/me/profile → 200 (بلا أسرار)</div>
+    <div>POST /api/v1/refresh → 200 ثم إعادة استخدام → 401</div>
+    <div>POST /api/v1/logout → 200 ثم /me → 401</div>
+  </div>
+
+  <div class="card p-5 mt-6 border-amber-200 bg-amber-50">
+    <div class="font-bold text-amber-800">ملاحظة نطاق (ليست من هذا الجزء)</div>
+    <p class="text-sm text-amber-900 mt-1">
+      مسار <span class="mono text-xs">GET /api/v1/admin/stats</span> يستعلم عن حالة دعم
+      <span class="mono text-xs">PENDING_ADMIN</span> غير الموجودة في التعداد، فيفشل بخطأ 400.
+      <b>الترخيص يعمل بنجاح</b> (وصل الطلب إلى المعالج)، والخلل في استعلام لوحة الإدارة — وهو من نطاق
+      مهام لوحة المسؤول لاحقًا، فأُبقي كما هو دون تعديل.
+    </p>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الملفات الرئيسية</h2>
+  <div class="card p-5 text-sm mono text-slate-600 space-y-1" dir="ltr">
+    <div>apps/web/src/lib/auth-api.ts · auth-provider.tsx · require-auth.tsx</div>
+    <div>apps/web/src/app/[locale]/{login,register,profile}/page.tsx</div>
+    <div>packages/validation/src/auth.ts (+ .test.ts)</div>
+    <div>apps/api/src/plugins/auth.plugin.ts · modules/auth/auth.service.ts</div>
+    <div>apps/api/src/modules/auth/auth.integration.test.ts</div>
+    <div>docs/06-api-architecture.md</div>
+  </div>
+
+  <div class="mt-10 rounded-2xl bg-slate-900 text-white p-6 text-center">
+    <div class="text-xs tracking-widest text-emerald-400 font-bold">TASK 3/10 COMPLETE</div>
+    <div class="text-lg font-bold mt-1">مصادقة آمنة، أدوار محكمة، وواجهة متصلة بالخادم الحقيقي</div>
+    <p class="text-slate-400 text-sm mt-2">جاهزون للمهمة 4 عند إشارتك.</p>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-6">BIDLY · السوق: المغرب · العملة: MAD · اللغات: ar / fr / en</p>
+</div>
+</body>
+</html>

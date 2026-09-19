@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIDLY — الجزء 4/10 مكتمل</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<style>
+  body{font-family:'Segoe UI',Tahoma,system-ui,sans-serif}
+  .card{border:1px solid #e5e7eb;border-radius:16px;background:#fff}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div class="max-w-5xl mx-auto p-6 md:p-10">
+
+  <div class="flex items-center justify-between flex-wrap gap-4">
+    <div>
+      <div class="text-xs font-bold tracking-widest text-emerald-600">BIDLY · مرحلة البناء</div>
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 mt-1">الجزء 4/10 — الخدمات والطلبات والمسار الأساسي</h1>
+      <p class="text-slate-500 mt-2">مكتمل ومُختبر · تصفح الخدمات، إنشاء طلب ديناميكي، نشره، متابعته، وإلغاؤه</p>
+    </div>
+    <div class="text-center bg-emerald-600 text-white rounded-2xl px-6 py-4 shadow">
+      <div class="text-3xl font-black">100%</div>
+      <div class="text-xs opacity-90">مُتحقق منه</div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-4 gap-4 mt-8">
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">15</div><div class="text-sm text-slate-500">اختبار تكامل للطلبات</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">99</div><div class="text-sm text-slate-500">اختبار ناجح إجمالاً</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">27/27</div><div class="text-sm text-slate-500">مهام البناء ناجحة</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-emerald-600">0</div><div class="text-sm text-slate-500">جداول/نماذج مكرّرة</div></div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الحالة عند البدء</h2>
+  <div class="card p-5 text-sm text-slate-700 leading-7">
+    كانت واجهة الخدمات والطلبات في الخلفية <b>مكتملة ومطابقة للمخطط</b> (فئات، خدمات، حقول ديناميكية، إنشاء طلب،
+    نشر، إلغاء). النقص الحقيقي كان في <b>الواجهة الأمامية</b>: لا صفحة للخدمات ولا للطلبات، ولا نموذج ديناميكي.
+    أعدت استخدام كل ما هو موجود دون إنشاء جداول أو مسارات مكررة.
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">ما أُنجز في هذا الجزء</h2>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">تصفّح الخدمات (جديد)</div>
+      <p class="text-sm text-slate-600 mt-1">صفحة تعرض شجرة الفئات ← الفئات الفرعية ← الخدمات من قاعدة البيانات مباشرة، مع بحث، ووسوم نموذج التسعير ومتطلبات الموقع/الوجهة.</p>
+    </div>
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">نموذج طلب ديناميكي (جديد)</div>
+      <p class="text-sm text-slate-600 mt-1">يُبنى تلقائيًا من تعريفات <span class="mono text-xs">service_fields</span> لكل خدمة (نص، رقم، قائمة، تاريخ، منطق شرطي)، مع حقول الاستلام والوجهة عند الحاجة واختيار المدينة.</p>
+    </div>
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">دورة حياة الطلب (مربوطة)</div>
+      <p class="text-sm text-slate-600 mt-1">مسودة ← منشور عبر النشر، مع عرض الحالة في كل مرحلة. الإلغاء متاح ضمن الحالات المفتوحة فقط، والانتقالات محمية في الخادم وقاعدة البيانات.</p>
+    </div>
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">طلباتي + التفاصيل (جديد)</div>
+      <p class="text-sm text-slate-600 mt-1">قائمة بطلبات العميل وحدها، وصفحة تفاصيل تعرض الخدمة، الحالة، الأجوبة الديناميكية، الاستلام/الوجهة، الميزانية، والعروض الواردة.</p>
+    </div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">تحقق المسار الحقيقي (حي)</h2>
+  <div class="card p-5 text-sm mono text-slate-600 leading-7" dir="ltr">
+    <div>POST /api/v1/requests (بلا رمز) → 401</div>
+    <div>POST /api/v1/requests (مزوّد) → 403 (للعملاء فقط)</div>
+    <div>POST /api/v1/requests (خدمة غير موجودة) → 404</div>
+    <div>POST /api/v1/requests (أجوبة ناقصة) → 400</div>
+    <div>POST /api/v1/requests (صحيح) → 201 · REQ-XXXXXX · DRAFT</div>
+    <div>GET&nbsp; /api/v1/requests/mine → يظهر كـ DRAFT</div>
+    <div>GET&nbsp; /api/v1/requests/:id (عميل آخر) → 403</div>
+    <div>POST /api/v1/requests/:id/publish → PUBLISHED</div>
+    <div>POST /api/v1/requests/:id/cancel → CANCELLED</div>
+    <div>إعادة الإلغاء/النشر → 409/422 (انتقال غير مسموح)</div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">تحقق قاعدة البيانات</h2>
+  <div class="card p-5 text-sm text-slate-700 leading-7">
+    الطلب المُنشأ حُفظ فعليًا: الحالة النهائية <span class="mono text-xs">CANCELLED</span>،
+    عدد صفوف الأجوبة الديناميكية 5، و
+    <span class="mono text-xs">published_at</span> و<span class="mono text-xs">cancelled_at</span> مضبوطان،
+    والعلاقات (العميل ← الطلب ← الخدمة ← الفئة) سليمة عبر المفاتيح الأجنبية.
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">اختبارات المهمة</h2>
+  <div class="card p-5 text-sm text-slate-700">
+    <ul class="grid md:grid-cols-2 gap-x-8 gap-y-1 list-disc pr-5">
+      <li>إنشاء طلب صحيح</li>
+      <li>بيانات ناقصة/غير صحيحة</li>
+      <li>خدمة غير موجودة</li>
+      <li>ميزانية غير منطقية</li>
+      <li>طلب بلا مصادقة</li>
+      <li>وصول عميل آخر → 403</li>
+      <li>عرض قائمة طلباتي</li>
+      <li>تفاصيل الطلب للمالك</li>
+      <li>النشر (انتقال صحيح)</li>
+      <li>تعديل/نشر مكرر → رفض</li>
+      <li>الإلغاء ضمن الحالات المفتوحة</li>
+      <li>إلغاء طلب ملغى مسبقًا → رفض</li>
+    </ul>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الملفات الرئيسية</h2>
+  <div class="card p-5 text-sm mono text-slate-600 space-y-1" dir="ltr">
+    <div>apps/web/src/app/[locale]/services/page.tsx</div>
+    <div>apps/web/src/app/[locale]/requests/{page,new/page,[id]/page}.tsx</div>
+    <div>apps/web/src/lib/{catalog-api,requests-api,status-badge,app-header}.tsx</div>
+    <div>packages/validation/src/request.ts (+ .test.ts)</div>
+    <div>apps/api/src/modules/requests/requests.integration.test.ts</div>
+  </div>
+
+  <div class="card p-5 mt-6 border-amber-200 bg-amber-50">
+    <div class="font-bold text-amber-800">ملاحظة نطاق</div>
+    <p class="text-sm text-amber-900 mt-1">
+      لم يُنفَّذ أي شيء من خارج نطاق هذه المهمة: لا مطابقة مزوّدين، لا عروض، لا محادثات، لا مدفوعات، لا تتبع حي.
+      العروض تُعرض فقط إذا وُجدت في قاعدة البيانات — التقديم عليها يأتي في مهمة لاحقة.
+    </p>
+  </div>
+
+  <div class="mt-10 rounded-2xl bg-slate-900 text-white p-6 text-center">
+    <div class="text-xs tracking-widest text-emerald-400 font-bold">TASK 4/10 COMPLETE</div>
+    <div class="text-lg font-bold mt-1">مسار العميل كامل من المتصفح إلى قاعدة البيانات والعودة</div>
+    <p class="text-slate-400 text-sm mt-2">جاهزون للمهمة 5 عند إشارتك.</p>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-6">BIDLY · السوق: المغرب · العملة: MAD · اللغات: ar / fr / en</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BIDLY — المهمة 8: الوقت الحقيقي والدردشة والإشعارات</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .glow { box-shadow: 0 0 0 1px rgba(56,189,248,.25), 0 8px 30px -12px rgba(56,189,248,.45); }
+  .grain { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0); background-size: 22px 22px; }
+</style>
+</head>
+<body class="min-h-screen bg-[#080d14] text-slate-100 grain">
+  <main class="mx-auto max-w-6xl px-6 py-8">
+
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-500/20 pb-6">
+      <div class="flex items-center gap-4">
+        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-600 text-2xl font-bold text-emerald-950">B</div>
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">المهمة 8 — الوقت الحقيقي، الدردشة والإشعارات</h1>
+          <p class="text-sm text-emerald-300/80">BIDLY · SSE + صندوق صادر + مركز إشعارات، مربوط ببيانات حقيقية</p>
+        </div>
+      </div>
+      <span class="glow rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300">✓ مكتملة</span>
+    </header>
+
+    <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">فحوصات E2E الحيّة</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">30<span class="text-xl text-slate-500">/30</span></p>
+        <p class="mt-1 text-xs text-slate-500">خادم حقيقي + PostgreSQL + SSE</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">مهام البناء والاختبار</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">27<span class="text-xl text-slate-500">/27</span></p>
+        <p class="mt-1 text-xs text-slate-500">build + typecheck + test</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">اختبارات وحدة وتكامل</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">151</p>
+        <p class="mt-1 text-xs text-slate-500">+22 وقت حقيقي و‎+8 إشعارات</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">شاشات جديدة</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">4</p>
+        <p class="mt-1 text-xs text-slate-500">3 لغات (ar / fr / en)</p>
+      </div>
+    </section>
+
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-emerald-300">البنية — مصدر واحد للحقيقة</h2>
+      <p class="mt-1 text-sm text-slate-400">كل مسار يسجّل ما حدث فقط؛ الصندوق الصادر هو المنتج الوحيد للوقت الحقيقي والإشعارات.</p>
+      <div class="mt-5 grid gap-3 md:grid-cols-5 text-center text-sm">
+        <div class="rounded-xl border border-white/10 bg-white/[0.02] p-4"><div class="text-2xl">📝</div><div class="mt-2 font-semibold">المسار</div><div class="text-xs text-slate-400 mt-1">enqueue()</div></div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.02] p-4"><div class="text-2xl">📤</div><div class="mt-2 font-semibold">الصندوق الصادر</div><div class="text-xs text-slate-400 mt-1">outbox_events</div></div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.02] p-4"><div class="text-2xl">⚙️</div><div class="mt-2 font-semibold">العامل</div><div class="text-xs text-slate-400 mt-1">drain كل ثانية</div></div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.02] p-4"><div class="text-2xl">🔔</div><div class="mt-2 font-semibold">مركز الإشعارات</div><div class="text-xs text-slate-400 mt-1">جدول notifications</div></div>
+        <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4"><div class="text-2xl">📡</div><div class="mt-2 font-semibold">بثّ SSE</div><div class="text-xs text-slate-400 mt-1">غرف مُتحقَّق منها</div></div>
+      </div>
+    </section>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-emerald-300">ما بُني في هذه المهمة</h2>
+        <ul class="mt-4 space-y-2 text-sm text-slate-300">
+          <li>✅ مركّز بثّ داخلي (hub) بدون وسيط خارجي، مع غرف مستخدم/طلب/مهمة/محادثة/مزوّد.</li>
+          <li>✅ نقطة نهاية <span class="mono text-emerald-300">GET /realtime</span> عبر SSE، بتحقق JWT وفحص عضوية كل غرفة في قاعدة البيانات.</li>
+          <li>✅ صندوق صادر (outbox) وعامل تصريف دوري — مصدر واحد للأحداث والإشعارات.</li>
+          <li>✅ واجهات المحادثات: قائمة، فتح محادثة (idempotent)، إرسال، قراءة، وعدّاد غير المقروء.</li>
+          <li>✅ مركز الإشعارات: قائمة، فلتر غير المقروء، تحديد الكل كمقروء، تفضيلات لكل قناة.</li>
+          <li>✅ عميل SSE في الواجهة: إعادة اتصال تدريجية، تنظيف عند المغادرة، وإضافة الرسائل فوريّاً.</li>
+          <li>✅ ترقيم الرسائل الفوري (optimistic) مع معرّف عميل يمنع التكرار.</li>
+        </ul>
+      </section>
+
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-emerald-300">أخطاء حقيقية اكتُشفت وأُصلحت</h2>
+        <ul class="mt-4 space-y-2 text-sm text-slate-300">
+          <li>🐞 تمرير <span class="mono">kind</span> كنص إلى عمود enum — أُصلح بتحويل <span class="mono">::bidly_message_kind</span>.</li>
+          <li>🐞 <span class="mono">ON CONFLICT</span> مع فهرس جزئي — أُضيف الشرط <span class="mono">where client_id is not null</span>.</li>
+          <li>🐞 عدّاد غير المقروء كان يقرأ العمود المعاكس — صُحّح ليطابق منطق trigger.</li>
+          <li>🐞 مفتاح منع التكرار لم يتضمّن الحالة — كان يُسقط إشعارات تغيّر حالة المهمة؛ أُضيفت الحالة إلى المفتاح.</li>
+          <li>🐞 توجيه الإشعار اعتمد على مرجع النوع فقط — أُصلح ليشمل <span class="mono">JOB</span> و<span class="mono">MESSAGE</span>.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-emerald-300">تدفق الوقت الحقيقي المُتحقَّق منه (30/30)</h2>
+      <div class="mt-5 grid gap-2 md:grid-cols-2 text-sm" id="checks"></div>
+    </section>
+
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-emerald-300">الشاشات الجديدة</h2>
+      <div class="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4 text-sm">
+        <a href="#" class="rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-emerald-500/40"><div class="font-semibold">/messages</div><div class="text-xs text-slate-400 mt-1">صندوق المحادثات + غير المقروء</div></a>
+        <a href="#" class="rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-emerald-500/40"><div class="font-semibold">/messages/[id]</div><div class="text-xs text-slate-400 mt-1">الدردشة الحيّة + بثّ فوري</div></a>
+        <a href="#" class="rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-emerald-500/40"><div class="font-semibold">/notifications</div><div class="text-xs text-slate-400 mt-1">المركز + الفلترة + قراءة الكل</div></a>
+        <a href="#" class="rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-emerald-500/40"><div class="font-semibold">/notifications/preferences</div><div class="text-xs text-slate-400 mt-1">تفضيلات القنوات لكل حدث</div></a>
+      </div>
+    </section>
+
+    <footer class="mt-10 border-t border-white/10 pt-6 text-center text-xs text-slate-500">
+      BIDLY · المهمة 8 من 10 · التالي: المهمة 9
+    </footer>
+  </main>
+
+<script>
+  const checks = [
+    ['API متاح','✓'],['تسجيل دخول عميل ومزوّد','✓'],['فتح محادثة','✓'],['إعادة الفتح idempotent','✓'],
+    ['إرسال رسالة','✓'],['إعادة الإرسال بنفس clientId لا تكرّر','✓'],['شارة غير المقروء عند الطرف الآخر','✓'],
+    ['قراءة الرسائل','✓'],['تصفير العدّاد بعد القراءة','✓'],['منع الغريب من القراءة (403)','✓'],
+    ['منع الغريب من الإرسال (403)','✓'],['المحادثات تتطلب مصادقة (401)','✓'],['فتح بثّ SSE','✓'],
+    ['بثّ message:new وصل للمزوّد','✓'],['الغريب لا يستقبل الرسالة','✓'],['رفض غرفة غير مصرّح بها (403)','✓'],
+    ['قائمة الإشعارات','✓'],['إشعارات الرسائل مسجّلة','✓'],['تحديد إشعار كمقروء','✓'],
+    ['تحديد الكل كمقروء','✓'],['العدّاد صفر بعد ذلك','✓'],['تفضيلات الإشعارات','✓'],
+    ['تحديث تفضيل وحفظه','✓'],['بثّ notification:new','✓']
+  ];
+  document.getElementById('checks').innerHTML = checks.map(([n]) =>
+    `<div class="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] px-3 py-2"><span class="text-emerald-400">✓</span><span>${n}</span></div>`
+  ).join('');
+</script>
+</body>
+</html>

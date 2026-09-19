@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BIDLY — المهمة 6: واجهة العميل</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .glow { box-shadow: 0 0 0 1px rgba(16,185,129,.25), 0 8px 30px -12px rgba(16,185,129,.45); }
+  .grain { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0); background-size: 22px 22px; }
+</style>
+</head>
+<body class="min-h-screen bg-[#0a0f0d] text-slate-100 grain">
+  <main class="mx-auto max-w-6xl px-6 py-8">
+
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-500/20 pb-6">
+      <div class="flex items-center gap-4">
+        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-2xl font-bold text-emerald-950">B</div>
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">المهمة 6 — واجهة العميل</h1>
+          <p class="text-sm text-emerald-300/80">BIDLY · ربط كامل ببيانات حقيقية من الواجهة الخلفية</p>
+        </div>
+      </div>
+      <span class="glow rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300">✓ مكتملة</span>
+    </header>
+
+    <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">فحوصات التدفق الحيّ</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">21<span class="text-xl text-slate-500">/21</span></p>
+        <p class="mt-1 text-xs text-slate-500">خادم حقيقي + PostgreSQL</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">مهام البناء والاختبار</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">27<span class="text-xl text-slate-500">/27</span></p>
+        <p class="mt-1 text-xs text-slate-500">build + typecheck + test</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">اختبارات وحدة وتكامل</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">99</p>
+        <p class="mt-1 text-xs text-slate-500">+ اختبارات قاعدة البيانات</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">صفحات الواجهة</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">39</p>
+        <p class="mt-1 text-xs text-slate-500">3 لغات (ar / fr / en)</p>
+      </div>
+    </section>
+
+    <!-- Customer flow -->
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-emerald-300">التدفق الكامل للعميل — مُتحقَّق منه فعليًا</h2>
+      <p class="mt-1 text-sm text-slate-400">تسجيل دخول ← لوحة ← خدمة ← طلب ← عروض ← قبول ← مزوّد ← تاريخ</p>
+      <div class="mt-5 grid gap-2 md:grid-cols-2" id="flow"></div>
+    </section>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <!-- Screens -->
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-emerald-300">الشاشات المكتملة</h2>
+        <ul class="mt-4 space-y-3 text-sm" id="screens"></ul>
+      </section>
+
+      <!-- APIs -->
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-emerald-300">واجهات الـ API المرتبطة</h2>
+        <ul class="mt-4 space-y-3 text-sm" id="apis"></ul>
+      </section>
+    </div>
+
+    <!-- Files -->
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-emerald-300">الملفات المُنشأة / المُعدَّلة</h2>
+      <div class="mt-4 grid gap-3 md:grid-cols-2" id="files"></div>
+    </section>
+
+    <!-- Notes -->
+    <section class="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-6">
+      <h2 class="text-lg font-bold text-amber-300">إصلاحات خارج نطاق الواجهة (مطلوبة للتدفق)</h2>
+      <ul class="mt-4 space-y-3 text-sm text-slate-300" id="notes"></ul>
+    </section>
+
+    <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5 text-xs text-slate-500">
+      <span>2026-09-19 · لم تبدأ المهمة 7</span>
+      <span class="mono">turbo run build typecheck test:unit → 27/27</span>
+    </footer>
+  </main>
+
+<script>
+const flow = [
+  ['تسجيل + تأكيد البريد', 'verified'],
+  ['تسجيل الدخول', '395-char token'],
+  ['قراءة + تحديث الملف الشخصي', 'fullName ✓'],
+  ['تصفح الفئات والخدمات', '3 / 34'],
+  ['إنشاء الطلب', 'REQ-XXXXXX'],
+  ['نشر الطلب → المطابقة', 'RECEIVING_OFFERS'],
+  ['استلام عرض من مزوّد', '1 offer'],
+  ['مقارنة وقبول العرض', 'JOB-XXXXXX'],
+  ['إظهار المزوّد المُعيَّن', 'Karim Plumbing'],
+  ['المهام + الالتزام الزمني', '1 event'],
+  ['سجل الطلبات + الفلترة', 'CONFIRMED'],
+  ['الأمان: بلا توكن / عميل آخر / خروج', '3/3 ✓'],
+];
+document.getElementById('flow').innerHTML = flow.map(([label, val], i) => `
+  <div class="flex items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-3 py-2">
+    <span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-[11px] font-bold text-emerald-300">${i+1}</span>
+    <span class="flex-1 text-sm text-slate-200">${label}</span>
+    <span class="mono shrink-0 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] text-emerald-300">${val}</span>
+  </div>`).join('');
+
+const screens = [
+  ['لوحة التحكم', '/[locale]/dashboard', 'طلب نشط · إحصاءات · إجراءات سريعة · أحدث الطلبات'],
+  ['تصفح الخدمات', '/[locale]/services', 'فئات → فئات فرعية → خدمات من الـ API'],
+  ['إنشاء طلب', '/[locale]/requests/new', 'حقول ديناميكية · موقع · ميزانية · منع الإرسال المزدوج'],
+  ['متتبع الطلب', '/[locale]/requests/[id]', 'الحالة · المزوّد المُعيَّن · مقارنة العروض · قبول/رفض'],
+  ['سجل الطلبات', '/[locale]/requests', 'تبويبات: الكل / مفتوحة / مكتملة'],
+  ['المهام', '/[locale]/jobs', 'المزوّد · الالتزام الزمني · الدفع · تأكيد الإنجاز'],
+  ['الملف الشخصي', '/[locale]/profile', 'عرض/تعديل · تحقق · لا أسرار مصادقة'],
+];
+document.getElementById('screens').innerHTML = screens.map(([name, path, desc]) => `
+  <li class="rounded-xl border border-white/5 bg-black/20 p-3">
+    <div class="flex items-center justify-between gap-2">
+      <span class="font-semibold text-slate-100">${name}</span>
+      <span class="mono text-[11px] text-emerald-300/80">${path}</span>
+    </div>
+    <p class="mt-1 text-xs text-slate-400">${desc}</p>
+  </li>`).join('');
+
+const apis = [
+  ['المصادقة', 'POST /register · /verify-email · /login · /logout', 'GET /me'],
+  ['الملف الشخصي', 'GET /users/me/profile', 'PATCH /users/me/profile'],
+  ['الكتالوج', 'GET /categories · /services · /cities', 'GET /services/:slug/form'],
+  ['الطلبات', 'POST /requests', 'POST /requests/:id/publish'],
+  ['الطلبات (قراءة)', 'GET /requests/mine', 'GET /requests/:id'],
+  ['العروض', 'POST /offers/:id/accept', 'POST /offers/:id/reject'],
+  ['المهام', 'GET /jobs/mine', 'GET /jobs/:id · POST /jobs/:id/confirm'],
+];
+document.getElementById('apis').innerHTML = apis.map(([name, ...eps]) => `
+  <li class="rounded-xl border border-white/5 bg-black/20 p-3">
+    <div class="font-semibold text-slate-100">${name}</div>
+    <div class="mt-1 space-y-0.5">${eps.map(e => `<div class="mono text-[11px] text-sky-300/80">${e}</div>`).join('')}</div>
+  </li>`).join('');
+
+const files = [
+  ['جديد', 'apps/web/src/app/[locale]/dashboard/page.tsx'],
+  ['جديد', 'apps/web/src/app/[locale]/jobs/page.tsx'],
+  ['جديد', 'apps/web/src/lib/jobs-api.ts'],
+  ['جديد', 'apps/web/src/lib/offers-api.ts'],
+  ['جديد', 'apps/web/src/lib/providers-api.ts'],
+  ['معدَّل', 'apps/web/src/app/[locale]/requests/[id]/page.tsx'],
+  ['معدَّل', 'apps/web/src/app/[locale]/requests/new/page.tsx'],
+  ['معدَّل', 'apps/web/src/app/[locale]/requests/page.tsx'],
+  ['معدَّل', 'apps/web/src/app/[locale]/profile/page.tsx'],
+  ['معدَّل', 'apps/web/src/lib/{requests-api,app-header}.ts(x)'],
+];
+document.getElementById('files').innerHTML = files.map(([kind, path]) => `
+  <div class="flex items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-3 py-2">
+    <span class="shrink-0 rounded-md px-2 py-0.5 text-[11px] font-semibold ${kind === 'جديد' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}">${kind}</span>
+    <span class="mono text-xs text-slate-300">${path}</span>
+  </div>`).join('');
+
+const notes = [
+  'قبول العرض كان يفشل (23514): مسار النشر الآن DRAFT→PUBLISHED→MATCHING→RECEIVING_OFFERS، والقبول يمرّ عبر PROVIDER_SELECTED→CONFIRMED.',
+  'المشرف المُهيَّأ لم يكن له صف في users، فكان دخوله يفشل — أُضيف وربط admins.user_id في seed.sql.',
+  'اختبار invariants: أرقام هواتف الـ fixture كانت تتصادم مع بيانات الاختبار — نُقلت إلى نطاق محجوز ‎+212699000xxx.',
+  'ثغرة لوحة المشرف /admin/stats و /admin/providers/pending تبقى خارج النطاق (المهمة 10).',
+];
+document.getElementById('notes').innerHTML = notes.map(n => `<li class="flex gap-2"><span class="text-amber-400">◆</span><span>${n}</span></li>`).join('');
+</script>
+</body>
+</html>
