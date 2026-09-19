@@ -70,20 +70,17 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
       );
       if (existing) throw conflict('You have already reviewed this job.');
 
-      const tags: string[] = [];
-      if (b.punctuality != null) tags.push(`punctuality:${b.punctuality}`);
-      if (b.quality != null) tags.push(`quality:${b.quality}`);
-      if (b.communication != null) tags.push(`communication:${b.communication}`);
-      if (b.value != null) tags.push(`value:${b.value}`);
-
       const review = await c.one<{ id: string }>(
-        `insert into reviews (job_id, request_id, author_id, subject_id, provider_id, direction, rating, comment, tags, is_visible)
-         values ($1, (select request_id from jobs where id = $1), $2, $3, $4, $5::bidly_actor_side, $6, $7, $8::text[], true)
+        `insert into reviews (job_id, request_id, author_id, subject_id, provider_id, direction, rating, comment,
+                              rating_punctuality, rating_quality, rating_communication, rating_value, is_visible)
+         values ($1, (select request_id from jobs where id = $1), $2, $3, $4, $5::bidly_actor_side, $6, $7,
+                 $8, $9, $10, $11, true)
          returning id`,
         [
           b.jobId, auth.userId, subjectId,
           isCustomer ? job.provider_id : null,
-          direction, b.rating, b.comment ?? null, tags,
+          direction, b.rating, b.comment ?? null,
+          b.punctuality ?? null, b.quality ?? null, b.communication ?? null, b.value ?? null,
         ],
       );
 
@@ -128,6 +125,7 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
     if (!party) throw forbidden();
     const rows = await queryMany(
       `select r.id, r.direction, r.rating, r.comment, r.tags, r.would_recommend,
+              r.rating_punctuality, r.rating_quality, r.rating_communication, r.rating_value,
               r.created_at, u.id as author_id, coalesce(up.display_name, u.email) as author_name
        from reviews r join users u on u.id = r.author_id
        left join user_profiles up on up.user_id = u.id
@@ -151,6 +149,7 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
     const page = parsePagination(request.query as Record<string, unknown>);
     const rows = await queryMany(
       `select r.id, r.rating, r.comment, r.tags, r.would_recommend,
+              r.rating_punctuality, r.rating_quality, r.rating_communication, r.rating_value,
               r.created_at, coalesce(up.display_name, u.email) as author_name,
               up.avatar_url as author_avatar_url
        from reviews r
