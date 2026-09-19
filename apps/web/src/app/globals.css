@@ -1,0 +1,39 @@
+:root {
+  --bidly-bg: #ffffff;
+  --bidly-fg: #0f172a;
+  --bidly-muted: #64748b;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bidly-bg: #0b1120;
+    --bidly-fg: #e2e8f0;
+    --bidly-muted: #94a3b8;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bidly-bg);
+  color: var(--bidly-fg);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Noto Sans Arabic',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
