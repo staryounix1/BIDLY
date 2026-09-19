@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIDLY — الجزء 2/10 مكتمل</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<style>
+  body{font-family:'Segoe UI',Tahoma,system-ui,sans-serif}
+  .card{border:1px solid #e5e7eb;border-radius:16px;background:#fff}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div class="max-w-5xl mx-auto p-6 md:p-10">
+
+  <div class="flex items-center justify-between flex-wrap gap-4">
+    <div>
+      <div class="text-xs font-bold tracking-widest text-emerald-600">BIDLY · مرحلة البناء</div>
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 mt-1">الجزء 2/10 — قواعد البيانات ونماذج البيانات</h1>
+      <p class="text-slate-500 mt-2">مكتمل ومُختبر · 67 جدولاً · الترحيلان 0001 و 0002</p>
+    </div>
+    <div class="text-center bg-emerald-600 text-white rounded-2xl px-6 py-4 shadow">
+      <div class="text-3xl font-black">100%</div>
+      <div class="text-xs opacity-90">تم التحقق</div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-4 gap-4 mt-8">
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">4</div><div class="text-sm text-slate-500">نماذج جديدة/مُحسَّنة</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">9</div><div class="text-sm text-slate-500">اختبارات سلوكية ناجحة</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-slate-900">27/27</div><div class="text-sm text-slate-500">مهام البناء ناجحة</div></div>
+    <div class="card p-4"><div class="text-2xl font-black text-emerald-600">0</div><div class="text-sm text-slate-500">أعمدة محذوفة أو مُغيَّرة</div></div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">ما أُنجز في هذا الجزء</h2>
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">تقييمات فرعية لكل فئة</div>
+      <p class="text-sm text-slate-600 mt-1">
+        <span class="mono text-xs bg-slate-100 px-1 rounded">reviews</span> يكتسب 4 درجات اختيارية:
+        الالتزام بالوقت، الجودة، التواصل، والقيمة (1–5). الدرجة الكلية تبقى كما هي.
+      </p>
+    </div>
+
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">حماية: لا تقييم قبل إتمام العمل</div>
+      <p class="text-sm text-slate-600 mt-1">
+        مشغّل قاعدة بيانات يرفض أي تقييم ما لم تكن حالة المهمة
+        <span class="mono text-xs">COMPLETED</span> أو ما بعدها. القاعدة صارت ثابتة في القاعدة نفسها، لا في الخدمة فقط.
+      </p>
+    </div>
+
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">جدول مرفقات موحّد</div>
+      <p class="text-sm text-slate-600 mt-1">
+        جدول <span class="mono text-xs bg-slate-100 px-1 rounded">attachments</span> يخزّن بيانات كل الملفات
+        (وسائط طلب، أدلة مهمة، أدلة نزاع، وثائق مزوّد، مرفقات محادثة) دون تخزين الملف نفسه — فقط المفتاح والحجم والنوع.
+      </p>
+    </div>
+
+    <div class="card p-5">
+      <div class="font-bold text-slate-900">خصوصية موقع الطلب</div>
+      <p class="text-sm text-slate-600 mt-1">
+        حتى يتم اختيار مزوّد، يُنشر موقع تقريبي فقط (بإحداثيات مُقارَبة) — لا يُسرَّب العنوان الدقيق.
+        درجة التقريب قابلة للضبط عبر الإعداد <span class="mono text-xs">geo.approx_decimals</span>.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="card p-5 mt-4 border-emerald-200 bg-emerald-50">
+    <div class="font-bold text-emerald-800">إصلاح مهم اكتُشف أثناء الاختبار</div>
+    <p class="text-sm text-emerald-900 mt-1">
+      كان مشغّل العدّاد ينقل الطلب مباشرةً من <span class="mono text-xs">PUBLISHED</span> إلى
+      <span class="mono text-xs">RECEIVING_OFFERS</span> عند وصول أول عرض، ما يخالف آلة الحالات المعتمدة.
+      أُصلح ليمرّ فقط عبر <span class="mono text-xs">MATCHING → RECEIVING_OFFERS</span> كما في التوثيق وفي كود آلة الحالات.
+    </p>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الاختبارات السلوكية (9/9)</h2>
+  <div class="card p-5">
+    <ul class="grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700 list-disc pr-5">
+      <li>رفض التقييم قبل إتمام المهمة</li>
+      <li>قبول التقييم بعد الإتمام</li>
+      <li>منع تكرار التقييم لنفس المهمة والاتجاه</li>
+      <li>رفض درجة فرعية خارج 1–5</li>
+      <li>رفض حجم مرفق سالب</li>
+      <li>تخزين بيانات المرفق دون محتوى</li>
+      <li>الدقة EXACT تتطلب إحداثيات</li>
+      <li>قبول EXACT عند وجود الإحداثيات</li>
+      <li>رفض خط عرض تقريبي خارج النطاق</li>
+    </ul>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">نتائج التحقق</h2>
+  <div class="card overflow-hidden">
+    <table class="w-full text-sm">
+      <tbody class="divide-y">
+        <tr><td class="p-3 text-slate-500">ترحيل تدريجي (0001 ← 0002)</td><td class="p-3 font-bold text-emerald-600">ناجح</td></tr>
+        <tr><td class="p-3 text-slate-500">تثبيت نظيف (0001 + 0002)</td><td class="p-3 font-bold text-emerald-600">ناجح</td></tr>
+        <tr><td class="p-3 text-slate-500">Idempotent (إعادة التطبيق)</td><td class="p-3 font-bold text-emerald-600">ناجح</td></tr>
+        <tr><td class="p-3 text-slate-500">البذور (seed)</td><td class="p-3 font-bold text-emerald-600">ناجح</td></tr>
+        <tr><td class="p-3 text-slate-500">اختبارات القاعدة (invariants + part2)</td><td class="p-3 font-bold text-emerald-600">ناجح</td></tr>
+        <tr><td class="p-3 text-slate-500">Build · Typecheck · Unit (Turbo)</td><td class="p-3 font-bold text-emerald-600">27/27</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 mt-10 mb-3">الملفات الرئيسية</h2>
+  <div class="card p-5 text-sm mono text-slate-600 space-y-1" dir="ltr">
+    <div>db/migrations/0002_part2_data_models.sql</div>
+    <div>db/tests/part2_models.sql</div>
+    <div>scripts/test-db.mjs</div>
+    <div>docs/05-database-schema.md</div>
+  </div>
+
+  <div class="mt-10 rounded-2xl bg-slate-900 text-white p-6 text-center">
+    <div class="text-xs tracking-widest text-emerald-400 font-bold">PART 2/10 COMPLETE</div>
+    <div class="text-lg font-bold mt-1">قاعدة بيانات موثوقة، آمنة، وقابلة للقياس</div>
+    <p class="text-slate-400 text-sm mt-2">جاهزون للجزء 3 عند إشارتك.</p>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-6">BIDLY · السوق: المغرب (الرباط، سلا، تمارة) · العملة: MAD · اللغات: ar / fr / en</p>
+
+</div>
+</body>
+</html>

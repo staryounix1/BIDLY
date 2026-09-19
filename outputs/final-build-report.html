@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BIDLY — تقرير البناء والاختبار النهائي</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .glow { box-shadow: 0 0 0 1px rgba(16,185,129,.25), 0 8px 30px -12px rgba(16,185,129,.45); }
+  .grain { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0); background-size: 22px 22px; }
+</style>
+</head>
+<body class="min-h-screen bg-[#0a0f0d] text-slate-100 grain">
+  <main class="mx-auto max-w-6xl px-6 py-8">
+
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-500/20 pb-6">
+      <div class="flex items-center gap-4">
+        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-2xl font-bold text-emerald-950">B</div>
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">BIDLY</h1>
+          <p class="text-sm text-emerald-300/80">منصة خدمات عكسية · تقرير البناء والاختبار النهائي</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="glow rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300">✓ كل الفحوصات ناجحة</span>
+      </div>
+    </header>
+
+    <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">مهام البناء والفحص</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">27<span class="text-xl text-slate-500">/27</span></p>
+        <p class="mt-1 text-xs text-slate-500">build + typecheck + test</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">اختبارات وحدة وتكامل</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">99</p>
+        <p class="mt-1 text-xs text-slate-500">كلها ناجحة — بلا أخطاء</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">فحوصات E2E حيّة</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">17</p>
+        <p class="mt-1 text-xs text-slate-500">خادم حقيقي + PostgreSQL</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <p class="text-sm text-slate-400">صفحات الواجهة</p>
+        <p class="mt-2 text-4xl font-bold text-emerald-400">22</p>
+        <p class="mt-1 text-xs text-slate-500">3 لغات (ar / fr / en)</p>
+      </div>
+    </section>
+
+    <section class="mt-8 grid gap-6 lg:grid-cols-5">
+      <div class="lg:col-span-3 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-emerald-300">دورة حياة الطلب — مُتحقَّق منها فعليًا</h2>
+        <p class="mt-1 text-sm text-slate-400">تشغيل تسلسلي حقيقي عبر HTTP على قاعدة بيانات Postgres مُفعّلة</p>
+        <ol class="mt-5 space-y-3" id="flow"></ol>
+      </div>
+
+      <div class="lg:col-span-2 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 class="text-lg font-bold text-emerald-300">الحزم والاختبارات</h2>
+        <div class="mt-4 space-y-3" id="pkgs"></div>
+        <div class="mt-5 rounded-xl bg-emerald-500/10 p-3 text-xs text-emerald-200/90 leading-relaxed">
+          كل حزمة تشغّل اختباراتها فقط بعد إصلاح النطاق (BIDLY_TEST_SCOPE)،
+          مما أوقف تصادم الاختبارات المتوازية على قاعدة البيانات المشتركة.
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <h2 class="text-lg font-bold text-emerald-300">ما تم إصلاحه هذه الجلسة</h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+          <p class="mono text-xs text-amber-300">apps/api/src/app.ts</p>
+          <p class="mt-2 text-sm text-slate-300">إزالة خيار <span class="mono text-rose-300">ajax:false</span> غير المدعوم في Fastify 5، وتصحيح توقيع معالج الأخطاء. كانا يمنعان بناء وفحص حزمة الـ API.</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+          <p class="mono text-xs text-amber-300">vitest.config.ts</p>
+          <p class="mt-2 text-sm text-slate-300">تقييد كل حزمة باختباراتها عبر متغير البيئة <span class="mono text-sky-300">BIDLY_TEST_SCOPE</span>، مع تشغيل متسلسل لحزمة الـ API ورفع مهل التنفيذ.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5 text-xs text-slate-500">
+      <span>تاريخ التشغيل: 2026-09-19 · بيئة نظيفة بلا كاش</span>
+      <span class="mono">turbo run build typecheck test:unit --force → 27/27</span>
+    </footer>
+  </main>
+
+<script>
+const flow = [
+  ['تسجيل حساب جديد + تأكيد البريد', 'verified'],
+  ['تسجيل الدخول واستلام التوكن', '395-char JWT'],
+  ['GET /me — بيانات المستخدم', 'role=CUSTOMER'],
+  ['المتصفح: 34 خدمة · 3 فئات · 3 مدن', 'ok'],
+  ['إنشاء طلب (مسودة)', 'REQ-XXXXXX'],
+  ['نشر الطلب', 'PUBLISHED'],
+  ['سرد طلباتي', '1 request'],
+  ['تفاصيل الطلب', 'PUBLISHED'],
+  ['إلغاء الطلب', 'CANCELLED'],
+  ['حراس الأمان والحالات', '4/4 ✓'],
+];
+document.getElementById('flow').innerHTML = flow.map(([label, val], i) => `
+  <li class="flex items-center gap-3">
+    <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-xs font-bold text-emerald-300">${i+1}</span>
+    <span class="flex-1 text-sm text-slate-200">${label}</span>
+    <span class="mono shrink-0 rounded-md bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">${val}</span>
+  </li>`).join('');
+
+const pkgs = [
+  ['packages/validation', 21, 9],
+  ['apps/api (تكامل)', 28, 9],
+  ['packages/money', 18, 9],
+  ['packages/state-machines', 18, 9],
+  ['packages/i18n', 14, 9],
+];
+document.getElementById('pkgs').innerHTML = pkgs.map(([name, n]) => `
+  <div>
+    <div class="flex items-center justify-between text-sm">
+      <span class="mono text-xs text-slate-300">${name}</span>
+      <span class="text-emerald-300 font-semibold">${n} ✓</span>
+    </div>
+    <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10">
+      <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500" style="width:100%"></div>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIDLY — Part 1 Foundation</title>
+<style>
+  :root{
+    --bg:#080b14; --panel:#0f1524; --panel2:#141c2f; --line:#20293f;
+    --fg:#e8ecf5; --muted:#8b97b0; --brand:#5b8cff; --brand2:#8b5cf6;
+    --ok:#34d399; --warn:#fbbf24; --err:#f87171; --cyan:#22d3ee;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(1200px 700px at 15% -10%,#16224a 0%,transparent 55%),
+               radial-gradient(1000px 600px at 90% 0%,#2a1a4d 0%,transparent 50%),var(--bg);
+    color:var(--fg);
+    font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1440px;margin:0 auto;padding:26px 30px 34px}
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{
+    width:46px;height:46px;border-radius:13px;flex:none;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    display:grid;place-items:center;font-weight:800;font-size:20px;color:#fff;
+    box-shadow:0 8px 26px -8px var(--brand);
+  }
+  h1{font-size:26px;margin:0;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;
+    background:rgba(52,211,153,.12);color:var(--ok);border:1px solid rgba(52,211,153,.3);
+    padding:6px 13px;border-radius:999px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .kpi .n{font-size:26px;font-weight:750;letter-spacing:-.5px;line-height:1.1}
+  .kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:5px}
+  .kpi.b .n{color:var(--brand)} .kpi.g .n{color:var(--ok)} .kpi.c .n{color:var(--cyan)} .kpi.p .n{color:var(--brand2)} .kpi.y .n{color:var(--warn)}
+  .grid{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px;align-items:start}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);margin:0 0 13px;font-weight:700}
+  .stack{display:flex;flex-direction:column;gap:9px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:13.5px}
+  .row .k{color:var(--muted);flex:none;min-width:104px}
+  .row .v{text-align:right;font-weight:550}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(91,140,255,.14);color:#a9c1ff;border:1px solid rgba(91,140,255,.25);font-weight:600}
+  .tag.g{background:rgba(52,211,153,.13);color:#7ee7c0;border-color:rgba(52,211,153,.28)}
+  .tag.y{background:rgba(251,191,36,.13);color:#f7d67a;border-color:rgba(251,191,36,.3)}
+  .layer{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.05);margin-bottom:7px}
+  .layer .ic{width:30px;height:30px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:14px;background:rgba(91,140,255,.14);border:1px solid rgba(91,140,255,.22)}
+  .layer .t{font-size:13.5px;font-weight:600}
+  .layer .d{font-size:11.5px;color:var(--muted)}
+  ul.clean{margin:0;padding-left:16px;color:var(--muted);font-size:12.8px;line-height:1.75}
+  ul.clean b{color:var(--fg);font-weight:600}
+  .bar{height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .full{grid-column:1/-1}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px}
+  .step{padding:7px 12px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);font-weight:600;white-space:nowrap}
+  .arrow{color:var(--brand);font-weight:800}
+  .checks{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .chk{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:9px 11px}
+  .chk .ok{color:var(--ok);font-weight:800;flex:none}
+  footer{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  @media(max-width:1180px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}.checks{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.checks{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">B</div>
+      <div>
+        <h1>BIDLY — Technical Foundation</h1>
+        <div class="sub">Reverse marketplace for services &middot; Morocco launch (Rabat, Salé, Témara) &middot; MAD / ar&middot;fr&middot;en</div>
+      </div>
+    </div>
+    <div class="pill"><span class="dot"></span>PART 1 / 10 &middot; all 27 checks passing</div>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi b"><div class="n">66</div><div class="l">Database tables</div></div>
+    <div class="kpi p"><div class="n">37</div><div class="l">Enums</div></div>
+    <div class="kpi c"><div class="n">48</div><div class="l">API routes</div></div>
+    <div class="kpi g"><div class="n">57</div><div class="l">Unit tests passing</div></div>
+    <div class="kpi y"><div class="n">12</div><div class="l">DB invariant checks</div></div>
+    <div class="kpi b"><div class="n">9</div><div class="l">Workspace projects</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Architecture layers</h2>
+      <div class="layer"><div class="ic">🖥️</div><div><div class="t">apps/web &middot; apps/admin</div><div class="d">Next.js 15 &middot; React 19 &middot; locale routing &middot; RTL</div></div></div>
+      <div class="layer"><div class="ic">⚙️</div><div><div class="t">apps/api &middot; Fastify 5</div><div class="d">Modular monolith, 14 feature modules, REST /api/v1</div></div></div>
+      <div class="layer"><div class="ic">🧩</div><div><div class="t">packages/*</div><div class="d">config &middot; types &middot; money &middot; state-machines &middot; validation &middot; i18n</div></div></div>
+      <div class="layer"><div class="ic">🗄️</div><div><div class="t">db/</div><div class="d">migrations &middot; seed &middot; invariant tests &middot; PostgreSQL 17</div></div></div>
+      <div class="layer"><div class="ic">🔐</div><div><div class="t">Auth &amp; RBAC</div><div class="d">Argon2id &middot; JWT access + rotating refresh &middot; server-side roles</div></div></div>
+      <div class="layer"><div class="ic">💰</div><div><div class="t">Money &amp; time</div><div class="d">Integer minor units &middot; char(3) currency &middot; timestamptz UTC</div></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Technology decisions</h2>
+      <div class="stack">
+        <div class="row"><span class="k">Language</span><span class="v">TypeScript 5.9 <span class="tag g">strict</span></span></div>
+        <div class="row"><span class="k">Runtime</span><span class="v">Node.js 22 LTS</span></div>
+        <div class="row"><span class="k">Monorepo</span><span class="v">pnpm 10 + Turborepo</span></div>
+        <div class="row"><span class="k">API</span><span class="v">Fastify 5</span></div>
+        <div class="row"><span class="k">Frontend</span><span class="v">Next.js 15 App Router</span></div>
+        <div class="row"><span class="k">Database</span><span class="v">PostgreSQL 17</span></div>
+        <div class="row"><span class="k">Data access</span><span class="v">Parameterised SQL <span class="tag">no ORM</span></span></div>
+        <div class="row"><span class="k">Validation</span><span class="v">Zod + JSON Schema</span></div>
+        <div class="row"><span class="k">Testing</span><span class="v">Vitest</span></div>
+        <div class="row"><span class="k">Payments</span><span class="v">Provider interface <span class="tag y">internal dev</span></span></div>
+        <div class="row"><span class="k">CI</span><span class="v">GitHub Actions</span></div>
+        <div class="row"><span class="k">Deploy</span><span class="v">Vercel <span class="tag y">pending</span></span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Market configuration (DB-driven)</h2>
+      <div class="stack">
+        <div class="row"><span class="k">Country</span><span class="v">MA <span class="tag">configurable</span></span></div>
+        <div class="row"><span class="k">Currency</span><span class="v">MAD &middot; 2 minor units</span></div>
+        <div class="row"><span class="k">Locales</span><span class="v">ar (RTL) &middot; fr &middot; en</span></div>
+        <div class="row"><span class="k">Timezone</span><span class="v">Africa/Casablanca</span></div>
+        <div class="row"><span class="k">Launch cities</span><span class="v">Rabat &middot; Salé &middot; Témara</span></div>
+        <div class="row"><span class="k">Settings rows</span><span class="v">32</span></div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Nothing is hard-coded: country, currency, language and timezone are read from the database <b style="color:var(--fg)">settings</b> table.</div>
+        <div class="bar"><i style="width:100%"></i></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <h2>Request → Offer → Job lifecycle (state machines)</h2>
+      <div class="flow">
+        <span class="step">DRAFT</span><span class="arrow">→</span>
+        <span class="step">PUBLISHED</span><span class="arrow">→</span>
+        <span class="step">MATCHING</span><span class="arrow">→</span>
+        <span class="step">RECEIVING OFFERS</span><span class="arrow">→</span>
+        <span class="step">PROVIDER SELECTED</span><span class="arrow">→</span>
+        <span class="step">CONFIRMED</span><span class="arrow">→</span>
+        <span class="step">IN PROGRESS</span><span class="arrow">→</span>
+        <span class="step">COMPLETED</span><span class="arrow">→</span>
+        <span class="step">PAID</span>
+      </div>
+      <div style="margin-top:12px;font-size:12.5px;color:var(--muted)">
+        Every transition is validated server-side. Off-path moves (e.g. <b style="color:var(--fg)">CREATED → PAID</b>) are rejected by the state machine and by database constraints.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>What Part 1 delivered</h2>
+      <ul class="clean">
+        <li><b>Database foundation</b> — 66 tables, RLS on 55, 54 policies, 123 indexes</li>
+        <li><b>Shared packages</b> — money, state machines, types, validation, i18n</li>
+        <li><b>API core</b> — errors, logging, pagination, RBAC, provider adapters</li>
+        <li><b>Auth foundation</b> — registration, login, rotation, verification</li>
+        <li><b>i18n foundation</b> — RTL Arabic, French, English</li>
+        <li><b>Web + Admin scaffolds</b> — locale-routed, RTL-correct</li>
+        <li><b>CLI scripts</b> — migrate, seed, DB invariant test</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Verification performed</h2>
+      <div class="stack">
+        <div class="row"><span class="k">Unit tests</span><span class="v" style="color:var(--ok)">57 / 57 passing</span></div>
+        <div class="row"><span class="k">Typecheck</span><span class="v" style="color:var(--ok)">9 / 9 projects</span></div>
+        <div class="row"><span class="k">Builds</span><span class="v" style="color:var(--ok)">API + web + admin</span></div>
+        <div class="row"><span class="k">DB invariants</span><span class="v" style="color:var(--ok)">12 / 12 passing</span></div>
+        <div class="row"><span class="k">Live API</span><span class="v" style="color:var(--ok)">boots + serves</span></div>
+        <div class="row"><span class="k">Auth flow</span><span class="v" style="color:var(--ok)">end-to-end</span></div>
+        <div class="row"><span class="k">Migration</span><span class="v" style="color:var(--ok)">fresh DB → ok</span></div>
+        <div class="row"><span class="k">RTL render</span><span class="v" style="color:var(--ok)">dir="rtl" verified</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Known blockers</h2>
+      <ul class="clean">
+        <li><b>Vercel</b> — not connected; repo can be imported at vercel.com/new</li>
+        <li><b>Supabase schema</b> — not yet applied to the remote project</li>
+        <li><b>GitHub push</b> — repo contains only the initial README so far</li>
+      </ul>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted)">None block Part 2; all are deployment steps.</div>
+    </div>
+
+    <div class="card full">
+      <h2>Foundation checks</h2>
+      <div class="checks">
+        <div class="chk"><span class="ok">✓</span><span>Money is integer minor units — no floats anywhere</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Timestamps stored in UTC, displayed per user timezone</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Roles enforced server-side; never trusted from client</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Secrets only in env; zero hard-coded credentials</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Payment / storage / push / email providers are swappable</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Append-only ledgers: wallet, payment, audit, job events</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Errors return stable codes; internals never leaked</span></div>
+        <div class="chk"><span class="ok">✓</span><span>Market config is database-driven, not hard-coded</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>BIDLY &middot; modular monolith &middot; production-oriented foundation</span>
+    <span>Part 1 of 10 complete &middot; next: database models &amp; domain layer</span>
+  </footer>
+</div>
+</body>
+</html>
