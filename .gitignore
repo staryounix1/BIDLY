@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# env / secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+.env.production
+*.pem
+*.key
+secrets/
+
+# logs & os
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# test coverage
+coverage/
+.nyc_output/
+
+# tooling
+.turbo/
+.vercel
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# uploads / temp
+tmp/
+temp/
+uploads/
+*.sqlite
+*.sqlite3

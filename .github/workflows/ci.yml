@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Build, typecheck and test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bidly_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bidly_test
+      DATABASE_SSL: 'false'
+      NODE_ENV: test
+      AUTH_SECRET: ci-only-auth-secret-0123456789abcdefghijklmnop
+      REFRESH_SECRET: ci-only-refresh-secret-0123456789abcdefghijklmn
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build, typecheck and unit-test every workspace
+        run: pnpm turbo run build typecheck test:unit
+
+      - name: Apply migrations
+        run: pnpm db:migrate
+
+      - name: Seed reference data
+        run: pnpm db:seed
+
+      - name: Database invariant suite
+        run: pnpm db:test

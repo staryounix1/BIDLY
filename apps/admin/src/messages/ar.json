@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "BIDLY",
+    "tagline": "اطلب أي خدمة، ودع المزوّدين يتنافسون"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "requests": "طلباتي",
+    "offers": "العروض",
+    "jobs": "المهام",
+    "messages": "الرسائل",
+    "profile": "الملف الشخصي"
+  },
+  "common": {
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "continue": "متابعة",
+    "cancel": "إلغاء",
+    "loading": "جارٍ التحميل…",
+    "error": "حدث خطأ"
+  },
+  "admin": {
+    "sections": {
+      "users": "المستخدمون",
+      "providers": "المزوّدون",
+      "disputes": "الخلافات",
+      "payouts": "المدفوعات",
+      "settings": "الإعدادات"
+    }
+  }
+}

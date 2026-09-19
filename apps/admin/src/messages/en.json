@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "BIDLY",
+    "tagline": "Request any service, let providers compete"
+  },
+  "nav": {
+    "home": "Home",
+    "requests": "My requests",
+    "offers": "Offers",
+    "jobs": "Jobs",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "common": {
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "error": "Something went wrong"
+  },
+  "admin": {
+    "sections": {
+      "users": "Users",
+      "providers": "Providers",
+      "disputes": "Disputes",
+      "payouts": "Payouts",
+      "settings": "Settings"
+    }
+  }
+}
