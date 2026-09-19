@@ -11,7 +11,7 @@ import pino, { type Logger } from 'pino';
  *   stable `event` names so they can be searched and alerted on.
  */
 
-const REDACTED_PATHS = [
+const SENSITIVE_KEYS = [
   'password',
   'passwordHash',
   'password_hash',
@@ -24,8 +24,6 @@ const REDACTED_PATHS = [
   'tokenHash',
   'authorization',
   'cookie',
-  'headers.authorization',
-  'headers.cookie',
   'cardNumber',
   'card_number',
   'cvv',
@@ -41,6 +39,20 @@ const REDACTED_PATHS = [
   'otpHash',
   'startOtp',
   'mfaSecret',
+];
+
+// Top-level exact matches plus one-level nesting under the objects Fastify and
+// our own code log most often. Pino's `*` matches a single path segment, so
+// `body.*` covers `body.password` without needing every key spelled out twice.
+const REDACTED_PATHS = [
+  ...SENSITIVE_KEYS,
+  'headers.authorization',
+  'headers.cookie',
+  ...['body', 'req.body', 'request.body', 'data', 'payload', 'context'].flatMap((prefix) =>
+    SENSITIVE_KEYS.map((key) => `${prefix}.${key}`),
+  ),
+  'req.headers.authorization',
+  'req.headers.cookie',
 ];
 
 let rootLogger: Logger | null = null;

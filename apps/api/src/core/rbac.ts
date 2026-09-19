@@ -58,6 +58,7 @@ export const ADMIN_PERMISSIONS = {
   DISPUTES_RESOLVE: 'disputes:resolve',
   // money
   PAYMENTS_READ: 'payments:read',
+  PAYMENTS_WRITE: 'payments:write',
   REFUNDS_CREATE: 'refunds:create',
   REFUNDS_APPROVE: 'refunds:approve',
   PAYOUTS_READ: 'payouts:read',
@@ -93,6 +94,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermission[] | '*'> = {
   ],
   FINANCE: [
     ADMIN_PERMISSIONS.PAYMENTS_READ,
+    ADMIN_PERMISSIONS.PAYMENTS_WRITE,
     ADMIN_PERMISSIONS.REFUNDS_CREATE,
     ADMIN_PERMISSIONS.REFUNDS_APPROVE,
     ADMIN_PERMISSIONS.PAYOUTS_READ,

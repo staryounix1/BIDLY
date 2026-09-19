@@ -186,6 +186,14 @@ export function validateEnv(raw: Record<string, string | undefined>): EnvValidat
     if (env.STORAGE_DRIVER === 's3' && !env.S3_ACCESS_KEY_ID) {
       errors.push('S3_ACCESS_KEY_ID is required when STORAGE_DRIVER=s3 in production');
     }
+    // The `log` adapters print OTPs and message bodies to stdout: fine locally,
+    // never in production.
+    if (env.EMAIL_PROVIDER === 'log') {
+      errors.push('EMAIL_PROVIDER must not be "log" in production');
+    }
+    if (env.SMS_PROVIDER === 'log') {
+      errors.push('SMS_PROVIDER must not be "log" in production');
+    }
   }
   if (errors.length) return { ok: false, errors };
 

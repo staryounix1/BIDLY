@@ -20,7 +20,7 @@ import { registerDisputeRoutes } from './modules/disputes/disputes.routes.js';
 import { registerNotificationRoutes } from './modules/notifications/notifications.routes.js';
 import { registerRealtimeRoutes } from './modules/realtime/realtime.routes.js';
 import { registerAdminRoutes } from './modules/admin/admin.routes.js';
-import { registerSupportRoutes } from './modules/support/support.routes.js';
+import { registerSupportRoutes, registerSupportPublicRoutes } from './modules/support/support.routes.js';
 import { authPlugin } from './plugins/auth.plugin.js';
 import { errorHandler } from './core/error-handler.js';
 import { createNotificationAdapters, type NotificationAdapters } from './core/providers.js';
@@ -190,6 +190,7 @@ export async function buildApp(
       await api.register(registerRealtimeRoutes, { authService });
       await api.register(registerAdminRoutes);
       await api.register(registerSupportRoutes);
+      await api.register(registerSupportPublicRoutes);
     },
     { prefix: '/api/v1' },
   );
