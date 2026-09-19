@@ -15,8 +15,6 @@ import type { CommissionRule, StoredCommissionRule } from '@bidly/money';
  * `admins` + role, re-checked per request; nothing is trusted from the client.
  */
 export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
-  const adminOnly = [app.requireAdmin];
-
   // Each endpoint is gated by the least privilege it needs, so an ADMIN with a
   // narrow permission set (e.g. FINANCE) cannot reach unrelated endpoints.
   const can = (permission: (typeof ADMIN_PERMISSIONS)[keyof typeof ADMIN_PERMISSIONS]) => [app.requirePermission(permission)];
@@ -27,9 +25,11 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
   const providersVerify = can(ADMIN_PERMISSIONS.PROVIDERS_VERIFY);
   const requestsRead = can(ADMIN_PERMISSIONS.REQUESTS_READ);
   const jobsRead = can(ADMIN_PERMISSIONS.JOBS_READ);
+  const jobsIntervene = can(ADMIN_PERMISSIONS.JOBS_INTERVENE);
   const disputesRead = can(ADMIN_PERMISSIONS.DISPUTES_READ);
   const disputesResolve = can(ADMIN_PERMISSIONS.DISPUTES_RESOLVE);
   const paymentsRead = can(ADMIN_PERMISSIONS.PAYMENTS_READ);
+  const paymentsWrite = can(ADMIN_PERMISSIONS.PAYMENTS_WRITE);
   const payoutsRead = can(ADMIN_PERMISSIONS.PAYOUTS_READ);
   const payoutsApprove = can(ADMIN_PERMISSIONS.PAYOUTS_APPROVE);
   const settingsRead = can(ADMIN_PERMISSIONS.SETTINGS_READ);
@@ -69,7 +69,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
   }
 
   // -------- dashboard ---------------------------------------------------
-  app.get('/admin/stats', { preHandler: adminOnly, schema: { tags: ['admin'], summary: 'Platform KPIs', security: [{ bearerAuth: [] }] } },
+  app.get('/admin/stats', { preHandler: [app.requireAdmin], schema: { tags: ['admin'], summary: 'Platform KPIs', security: [{ bearerAuth: [] }] } },
     async (_request, reply) => {
       const stats = await queryOne(
         `select
@@ -271,9 +271,11 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     const where: string[] = [];
     if (q.status) { params.push(q.status); where.push(`d.status = $${params.length}`); }
     const rows = await queryMany(
-      `select d.id, d.job_id, d.category, d.status, d.priority, d.description, d.resolution,
-              d.created_at, j.title as job_title, j.amount_minor, j.currency
-       from disputes d join jobs j on j.id = d.job_id
+      `select d.id, d.job_id, d.reason_code as category, d.status, d.priority, d.description, d.resolution,
+              d.created_at, r.title as job_title, j.final_price_minor as amount_minor, j.currency
+       from disputes d
+       join jobs j on j.id = d.job_id
+       left join requests r on r.id = j.request_id
        ${where.length ? `where ${where.join(' and ')}` : ''}
        order by case d.priority when 'URGENT' then 0 when 'HIGH' then 1 when 'NORMAL' then 2 else 3 end, d.created_at
        limit $${params.length + 1} offset $${params.length + 2}`,
@@ -563,7 +565,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     schema: { tags: ['admin'], summary: 'Active commission rules', security: [{ bearerAuth: [] }] },
   }, async (_request, reply) => {
     const rows = await queryMany(
-      `select cr.*, c.name as category_name from commission_rules cr
+      `select cr.*, c.name_en as category_name from commission_rules cr
        left join categories c on c.id = cr.category_id
        where cr.is_active = true order by cr.priority`,
     );
@@ -775,7 +777,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post('/admin/wallets/:id/adjust', {
-    preHandler: paymentsRead,
+    preHandler: paymentsWrite,
     schema: {
       tags: ['admin'], summary: 'Manual wallet adjustment (ledger-backed)', security: [{ bearerAuth: [] }],
       params: { type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } },
@@ -853,7 +855,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post('/admin/requests/:id/cancel', {
-    preHandler: jobsRead,
+    preHandler: jobsIntervene,
     schema: {
       tags: ['admin'], summary: 'Force-cancel a request', security: [{ bearerAuth: [] }],
       params: { type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } },

@@ -17,6 +17,22 @@ import { enqueue, OUTBOX_TOPICS } from '../../core/outbox.js';
 export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
   const ORDER = { createdAt: 'j.created_at', scheduledAt: 'j.scheduled_at', price: 'j.final_price_minor' };
 
+  /**
+   * Server-only columns that must never reach a client.
+   *
+   * `jobs` physically stores the start-of-work code hash (and its expiry) so the
+   * provider can be challenged with the customer's one-time code. A `select j.*`
+   * row is therefore not safe to serialize as-is: the provider is exactly the
+   * party the code protects against. Strip these at every response boundary.
+   */
+  function sanitizeJob<T extends Record<string, unknown>>(row: T): Omit<T, 'start_otp_hash' | 'start_otp_expires_at'>;
+  function sanitizeJob<T extends Record<string, unknown>>(row: T | null): Omit<T, 'start_otp_hash' | 'start_otp_expires_at'> | null;
+  function sanitizeJob(row: Record<string, unknown> | null): Record<string, unknown> | null {
+    if (!row) return null;
+    const { start_otp_hash: _omitHash, start_otp_expires_at: _omitExpiry, ...safe } = row;
+    return safe;
+  }
+
   async function loadJobForActor(jobId: string, userId: string, role: string, client?: import('pg').PoolClient) {
     const runner = client ? clientQuery(client) : null;
     const sql = `select j.*, p.user_id as provider_user_id, s.name_en as service_name
@@ -30,6 +46,9 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
     const isCustomer = row.customer_id === userId;
     const isProvider = row.provider_user_id === userId;
     if (!isCustomer && !isProvider && role !== 'ADMIN') throw forbidden();
+    // NOTE: the row is returned un-sanitized because callers (e.g. the start
+    // endpoint) need `start_otp_hash` / `start_otp_expires_at` internally.
+    // Every response boundary must pass the value through `sanitizeJob`.
     return { job: row, isCustomer, isProvider };
   }
 
@@ -87,7 +106,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       `select count(*)::text as count from jobs j join providers p on p.id = j.provider_id where ${where.join(' and ')}`,
       params,
     );
-    return reply.send({ success: true, data: buildPage(rows, Number(total?.count ?? 0), page) });
+    return reply.send({ success: true, data: buildPage(rows.map(sanitizeJob), Number(total?.count ?? 0), page) });
   });
 
   // -------- one ------------------------------------------------------- 
@@ -111,7 +130,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
        from payments where job_id = $1`,
       [id],
     );
-    return reply.send({ success: true, data: { job, events, payment } });
+    return reply.send({ success: true, data: { job: sanitizeJob(job), events, payment } });
   });
 
   // -------- provider: en route ----------------------------------------
@@ -146,7 +165,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       );
       return updated;
     });
-    return reply.send({ success: true, data: result });
+    return reply.send({ success: true, data: sanitizeJob(result) });
   });
 
   // -------- provider: arrived -----------------------------------------
@@ -166,7 +185,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       assertJobTransition(job.status as JobStatus, 'PROVIDER_ARRIVED');
       return clientQuery(client).one(`update jobs set status = 'PROVIDER_ARRIVED', arrived_at = now() where id = $1 returning *`, [id]);
     });
-    return reply.send({ success: true, data: result });
+    return reply.send({ success: true, data: sanitizeJob(result) });
   });
 
   // -------- customer: start OTP ---------------------------------------
@@ -259,7 +278,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       logEvent(LOG_EVENTS.JOB_STARTED, { jobId: id, providerId: job.provider_id });
       return updated;
     });
-    return reply.send({ success: true, data: result });
+    return reply.send({ success: true, data: sanitizeJob(result) });
   });
 
   // -------- provider: complete ----------------------------------------
@@ -320,7 +339,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       logEvent(LOG_EVENTS.JOB_COMPLETED, { jobId: id, providerId: job.provider_id });
       return updated;
     });
-    return reply.send({ success: true, data: result });
+    return reply.send({ success: true, data: sanitizeJob(result) });
   });
 
   // -------- customer: confirm ------------------------------------------
@@ -350,7 +369,7 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       );
       return updated;
     });
-    return reply.send({ success: true, data: result });
+    return reply.send({ success: true, data: sanitizeJob(result) });
   });
 
   // -------- cancel ------------------------------------------------------
@@ -445,6 +464,6 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
       return { ...(updated as object), cancellationFeeMinor: feeMinor, stage };
     });
 
-    return reply.send({ success: true, data: result });
+    return reply.send({ success: true, data: sanitizeJob(result) });
   });
 }
