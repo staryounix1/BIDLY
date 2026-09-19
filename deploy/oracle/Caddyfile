@@ -1,0 +1,15 @@
+# Replace YOUR_DOMAIN with your real domain, or use the server public IP
+# (IP-only works but gives no automatic HTTPS — see README).
+{$SITE_DOMAIN} {
+	encode gzip zstd
+
+	# API under /api/* — keep the prefix, the API serves /api/v1/*
+	handle /api/* {
+		reverse_proxy api:4000
+	}
+
+	# Everything else -> Next.js web
+	handle {
+		reverse_proxy web:3000
+	}
+}

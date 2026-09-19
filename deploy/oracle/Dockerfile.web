@@ -1,0 +1,26 @@
+# BIDLY Web — production image (Next.js standalone-ish)
+FROM node:22-slim AS base
+RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
+WORKDIR /app
+
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY packages ./packages
+COPY apps/web/package.json ./apps/web/package.json
+RUN pnpm install --frozen-lockfile --prod=false
+
+FROM deps AS build
+COPY . .
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+RUN pnpm --filter @bidly/web build
+
+FROM base AS runtime
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/web ./apps/web
+COPY pnpm-workspace.yaml package.json ./
+WORKDIR /app/apps/web
+EXPOSE 3000
+CMD ["pnpm", "exec", "next", "start", "-p", "3000"]

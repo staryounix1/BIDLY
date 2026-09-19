@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bidly
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: bidly
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ../../db/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bidly -d bidly"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [bidly]
+
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/oracle/Dockerfile.api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://bidly:${POSTGRES_PASSWORD}@db:5432/bidly
+      DATABASE_SSL: "false"
+      API_PORT: "4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [bidly]
+
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/oracle/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL}
+    depends_on: [api]
+    networks: [bidly]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on: [web, api]
+    networks: [bidly]
+
+volumes:
+  dbdata:
+  caddydata:
+  caddyconfig:
+
+networks:
+  bidly:
