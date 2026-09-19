@@ -1,0 +1,39 @@
+{
+  "name": "bidly",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BIDLY — reverse marketplace platform (request, offer, job, pay, review)",
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed.mjs",
+    "db:test": "node scripts/test-db.mjs",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.1",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "argon2",
+      "esbuild",
+      "prisma"
+    ]
+  }
+}

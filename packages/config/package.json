@@ -1,0 +1,53 @@
+{
+  "name": "@bidly/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": {
+        "types": "./src/index.ts",
+        "import": "./src/index.ts",
+        "default": "./src/index.ts"
+      },
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./env": {
+      "development": {
+        "types": "./src/env/index.ts",
+        "import": "./src/env/index.ts",
+        "default": "./src/env/index.ts"
+      },
+      "types": "./dist/env/index.d.ts",
+      "import": "./dist/env/index.js",
+      "default": "./dist/env/index.js"
+    },
+    "./constants": {
+      "development": {
+        "types": "./src/constants/index.ts",
+        "import": "./src/constants/index.ts",
+        "default": "./src/constants/index.ts"
+      },
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.js",
+      "default": "./dist/constants/index.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:unit": "BIDLY_TEST_SCOPE=packages/config/src vitest run --config ../../vitest.config.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist tsconfig.build.tsbuildinfo"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}

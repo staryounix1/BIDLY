@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BIDLY — Task 9: Payments, Wallet &amp; Admin</title>
+<style>
+  :root { --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --ok:#059669; --warn:#d97706; --bad:#dc2626; --bg:#f8fafc; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  .wrap { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+  .eyebrow { text-transform:uppercase; letter-spacing:.12em; font-size:12px; font-weight:700; color:var(--muted); }
+  h1 { font-size:34px; line-height:1.15; margin:8px 0 6px; letter-spacing:-.02em; }
+  h2 { font-size:20px; margin:38px 0 12px; letter-spacing:-.01em; }
+  h3 { font-size:15px; margin:20px 0 8px; }
+  p { margin:8px 0; }
+  .lede { font-size:17px; color:var(--muted); }
+  .hero { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 28px; margin-top:18px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+  .grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-top:16px; }
+  .stat { background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .stat .k { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; }
+  .stat .v { font-size:24px; font-weight:800; margin-top:4px; letter-spacing:-.02em; }
+  .stat.ok .v { color:var(--ok); }
+  ul { margin:8px 0; padding-inline-start:20px; }
+  li { margin:5px 0; }
+  code { background:#eef2f7; padding:1px 6px; border-radius:5px; font-size:13px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px 22px; margin-top:14px; }
+  .badge { display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px; }
+  .b-ok { background:#dcfce7; color:#166534; }
+  .b-new { background:#dbeafe; color:#1e40af; }
+  .b-fix { background:#fef3c7; color:#92400e; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+  th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .done { color:var(--ok); font-weight:700; }
+  footer { margin-top:44px; color:var(--muted); font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">BIDLY · Task 9 of 10</div>
+  <h1>Payments, wallet, webhooks &amp; admin console</h1>
+  <p class="lede">Money moves through one append-only ledger, provider webhooks are signature-verified and replay-proof, and the admin console is permission-gated with every mutating action recorded in an audit trail.</p>
+
+  <div class="hero">
+    <span class="badge b-ok">Complete</span>
+    <div class="grid">
+      <div class="stat ok"><div class="k">Turbo tasks</div><div class="v">27/27</div></div>
+      <div class="stat ok"><div class="k">Unit + integration</div><div class="v">167</div></div>
+      <div class="stat ok"><div class="k">Live E2E checks</div><div class="v">31/31</div></div>
+      <div class="stat ok"><div class="k">New Task 9 tests</div><div class="v">16</div></div>
+    </div>
+  </div>
+
+  <h2>What was built</h2>
+
+  <div class="card">
+    <h3>Payments &amp; wallet <span class="badge b-new">new</span></h3>
+    <ul>
+      <li>Job payment: authorize → capture in one transaction; the provider wallet is credited through <code>wallet_transactions</code>, the platform commission is recorded in <code>platform_earnings</code>, and the job is marked <code>PAID</code>.</li>
+      <li>Paying is idempotent: re-paying returns the captured payment; a prior CAPTURE success row is never charged twice.</li>
+      <li>Failed authorization/capture now sets the payment <code>FAILED</code>, records the failed transaction with an error code, and leaves it retryable.</li>
+      <li>Payouts: requesting one moves funds from <code>available</code> to <code>reserved</code>; admin approval settles reserved, rejection returns it to available — so the same balance can never leave twice.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Signed provider webhooks <span class="badge b-new">new</span></h3>
+    <ul>
+      <li><code>POST /payments/webhook/:provider</code> verifies HMAC-SHA256 over the <em>raw</em> body (constant-time compare) before anything is parsed.</li>
+      <li>Events are persisted in <code>webhook_events</code>; the unique <code>(provider, event_id)</code> index makes a replay a no-op that is acknowledged but never applied twice.</li>
+      <li>Signature failures are stored as <code>FAILED</code> and rejected with 401.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Admin console <span class="badge b-fix">repaired</span></h3>
+    <ul>
+      <li>Fixed broken schema references that made every mutating action 500: <code>admin_actions</code> now writes <code>target_type</code>/<code>target_id</code> with the admin row resolved from <code>admins.user_id</code>.</li>
+      <li>Fixed the KPIs query (<code>platform_earnings.recorded_at</code>), the provider queue (<code>display_name</code>, correct enum values, <code>suspension_reason</code>), and audit-log joins.</li>
+      <li>Added money views: payments list + detail, transactions, wallets + per-wallet ledger, and reason-bearing, ledger-backed wallet adjustments.</li>
+      <li>Added request management (list, force-cancel) and catalog management (services list/update, category create).</li>
+      <li>Every endpoint is gated by <code>requirePermission</code> least privilege; a MODERATOR cannot read finance endpoints, and a non-admin gets 403.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Frontend <span class="badge b-new">new</span></h3>
+    <ul>
+      <li><code>/[locale]/jobs</code>: a <strong>Pay now</strong> action appears for completed, unpaid jobs and reports the outcome (paid / failed, retryable).</li>
+      <li><code>/[locale]/wallet</code>: provider balance (available / reserved / lifetime), ledger table, payout request form and payout history.</li>
+      <li><code>/[locale]/admin</code>: tabbed console — overview KPIs, payments, transactions, wallets (with adjust), payouts (approve/reject), provider verification, requests, and the audit log. Permission denials surface cleanly.</li>
+      <li>i18n keys (<code>payment</code>, <code>wallet</code>, <code>admin</code>, nav entries) added to Arabic, French and English; RTL preserved.</li>
+    </ul>
+    <p>Web build emits 63 static pages (was 55).</p>
+  </div>
+
+  <h2>Bugs found and fixed</h2>
+  <table>
+    <tr><th>Area</th><th>Problem</th><th>Fix</th></tr>
+    <tr><td>admin_actions</td><td>inserted <code>entity_type</code>/<code>entity_id</code>; table has <code>target_type</code>/<code>target_id</code>; admin_id FK is to <code>admins</code> not <code>users</code></td><td>resolve the admin row and write the correct columns</td></tr>
+    <tr><td>admin stats</td><td>read <code>platform_earnings.created_at</code></td><td><code>recorded_at</code></td></tr>
+    <tr><td>provider queue</td><td>selected <code>business_name</code>; wrong verification enum values</td><td><code>display_name</code>; <code>PENDING/REJECTED/UNVERIFIED</code></td></tr>
+    <tr><td>provider verify</td><td>wrote <code>rejection_reason</code>; invalid status <code>REJECTED</code></td><td><code>suspension_reason</code>; status <code>SUSPENDED</code></td></tr>
+    <tr><td>display names</td><td>queries used <code>users.display_name</code> / <code>users.last_seen_at</code></td><td>join <code>user_profiles</code>; use <code>users.last_login_at</code></td></tr>
+    <tr><td>dispute resolve</td><td>wrote <code>dispute_events</code> and <code>disputes.refund_minor/resolved_by</code>, which do not exist; invalid ledger type</td><td>use <code>audit_logs</code>, correct dispute columns, <code>REFUND_DEBIT</code></td></tr>
+    <tr><td>payouts</td><td><code>approved_by</code> given a user id; wrote non-existent <code>external_ref</code></td><td>admin row id; <code>provider_ref</code>; reserved-funds settlement</td></tr>
+    <tr><td>catalog</td><td>services queried <code>category_id</code>/<code>name</code>/<code>base_price_minor</code>; categories <code>parent_id</code></td><td>correct columns (<code>subcategory_id</code>, <code>name_en</code>, <code>min_price_minor</code>)</td></tr>
+    <tr><td>wallet owner enum</td><td>filtered <code>CUSTOMER</code></td><td>enum value is <code>USER</code></td></tr>
+    <tr><td>payment provider types</td><td><code>SignedWebhookProvider extends InternalPaymentProvider</code> with incompatible overrides</td><td>implements <code>PaymentProvider</code> and delegates money movement</td></tr>
+  </table>
+
+  <h2>Verification</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Unit + integration:</strong> 167 tests across 6 packages (API 88, of which 16 are the new Task 9 payments/admin suite).</li>
+      <li><strong>Live HTTP E2E</strong> (<code>scripts/e2e-payments.mjs</code>): 31/31 — register, job lifecycle, payment capture, ledger credit, payout reserve/return, webhook accept/reject/dedupe, admin KPIs, money views, wallet adjust, audit log, RBAC.</li>
+      <li><strong>Regression:</strong> Task 8 realtime E2E still 30/30; full pipeline 27/27 turbo tasks.</li>
+      <li><strong>Web:</strong> <code>next build</code> + typecheck clean; 63 static pages with the new admin, wallet and payment UI.</li>
+    </ul>
+  </div>
+
+  <footer>BIDLY · Task 9 report · generated for the workspace</footer>
+</div>
+</body>
+</html>
