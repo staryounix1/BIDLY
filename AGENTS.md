@@ -592,3 +592,42 @@ If they ask to be notified (for example when a long-running task finishes), send
 - **Task 9 e2e launcher:** `/tmp/bcode/run-api9.sh` (PORT 4000, `NODE_ENV=development`,
   `PAYMENT_WEBHOOK_SECRET=test-webhook-secret`), log `/tmp/bcode/api9.log`; run
   `node scripts/e2e-payments.mjs http://127.0.0.1:4000`.
+
+## Task 10 (FINAL AUDIT) — done
+
+- **All 10 tasks complete.** Full pipeline: 171 tests (API 88, web 12, validation 21,
+  state-machines 18, i18n 14, money 18), all 7 packages typecheck clean, API `tsc` build ok,
+  web `next build` → 63 static pages. Live E2E: realtime 30/30, payments 31/31, provider 35/35.
+- **Schema-drift bugs found & fixed (do not revert)** — routes written against columns/tables that
+  never existed; most were unreachable because their register function was never called or had no
+  tests. All confirmed fixed against the live DB:
+  1. `reviews.routes.ts` — `reviewee_id`→`subject_id`; sub-ratings parked in `tags`; `direction` is
+     `bidly_actor_side` = **CUSTOMER/PROVIDER** (author side), not `*_TO_*`; `FOR UPDATE` on the
+     `left join` → `for update of j`; `u.display_name`→`coalesce(up.display_name,u.email)`.
+  2. `disputes.routes.ts` — whole module was dead: `dispute_events` table **created** (migration
+     `0003`); `against_user_id`→`against_id`; `category`→`reason_code`; `desired_resolution`→
+     `resolution_type`; `j.title` comes from `requests.title` (jobs has no title); `jobs.disputed_at`
+     does not exist → set `jobs.dispute_id`; `for update of j`.
+  3. `support.routes.ts` — `faq_articles` table **created** (migration `0004`, seeded 5 articles);
+     `registerSupportPublicRoutes` was never registered in `app.ts` → now registered; `support_messages.sender_role`
+     enum is CUSTOMER/PROVIDER/ADMIN (**not** 'USER'); `priority` needs `::bidly_priority`;
+     status `PENDING_USER`→`PENDING`.
+  4. `admin.routes.ts` — `/admin/disputes` used `d.category` + `j.title`/`j.amount_minor`;
+     `/admin/commission-rules` used `c.name` → `c.name_en`. Both now 200.
+  5. `users.routes.ts` — devices insert `coalesce($2,'WEB')` needs `::bidly_os_platform`.
+  6. `jobs.routes.ts` — OTP-hash leak fix regression: `loadJobForActor` must return the **raw** row
+     (the `start` endpoint reads `start_otp_hash`); sanitize only at response boundaries
+     (`GET /jobs/:id` + every mutation reply). 12 `sanitizeJob` call sites.
+- **RBAC:** added `PAYMENTS_WRITE` (SUPER_ADMIN/ADMIN/FINANCE). `/admin/wallets/:id/adjust` now gated
+  by `paymentsWrite` (was `paymentsRead`). `/admin/requests/:id/cancel` gated by `jobsIntervene`
+  (was `jobsRead`). `/admin/stats` intentionally stays `requireAdmin` (MODERATOR may see it — test
+  `payments.integration.test.ts` asserts 200 for MODERATOR; do not "fix" this).
+- **Logger/providers hardening:** pino redact expanded to one-level nested keys (`body.*`, `data.*`,
+  `req.body.*`, `payload.*`, `context.*`). Production now rejects `EMAIL_PROVIDER=log` /
+  `SMS_PROVIDER=log` in `packages/config/src/env.ts`.
+- **Migrations are now 4:** `0003_dispute_events.sql`, `0004_faq_articles.sql`. Rebuild DB with
+  `node scripts/migrate.mjs && node scripts/seed.mjs`.
+- **Admin E2E needs a real argon2 hash:** `admin@bidly.test` seed hash is a placeholder. Set it with a
+  throwaway script inside `apps/api/` (so `argon2` resolves): `update users set password_hash=... where
+  email='admin@bidly.test'`, password `BidlyDev!2026`.
+- **Reports:** `outputs/task10-final-audit.html`. Task 10 is the last task; project is feature-complete.
