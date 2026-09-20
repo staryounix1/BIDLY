@@ -2,40 +2,427 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+ * BIDLY design system
+ *
+ * One brand ramp (indigo -> violet) drives every accent, so the product reads as
+ * a single thing next to global marketplaces instead of a set of default-styled
+ * screens. Surfaces and text are semantic tokens, which is what makes the light
+ * and dark themes a token swap rather than two sets of utilities.
+ * ------------------------------------------------------------------------- */
+
 @layer base {
   :root {
-    --bidly-bg: #ffffff;
-    --bidly-fg: #0f172a;
-    --bidly-muted: #64748b;
+    --brand-50: 238 242 255;
+    --brand-100: 224 231 255;
+    --brand-200: 199 210 254;
+    --brand-300: 165 180 252;
+    --brand-400: 129 140 248;
+    --brand-500: 99 102 241;
+    --brand-600: 79 70 229;
+    --brand-700: 67 56 202;
+    --brand-800: 55 48 163;
+    --brand-900: 49 46 129;
+    /* violet companions for gradients */
+    --accent-400: 167 139 250;
+    --accent-500: 139 92 246;
+    --accent-600: 124 58 237;
+
+    --surface: 255 255 255;
+    --surface-2: 248 250 252;
+    --surface-3: 241 245 249;
+    --line: 226 232 240;
+    --line-strong: 203 213 225;
+    --fg: 15 23 42;
+    --fg-muted: 71 85 105;
+    --fg-subtle: 148 163 184;
+
+    --ok: 16 185 129;
+    --warn: 245 158 11;
+    --danger: 239 68 68;
+    --info: 14 165 233;
+
+    --shadow-xs: 0 1px 2px rgb(15 23 42 / 0.05);
+    --shadow-sm: 0 1px 3px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.04);
+    --shadow-md: 0 4px 12px -2px rgb(15 23 42 / 0.10), 0 2px 6px -2px rgb(15 23 42 / 0.06);
+    --shadow-lg: 0 18px 40px -12px rgb(15 23 42 / 0.22);
+    --shadow-brand: 0 12px 30px -10px rgb(79 70 229 / 0.45);
+
+    --radius: 0.875rem;
     color-scheme: light;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bidly-bg: #0b1120;
-      --bidly-fg: #e2e8f0;
-      --bidly-muted: #94a3b8;
+      --surface: 11 15 25;
+      --surface-2: 17 24 39;
+      --surface-3: 30 41 59;
+      --line: 39 48 68;
+      --line-strong: 71 85 105;
+      --fg: 241 245 249;
+      --fg-muted: 148 163 184;
+      --fg-subtle: 100 116 139;
+      --shadow-md: 0 4px 14px -2px rgb(0 0 0 / 0.5);
+      --shadow-lg: 0 22px 48px -12px rgb(0 0 0 / 0.7);
       color-scheme: dark;
     }
+  }
+
+  * {
+    border-color: rgb(var(--line));
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
   }
 
   html,
   body {
     margin: 0;
     padding: 0;
-    background: var(--bidly-bg);
-    color: var(--bidly-fg);
+    background: rgb(var(--surface-2));
+    color: rgb(var(--fg));
     font-family:
+      'Inter var',
       system-ui,
       -apple-system,
       'Segoe UI',
       'Noto Sans Arabic',
+      'Noto Kufi Arabic',
       sans-serif;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Arabic reads better with slightly looser leading and a little more tracking. */
+  html[lang='ar'] body {
+    line-height: 1.75;
+    letter-spacing: 0.002em;
   }
 
   a {
     color: inherit;
     text-decoration: none;
+  }
+
+  ::selection {
+    background: rgb(var(--brand-500) / 0.24);
+  }
+
+  /* Numerals stay Latin in Arabic for prices, distances and phone numbers. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--line-strong));
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .surface-blur {
+    background: rgb(var(--surface) / 0.78);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+  }
+
+  .brand-text {
+    background: linear-gradient(
+      100deg,
+      rgb(var(--brand-500)),
+      rgb(var(--accent-500)) 60%,
+      rgb(var(--brand-400))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .brand-bg {
+    background: linear-gradient(120deg, rgb(var(--brand-600)), rgb(var(--accent-600)));
+  }
+
+  .mesh {
+    background-image:
+      radial-gradient(60rem 32rem at 88% -12%, rgb(var(--brand-500) / 0.20), transparent 62%),
+      radial-gradient(48rem 28rem at 4% 0%, rgb(var(--accent-500) / 0.16), transparent 58%),
+      radial-gradient(30rem 20rem at 50% 120%, rgb(var(--info) / 0.10), transparent 60%);
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--surface-3)) 0%,
+      rgb(var(--line)) 40%,
+      rgb(var(--surface-3)) 80%
+    );
+    background-size: 200% 100%;
+    animation: bidly-shimmer 1.4s ease-in-out infinite;
+  }
+
+  .fade-rise {
+    animation: bidly-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .pulse-ring {
+    animation: bidly-pulse 2.4s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  }
+
+  .bounce-soft {
+    animation: bidly-bounce 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes bidly-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes bidly-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bidly-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes bidly-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .fade-rise,
+  .pulse-ring,
+  .bounce-soft {
+    animation: none !important;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container-page {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .card {
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--line));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .card-hover {
+    transition:
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s,
+      border-color 0.22s;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgb(var(--brand-400) / 0.7);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1;
+    padding: 0.625rem 1rem;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.18s,
+      border-color 0.18s,
+      color 0.18s,
+      transform 0.12s,
+      box-shadow 0.18s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:active {
+    transform: scale(0.975);
+  }
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .btn:focus-visible {
+    outline: 2px solid rgb(var(--brand-500));
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(120deg, rgb(var(--brand-600)), rgb(var(--accent-600)));
+    color: #fff;
+    box-shadow: var(--shadow-brand);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.07);
+  }
+
+  .btn-secondary {
+    background: rgb(var(--surface));
+    border-color: rgb(var(--line-strong));
+    color: rgb(var(--fg));
+  }
+  .btn-secondary:hover {
+    background: rgb(var(--surface-3));
+  }
+
+  .btn-ghost {
+    color: rgb(var(--fg-muted));
+  }
+  .btn-ghost:hover {
+    background: rgb(var(--surface-3));
+    color: rgb(var(--fg));
+  }
+
+  .btn-lg {
+    padding: 0.8125rem 1.25rem;
+    font-size: 0.9375rem;
+    border-radius: 0.875rem;
+  }
+
+  .input {
+    width: 100%;
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--line-strong));
+    border-radius: 0.75rem;
+    padding: 0.6875rem 0.9375rem;
+    font-size: 0.9375rem;
+    color: rgb(var(--fg));
+    outline: none;
+    transition:
+      border-color 0.18s,
+      box-shadow 0.18s,
+      background-color 0.18s;
+  }
+  .input::placeholder {
+    color: rgb(var(--fg-subtle));
+  }
+  .input:focus {
+    border-color: rgb(var(--brand-500));
+    box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.14);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .chip-neutral {
+    background: rgb(var(--surface-3));
+    color: rgb(var(--fg-muted));
+    border-color: rgb(var(--line));
+  }
+
+  .chip-brand {
+    background: rgb(var(--brand-500) / 0.12);
+    color: rgb(var(--brand-700));
+    border-color: rgb(var(--brand-500) / 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    .chip-brand {
+      color: rgb(var(--brand-300));
+    }
+  }
+
+  .chip-ok {
+    background: rgb(var(--ok) / 0.12);
+    color: rgb(5 150 105);
+    border-color: rgb(var(--ok) / 0.3);
+  }
+  .chip-warn {
+    background: rgb(var(--warn) / 0.14);
+    color: rgb(180 83 9);
+    border-color: rgb(var(--warn) / 0.32);
+  }
+  @media (prefers-color-scheme: dark) {
+    .chip-ok {
+      color: rgb(52 211 153);
+    }
+    .chip-warn {
+      color: rgb(252 211 77);
+    }
+  }
+
+  .icon-tile {
+    display: grid;
+    place-items: center;
+    border-radius: 0.75rem;
+    flex: none;
+  }
+
+  .skeleton {
+    border-radius: 0.5rem;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--surface-3)) 0%,
+      rgb(var(--line)) 40%,
+      rgb(var(--surface-3)) 80%
+    );
+    background-size: 200% 100%;
+    animation: bidly-shimmer 1.4s ease-in-out infinite;
   }
 }
