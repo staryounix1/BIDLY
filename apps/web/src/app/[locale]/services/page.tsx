@@ -1,1 +1,276 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlRWZmZWN0LCB1c2VNZW1vLCB1c2VTdGF0ZSB9IGZyb20gJ3JlYWN0JzsKaW1wb3J0IExpbmsgZnJvbSAnbmV4dC9saW5rJzsKaW1wb3J0IHsgdXNlSTE4biB9IGZyb20gJ0AvbGliL2kxOG4tcHJvdmlkZXInOwppbXBvcnQgeyBjYXRhbG9nQXBpLCBsb2NhbGl6ZWQsIHR5cGUgQ2F0ZWdvcnksIHR5cGUgU2VydmljZSB9IGZyb20gJ0AvbGliL2NhdGFsb2ctYXBpJzsKaW1wb3J0IHsgQXBpRXJyb3IgfSBmcm9tICdAL2xpYi9hdXRoLWFwaSc7CmltcG9ydCB7IENhdGVnb3J5SWNvbiwgaWNvbkZvclNsdWcgfSBmcm9tICdAL2xpYi9pY29ucyc7CmltcG9ydCB7IFByaWNlLCBTZWN0aW9uVGl0bGUsIFNwaW5uZXIgfSBmcm9tICdAL2xpYi91aSc7CgovKioKICogQ2hvb3NlIGEgc2VydmljZSDigJQgdGhlIGN1c3RvbWVyJ3MgZnJvbnQgZG9vci4KICoKICogTGFpZCBvdXQgbGlrZSB0aGUgY2F0ZWdvcnkgcGlja2VycyBwZW9wbGUgYWxyZWFkeSB1c2U6IHdoaXRlIGNhcmRzLCBhIGxpbmUKICogaWNvbiwgdGhlIHNlcnZpY2UgbmFtZSwgYW5kIGhvdyBtYW55IEtoZGVtbGkgY3JhZnRzbWVuIGFyZSByZWFjaGFibGUgcmlnaHQKICogbm93LiBUaGF0IGNvdW50IGNvbWVzIGZyb20gdGhlIGRhdGFiYXNlIChhdmFpbGFibGUgcHJvdmlkZXJzIHdpdGggdGhlIHNlcnZpY2UKICogYWN0aXZlKSwgc28gdGhlIG51bWJlciBpcyBob25lc3QgYWJvdXQgbGl2ZSBzdXBwbHkgaW5zdGVhZCBvZiBkZWNvcmF0aXZlLgogKgogKiBUaGUgY2F0YWxvZ3VlIGl0c2VsZiBpcyBkYXRhIOKAlCBhbiBhZG1pbiBhZGRzIGEgc2VydmljZSBhbmQgaXQgYXBwZWFycyBoZXJlCiAqIHdpdGhvdXQgYSBkZXBsb3kg4oCUIHNvIG5vdGhpbmcgYmVsb3cgaGFyZGNvZGVzIGEgdHJhZGUuCiAqLwoKaW50ZXJmYWNlIFNlcnZpY2VSb3cgewogIHNlcnZpY2U6IFNlcnZpY2U7CiAgc3ViY2F0ZWdvcnk6IHN0cmluZzsKICBjYXRlZ29yeTogQ2F0ZWdvcnk7Cn0KCmZ1bmN0aW9uIGZvcm1hdENvdW50KG46IG51bWJlcik6IHN0cmluZyB7CiAgcmV0dXJuIG4udG9Mb2NhbGVTdHJpbmcoJ2FyLU1BJyk7Cn0KCi8qKiBPbmUgd2hpdGUgY2FyZCBpbiB0aGUgbGlzdC4gKi8KZnVuY3Rpb24gU2VydmljZUNhcmQoewogIHJvdywKICBjb3VudCwKICBocmVmLAogIGluZGV4LAp9OiB7CiAgcm93OiBTZXJ2aWNlUm93OwogIGNvdW50OiBudW1iZXI7CiAgaHJlZjogc3RyaW5nOwogIGluZGV4OiBudW1iZXI7Cn0pIHsKICBjb25zdCB7IHQsIGxvY2FsZSB9ID0gdXNlSTE4bigpOwogIGNvbnN0IGljb24gPSBpY29uRm9yU2x1Zyhyb3cuc2VydmljZS5zbHVnLCByb3cuY2F0ZWdvcnkuaWNvbik7CiAgY29uc3QgbmFtZSA9IGxvY2FsaXplZChyb3cuc2VydmljZSwgbG9jYWxlKTsKCiAgcmV0dXJuICgKICAgIDxMaW5rCiAgICAgIGhyZWY9e2hyZWZ9CiAgICAgIGNsYXNzTmFtZT0iY2FyZCBjYXJkLXRhcCBzbGlkZS1pbiBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMy41IHAtMy41IgogICAgICBzdHlsZT17eyBhbmltYXRpb25EZWxheTogYCR7TWF0aC5taW4oaW5kZXgsIDEyKSAqIDM1fW1zYCB9fQogICAgPgogICAgICA8c3BhbiBjbGFzc05hbWU9Imljb24tdGlsZSBoLTE0IHctMTQiPgogICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT17aWNvbn0gc2l6ZT17MjZ9IC8+CiAgICAgIDwvc3Bhbj4KCiAgICAgIDxzcGFuIGNsYXNzTmFtZT0ibWluLXctMCBmbGV4LTEiPgogICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iYmxvY2sgdHJ1bmNhdGUgdGV4dC1bMC45Mzc1cmVtXSBmb250LWJvbGQiPntuYW1lfTwvc3Bhbj4KICAgICAgICA8c3BhbiBjbGFzc05hbWU9Im10LTAuNSBibG9jayB0cnVuY2F0ZSB0ZXh0LXhzIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+CiAgICAgICAgICB7cm93LnN1YmNhdGVnb3J5fQogICAgICAgIDwvc3Bhbj4KICAgICAgICA8c3BhbiBjbGFzc05hbWU9Im10LTEgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTEuNSI+CiAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9ImlubGluZS1mbGV4IGl0ZW1zLWNlbnRlciBnYXAtMSB0ZXh0LXhzIGZvbnQtYm9sZCB0ZXh0LVtyZ2IodmFyKC0tYnJhbmQtNzAwKSldIj4KICAgICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPSJ1c2VyIiBzaXplPXsxM30gLz4KICAgICAgICAgICAge2NvdW50ID4gMAogICAgICAgICAgICAgID8gdCgnY2F0YWxvZy5wcm92aWRlcnNBdmFpbGFibGUnLCB7IGNvdW50OiBmb3JtYXRDb3VudChjb3VudCkgfSkKICAgICAgICAgICAgICA6IHQoJ2NhdGFsb2cubm9Qcm92aWRlcnNZZXQnKX0KICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgIHtyb3cuc2VydmljZS5taW5fcHJpY2VfbWlub3IgIT0gbnVsbCAmJiAoCiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC14cyB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj4KICAgICAgICAgICAgICDCtyA8UHJpY2UgbWlub3I9e3Jvdy5zZXJ2aWNlLm1pbl9wcmljZV9taW5vcn0gY3VycmVuY3k9e3Jvdy5zZXJ2aWNlLmRlZmF1bHRfY3VycmVuY3l9IHNpemU9InNtIiAvPgogICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICApfQogICAgICAgIDwvc3Bhbj4KICAgICAgPC9zcGFuPgoKICAgICAgPENhdGVnb3J5SWNvbgogICAgICAgIG5hbWU9ImNoZXZyb24iCiAgICAgICAgc2l6ZT17MjB9CiAgICAgICAgY2xhc3NOYW1lPSJmbGV4LW5vbmUgdGV4dC1bcmdiKHZhcigtLWZnLXN1YnRsZSkpXSBydGw6cm90YXRlLTE4MCIKICAgICAgLz4KICAgIDwvTGluaz4KICApOwp9CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBTZXJ2aWNlc1BhZ2UoKSB7CiAgY29uc3QgeyB0LCBsb2NhbGUgfSA9IHVzZUkxOG4oKTsKICBjb25zdCBbY2F0ZWdvcmllcywgc2V0Q2F0ZWdvcmllc10gPSB1c2VTdGF0ZTxDYXRlZ29yeVtdPihbXSk7CiAgY29uc3QgW2NvdW50cywgc2V0Q291bnRzXSA9IHVzZVN0YXRlPHsgYnlDYXRlZ29yeTogUmVjb3JkPHN0cmluZywgbnVtYmVyPjsgYnlTZXJ2aWNlOiBSZWNvcmQ8c3RyaW5nLCBudW1iZXI+IH0+KHsKICAgIGJ5Q2F0ZWdvcnk6IHt9LAogICAgYnlTZXJ2aWNlOiB7fSwKICB9KTsKICBjb25zdCBbbG9hZGluZywgc2V0TG9hZGluZ10gPSB1c2VTdGF0ZSh0cnVlKTsKICBjb25zdCBbZXJyb3IsIHNldEVycm9yXSA9IHVzZVN0YXRlPHN0cmluZyB8IG51bGw+KG51bGwpOwogIGNvbnN0IFtxdWVyeSwgc2V0UXVlcnldID0gdXNlU3RhdGUoJycpOwogIGNvbnN0IFthY3RpdmVDYXRlZ29yeSwgc2V0QWN0aXZlQ2F0ZWdvcnldID0gdXNlU3RhdGU8c3RyaW5nIHwgbnVsbD4obnVsbCk7CgogIHVzZUVmZmVjdCgoKSA9PiB7CiAgICBsZXQgYWxpdmUgPSB0cnVlOwogICAgKGFzeW5jICgpID0+IHsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCBbdHJlZSwgcHJvdmlkZXJDb3VudHNdID0gYXdhaXQgUHJvbWlzZS5hbGwoWwogICAgICAgICAgY2F0YWxvZ0FwaS50cmVlKCksCiAgICAgICAgICBjYXRhbG9nQXBpLnByb3ZpZGVyQ291bnRzKCksCiAgICAgICAgXSk7CiAgICAgICAgaWYgKCFhbGl2ZSkgcmV0dXJuOwogICAgICAgIHNldENhdGVnb3JpZXModHJlZS5jYXRlZ29yaWVzID8/IFtdKTsKICAgICAgICBzZXRDb3VudHMocHJvdmlkZXJDb3VudHMpOwogICAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgICBpZiAoIWFsaXZlKSByZXR1cm47CiAgICAgICAgc2V0RXJyb3IoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgPyBlcnIubWVzc2FnZSA6IHQoJ2NvbW1vbi5lcnJvcicpKTsKICAgICAgfSBmaW5hbGx5IHsKICAgICAgICBpZiAoYWxpdmUpIHNldExvYWRpbmcoZmFsc2UpOwogICAgICB9CiAgICB9KSgpOwogICAgcmV0dXJuICgpID0+IHsKICAgICAgYWxpdmUgPSBmYWxzZTsKICAgIH07CiAgfSwgW3RdKTsKCiAgLyoqIEZsYXR0ZW4gdG8gb25lIHJvdyBwZXIgc2VydmljZSBzbyB0aGUgbGlzdCBtYXRjaGVzIGhvdyBwZW9wbGUgdGhpbmsuICovCiAgY29uc3Qgcm93cyA9IHVzZU1lbW88U2VydmljZVJvd1tdPigoKSA9PiB7CiAgICBjb25zdCBvdXQ6IFNlcnZpY2VSb3dbXSA9IFtdOwogICAgZm9yIChjb25zdCBjYXRlZ29yeSBvZiBjYXRlZ29yaWVzKSB7CiAgICAgIGZvciAoY29uc3Qgc3ViIG9mIGNhdGVnb3J5LnN1YmNhdGVnb3JpZXMgPz8gW10pIHsKICAgICAgICBmb3IgKGNvbnN0IHNlcnZpY2Ugb2Ygc3ViLnNlcnZpY2VzID8/IFtdKSB7CiAgICAgICAgICBvdXQucHVzaCh7IHNlcnZpY2UsIHN1YmNhdGVnb3J5OiBsb2NhbGl6ZWQoc3ViLCBsb2NhbGUpLCBjYXRlZ29yeSB9KTsKICAgICAgICB9CiAgICAgIH0KICAgIH0KICAgIHJldHVybiBvdXQ7CiAgfSwgW2NhdGVnb3JpZXMsIGxvY2FsZV0pOwoKICBjb25zdCBmaWx0ZXJlZCA9IHVzZU1lbW8oKCkgPT4gewogICAgY29uc3QgcSA9IHF1ZXJ5LnRyaW0oKS50b0xvd2VyQ2FzZSgpOwogICAgcmV0dXJuIHJvd3MuZmlsdGVyKChyb3cpID0+IHsKICAgICAgaWYgKGFjdGl2ZUNhdGVnb3J5ICYmIHJvdy5jYXRlZ29yeS5pZCAhPT0gYWN0aXZlQ2F0ZWdvcnkpIHJldHVybiBmYWxzZTsKICAgICAgaWYgKCFxKSByZXR1cm4gdHJ1ZTsKICAgICAgY29uc3QgaGF5ID0gWwogICAgICAgIGxvY2FsaXplZChyb3cuc2VydmljZSwgbG9jYWxlKSwKICAgICAgICBsb2NhbGl6ZWQocm93LmNhdGVnb3J5LCBsb2NhbGUpLAogICAgICAgIHJvdy5zdWJjYXRlZ29yeSwKICAgICAgICByb3cuc2VydmljZS5zbHVnLAogICAgICBdCiAgICAgICAgLmpvaW4oJyAnKQogICAgICAgIC50b0xvd2VyQ2FzZSgpOwogICAgICByZXR1cm4gaGF5LmluY2x1ZGVzKHEpOwogICAgfSk7CiAgfSwgW3Jvd3MsIHF1ZXJ5LCBhY3RpdmVDYXRlZ29yeSwgbG9jYWxlXSk7CgogIGlmIChsb2FkaW5nKSB7CiAgICByZXR1cm4gKAogICAgICA8ZGl2IGNsYXNzTmFtZT0iYXBwLXNoZWxsIGNvbnRhaW5lci1wYWdlIGZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktY2VudGVyIHB5LTI0Ij4KICAgICAgICA8U3Bpbm5lciBzaXplPXsyOH0gLz4KICAgICAgPC9kaXY+CiAgICApOwogIH0KCiAgcmV0dXJuICgKICAgIDxkaXYgY2xhc3NOYW1lPSJhcHAtc2hlbGwgY29udGFpbmVyLXBhZ2UgcHktNSI+CiAgICAgIHsvKiBIZXJvICovfQogICAgICA8ZGl2IGNsYXNzTmFtZT0ibWItNCI+CiAgICAgICAgPGgxIGNsYXNzTmFtZT0idGV4dC0yeGwgZm9udC1ibGFjayB0cmFja2luZy10aWdodCI+e3QoJ2NhdGFsb2cuY2hvb3NlU2VydmljZScpfTwvaDE+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJtdC0xIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgnY2F0YWxvZy5jaG9vc2VTZXJ2aWNlSGludCcpfTwvcD4KICAgICAgPC9kaXY+CgogICAgICB7LyogU2VhcmNoICovfQogICAgICA8ZGl2IGNsYXNzTmFtZT0icmVsYXRpdmUgbWItNCI+CiAgICAgICAgPENhdGVnb3J5SWNvbgogICAgICAgICAgbmFtZT0ic2VhcmNoIgogICAgICAgICAgc2l6ZT17MTl9CiAgICAgICAgICBjbGFzc05hbWU9InBvaW50ZXItZXZlbnRzLW5vbmUgYWJzb2x1dGUgaW5zZXQteS0wIHN0YXJ0LTMuNSBteS1hdXRvIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iCiAgICAgICAgLz4KICAgICAgICA8aW5wdXQKICAgICAgICAgIGNsYXNzTmFtZT0iaW5wdXQgcHMtMTEiCiAgICAgICAgICBwbGFjZWhvbGRlcj17dCgnY2F0YWxvZy5zZWFyY2hQbGFjZWhvbGRlcicpfQogICAgICAgICAgdmFsdWU9e3F1ZXJ5fQogICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRRdWVyeShlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICBhcmlhLWxhYmVsPXt0KCdjYXRhbG9nLnNlYXJjaFBsYWNlaG9sZGVyJyl9CiAgICAgICAgLz4KICAgICAgPC9kaXY+CgogICAgICB7LyogQ2F0ZWdvcnkgcmFpbCAqL30KICAgICAge2NhdGVnb3JpZXMubGVuZ3RoID4gMCAmJiAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9Im5vLXNjcm9sbGJhciAtbXgtNCBtYi01IGZsZXggZ2FwLTIgb3ZlcmZsb3cteC1hdXRvIHB4LTQgcGItMSI+CiAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgIHR5cGU9ImJ1dHRvbiIKICAgICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0QWN0aXZlQ2F0ZWdvcnkobnVsbCl9CiAgICAgICAgICAgIGNsYXNzTmFtZT17CiAgICAgICAgICAgICAgYWN0aXZlQ2F0ZWdvcnkgPT09IG51bGwKICAgICAgICAgICAgICAgID8gJ2NoaXAgY2hpcC1icmFuZCBoLTkgcHgtNCB0ZXh0LXNtJwogICAgICAgICAgICAgICAgOiAnY2hpcCBjaGlwLW5ldXRyYWwgaC05IHB4LTQgdGV4dC1zbScKICAgICAgICAgICAgfQogICAgICAgICAgPgogICAgICAgICAgICB7dCgnY2F0YWxvZy5hbGwnKX0KICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICAge2NhdGVnb3JpZXMubWFwKChjYXRlZ29yeSkgPT4gewogICAgICAgICAgICBjb25zdCBhY3RpdmUgPSBhY3RpdmVDYXRlZ29yeSA9PT0gY2F0ZWdvcnkuaWQ7CiAgICAgICAgICAgIHJldHVybiAoCiAgICAgICAgICAgICAgPGJ1dHRvbgogICAgICAgICAgICAgICAga2V5PXtjYXRlZ29yeS5pZH0KICAgICAgICAgICAgICAgIHR5cGU9ImJ1dHRvbiIKICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldEFjdGl2ZUNhdGVnb3J5KGFjdGl2ZSA/IG51bGwgOiBjYXRlZ29yeS5pZCl9CiAgICAgICAgICAgICAgICBjbGFzc05hbWU9ewogICAgICAgICAgICAgICAgICBhY3RpdmUgPyAnY2hpcCBjaGlwLWJyYW5kIGgtOSBweC00IHRleHQtc20nIDogJ2NoaXAgY2hpcC1uZXV0cmFsIGgtOSBweC00IHRleHQtc20nCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPXtpY29uRm9yU2x1ZyhjYXRlZ29yeS5zbHVnLCBjYXRlZ29yeS5pY29uKX0gc2l6ZT17MTV9IC8+CiAgICAgICAgICAgICAgICB7bG9jYWxpemVkKGNhdGVnb3J5LCBsb2NhbGUpfQogICAgICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICAgICApOwogICAgICAgICAgfSl9CiAgICAgICAgPC9kaXY+CiAgICAgICl9CgogICAgICB7ZXJyb3IgJiYgKAogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIG1iLTQgYm9yZGVyLVtyZ2IodmFyKC0tZGFuZ2VyKS8wLjM1KV0gcC00IHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWRhbmdlcikpXSI+CiAgICAgICAgICB7ZXJyb3J9CiAgICAgICAgPC9kaXY+CiAgICAgICl9CgogICAgICB7LyogU2VydmljZXMgKi99CiAgICAgIDxTZWN0aW9uVGl0bGU+e3QoJ2NhdGFsb2cuYXZhaWxhYmxlU2VydmljZXMnKX08L1NlY3Rpb25UaXRsZT4KCiAgICAgIHtmaWx0ZXJlZC5sZW5ndGggPT09IDAgPyAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgZmxleCBmbGV4LWNvbCBpdGVtcy1jZW50ZXIgZ2FwLTIgcHgtNiBweS0xMiB0ZXh0LWNlbnRlciI+CiAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9Imljb24tdGlsZSBoLTE0IHctMTQiPgogICAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9InNlYXJjaCIgc2l6ZT17MjR9IC8+CiAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICA8cCBjbGFzc05hbWU9InRleHQtYmFzZSBmb250LWJvbGQiPnt0KCdjYXRhbG9nLm5vUmVzdWx0cycpfTwvcD4KICAgICAgICAgIDxwIGNsYXNzTmFtZT0idGV4dC1zbSB0ZXh0LVtyZ2IodmFyKC0tZmctbXV0ZWQpKV0iPnt0KCdjYXRhbG9nLm5vUmVzdWx0c0hpbnQnKX08L3A+CiAgICAgICAgPC9kaXY+CiAgICAgICkgOiAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImdyaWQgZ2FwLTIuNSI+CiAgICAgICAgICB7ZmlsdGVyZWQubWFwKChyb3csIGluZGV4KSA9PiAoCiAgICAgICAgICAgIDxTZXJ2aWNlQ2FyZAogICAgICAgICAgICAgIGtleT17cm93LnNlcnZpY2UuaWR9CiAgICAgICAgICAgICAgcm93PXtyb3d9CiAgICAgICAgICAgICAgaW5kZXg9e2luZGV4fQogICAgICAgICAgICAgIGNvdW50PXtjb3VudHMuYnlTZXJ2aWNlW3Jvdy5zZXJ2aWNlLmlkXSA/PyAwfQogICAgICAgICAgICAgIGhyZWY9e2AvJHtsb2NhbGV9L3JlcXVlc3RzL25ldz9zZXJ2aWNlPSR7ZW5jb2RlVVJJQ29tcG9uZW50KHJvdy5zZXJ2aWNlLnNsdWcpfWB9CiAgICAgICAgICAgIC8+CiAgICAgICAgICApKX0KICAgICAgICA8L2Rpdj4KICAgICAgKX0KCiAgICAgIHsvKiBUcnVzdCBzdHJpcDogc2FmZXR5ICsgbm8tc2hvd3MsIHRoZSB0d28gdGhpbmdzIGN1c3RvbWVycyBhc2sgYWJvdXQuICovfQogICAgICA8ZGl2IGNsYXNzTmFtZT0ibXQtNiBncmlkIGdyaWQtY29scy0yIGdhcC0yLjUiPgogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIGZsZXggaXRlbXMtY2VudGVyIGdhcC0yLjUgcC0zLjUiPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJpY29uLXRpbGUgaC0xMCB3LTEwIj4KICAgICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPSJzaGllbGQiIHNpemU9ezE5fSAvPgogICAgICAgICAgPC9zcGFuPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJtaW4tdy0wIj4KICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJibG9jayB0ZXh0LXNtIGZvbnQtYm9sZCI+e3QoJ2NhdGFsb2cudHJ1c3RWZXJpZmllZCcpfTwvc3Bhbj4KICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJibG9jayB0cnVuY2F0ZSB0ZXh0LXhzIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+CiAgICAgICAgICAgICAge3QoJ2NhdGFsb2cudHJ1c3RWZXJpZmllZEhpbnQnKX0KICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgPC9zcGFuPgogICAgICAgIDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIGZsZXggaXRlbXMtY2VudGVyIGdhcC0yLjUgcC0zLjUiPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJpY29uLXRpbGUgaC0xMCB3LTEwIj4KICAgICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPSJ3YWxsZXQiIHNpemU9ezE5fSAvPgogICAgICAgICAgPC9zcGFuPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJtaW4tdy0wIj4KICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJibG9jayB0ZXh0LXNtIGZvbnQtYm9sZCI+e3QoJ2NhdGFsb2cudHJ1c3RQcmljZScpfTwvc3Bhbj4KICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJibG9jayB0cnVuY2F0ZSB0ZXh0LXhzIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+CiAgICAgICAgICAgICAge3QoJ2NhdGFsb2cudHJ1c3RQcmljZUhpbnQnKX0KICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgPC9zcGFuPgogICAgICAgIDwvZGl2PgogICAgICA8L2Rpdj4KICAgIDwvZGl2PgogICk7Cn0K
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useI18n } from '@/lib/i18n-provider';
+import { catalogApi, localized, type Category, type Service } from '@/lib/catalog-api';
+import { ApiError } from '@/lib/auth-api';
+import { CategoryIcon, iconForSlug } from '@/lib/icons';
+import { Price, SectionTitle, Spinner } from '@/lib/ui';
+
+/**
+ * Choose a service — the customer's front door.
+ *
+ * Laid out like the category pickers people already use: white cards, a line
+ * icon, the service name, and how many Khdemli craftsmen are reachable right
+ * now. That count comes from the database (available providers with the service
+ * active), so the number is honest about live supply instead of decorative.
+ *
+ * The catalogue itself is data — an admin adds a service and it appears here
+ * without a deploy — so nothing below hardcodes a trade.
+ */
+
+interface ServiceRow {
+  service: Service;
+  subcategory: string;
+  category: Category;
+}
+
+function formatCount(n: number): string {
+  return n.toLocaleString('ar-MA');
+}
+
+/** One white card in the list. */
+function ServiceCard({
+  row,
+  count,
+  href,
+  index,
+}: {
+  row: ServiceRow;
+  count: number;
+  href: string;
+  index: number;
+}) {
+  const { t, locale } = useI18n();
+  const icon = iconForSlug(row.service.slug, row.category.icon);
+  const name = localized(row.service, locale);
+
+  return (
+    <Link
+      href={href}
+      className="card card-tap slide-in flex items-center gap-3.5 p-3.5"
+      style={{ animationDelay: `${Math.min(index, 12) * 35}ms` }}
+    >
+      <span className="icon-tile h-14 w-14">
+        <CategoryIcon name={icon} size={26} />
+      </span>
+
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[0.9375rem] font-bold">{name}</span>
+        <span className="mt-0.5 block truncate text-xs text-[rgb(var(--fg-muted))]">
+          {row.subcategory}
+        </span>
+        <span className="mt-1 flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-[rgb(var(--brand-700))]">
+            <CategoryIcon name="user" size={13} />
+            {count > 0
+              ? t('catalog.providersAvailable', { count: formatCount(count) })
+              : t('catalog.noProvidersYet')}
+          </span>
+          {row.service.min_price_minor != null && (
+            <span className="text-xs text-[rgb(var(--fg-subtle))]">
+              · <Price minor={row.service.min_price_minor} currency={row.service.default_currency} size="sm" />
+            </span>
+          )}
+        </span>
+      </span>
+
+      <CategoryIcon
+        name="chevron"
+        size={20}
+        className="flex-none text-[rgb(var(--fg-subtle))] rtl:rotate-180"
+      />
+    </Link>
+  );
+}
+
+export default function ServicesPage() {
+  const { t, locale } = useI18n();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [counts, setCounts] = useState<{ byCategory: Record<string, number>; byService: Record<string, number> }>({
+    byCategory: {},
+    byService: {},
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [tree, providerCounts] = await Promise.all([
+          catalogApi.tree(),
+          catalogApi.providerCounts(),
+        ]);
+        if (!alive) return;
+        setCategories(tree.categories ?? []);
+        setCounts(providerCounts);
+      } catch (err) {
+        if (!alive) return;
+        setError(err instanceof ApiError ? err.message : t('common.error'));
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [t]);
+
+  /** Flatten to one row per service so the list matches how people think. */
+  const rows = useMemo<ServiceRow[]>(() => {
+    const out: ServiceRow[] = [];
+    for (const category of categories) {
+      for (const sub of category.subcategories ?? []) {
+        for (const service of sub.services ?? []) {
+          out.push({ service, subcategory: localized(sub, locale), category });
+        }
+      }
+    }
+    return out;
+  }, [categories, locale]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (activeCategory && row.category.id !== activeCategory) return false;
+      if (!q) return true;
+      const hay = [
+        localized(row.service, locale),
+        localized(row.category, locale),
+        row.subcategory,
+        row.service.slug,
+      ]
+        .join(' ')
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [rows, query, activeCategory, locale]);
+
+  if (loading) {
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-shell container-page py-5">
+      {/* Hero */}
+      <div className="mb-4">
+        <h1 className="text-2xl font-black tracking-tight">{t('catalog.chooseService')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('catalog.chooseServiceHint')}</p>
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-4">
+        <CategoryIcon
+          name="search"
+          size={19}
+          className="pointer-events-none absolute inset-y-0 start-3.5 my-auto text-[rgb(var(--fg-subtle))]"
+        />
+        <input
+          className="input ps-11"
+          placeholder={t('catalog.searchPlaceholder')}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label={t('catalog.searchPlaceholder')}
+        />
+      </div>
+
+      {/* Category rail */}
+      {categories.length > 0 && (
+        <div className="no-scrollbar -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 pb-1">
+          <button
+            type="button"
+            onClick={() => setActiveCategory(null)}
+            className={
+              activeCategory === null
+                ? 'chip chip-brand h-9 px-4 text-sm'
+                : 'chip chip-neutral h-9 px-4 text-sm'
+            }
+          >
+            {t('catalog.all')}
+          </button>
+          {categories.map((category) => {
+            const active = activeCategory === category.id;
+            return (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => setActiveCategory(active ? null : category.id)}
+                className={
+                  active ? 'chip chip-brand h-9 px-4 text-sm' : 'chip chip-neutral h-9 px-4 text-sm'
+                }
+              >
+                <CategoryIcon name={iconForSlug(category.slug, category.icon)} size={15} />
+                {localized(category, locale)}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {error && (
+        <div className="card mb-4 border-[rgb(var(--danger)/0.35)] p-4 text-sm text-[rgb(var(--danger))]">
+          {error}
+        </div>
+      )}
+
+      {/* Services */}
+      <SectionTitle>{t('catalog.availableServices')}</SectionTitle>
+
+      {filtered.length === 0 ? (
+        <div className="card flex flex-col items-center gap-2 px-6 py-12 text-center">
+          <span className="icon-tile h-14 w-14">
+            <CategoryIcon name="search" size={24} />
+          </span>
+          <p className="text-base font-bold">{t('catalog.noResults')}</p>
+          <p className="text-sm text-[rgb(var(--fg-muted))]">{t('catalog.noResultsHint')}</p>
+        </div>
+      ) : (
+        <div className="grid gap-2.5">
+          {filtered.map((row, index) => (
+            <ServiceCard
+              key={row.service.id}
+              row={row}
+              index={index}
+              count={counts.byService[row.service.id] ?? 0}
+              href={`/${locale}/requests/new?service=${encodeURIComponent(row.service.slug)}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Trust strip: safety + no-shows, the two things customers ask about. */}
+      <div className="mt-6 grid grid-cols-2 gap-2.5">
+        <div className="card flex items-center gap-2.5 p-3.5">
+          <span className="icon-tile h-10 w-10">
+            <CategoryIcon name="shield" size={19} />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-bold">{t('catalog.trustVerified')}</span>
+            <span className="block truncate text-xs text-[rgb(var(--fg-muted))]">
+              {t('catalog.trustVerifiedHint')}
+            </span>
+          </span>
+        </div>
+        <div className="card flex items-center gap-2.5 p-3.5">
+          <span className="icon-tile h-10 w-10">
+            <CategoryIcon name="wallet" size={19} />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-bold">{t('catalog.trustPrice')}</span>
+            <span className="block truncate text-xs text-[rgb(var(--fg-muted))]">
+              {t('catalog.trustPriceHint')}
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}

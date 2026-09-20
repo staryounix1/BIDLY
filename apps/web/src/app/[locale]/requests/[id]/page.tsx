@@ -1,1 +1,534 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlQ2FsbGJhY2ssIHVzZUVmZmVjdCwgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7CmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluayc7CmltcG9ydCB7IHVzZVBhcmFtcywgdXNlUm91dGVyLCB1c2VTZWFyY2hQYXJhbXMgfSBmcm9tICduZXh0L25hdmlnYXRpb24nOwppbXBvcnQgeyB1c2VJMThuIH0gZnJvbSAnQC9saWIvaTE4bi1wcm92aWRlcic7CmltcG9ydCB7IFJlcXVpcmVBdXRoIH0gZnJvbSAnQC9saWIvcmVxdWlyZS1hdXRoJzsKaW1wb3J0IHsgQXBpRXJyb3IgfSBmcm9tICdAL2xpYi9hdXRoLWFwaSc7CmltcG9ydCB7IHJlcXVlc3RzQXBpLCB0eXBlIFJlcXVlc3REZXRhaWwgfSBmcm9tICdAL2xpYi9yZXF1ZXN0cy1hcGknOwppbXBvcnQgeyBvZmZlcnNBcGkgfSBmcm9tICdAL2xpYi9vZmZlcnMtYXBpJzsKaW1wb3J0IHsgU2VhcmNoUmFkYXIgfSBmcm9tICdAL2xpYi9tYXAvc2VhcmNoLXJhZGFyJzsKaW1wb3J0IHsgVHJhY2tQcm92aWRlciB9IGZyb20gJ0AvbGliL21hcC90cmFjay1wcm92aWRlcic7CmltcG9ydCB7IFN0YXR1c0JhZGdlIH0gZnJvbSAnQC9saWIvc3RhdHVzLWJhZGdlJzsKaW1wb3J0IHsgQ2F0ZWdvcnlJY29uIH0gZnJvbSAnQC9saWIvaWNvbnMnOwppbXBvcnQgeyBBdmF0YXIsIFByaWNlLCBTZWN0aW9uVGl0bGUsIFNwaW5uZXIsIFN0YXJzIH0gZnJvbSAnQC9saWIvdWknOwoKLyoqCiAqIFJlcXVlc3QgZGV0YWlsIGZvciB0aGUgb3duaW5nIGN1c3RvbWVyLgogKgogKiBPbmNlIHRoZSByZXF1ZXN0IGlzIGxpdmUgdGhpcyBpcyB0aGUgb2ZmZXJzIHNjcmVlbjogb25lIGNhcmQgcGVyIGNyYWZ0c21hbiwKICogZW50ZXJpbmcgYXMgb2ZmZXJzIGFycml2ZSwgd2l0aCB0aGUgcHJpY2UgbGFyZ2UgZW5vdWdoIHRvIGNvbXBhcmUgd2l0aG91dAogKiByZWFkaW5nLCBhbmQgYWNjZXB0L2RlY2xpbmUgd2hlcmUgdGhlIHRodW1iIGFscmVhZHkgaXMuIFRoZSBsaXZlIHJhZGFyIHN0YXlzCiAqIG9uIHRvcCB3aGlsZSB0aGUgc2VhcmNoIGlzIG9wZW4sIGFuZCBiZWNvbWVzIHRoZSB0cmFja2luZyBtYXAgb25jZSBhCiAqIGNyYWZ0c21hbiBpcyBjaG9zZW4uCiAqCiAqIE93bmVyc2hpcCBpcyBlbmZvcmNlZCBieSB0aGUgQVBJOiBhIG5vbi1vd25lciBnZXRzIDQwMyBhbmQgdGhpcyBzY3JlZW4gc2hvd3MKICogYSBuZXV0cmFsIG1lc3NhZ2UgaW5zdGVhZCBvZiBhbnkgZGF0YS4KICovCmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIFJlcXVlc3REZXRhaWxQYWdlKCkgewogIHJldHVybiAoCiAgICA8UmVxdWlyZUF1dGggcm9sZXM9e1snQ1VTVE9NRVInXX0+CiAgICAgIDxSZXF1ZXN0RGV0YWlsVmlldyAvPgogICAgPC9SZXF1aXJlQXV0aD4KICApOwp9Cgpjb25zdCBDQU5DRUxBQkxFID0gWwogICdEUkFGVCcsCiAgJ1BVQkxJU0hFRCcsCiAgJ01BVENISU5HJywKICAnUkVDRUlWSU5HX09GRkVSUycsCiAgJ1BST1ZJREVSX1NFTEVDVEVEJywKICAnQ09ORklSTUVEJywKICAnSU5fUFJPR1JFU1MnLApdOwoKZnVuY3Rpb24gUmVxdWVzdERldGFpbFZpZXcoKSB7CiAgY29uc3QgeyB0LCBsb2NhbGUgfSA9IHVzZUkxOG4oKTsKICBjb25zdCByb3V0ZXIgPSB1c2VSb3V0ZXIoKTsKICBjb25zdCBwYXJhbXMgPSB1c2VQYXJhbXM8eyBpZDogc3RyaW5nIH0+KCk7CiAgY29uc3QgaWQgPSBwYXJhbXMuaWQ7CiAgY29uc3Qgc2VhcmNoID0gdXNlU2VhcmNoUGFyYW1zKCk7CgogIGNvbnN0IFtkYXRhLCBzZXREYXRhXSA9IHVzZVN0YXRlPFJlcXVlc3REZXRhaWwgfCBudWxsPihudWxsKTsKICBjb25zdCBbbG9hZGluZywgc2V0TG9hZGluZ10gPSB1c2VTdGF0ZSh0cnVlKTsKICBjb25zdCBbZXJyb3IsIHNldEVycm9yXSA9IHVzZVN0YXRlPHN0cmluZyB8IG51bGw+KG51bGwpOwogIGNvbnN0IFtidXN5LCBzZXRCdXN5XSA9IHVzZVN0YXRlKGZhbHNlKTsKICBjb25zdCBbbm90aWNlLCBzZXROb3RpY2VdID0gdXNlU3RhdGU8c3RyaW5nIHwgbnVsbD4oCiAgICBzZWFyY2guZ2V0KCdjcmVhdGVkJykgPT09ICcxJyA/IHQoJ3JlcXVlc3QuY3JlYXRlZCcpIDogbnVsbCwKICApOwogIGNvbnN0IFtzaG93Q2FuY2VsLCBzZXRTaG93Q2FuY2VsXSA9IHVzZVN0YXRlKGZhbHNlKTsKICBjb25zdCBbY2FuY2VsUmVhc29uLCBzZXRDYW5jZWxSZWFzb25dID0gdXNlU3RhdGUoJycpOwogIGNvbnN0IFtzaG93RGV0YWlscywgc2V0U2hvd0RldGFpbHNdID0gdXNlU3RhdGUoZmFsc2UpOwoKICBjb25zdCBsb2FkID0gdXNlQ2FsbGJhY2soYXN5bmMgKCkgPT4gewogICAgc2V0TG9hZGluZyh0cnVlKTsKICAgIHNldEVycm9yKG51bGwpOwogICAgdHJ5IHsKICAgICAgc2V0RGF0YShhd2FpdCByZXF1ZXN0c0FwaS5nZXQoaWQpKTsKICAgIH0gY2F0Y2ggKGVycikgewogICAgICBpZiAoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgJiYgZXJyLnN0YXR1cyA9PT0gNDAzKSBzZXRFcnJvcih0KCdyZXF1ZXN0LmZvcmJpZGRlbicpKTsKICAgICAgZWxzZSBpZiAoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgJiYgZXJyLnN0YXR1cyA9PT0gNDA0KSBzZXRFcnJvcih0KCdyZXF1ZXN0Lm5vdEZvdW5kJykpOwogICAgICBlbHNlIHNldEVycm9yKGVyciBpbnN0YW5jZW9mIEFwaUVycm9yID8gZXJyLm1lc3NhZ2UgOiB0KCdjb21tb24uZXJyb3InKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRMb2FkaW5nKGZhbHNlKTsKICAgIH0KICB9LCBbaWQsIHRdKTsKCiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIHZvaWQgbG9hZCgpOwogIH0sIFtsb2FkXSk7CgogIGFzeW5jIGZ1bmN0aW9uIG9uUHVibGlzaCgpIHsKICAgIGlmICghZGF0YSkgcmV0dXJuOwogICAgc2V0QnVzeSh0cnVlKTsKICAgIHNldE5vdGljZShudWxsKTsKICAgIHRyeSB7CiAgICAgIGNvbnN0IHVwZGF0ZWQgPSBhd2FpdCByZXF1ZXN0c0FwaS5wdWJsaXNoKGRhdGEucmVxdWVzdC5pZCk7CiAgICAgIHNldERhdGEoeyAuLi5kYXRhLCByZXF1ZXN0OiB7IC4uLmRhdGEucmVxdWVzdCwgLi4udXBkYXRlZCB9IH0pOwogICAgICBzZXROb3RpY2UodCgncmVxdWVzdC5wdWJsaXNoZWQnKSk7CiAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgc2V0RXJyb3IoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgPyBlcnIubWVzc2FnZSA6IHQoJ2NvbW1vbi5lcnJvcicpKTsKICAgIH0gZmluYWxseSB7CiAgICAgIHNldEJ1c3koZmFsc2UpOwogICAgfQogIH0KCiAgYXN5bmMgZnVuY3Rpb24gb25DYW5jZWwoKSB7CiAgICBpZiAoIWRhdGEpIHJldHVybjsKICAgIHNldEJ1c3kodHJ1ZSk7CiAgICBzZXROb3RpY2UobnVsbCk7CiAgICB0cnkgewogICAgICBjb25zdCB1cGRhdGVkID0gYXdhaXQgcmVxdWVzdHNBcGkuY2FuY2VsKGRhdGEucmVxdWVzdC5pZCwgY2FuY2VsUmVhc29uIHx8IHVuZGVmaW5lZCk7CiAgICAgIHNldERhdGEoeyAuLi5kYXRhLCByZXF1ZXN0OiB7IC4uLmRhdGEucmVxdWVzdCwgLi4udXBkYXRlZCB9IH0pOwogICAgICBzZXROb3RpY2UodCgncmVxdWVzdC5jYW5jZWxsZWQnKSk7CiAgICAgIHNldFNob3dDYW5jZWwoZmFsc2UpOwogICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgIHNldEVycm9yKGVyciBpbnN0YW5jZW9mIEFwaUVycm9yID8gZXJyLm1lc3NhZ2UgOiB0KCdjb21tb24uZXJyb3InKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRCdXN5KGZhbHNlKTsKICAgIH0KICB9CgogIGFzeW5jIGZ1bmN0aW9uIG9uQWNjZXB0T2ZmZXIob2ZmZXJJZDogc3RyaW5nKSB7CiAgICBpZiAoIWRhdGEpIHJldHVybjsKICAgIHNldEJ1c3kodHJ1ZSk7CiAgICBzZXRFcnJvcihudWxsKTsKICAgIHNldE5vdGljZShudWxsKTsKICAgIHRyeSB7CiAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IG9mZmVyc0FwaS5hY2NlcHQob2ZmZXJJZCk7CiAgICAgIHNldE5vdGljZShgJHt0KCdvZmZlci5hY2NlcHRlZCcpfSAoJHtyZXN1bHQuam9iQ29kZX0pYCk7CiAgICAgIGF3YWl0IGxvYWQoKTsKICAgIH0gY2F0Y2ggKGVycikgewogICAgICBzZXRFcnJvcihlcnIgaW5zdGFuY2VvZiBBcGlFcnJvciA/IGVyci5tZXNzYWdlIDogdCgnY29tbW9uLmVycm9yJykpOwogICAgfSBmaW5hbGx5IHsKICAgICAgc2V0QnVzeShmYWxzZSk7CiAgICB9CiAgfQoKICBhc3luYyBmdW5jdGlvbiBvblJlamVjdE9mZmVyKG9mZmVySWQ6IHN0cmluZykgewogICAgaWYgKCFkYXRhKSByZXR1cm47CiAgICBzZXRCdXN5KHRydWUpOwogICAgc2V0RXJyb3IobnVsbCk7CiAgICBzZXROb3RpY2UobnVsbCk7CiAgICB0cnkgewogICAgICBhd2FpdCBvZmZlcnNBcGkucmVqZWN0KG9mZmVySWQpOwogICAgICBzZXROb3RpY2UodCgnb2ZmZXIucmVqZWN0ZWQnKSk7CiAgICAgIGF3YWl0IGxvYWQoKTsKICAgIH0gY2F0Y2ggKGVycikgewogICAgICBzZXRFcnJvcihlcnIgaW5zdGFuY2VvZiBBcGlFcnJvciA/IGVyci5tZXNzYWdlIDogdCgnY29tbW9uLmVycm9yJykpOwogICAgfSBmaW5hbGx5IHsKICAgICAgc2V0QnVzeShmYWxzZSk7CiAgICB9CiAgfQoKICBpZiAobG9hZGluZykgewogICAgcmV0dXJuICgKICAgICAgPGRpdiBjbGFzc05hbWU9ImFwcC1zaGVsbCBjb250YWluZXItcGFnZSBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBweS0yNCI+CiAgICAgICAgPFNwaW5uZXIgc2l6ZT17Mjh9IC8+CiAgICAgIDwvZGl2PgogICAgKTsKICB9CgogIGlmIChlcnJvciB8fCAhZGF0YSkgewogICAgcmV0dXJuICgKICAgICAgPGRpdiBjbGFzc05hbWU9ImFwcC1zaGVsbCBjb250YWluZXItcGFnZSBweS04Ij4KICAgICAgICA8cCBjbGFzc05hbWU9ImNhcmQgYm9yZGVyLVtyZ2IodmFyKC0tZGFuZ2VyKS8wLjM1KV0gcC00IHRleHQtc20gZm9udC1zZW1pYm9sZCB0ZXh0LVtyZ2IodmFyKC0tZGFuZ2VyKSldIj4KICAgICAgICAgIHtlcnJvciA/PyB0KCdyZXF1ZXN0Lm5vdEZvdW5kJyl9CiAgICAgICAgPC9wPgogICAgICAgIDxidXR0b24gb25DbGljaz17KCkgPT4gcm91dGVyLnB1c2goYC8ke2xvY2FsZX0vcmVxdWVzdHNgKX0gY2xhc3NOYW1lPSJidG4gYnRuLXNlY29uZGFyeSBtdC00Ij4KICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0iY2hldnJvbiIgc2l6ZT17MTZ9IGNsYXNzTmFtZT0icm90YXRlLTE4MCBydGw6cm90YXRlLTAiIC8+CiAgICAgICAgICB7dCgncmVxdWVzdC5teVRpdGxlJyl9CiAgICAgICAgPC9idXR0b24+CiAgICAgIDwvZGl2PgogICAgKTsKICB9CgogIGNvbnN0IHsgcmVxdWVzdCwgb2ZmZXJzLCBtZWRpYSwgYW5zd2VycyB9ID0gZGF0YTsKICBjb25zdCBjYW5DYW5jZWwgPSBDQU5DRUxBQkxFLmluY2x1ZGVzKHJlcXVlc3Quc3RhdHVzKTsKICBjb25zdCBjYW5TZWxlY3RPZmZlciA9IFsKICAgICdQVUJMSVNIRUQnLAogICAgJ01BVENISU5HJywKICAgICdSRUNFSVZJTkdfT0ZGRVJTJywKICAgICdQUk9WSURFUl9TRUxFQ1RFRCcsCiAgXS5pbmNsdWRlcyhyZXF1ZXN0LnN0YXR1cyk7CiAgY29uc3Qgc2VsZWN0ZWRPZmZlciA9CiAgICBvZmZlcnMuZmluZCgobykgPT4gby5pZCA9PT0gcmVxdWVzdC5zZWxlY3RlZF9vZmZlcl9pZCB8fCBvLnN0YXR1cyA9PT0gJ0FDQ0VQVEVEJykgPz8gbnVsbDsKCiAgY29uc3Qgc2VhcmNoaW5nID0KICAgICFzZWxlY3RlZE9mZmVyICYmCiAgICAhcmVxdWVzdC5jYW5jZWxsZWRfYXQgJiYKICAgIFsnUFVCTElTSEVEJywgJ01BVENISU5HJywgJ1JFQ0VJVklOR19PRkZFUlMnXS5pbmNsdWRlcyhyZXF1ZXN0LnN0YXR1cyk7CgogIGNvbnN0IHJlcXVlc3RQb2ludCA9CiAgICByZXF1ZXN0LnBpY2t1cF9sYXQgIT0gbnVsbCAmJiByZXF1ZXN0LnBpY2t1cF9sbmcgIT0gbnVsbAogICAgICA/IHsgbGF0OiBOdW1iZXIocmVxdWVzdC5waWNrdXBfbGF0KSwgbG5nOiBOdW1iZXIocmVxdWVzdC5waWNrdXBfbG5nKSB9CiAgICAgIDogbnVsbDsKCiAgY29uc3QgcGVuZGluZyA9IG9mZmVycy5maWx0ZXIoKG8pID0+IG8uc3RhdHVzID09PSAnUEVORElORycpOwogIGNvbnN0IGNoZWFwZXN0SWQgPSBwZW5kaW5nLmxlbmd0aCA+IDEgPyBwZW5kaW5nLnJlZHVjZSgoYSwgYikgPT4gKGEucHJpY2VfbWlub3IgPD0gYi5wcmljZV9taW5vciA/IGEgOiBiKSkuaWQgOiBudWxsOwoKICBjb25zdCBzb3J0ZWRPZmZlcnMgPSBbLi4ub2ZmZXJzXS5zb3J0KChhLCBiKSA9PiB7CiAgICBjb25zdCByYW5rID0gKHM6IHN0cmluZykgPT4gKHMgPT09ICdQRU5ESU5HJyA/IDAgOiBzID09PSAnQUNDRVBURUQnID8gMSA6IDIpOwogICAgaWYgKHJhbmsoYS5zdGF0dXMpICE9PSByYW5rKGIuc3RhdHVzKSkgcmV0dXJuIHJhbmsoYS5zdGF0dXMpIC0gcmFuayhiLnN0YXR1cyk7CiAgICByZXR1cm4gYS5wcmljZV9taW5vciAtIGIucHJpY2VfbWlub3I7CiAgfSk7CgogIHJldHVybiAoCiAgICA8ZGl2IGNsYXNzTmFtZT0iYXBwLXNoZWxsIGNvbnRhaW5lci1wYWdlIHB5LTQiPgogICAgICB7LyogQ29tcGFjdCBoZWFkZXI6IHdoYXQsIHdoZXJlLCBzdGF0dXMuICovfQogICAgICA8YnV0dG9uCiAgICAgICAgb25DbGljaz17KCkgPT4gcm91dGVyLnB1c2goYC8ke2xvY2FsZX0vcmVxdWVzdHNgKX0KICAgICAgICBjbGFzc05hbWU9Im1iLTMgaW5saW5lLWZsZXggaXRlbXMtY2VudGVyIGdhcC0xLjUgdGV4dC1zbSBmb250LXNlbWlib2xkIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSIKICAgICAgPgogICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0iY2hldnJvbiIgc2l6ZT17MTZ9IGNsYXNzTmFtZT0icm90YXRlLTE4MCBydGw6cm90YXRlLTAiIC8+CiAgICAgICAge3QoJ3JlcXVlc3QubXlUaXRsZScpfQogICAgICA8L2J1dHRvbj4KCiAgICAgIDxkaXYgY2xhc3NOYW1lPSJtYi00IGZsZXggaXRlbXMtc3RhcnQganVzdGlmeS1iZXR3ZWVuIGdhcC0zIj4KICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWluLXctMCI+CiAgICAgICAgICA8aDEgY2xhc3NOYW1lPSJ0cnVuY2F0ZSB0ZXh0LXhsIGZvbnQtYmxhY2sgdHJhY2tpbmctdGlnaHQiPgogICAgICAgICAgICB7cmVxdWVzdC50aXRsZSB8fCByZXF1ZXN0LnNlcnZpY2VfbmFtZX0KICAgICAgICAgIDwvaDE+CiAgICAgICAgICA8cCBjbGFzc05hbWU9InRudW0gbXQtMC41IHRleHQteHMgdGV4dC1bcmdiKHZhcigtLWZnLXN1YnRsZSkpXSI+CiAgICAgICAgICAgIHtyZXF1ZXN0LmNvZGV9IMK3IHtyZXF1ZXN0LnNlcnZpY2VfbmFtZX0KICAgICAgICAgIDwvcD4KICAgICAgICA8L2Rpdj4KICAgICAgICA8U3RhdHVzQmFkZ2Ugc3RhdHVzPXtyZXF1ZXN0LnN0YXR1c30gLz4KICAgICAgPC9kaXY+CgogICAgICB7LyogTGl2ZSBzZWFyY2ggcmFkYXIuICovfQogICAgICB7c2VhcmNoaW5nICYmICgKICAgICAgICA8U2VhcmNoUmFkYXIKICAgICAgICAgIHJlcXVlc3RJZD17cmVxdWVzdC5pZH0KICAgICAgICAgIG9mZmVycz17b2ZmZXJzfQogICAgICAgICAgcG9pbnQ9e3JlcXVlc3RQb2ludH0KICAgICAgICAgIGV4cGlyZXNBdD17cmVxdWVzdC5leHBpcmVzX2F0fQogICAgICAgICAgY2FuZGlkYXRlQ291bnQ9e29mZmVycy5sZW5ndGh9CiAgICAgICAgICBvblZpZXdPZmZlcnM9eygpID0+IHsKICAgICAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2toZGVtbGktb2ZmZXJzJyk/LnNjcm9sbEludG9WaWV3KHsgYmVoYXZpb3I6ICdzbW9vdGgnIH0pOwogICAgICAgICAgfX0KICAgICAgICAgIG9uU3RvcD17Y2FuQ2FuY2VsID8gKCkgPT4gc2V0U2hvd0NhbmNlbCh0cnVlKSA6IHVuZGVmaW5lZH0KICAgICAgICAvPgogICAgICApfQoKICAgICAgey8qIENob3NlbiBjcmFmdHNtYW46IHRyYWNraW5nIG1hcC4gKi99CiAgICAgIHtzZWxlY3RlZE9mZmVyICYmIHJlcXVlc3Quam9iX2lkICYmICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWItNCBzcGFjZS15LTMiPgogICAgICAgICAge3NlbGVjdGVkT2ZmZXIucHJvdmlkZXJfaWQgJiYgKAogICAgICAgICAgICA8VHJhY2tQcm92aWRlcgogICAgICAgICAgICAgIHByb3ZpZGVySWQ9e3NlbGVjdGVkT2ZmZXIucHJvdmlkZXJfaWR9CiAgICAgICAgICAgICAgZGVzdGluYXRpb249e3JlcXVlc3RQb2ludH0KICAgICAgICAgICAgICBwcm92aWRlck5hbWU9e3NlbGVjdGVkT2ZmZXIucHJvdmlkZXJfbmFtZX0KICAgICAgICAgICAgICBoZWlnaHQ9ezIyMH0KICAgICAgICAgICAgLz4KICAgICAgICAgICl9CgogICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgY2FyZC1mZWF0dXJlZCBwLTQiPgogICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTMiPgogICAgICAgICAgICAgIDxBdmF0YXIgbmFtZT17c2VsZWN0ZWRPZmZlci5wcm92aWRlcl9uYW1lfSBzcmM9e3NlbGVjdGVkT2ZmZXIucHJvdmlkZXJfYXZhdGFyfSBzaXplPXs1Mn0gLz4KICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWluLXctMCBmbGV4LTEiPgogICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPSJ0cnVuY2F0ZSB0ZXh0LWJhc2UgZm9udC1ib2xkIj57c2VsZWN0ZWRPZmZlci5wcm92aWRlcl9uYW1lfTwvcD4KICAgICAgICAgICAgICAgIDxTdGFycyB2YWx1ZT17c2VsZWN0ZWRPZmZlci5yYXRpbmdfYXZnfSBjb3VudD17c2VsZWN0ZWRPZmZlci5jb21wbGV0ZWRfam9ic30gLz4KICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICA8UHJpY2UgbWlub3I9e3NlbGVjdGVkT2ZmZXIucHJpY2VfbWlub3J9IGN1cnJlbmN5PXtzZWxlY3RlZE9mZmVyLmN1cnJlbmN5fSBzaXplPSJtZCIgLz4KICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICB7c2VsZWN0ZWRPZmZlci5tZXNzYWdlICYmICgKICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9Im10LTMgcm91bmRlZC14bCBiZy1bcmdiKHZhcigtLXN1cmZhY2UtMykpXSBweC0zIHB5LTIgdGV4dC1zbSI+CiAgICAgICAgICAgICAgICB7c2VsZWN0ZWRPZmZlci5tZXNzYWdlfQogICAgICAgICAgICAgIDwvcD4KICAgICAgICAgICAgKX0KCiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0zIGZsZXggZ2FwLTIiPgogICAgICAgICAgICAgIDxMaW5rIGhyZWY9e2AvJHtsb2NhbGV9L21lc3NhZ2VzYH0gY2xhc3NOYW1lPSJidG4gYnRuLXByaW1hcnkgZmxleC0xIj4KICAgICAgICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0iY2hhdCIgc2l6ZT17MTh9IC8+CiAgICAgICAgICAgICAgICB7dCgndHJhY2tpbmcubWVzc2FnZScpfQogICAgICAgICAgICAgIDwvTGluaz4KICAgICAgICAgICAgICA8TGluayBocmVmPXtgLyR7bG9jYWxlfS9qb2JzYH0gY2xhc3NOYW1lPSJidG4gYnRuLXNlY29uZGFyeSBmbGV4LTEiPgogICAgICAgICAgICAgICAge3QoJ2pvYi5kZXRhaWxzJyl9CiAgICAgICAgICAgICAgPC9MaW5rPgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvZGl2PgogICAgICApfQoKICAgICAge25vdGljZSAmJiAoCiAgICAgICAgPHAgY2xhc3NOYW1lPSJtYi00IHJvdW5kZWQteGwgYm9yZGVyIGJvcmRlci1bcmdiKHZhcigtLW9rKS8wLjM1KV0gYmctW3JnYih2YXIoLS1vaykvMC4wOCldIHB4LTQgcHktMyB0ZXh0LXNtIGZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKDVfMTUwXzEwNSldIj4KICAgICAgICAgIHtub3RpY2V9CiAgICAgICAgPC9wPgogICAgICApfQogICAgICB7ZXJyb3IgJiYgKAogICAgICAgIDxwIGNsYXNzTmFtZT0ibWItNCByb3VuZGVkLXhsIGJvcmRlciBib3JkZXItW3JnYih2YXIoLS1kYW5nZXIpLzAuMzUpXSBiZy1bcmdiKHZhcigtLWRhbmdlcikvMC4wOCldIHB4LTQgcHktMyB0ZXh0LXNtIGZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKHZhcigtLWRhbmdlcikpXSI+CiAgICAgICAgICB7ZXJyb3J9CiAgICAgICAgPC9wPgogICAgICApfQoKICAgICAgey8qIE9mZmVyczogdGhlIG1haW4gZXZlbnQuICovfQogICAgICA8c2VjdGlvbiBpZD0ia2hkZW1saS1vZmZlcnMiIGNsYXNzTmFtZT0ibXQtMiI+CiAgICAgICAgPFNlY3Rpb25UaXRsZQogICAgICAgICAgYWN0aW9uPXsKICAgICAgICAgICAgcGVuZGluZy5sZW5ndGggPiAwID8gKAogICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iY2hpcCBjaGlwLWJyYW5kIj57dCgnb2ZmZXJzLm5ld09mZmVycycpfSB7cGVuZGluZy5sZW5ndGh9PC9zcGFuPgogICAgICAgICAgICApIDogdW5kZWZpbmVkCiAgICAgICAgICB9CiAgICAgICAgPgogICAgICAgICAge3QoJ29mZmVycy50aXRsZScpfQogICAgICAgIDwvU2VjdGlvblRpdGxlPgoKICAgICAgICB7b2ZmZXJzLmxlbmd0aCA9PT0gMCA/ICgKICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIGZsZXggZmxleC1jb2wgaXRlbXMtY2VudGVyIGdhcC0yIHB4LTYgcHktMTIgdGV4dC1jZW50ZXIiPgogICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9Imljb24tdGlsZSBoLTE0IHctMTQiPgogICAgICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0icmFkYXIiIHNpemU9ezI2fSAvPgogICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICAgIDxwIGNsYXNzTmFtZT0idGV4dC1iYXNlIGZvbnQtYm9sZCI+e3QoJ29mZmVycy5lbXB0eScpfTwvcD4KICAgICAgICAgICAgPHAgY2xhc3NOYW1lPSJ0ZXh0LXNtIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+e3QoJ29mZmVycy5lbXB0eUhpbnQnKX08L3A+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICApIDogKAogICAgICAgICAgPHVsIGNsYXNzTmFtZT0ic3BhY2UteS0yLjUiPgogICAgICAgICAgICB7c29ydGVkT2ZmZXJzLm1hcCgobywgaW5kZXgpID0+IHsKICAgICAgICAgICAgICBjb25zdCBhY2NlcHRlZCA9IG8uc3RhdHVzID09PSAnQUNDRVBURUQnOwogICAgICAgICAgICAgIGNvbnN0IGlzQmVzdCA9IG8uaWQgPT09IGNoZWFwZXN0SWQ7CiAgICAgICAgICAgICAgcmV0dXJuICgKICAgICAgICAgICAgICAgIDxsaQogICAgICAgICAgICAgICAgICBrZXk9e28uaWR9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17YGNhcmQgc2xpZGUtaW4gcC00ICR7YWNjZXB0ZWQgfHwgaXNCZXN0ID8gJ2NhcmQtZmVhdHVyZWQnIDogJyd9YH0KICAgICAgICAgICAgICAgICAgc3R5bGU9e3sgYW5pbWF0aW9uRGVsYXk6IGAke01hdGgubWluKGluZGV4LCAxMCkgKiA1NX1tc2AgfX0KICAgICAgICAgICAgICAgID4KICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtc3RhcnQgZ2FwLTMiPgogICAgICAgICAgICAgICAgICAgIDxBdmF0YXIgbmFtZT17by5wcm92aWRlcl9uYW1lfSBzcmM9e28ucHJvdmlkZXJfYXZhdGFyfSBzaXplPXs0OH0gLz4KCiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9Im1pbi13LTAgZmxleC0xIj4KICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGZsZXgtd3JhcCBpdGVtcy1jZW50ZXIgZ2FwLTEuNSI+CiAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idHJ1bmNhdGUgdGV4dC1bMC45Mzc1cmVtXSBmb250LWJvbGQiPntvLnByb3ZpZGVyX25hbWV9PC9zcGFuPgogICAgICAgICAgICAgICAgICAgICAgICB7aXNCZXN0ICYmICgKICAgICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9ImNoaXAgY2hpcC1icmFuZCAhcHgtMiAhcHktMC41ICF0ZXh0LVswLjY4NzVyZW1dIj4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHt0KCdvZmZlci5iZXN0UHJpY2UnKX0KICAgICAgICAgICAgICAgICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgICl9CiAgICAgICAgICAgICAgICAgICAgICAgIHthY2NlcHRlZCAmJiAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJjaGlwIGNoaXAtb2sgIXB4LTIgIXB5LTAuNSAhdGV4dC1bMC42ODc1cmVtXSI+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9ImNoZWNrIiBzaXplPXsxMn0gLz4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHt0KCdvZmZlci5hY2NlcHRlZCcpfQogICAgICAgICAgICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0xIGZsZXggaXRlbXMtY2VudGVyIGdhcC0yIj4KICAgICAgICAgICAgICAgICAgICAgICAgPFN0YXJzIHZhbHVlPXtvLnJhdGluZ19hdmd9IGNvdW50PXtvLmNvbXBsZXRlZF9qb2JzfSAvPgogICAgICAgICAgICAgICAgICAgICAgICB7by5ldGFfbWludXRlcyAhPSBudWxsICYmICgKICAgICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRleHQteHMgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIMK3IHtvLmV0YV9taW51dGVzfSB7dCgncmVxdWVzdC5taW51dGVzJyl9CiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgICAgICAgICAgICApfQogICAgICAgICAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgICAgICAgICAge28ubWVzc2FnZSAmJiAoCiAgICAgICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT0ibXQtMiBsaW5lLWNsYW1wLTIgdGV4dC1zbSB0ZXh0LVtyZ2IodmFyKC0tZmctbXV0ZWQpKV0iPgogICAgICAgICAgICAgICAgICAgICAgICAgIHtvLm1lc3NhZ2V9CiAgICAgICAgICAgICAgICAgICAgICAgIDwvcD4KICAgICAgICAgICAgICAgICAgICAgICl9CiAgICAgICAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4LW5vbmUgdGV4dC1lbmQiPgogICAgICAgICAgICAgICAgICAgICAgPFByaWNlIG1pbm9yPXtvLnByaWNlX21pbm9yfSBjdXJyZW5jeT17by5jdXJyZW5jeX0gc2l6ZT0ibGciIC8+CiAgICAgICAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgICAgICAgICAge28uc3RhdHVzID09PSAnUEVORElORycgJiYgY2FuU2VsZWN0T2ZmZXIgJiYgKAogICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0zLjUgZmxleCBnYXAtMiI+CiAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IG9uQWNjZXB0T2ZmZXIoby5pZCl9CiAgICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtidXN5fQogICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9ImJ0biBidG4tcHJpbWFyeSBmbGV4LTEiCiAgICAgICAgICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0iY2hlY2siIHNpemU9ezE4fSAvPgogICAgICAgICAgICAgICAgICAgICAgICB7dCgnb2ZmZXJzLmFjY2VwdCcpfQogICAgICAgICAgICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IG9uUmVqZWN0T2ZmZXIoby5pZCl9CiAgICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtidXN5fQogICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9ImJ0biBidG4tc2Vjb25kYXJ5IGZsZXgtMSIKICAgICAgICAgICAgICAgICAgICAgID4KICAgICAgICAgICAgICAgICAgICAgICAge3QoJ29mZmVycy5kZWNsaW5lJyl9CiAgICAgICAgICAgICAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgKX0KCiAgICAgICAgICAgICAgICAgIHtvLnN0YXR1cyAhPT0gJ1BFTkRJTkcnICYmICgKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibXQtMyI+CiAgICAgICAgICAgICAgICAgICAgICA8U3RhdHVzQmFkZ2Ugc3RhdHVzPXtvLnN0YXR1c30gLz4KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgIDwvbGk+CiAgICAgICAgICAgICAgKTsKICAgICAgICAgICAgfSl9CiAgICAgICAgICA8L3VsPgogICAgICAgICl9CiAgICAgIDwvc2VjdGlvbj4KCiAgICAgIHsvKiBSZXF1ZXN0IGZhY3RzLCBjb2xsYXBzZWQgYnkgZGVmYXVsdCBzbyB0aGUgb2ZmZXJzIG93biB0aGUgc2NyZWVuLiAqL30KICAgICAgPGJ1dHRvbgogICAgICAgIHR5cGU9ImJ1dHRvbiIKICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRTaG93RGV0YWlscygodikgPT4gIXYpfQogICAgICAgIGNsYXNzTmFtZT0iY2FyZCBtdC01IGZsZXggdy1mdWxsIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gcC00IHRleHQtc3RhcnQiCiAgICAgID4KICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRleHQtc20gZm9udC1ib2xkIj57dCgncmVxdWVzdC5kZXRhaWxzVGl0bGUnKX08L3NwYW4+CiAgICAgICAgPENhdGVnb3J5SWNvbgogICAgICAgICAgbmFtZT0iY2hldnJvbiIKICAgICAgICAgIHNpemU9ezIwfQogICAgICAgICAgY2xhc3NOYW1lPXtgdGV4dC1bcmdiKHZhcigtLWZnLXN1YnRsZSkpXSB0cmFuc2l0aW9uLXRyYW5zZm9ybSBydGw6cm90YXRlLTE4MCAke3Nob3dEZXRhaWxzID8gJ3JvdGF0ZS05MCBydGw6LXJvdGF0ZS05MCcgOiAnJ31gfQogICAgICAgIC8+CiAgICAgIDwvYnV0dG9uPgoKICAgICAge3Nob3dEZXRhaWxzICYmICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmFkZS1yaXNlIG10LTIgc3BhY2UteS0zIj4KICAgICAgICAgIDxkbCBjbGFzc05hbWU9ImNhcmQgZ3JpZCBncmlkLWNvbHMtMiBnYXAtNCBwLTQgdGV4dC1zbSI+CiAgICAgICAgICAgIDxJbmZvIGxhYmVsPXt0KCdyZXF1ZXN0LmN1cnJlbnRTdGF0dXMnKX0+CiAgICAgICAgICAgICAgPFN0YXR1c0JhZGdlIHN0YXR1cz17cmVxdWVzdC5zdGF0dXN9IC8+CiAgICAgICAgICAgIDwvSW5mbz4KICAgICAgICAgICAgPEluZm8gbGFiZWw9e3QoJ3JlcXVlc3QuY3JlYXRlZEF0Jyl9PgogICAgICAgICAgICAgIHtuZXcgRGF0ZShyZXF1ZXN0LmNyZWF0ZWRfYXQpLnRvTG9jYWxlU3RyaW5nKGxvY2FsZSl9CiAgICAgICAgICAgIDwvSW5mbz4KICAgICAgICAgICAgPEluZm8gbGFiZWw9e3QoJ3JlcXVlc3QudXJnZW5jeScpfT57dChgdXJnZW5jeS4ke3JlcXVlc3QudXJnZW5jeX1gKX08L0luZm8+CiAgICAgICAgICAgIDxJbmZvIGxhYmVsPXt0KCdyZXF1ZXN0Lm9mZmVyc0NvdW50Jyl9PntyZXF1ZXN0Lm9mZmVyX2NvdW50fTwvSW5mbz4KICAgICAgICAgICAgeyhyZXF1ZXN0LmJ1ZGdldF9taW5fbWlub3IgIT0gbnVsbCB8fCByZXF1ZXN0LmJ1ZGdldF9tYXhfbWlub3IgIT0gbnVsbCkgJiYgKAogICAgICAgICAgICAgIDxJbmZvIGxhYmVsPXt0KCdyZXF1ZXN0LmJ1ZGdldCcpfT4KICAgICAgICAgICAgICAgIDxQcmljZQogICAgICAgICAgICAgICAgICBtaW5vcj17cmVxdWVzdC5idWRnZXRfbWluX21pbm9yID8/IHJlcXVlc3QuYnVkZ2V0X21heF9taW5vcn0KICAgICAgICAgICAgICAgICAgY3VycmVuY3k9e3JlcXVlc3QuY3VycmVuY3l9CiAgICAgICAgICAgICAgICAgIHNpemU9InNtIgogICAgICAgICAgICAgICAgLz4KICAgICAgICAgICAgICA8L0luZm8+CiAgICAgICAgICAgICl9CiAgICAgICAgICAgIHtyZXF1ZXN0LnBpY2t1cF9saW5lMSAmJiAoCiAgICAgICAgICAgICAgPEluZm8gbGFiZWw9e3QoJ3JlcXVlc3QucGlja3VwJyl9PgogICAgICAgICAgICAgICAge1tyZXF1ZXN0LnBpY2t1cF9saW5lMSwgcmVxdWVzdC5waWNrdXBfZGlzdHJpY3QsIHJlcXVlc3QucGlja3VwX2NpdHlfbmFtZV0KICAgICAgICAgICAgICAgICAgLmZpbHRlcihCb29sZWFuKQogICAgICAgICAgICAgICAgICAuam9pbignLCAnKX0KICAgICAgICAgICAgICA8L0luZm8+CiAgICAgICAgICAgICl9CiAgICAgICAgICAgIHtyZXF1ZXN0LmRlc3RpbmF0aW9uX2xpbmUxICYmICgKICAgICAgICAgICAgICA8SW5mbyBsYWJlbD17dCgncmVxdWVzdC5kZXN0aW5hdGlvbicpfT4KICAgICAgICAgICAgICAgIHtbcmVxdWVzdC5kZXN0aW5hdGlvbl9saW5lMSwgcmVxdWVzdC5kZXN0aW5hdGlvbl9jaXR5X25hbWVdLmZpbHRlcihCb29sZWFuKS5qb2luKCcsICcpfQogICAgICAgICAgICAgIDwvSW5mbz4KICAgICAgICAgICAgKX0KICAgICAgICAgIDwvZGw+CgogICAgICAgICAge3JlcXVlc3QuZGVzY3JpcHRpb24gJiYgKAogICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBwLTQiPgogICAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9ImxhYmVsIj57dCgncmVxdWVzdC5kZXNjcmlwdGlvbicpfTwvaDI+CiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPSJ3aGl0ZXNwYWNlLXByZS13cmFwIHRleHQtc20iPntyZXF1ZXN0LmRlc2NyaXB0aW9ufTwvcD4KICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICApfQoKICAgICAgICAgIHthbnN3ZXJzLmxlbmd0aCA+IDAgJiYgKAogICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBzcGFjZS15LTIgcC00Ij4KICAgICAgICAgICAgICB7YW5zd2Vycy5tYXAoKGEpID0+ICgKICAgICAgICAgICAgICAgIDxkaXYga2V5PXthLmlkfSBjbGFzc05hbWU9InJvdW5kZWQteGwgYmctW3JnYih2YXIoLS1zdXJmYWNlLTMpKV0gcHgtMyBweS0yIHRleHQtc20iPgogICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0idGV4dC14cyBmb250LXNlbWlib2xkIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iPnthLmZpZWxkX2tleX08L2Rpdj4KICAgICAgICAgICAgICAgICAgPGRpdj57Zm9ybWF0QW5zd2VyKGEpfTwvZGl2PgogICAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgKSl9CiAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgKX0KCiAgICAgICAgICB7bWVkaWEubGVuZ3RoID4gMCAmJiAoCiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIHAtNCI+CiAgICAgICAgICAgICAgPGgyIGNsYXNzTmFtZT0ibGFiZWwiPnt0KCdyZXF1ZXN0LmRldGFpbHNUaXRsZScpfTwvaDI+CiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9Im10LTIgZmxleCBmbGV4LXdyYXAgZ2FwLTIiPgogICAgICAgICAgICAgICAge21lZGlhLm1hcCgobSkgPT4gKAogICAgICAgICAgICAgICAgICA8YQogICAgICAgICAgICAgICAgICAgIGtleT17bS5pZH0KICAgICAgICAgICAgICAgICAgICBocmVmPXttLnVybH0KICAgICAgICAgICAgICAgICAgICB0YXJnZXQ9Il9ibGFuayIKICAgICAgICAgICAgICAgICAgICByZWw9Im5vcmVmZXJyZXIiCiAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJjaGlwIGNoaXAtbmV1dHJhbCIKICAgICAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAgICAgIHttLmtpbmR9CiAgICAgICAgICAgICAgICAgIDwvYT4KICAgICAgICAgICAgICAgICkpfQogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICl9CiAgICAgICAgPC9kaXY+CiAgICAgICl9CgogICAgICB7LyogQWN0aW9ucy4gKi99CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC01IHNwYWNlLXktMi41Ij4KICAgICAgICB7cmVxdWVzdC5zdGF0dXMgPT09ICdEUkFGVCcgJiYgKAogICAgICAgICAgPGJ1dHRvbiBvbkNsaWNrPXtvblB1Ymxpc2h9IGRpc2FibGVkPXtidXN5fSBjbGFzc05hbWU9ImJ0biBidG4tcHJpbWFyeSBidG4tYmxvY2siPgogICAgICAgICAgICB7dCgncmVxdWVzdC5wdWJsaXNoJyl9CiAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICApfQogICAgICAgIHtjYW5DYW5jZWwgJiYgKAogICAgICAgICAgPGJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBzZXRTaG93Q2FuY2VsKHRydWUpfSBkaXNhYmxlZD17YnVzeX0gY2xhc3NOYW1lPSJidG4gYnRuLXNlY29uZGFyeSBidG4tYmxvY2sgIXRleHQtW3JnYih2YXIoLS1kYW5nZXIpKV0iPgogICAgICAgICAgICB7dCgncmVxdWVzdC5jYW5jZWwnKX0KICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICl9CiAgICAgIDwvZGl2PgoKICAgICAge3Nob3dDYW5jZWwgJiYgKAogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmaXhlZCBpbnNldC0wIHotNDAgZmxleCBpdGVtcy1lbmQganVzdGlmeS1jZW50ZXIgYmctYmxhY2svNDAgcC0wIHNtOml0ZW1zLWNlbnRlciBzbTpwLTQiPgogICAgICAgICAgPGRpdiBjbGFzc05hbWU9InNoZWV0IHNoZWV0LXVwIHctZnVsbCBtYXgtdy1zbSBwLTUgc206cm91bmRlZC0yeGwiPgogICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ic2hlZXQtaGFuZGxlIHNtOmhpZGRlbiIgLz4KICAgICAgICAgICAgPGgzIGNsYXNzTmFtZT0ibXQtMyBmb250LWJvbGQgc206bXQtMCI+e3QoJ3JlcXVlc3QuY2FuY2VsQ29uZmlybScpfTwvaDM+CiAgICAgICAgICAgIDxpbnB1dAogICAgICAgICAgICAgIHZhbHVlPXtjYW5jZWxSZWFzb259CiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRDYW5jZWxSZWFzb24oZS50YXJnZXQudmFsdWUpfQogICAgICAgICAgICAgIHBsYWNlaG9sZGVyPXt0KCdyZXF1ZXN0LmNhbmNlbFJlYXNvbicpfQogICAgICAgICAgICAgIGNsYXNzTmFtZT0iaW5wdXQgbXQtMyIKICAgICAgICAgICAgLz4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9Im10LTQgZmxleCBnYXAtMiI+CiAgICAgICAgICAgICAgPGJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBzZXRTaG93Q2FuY2VsKGZhbHNlKX0gY2xhc3NOYW1lPSJidG4gYnRuLXNlY29uZGFyeSBmbGV4LTEiPgogICAgICAgICAgICAgICAge3QoJ2NvbW1vbi5jbG9zZScpfQogICAgICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICAgICAgIDxidXR0b24gb25DbGljaz17b25DYW5jZWx9IGRpc2FibGVkPXtidXN5fSBjbGFzc05hbWU9ImJ0biBidG4tZGFuZ2VyIGZsZXgtMSI+CiAgICAgICAgICAgICAgICB7dCgncmVxdWVzdC5jYW5jZWwnKX0KICAgICAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICA8L2Rpdj4KICAgICAgKX0KICAgIDwvZGl2PgogICk7Cn0KCmZ1bmN0aW9uIEluZm8oeyBsYWJlbCwgY2hpbGRyZW4gfTogeyBsYWJlbDogc3RyaW5nOyBjaGlsZHJlbjogUmVhY3QuUmVhY3ROb2RlIH0pIHsKICByZXR1cm4gKAogICAgPGRpdj4KICAgICAgPGR0IGNsYXNzTmFtZT0idGV4dC14cyB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj57bGFiZWx9PC9kdD4KICAgICAgPGRkIGNsYXNzTmFtZT0ibXQtMC41IGZvbnQtc2VtaWJvbGQiPntjaGlsZHJlbn08L2RkPgogICAgPC9kaXY+CiAgKTsKfQoKZnVuY3Rpb24gZm9ybWF0QW5zd2VyKGE6IFJlcXVlc3REZXRhaWxbJ2Fuc3dlcnMnXVtudW1iZXJdKTogc3RyaW5nIHsKICBpZiAoYS52YWx1ZV90ZXh0ICE9IG51bGwpIHJldHVybiBhLnZhbHVlX3RleHQ7CiAgaWYgKGEudmFsdWVfbnVtYmVyICE9IG51bGwpIHJldHVybiBTdHJpbmcoYS52YWx1ZV9udW1iZXIpOwogIGlmIChhLnZhbHVlX2Jvb2xlYW4gIT0gbnVsbCkgcmV0dXJuIGEudmFsdWVfYm9vbGVhbiA/ICfinJMnIDogJ+Kclyc7CiAgaWYgKGEudmFsdWVfZGF0ZSAhPSBudWxsKSByZXR1cm4gbmV3IERhdGUoYS52YWx1ZV9kYXRlKS50b0xvY2FsZVN0cmluZygpOwogIGlmIChhLnZhbHVlX2pzb24gIT0gbnVsbCkgcmV0dXJuIEpTT04uc3RyaW5naWZ5KGEudmFsdWVfanNvbik7CiAgcmV0dXJuICfigJQnOwp9Cg==
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useI18n } from '@/lib/i18n-provider';
+import { RequireAuth } from '@/lib/require-auth';
+import { ApiError } from '@/lib/auth-api';
+import { requestsApi, type RequestDetail } from '@/lib/requests-api';
+import { offersApi } from '@/lib/offers-api';
+import { SearchRadar } from '@/lib/map/search-radar';
+import { TrackProvider } from '@/lib/map/track-provider';
+import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Avatar, Price, SectionTitle, Spinner, Stars } from '@/lib/ui';
+
+/**
+ * Request detail for the owning customer.
+ *
+ * Once the request is live this is the offers screen: one card per craftsman,
+ * entering as offers arrive, with the price large enough to compare without
+ * reading, and accept/decline where the thumb already is. The live radar stays
+ * on top while the search is open, and becomes the tracking map once a
+ * craftsman is chosen.
+ *
+ * Ownership is enforced by the API: a non-owner gets 403 and this screen shows
+ * a neutral message instead of any data.
+ */
+export default function RequestDetailPage() {
+  return (
+    <RequireAuth roles={['CUSTOMER']}>
+      <RequestDetailView />
+    </RequireAuth>
+  );
+}
+
+const CANCELABLE = [
+  'DRAFT',
+  'PUBLISHED',
+  'MATCHING',
+  'RECEIVING_OFFERS',
+  'PROVIDER_SELECTED',
+  'CONFIRMED',
+  'IN_PROGRESS',
+];
+
+function RequestDetailView() {
+  const { t, locale } = useI18n();
+  const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+  const search = useSearchParams();
+
+  const [data, setData] = useState<RequestDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(
+    search.get('created') === '1' ? t('request.created') : null,
+  );
+  const [showCancel, setShowCancel] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [showDetails, setShowDetails] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setData(await requestsApi.get(id));
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) setError(t('request.forbidden'));
+      else if (err instanceof ApiError && err.status === 404) setError(t('request.notFound'));
+      else setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  }, [id, t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function onPublish() {
+    if (!data) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const updated = await requestsApi.publish(data.request.id);
+      setData({ ...data, request: { ...data.request, ...updated } });
+      setNotice(t('request.published'));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onCancel() {
+    if (!data) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const updated = await requestsApi.cancel(data.request.id, cancelReason || undefined);
+      setData({ ...data, request: { ...data.request, ...updated } });
+      setNotice(t('request.cancelled'));
+      setShowCancel(false);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onAcceptOffer(offerId: string) {
+    if (!data) return;
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await offersApi.accept(offerId);
+      setNotice(`${t('offer.accepted')} (${result.jobCode})`);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onRejectOffer(offerId: string) {
+    if (!data) return;
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      await offersApi.reject(offerId);
+      setNotice(t('offer.rejected'));
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="app-shell container-page py-8">
+        <p className="card border-[rgb(var(--danger)/0.35)] p-4 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error ?? t('request.notFound')}
+        </p>
+        <button onClick={() => router.push(`/${locale}/requests`)} className="btn btn-secondary mt-4">
+          <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+          {t('request.myTitle')}
+        </button>
+      </div>
+    );
+  }
+
+  const { request, offers, media, answers } = data;
+  const canCancel = CANCELABLE.includes(request.status);
+  const canSelectOffer = [
+    'PUBLISHED',
+    'MATCHING',
+    'RECEIVING_OFFERS',
+    'PROVIDER_SELECTED',
+  ].includes(request.status);
+  const selectedOffer =
+    offers.find((o) => o.id === request.selected_offer_id || o.status === 'ACCEPTED') ?? null;
+
+  const searching =
+    !selectedOffer &&
+    !request.cancelled_at &&
+    ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS'].includes(request.status);
+
+  const requestPoint =
+    request.pickup_lat != null && request.pickup_lng != null
+      ? { lat: Number(request.pickup_lat), lng: Number(request.pickup_lng) }
+      : null;
+
+  const pending = offers.filter((o) => o.status === 'PENDING');
+  const cheapestId = pending.length > 1 ? pending.reduce((a, b) => (a.price_minor <= b.price_minor ? a : b)).id : null;
+
+  const sortedOffers = [...offers].sort((a, b) => {
+    const rank = (s: string) => (s === 'PENDING' ? 0 : s === 'ACCEPTED' ? 1 : 2);
+    if (rank(a.status) !== rank(b.status)) return rank(a.status) - rank(b.status);
+    return a.price_minor - b.price_minor;
+  });
+
+  return (
+    <div className="app-shell container-page py-4">
+      {/* Compact header: what, where, status. */}
+      <button
+        onClick={() => router.push(`/${locale}/requests`)}
+        className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[rgb(var(--fg-muted))]"
+      >
+        <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+        {t('request.myTitle')}
+      </button>
+
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-black tracking-tight">
+            {request.title || request.service_name}
+          </h1>
+          <p className="tnum mt-0.5 text-xs text-[rgb(var(--fg-subtle))]">
+            {request.code} · {request.service_name}
+          </p>
+        </div>
+        <StatusBadge status={request.status} />
+      </div>
+
+      {/* Live search radar. */}
+      {searching && (
+        <SearchRadar
+          requestId={request.id}
+          offers={offers}
+          point={requestPoint}
+          expiresAt={request.expires_at}
+          candidateCount={offers.length}
+          onViewOffers={() => {
+            document.getElementById('khdemli-offers')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          onStop={canCancel ? () => setShowCancel(true) : undefined}
+        />
+      )}
+
+      {/* Chosen craftsman: tracking map. */}
+      {selectedOffer && request.job_id && (
+        <div className="mb-4 space-y-3">
+          {selectedOffer.provider_id && (
+            <TrackProvider
+              providerId={selectedOffer.provider_id}
+              destination={requestPoint}
+              providerName={selectedOffer.provider_name}
+              height={220}
+            />
+          )}
+
+          <div className="card card-featured p-4">
+            <div className="flex items-center gap-3">
+              <Avatar name={selectedOffer.provider_name} src={selectedOffer.provider_avatar} size={52} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-base font-bold">{selectedOffer.provider_name}</p>
+                <Stars value={selectedOffer.rating_avg} count={selectedOffer.completed_jobs} />
+              </div>
+              <Price minor={selectedOffer.price_minor} currency={selectedOffer.currency} size="md" />
+            </div>
+
+            {selectedOffer.message && (
+              <p className="mt-3 rounded-xl bg-[rgb(var(--surface-3))] px-3 py-2 text-sm">
+                {selectedOffer.message}
+              </p>
+            )}
+
+            <div className="mt-3 flex gap-2">
+              <Link href={`/${locale}/messages`} className="btn btn-primary flex-1">
+                <CategoryIcon name="chat" size={18} />
+                {t('tracking.message')}
+              </Link>
+              <Link href={`/${locale}/jobs`} className="btn btn-secondary flex-1">
+                {t('job.details')}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notice && (
+        <p className="mb-4 rounded-xl border border-[rgb(var(--ok)/0.35)] bg-[rgb(var(--ok)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(5_150_105)]">
+          {notice}
+        </p>
+      )}
+      {error && (
+        <p className="mb-4 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error}
+        </p>
+      )}
+
+      {/* Offers: the main event. */}
+      <section id="khdemli-offers" className="mt-2">
+        <SectionTitle
+          action={
+            pending.length > 0 ? (
+              <span className="chip chip-brand">{t('offers.newOffers')} {pending.length}</span>
+            ) : undefined
+          }
+        >
+          {t('offers.title')}
+        </SectionTitle>
+
+        {offers.length === 0 ? (
+          <div className="card flex flex-col items-center gap-2 px-6 py-12 text-center">
+            <span className="icon-tile h-14 w-14">
+              <CategoryIcon name="radar" size={26} />
+            </span>
+            <p className="text-base font-bold">{t('offers.empty')}</p>
+            <p className="text-sm text-[rgb(var(--fg-muted))]">{t('offers.emptyHint')}</p>
+          </div>
+        ) : (
+          <ul className="space-y-2.5">
+            {sortedOffers.map((o, index) => {
+              const accepted = o.status === 'ACCEPTED';
+              const isBest = o.id === cheapestId;
+              return (
+                <li
+                  key={o.id}
+                  className={`card slide-in p-4 ${accepted || isBest ? 'card-featured' : ''}`}
+                  style={{ animationDelay: `${Math.min(index, 10) * 55}ms` }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar name={o.provider_name} src={o.provider_avatar} size={48} />
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="truncate text-[0.9375rem] font-bold">{o.provider_name}</span>
+                        {isBest && (
+                          <span className="chip chip-brand !px-2 !py-0.5 !text-[0.6875rem]">
+                            {t('offer.bestPrice')}
+                          </span>
+                        )}
+                        {accepted && (
+                          <span className="chip chip-ok !px-2 !py-0.5 !text-[0.6875rem]">
+                            <CategoryIcon name="check" size={12} />
+                            {t('offer.accepted')}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-1 flex items-center gap-2">
+                        <Stars value={o.rating_avg} count={o.completed_jobs} />
+                        {o.eta_minutes != null && (
+                          <span className="text-xs text-[rgb(var(--fg-muted))]">
+                            · {o.eta_minutes} {t('request.minutes')}
+                          </span>
+                        )}
+                      </div>
+
+                      {o.message && (
+                        <p className="mt-2 line-clamp-2 text-sm text-[rgb(var(--fg-muted))]">
+                          {o.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex-none text-end">
+                      <Price minor={o.price_minor} currency={o.currency} size="lg" />
+                    </div>
+                  </div>
+
+                  {o.status === 'PENDING' && canSelectOffer && (
+                    <div className="mt-3.5 flex gap-2">
+                      <button
+                        onClick={() => onAcceptOffer(o.id)}
+                        disabled={busy}
+                        className="btn btn-primary flex-1"
+                      >
+                        <CategoryIcon name="check" size={18} />
+                        {t('offers.accept')}
+                      </button>
+                      <button
+                        onClick={() => onRejectOffer(o.id)}
+                        disabled={busy}
+                        className="btn btn-secondary flex-1"
+                      >
+                        {t('offers.decline')}
+                      </button>
+                    </div>
+                  )}
+
+                  {o.status !== 'PENDING' && (
+                    <div className="mt-3">
+                      <StatusBadge status={o.status} />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {/* Request facts, collapsed by default so the offers own the screen. */}
+      <button
+        type="button"
+        onClick={() => setShowDetails((v) => !v)}
+        className="card mt-5 flex w-full items-center justify-between p-4 text-start"
+      >
+        <span className="text-sm font-bold">{t('request.detailsTitle')}</span>
+        <CategoryIcon
+          name="chevron"
+          size={20}
+          className={`text-[rgb(var(--fg-subtle))] transition-transform rtl:rotate-180 ${showDetails ? 'rotate-90 rtl:-rotate-90' : ''}`}
+        />
+      </button>
+
+      {showDetails && (
+        <div className="fade-rise mt-2 space-y-3">
+          <dl className="card grid grid-cols-2 gap-4 p-4 text-sm">
+            <Info label={t('request.currentStatus')}>
+              <StatusBadge status={request.status} />
+            </Info>
+            <Info label={t('request.createdAt')}>
+              {new Date(request.created_at).toLocaleString(locale)}
+            </Info>
+            <Info label={t('request.urgency')}>{t(`urgency.${request.urgency}`)}</Info>
+            <Info label={t('request.offersCount')}>{request.offer_count}</Info>
+            {(request.budget_min_minor != null || request.budget_max_minor != null) && (
+              <Info label={t('request.budget')}>
+                <Price
+                  minor={request.budget_min_minor ?? request.budget_max_minor}
+                  currency={request.currency}
+                  size="sm"
+                />
+              </Info>
+            )}
+            {request.pickup_line1 && (
+              <Info label={t('request.pickup')}>
+                {[request.pickup_line1, request.pickup_district, request.pickup_city_name]
+                  .filter(Boolean)
+                  .join(', ')}
+              </Info>
+            )}
+            {request.destination_line1 && (
+              <Info label={t('request.destination')}>
+                {[request.destination_line1, request.destination_city_name].filter(Boolean).join(', ')}
+              </Info>
+            )}
+          </dl>
+
+          {request.description && (
+            <div className="card p-4">
+              <h2 className="label">{t('request.description')}</h2>
+              <p className="whitespace-pre-wrap text-sm">{request.description}</p>
+            </div>
+          )}
+
+          {answers.length > 0 && (
+            <div className="card space-y-2 p-4">
+              {answers.map((a) => (
+                <div key={a.id} className="rounded-xl bg-[rgb(var(--surface-3))] px-3 py-2 text-sm">
+                  <div className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">{a.field_key}</div>
+                  <div>{formatAnswer(a)}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {media.length > 0 && (
+            <div className="card p-4">
+              <h2 className="label">{t('request.detailsTitle')}</h2>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {media.map((m) => (
+                  <a
+                    key={m.id}
+                    href={m.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="chip chip-neutral"
+                  >
+                    {m.kind}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Actions. */}
+      <div className="mt-5 space-y-2.5">
+        {request.status === 'DRAFT' && (
+          <button onClick={onPublish} disabled={busy} className="btn btn-primary btn-block">
+            {t('request.publish')}
+          </button>
+        )}
+        {canCancel && (
+          <button onClick={() => setShowCancel(true)} disabled={busy} className="btn btn-secondary btn-block !text-[rgb(var(--danger))]">
+            {t('request.cancel')}
+          </button>
+        )}
+      </div>
+
+      {showCancel && (
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
+          <div className="sheet sheet-up w-full max-w-sm p-5 sm:rounded-2xl">
+            <div className="sheet-handle sm:hidden" />
+            <h3 className="mt-3 font-bold sm:mt-0">{t('request.cancelConfirm')}</h3>
+            <input
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder={t('request.cancelReason')}
+              className="input mt-3"
+            />
+            <div className="mt-4 flex gap-2">
+              <button onClick={() => setShowCancel(false)} className="btn btn-secondary flex-1">
+                {t('common.close')}
+              </button>
+              <button onClick={onCancel} disabled={busy} className="btn btn-danger flex-1">
+                {t('request.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Info({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <dt className="text-xs text-[rgb(var(--fg-subtle))]">{label}</dt>
+      <dd className="mt-0.5 font-semibold">{children}</dd>
+    </div>
+  );
+}
+
+function formatAnswer(a: RequestDetail['answers'][number]): string {
+  if (a.value_text != null) return a.value_text;
+  if (a.value_number != null) return String(a.value_number);
+  if (a.value_boolean != null) return a.value_boolean ? '✓' : '✗';
+  if (a.value_date != null) return new Date(a.value_date).toLocaleString();
+  if (a.value_json != null) return JSON.stringify(a.value_json);
+  return '—';
+}
