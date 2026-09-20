@@ -60,6 +60,17 @@ function settingLabel(key: string): string {
 /** Settings that hold a list of values rather than a scalar. */
 const LIST_TYPES = new Set(['array']);
 
+/**
+ * The page's three views, in the order the tab strip renders them.
+ *
+ * `verification` is its own tab rather than a band inside the features grid:
+ * it is site-wide policy with one-click switches, not a feature module.
+ */
+type Tab = 'features' | 'verification' | 'settings';
+
+/** Tab order, kept next to the type so the two can never drift apart. */
+const TABS: Tab[] = ['features', 'verification', 'settings'];
+
 /** Rough Arabic/French/English label for a setting key, e.g. `platform.name`. */
 function humanize(key: string): string {
   const leaf = key.split('.').pop() ?? key;
@@ -89,6 +100,7 @@ function SettingsView() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>('features');
 
   const [flags, setFlags] = useState<AdminFeatureFlag[]>([]);
   const [settings, setSettings] = useState<AdminSetting[]>([]);
@@ -221,6 +233,30 @@ function SettingsView() {
         <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('admin.settingsSubtitle')}</p>
       </div>
 
+      {/* The tab counts are the same numbers the sections show, so the strip
+          tells you the state of the page before you open each tab. */}
+      <div className="mb-5 flex flex-wrap gap-2">
+        {TABS.map((x) => {
+          const count =
+            x === 'features'
+              ? ` (${flags.filter((f) => f.enabled).length}/${flags.length})`
+              : x === 'verification'
+                ? ` (${verification.filter((s) => s.value === true).length}/${verification.length})`
+                : '';
+          return (
+            <button
+              key={x}
+              type="button"
+              onClick={() => setTab(x)}
+              className={`chip ${tab === x ? 'chip-brand' : 'chip-neutral'}`}
+            >
+              {t(`admin.tab_${x}` as never)}
+              {count}
+            </button>
+          );
+        })}
+      </div>
+
       {error && (
         <div className="card mb-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
           <CategoryIcon name="shield" size={16} />
@@ -241,19 +277,24 @@ function SettingsView() {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <FeaturesSection
-            flags={flags}
-            busy={busyFlag}
-            onToggle={toggleFlag}
-            labelForKey={humanizeFlag}
-          />
+          {tab === 'features' && (
+            <FeaturesSection
+              flags={flags}
+              busy={busyFlag}
+              onToggle={toggleFlag}
+              labelForKey={humanizeFlag}
+            />
+          )}
 
-          <VerificationSection
-            settings={verification}
-            busy={savingKey}
-            onToggle={toggleBooleanSetting}
-          />
+          {tab === 'verification' && (
+            <VerificationSection
+              settings={verification}
+              busy={savingKey}
+              onToggle={toggleBooleanSetting}
+            />
+          )}
 
+          {tab === 'settings' && (
           <section>
             <SectionTitle>
               <div>
@@ -284,6 +325,7 @@ function SettingsView() {
               ))}
             </div>
           </section>
+          )}
         </div>
       )}
     </div>
