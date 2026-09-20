@@ -74,6 +74,10 @@ export interface AuthUser {
   phoneVerified: boolean;
   providerId?: string | null;
   adminRole?: string | null;
+  /** Present on /me and login; the server owns the activation rule. */
+  activation?: ActivationState;
+  whatsappNumber?: string | null;
+  identityReviewStatus?: string | null;
 }
 
 export interface AuthSession {
@@ -82,6 +86,30 @@ export interface AuthSession {
   refreshToken: string;
   expiresIn: number;
   tokenType: 'Bearer';
+}
+
+/** Account activation state, derived server-side so clients cannot disagree. */
+export interface ActivationState {
+  whatsapp: boolean;
+  identity: boolean;
+  identityPending: boolean;
+  blockedUntil: string | null;
+  complete: boolean;
+}
+
+export interface ActivationDetail {
+  whatsapp_number: string | null;
+  whatsapp_verified_at: string | null;
+  identity_review_status: string | null;
+  identity_recto_url: string | null;
+  identity_verso_url: string | null;
+  identity_submitted_at: string | null;
+  identity_review_notes: string | null;
+  activation_blocked_until: string | null;
+  whatsapp: boolean;
+  identity: boolean;
+  identityPending: boolean;
+  complete: boolean;
 }
 
 export interface Profile {
@@ -182,6 +210,23 @@ export const authApi = {
   /** Confirm the phone number with the OTP sent at sign-up. */
   async verifyPhone(phone: string, code: string): Promise<void> {
     await api.post('/phone/verify', { phone, code });
+  },
+
+  /** Confirm the account's WhatsApp number (simulated server-side for now). */
+  async setWhatsapp(number: string): Promise<{ whatsapp_number: string; whatsapp_verified_at: string }> {
+    const res = await api.put<{ whatsapp_number: string; whatsapp_verified_at: string }>('/me/whatsapp', { number });
+    return res.data;
+  },
+
+  /** Submit identity documents (front and back) for admin review. */
+  async submitIdentity(input: { rectoUrl: string; versoUrl: string; documentNumber?: string }): Promise<void> {
+    await api.post('/me/identity', input);
+  },
+
+  /** Current activation state, used to poll while a review is pending. */
+  async activation(): Promise<ActivationDetail> {
+    const res = await api.get<ActivationDetail>('/me/activation');
+    return res.data;
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

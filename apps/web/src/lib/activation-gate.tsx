@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from './auth-provider';
 import { useI18n } from './i18n-provider';
 import { authApi, ApiError } from './auth-api';
@@ -9,36 +8,33 @@ import { CategoryIcon, KhdemliMark } from './icons';
 import { Spinner } from './ui';
 
 /**
- * Activation gate.
+ * Account activation gate.
  *
- * A brand-new account is real and usable, but it has not been activated: the
- * email (and, when the platform asks for them, the WhatsApp and identity
- * checks) have not been satisfied. Rather than hide that in a settings page,
- * the product stops at the door with a blocking sheet that cannot be dismissed
- * — no backdrop click, no Escape, no close button — until the account is
- * activated. That is the one moment we have the user's full attention, so it is
- * the right place to ask.
+ * A new account exists but is not yet usable. This full-screen sheet cannot be
+ * dismissed — no backdrop click, no Escape, no close button — and covers the
+ * header and nav, so the platform is genuinely gated until the account is
+ * activated. That makes it the one screen where the user's full attention is
+ * guaranteed, which is why activation is asked for here rather than buried in
+ * settings.
  *
- * Deliberately not a hard redirect: the sheet is rendered over whatever page
- * the user asked for, so after activating they are already where they wanted to
- * be. The header and bottom nav stay hidden behind it (it covers them) which is
- * what makes it feel like a checkpoint rather than a toast.
+ * The checks, in order:
+ *   1. **Email** — satisfied by the code sent at sign-up, when the platform
+ *      requires it (the `verification.email_enabled` switch). Skipped entirely
+ *      when it is off.
+ *   2. **WhatsApp** — the user enters a number, sees a short "verifying" state,
+ *      and it is confirmed. Simulated: no message is sent (see the API).
+ *   3. **Identity** — front and back of an ID are uploaded and reviewed by an
+ *      admin. Until approved the account can browse but not transact.
  *
- * Sign-out stays reachable: a gate that traps someone who cannot activate would
- * be a dead end.
+ * Sign-out stays reachable: a gate with no exit is a dead end.
  */
 export function ActivationGate() {
   const { user, ready, signOut, reload } = useAuth();
   const { t } = useI18n();
-  const pathname = usePathname();
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [code, setCode] = useState('');
-  const [awaitingCode, setAwaitingCode] = useState(false);
 
   const open = ready && user != null && !isActivated(user);
 
-  // Lock the page behind the sheet so the content cannot scroll away under it.
+  // While a sheet is open the page behind must not scroll.
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -48,7 +44,7 @@ export function ActivationGate() {
     };
   }, [open]);
 
-  // Escape must not close it; block the key so no parent handler reacts either.
+  // Escape must not close it; swallow the key so nothing behind reacts.
   useEffect(() => {
     if (!open) return;
     const block = (e: KeyboardEvent) => {
@@ -61,29 +57,82 @@ export function ActivationGate() {
     return () => window.removeEventListener('keydown', block, true);
   }, [open]);
 
-  // Nothing to show, and it must not flash before auth resolves.
   if (!open || !user) return null;
 
-  const needsEmail = !user.emailVerified;
-  const needsPhone = !user.phoneVerified;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="activation-title"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgb(var(--fg)/0.62)] px-4 py-6 backdrop-blur-sm"
+    >
+      <ActivationCard onDone={() => void reload()} onSignOut={() => void signOut()} />
+    </div>
+  );
+}
 
-  async function activate() {
+/** How long the simulated WhatsApp check "runs" before confirming. */
+const WHATSAPP_VERIFY_MS = 6000;
+
+type Step = 'intro' | 'whatsapp' | 'identity' | 'review';
+
+function ActivationCard({ onDone, onSignOut }: { onDone: () => void; onSignOut: () => void }) {
+  const { user } = useAuth();
+  const { t, locale } = useI18n();
+  const [step, setStep] = useState<Step>('intro');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Step 1 — WhatsApp.
+  const [number, setNumber] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Step 2 — Identity.
+  const [recto, setRecto] = useState('');
+  const [verso, setVerso] = useState('');
+  const [pendingApproval, setPendingApproval] = useState(false);
+
+  const whatsappDone = user?.activation?.whatsapp ?? false;
+  const identityDone = user?.activation?.identity ?? false;
+  const identityPending = user?.activation?.identityPending ?? false;
+
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  // If the account already cleared a step (e.g. resumed later), show the next.
+  useEffect(() => {
+    if (!whatsappDone && step === 'intro') return;
+    if (whatsappDone && !identityDone && !identityPending && step === 'intro') setStep('identity');
+    if (identityPending && step === 'intro') setStep('review');
+  }, [whatsappDone, identityDone, identityPending, step]);
+
+  async function submitWhatsapp() {
+    setError(null);
+    setVerifying(true);
+    try {
+      await authApi.setWhatsapp(number.trim());
+      // Hold the "verifying" state briefly so the confirmation reads as a real
+      // check rather than an instant no-op. The write already happened.
+      await new Promise((r) => {
+        timer.current = setTimeout(r, WHATSAPP_VERIFY_MS);
+      });
+      setVerifying(false);
+      setStep('identity');
+      onDone();
+    } catch (err) {
+      setVerifying(false);
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    }
+  }
+
+  async function submitIdentity() {
     setBusy(true);
     setError(null);
     try {
-      if (needsEmail && !awaitingCode) {
-        // Ask the server for a fresh code, then move to the code step.
-        await authApi.resendVerification();
-        setAwaitingCode(true);
-        return;
-      }
-      if (needsEmail && awaitingCode) {
-        await authApi.verifyEmail(code.trim(), user!.email ?? undefined);
-      } else if (needsPhone) {
-        // Phone-only accounts confirm with the OTP they were sent at sign-up.
-        await authApi.verifyPhone(user!.phone!, code.trim());
-      }
-      await reload();
+      await authApi.submitIdentity({ rectoUrl: recto.trim(), versoUrl: verso.trim() });
+      setPendingApproval(true);
+      setStep('review');
+      onDone();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
@@ -91,117 +140,205 @@ export function ActivationGate() {
     }
   }
 
-  // A phone-only account already received its code at sign-up, so it starts on
-  // the code step; an email account needs a fresh code requested first.
-  const step = needsEmail && !awaitingCode ? 'intro' : 'code';
+  const title =
+    step === 'whatsapp' || (step === 'intro' && !whatsappDone)
+      ? t('activation.title')
+      : step === 'identity'
+        ? t('activation.identityTitle')
+        : step === 'review'
+          ? t('activation.reviewTitle')
+          : t('activation.identityTitle');
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="activation-title"
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgb(var(--fg)/0.55)] px-5 backdrop-blur-sm"
-    >
-      <div className="card w-full max-w-md overflow-hidden p-0 shadow-2xl">
-        <div className="flex flex-col items-center gap-3 bg-[rgb(var(--brand-500)/0.08)] px-6 pt-7 pb-6 text-center">
-          <KhdemliMark size={54} />
-          <span className="chip chip-brand mt-1">{t('activation.badge')}</span>
-          <h1 id="activation-title" className="text-xl font-black leading-snug tracking-tight">
-            {step === 'intro' ? t('activation.title') : t('activation.codeTitle')}
-          </h1>
-          <p className="text-sm leading-relaxed text-[rgb(var(--fg-muted))]">
-            {step === 'intro' ? t('activation.subtitle') : t('activation.codeSubtitle')}
+    <div className="card flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden p-0 shadow-2xl">
+      <div className="flex flex-col items-center gap-2.5 bg-[rgb(var(--brand-500)/0.08)] px-6 pt-6 pb-5 text-center">
+        <KhdemliMark size={48} />
+        <span className="chip chip-brand">{t('activation.badge')}</span>
+        <h1 id="activation-title" className="text-lg font-black leading-snug tracking-tight">
+          {title}
+        </h1>
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 py-5">
+        <ol className="flex flex-col gap-2">
+          <StepRow done={whatsappDone} active={step === 'whatsapp' || (step === 'intro' && !whatsappDone)} label={t('activation.stepWhatsapp')} />
+          <StepRow done={identityDone} active={step === 'identity'} label={t('activation.stepIdentity')} />
+        </ol>
+
+        {error && (
+          <p role="alert" className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]">
+            {error}
           </p>
-        </div>
+        )}
 
-        <div className="flex flex-col gap-4 px-6 py-6">
-          <ul className="flex flex-col gap-2">
-            <CheckRow done={user.emailVerified} label={t('activation.email')} />
-            <CheckRow done={user.phoneVerified} label={t('activation.whatsapp')} />
-          </ul>
+        {/* ---- intro: explain, then start with WhatsApp ---- */}
+        {step === 'intro' && (
+          <>
+            <p className="text-sm leading-relaxed text-[rgb(var(--fg-muted))]">{t('activation.subtitle')}</p>
+            <button type="button" onClick={() => setStep('whatsapp')} className="btn btn-primary btn-block">
+              <CategoryIcon name="arrow" size={19} className="rtl:rotate-180" />
+              {t('activation.start')}
+            </button>
+          </>
+        )}
 
-          {step === 'code' && (
+        {/* ---- WhatsApp ---- */}
+        {step === 'whatsapp' && (
+          <>
+            <p className="text-sm leading-relaxed text-[rgb(var(--fg-muted))]">{t('activation.whatsappSubtitle')}</p>
             <label className="block">
-              <span className="label">{t('activation.code')}</span>
+              <span className="label">{t('activation.whatsappNumber')}</span>
               <input
-                className="input text-center text-lg tracking-[0.4em]"
+                className="input"
                 dir="ltr"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                placeholder="······"
+                type="tel"
+                inputMode="tel"
+                placeholder="+212 6XX XXX XXX"
+                value={number}
+                disabled={verifying}
+                onChange={(e) => setNumber(e.target.value)}
               />
             </label>
-          )}
-
-          {error && (
-            <p
-              role="alert"
-              className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
+            <button
+              type="button"
+              disabled={verifying || number.trim().length < 8}
+              onClick={() => void submitWhatsapp()}
+              className="btn btn-primary btn-block"
             >
-              {error}
-            </p>
-          )}
-
-          <button
-            type="button"
-            disabled={busy || (step === 'code' && code.length < 6)}
-            onClick={() => void activate()}
-            className="btn btn-primary btn-block"
-          >
-            {busy ? (
-              <Spinner size={18} />
-            ) : (
-              <CategoryIcon name="check" size={19} />
+              {verifying ? <Spinner size={18} /> : <CategoryIcon name="check" size={19} />}
+              {verifying ? t('activation.verifying') : t('activation.activateWhatsapp')}
+            </button>
+            {verifying && (
+              <p className="text-center text-xs text-[rgb(var(--fg-subtle))]">{t('activation.verifyingHint')}</p>
             )}
-            {step === 'intro' ? t('activation.activate') : t('activation.confirm')}
-          </button>
+          </>
+        )}
 
-          <p className="text-center text-xs leading-relaxed text-[rgb(var(--fg-subtle))]">
-            {t('activation.locked')}
-          </p>
+        {/* ---- Identity upload ---- */}
+        {step === 'identity' && (
+          <>
+            <p className="text-sm leading-relaxed text-[rgb(var(--fg-muted))]">{t('activation.identitySubtitle')}</p>
 
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="mx-auto text-xs font-semibold text-[rgb(var(--fg-muted))] underline"
-          >
-            {t('common.signOut')}
-          </button>
-        </div>
+            <DocumentField
+              label={t('activation.recto')}
+              hint={t('activation.rectoHint')}
+              value={recto}
+              onChange={setRecto}
+            />
+            <DocumentField
+              label={t('activation.verso')}
+              hint={t('activation.versoHint')}
+              value={verso}
+              onChange={setVerso}
+            />
+
+            <button
+              type="button"
+              disabled={busy || !recto.trim() || !verso.trim()}
+              onClick={() => void submitIdentity()}
+              className="btn btn-primary btn-block"
+            >
+              {busy ? <Spinner size={18} /> : <CategoryIcon name="shield" size={19} />}
+              {t('activation.submitIdentity')}
+            </button>
+            <p className="text-center text-xs leading-relaxed text-[rgb(var(--fg-subtle))]">
+              {t('activation.identityNote')}
+            </p>
+          </>
+        )}
+
+        {/* ---- Awaiting admin review ---- */}
+        {step === 'review' && (
+          <>
+            <div className="flex flex-col items-center gap-3 py-3 text-center">
+              <span className="icon-tile h-14 w-14">
+                <CategoryIcon name="clock" size={26} />
+              </span>
+              <p className="text-sm leading-relaxed text-[rgb(var(--fg-muted))]">{t('activation.reviewSubtitle')}</p>
+            </div>
+            <button type="button" onClick={onDone} className="btn btn-primary btn-block">
+              {t('activation.continueBrowsing')}
+            </button>
+          </>
+        )}
+
+        <p className="text-center text-[11px] leading-relaxed text-[rgb(var(--fg-subtle))]">
+          {t('activation.locked')}
+        </p>
+        <button type="button" onClick={onSignOut} className="mx-auto text-xs font-semibold text-[rgb(var(--fg-muted))] underline">
+          {t('common.signOut')}
+        </button>
       </div>
     </div>
   );
 }
 
-/** One requirement line, struck through once satisfied. */
-function CheckRow({ done, label }: { done: boolean; label: string }) {
+/** One numbered requirement row, ticked once satisfied. */
+function StepRow({ done, active, label }: { done: boolean; active: boolean; label: string }) {
   return (
-    <li className="flex items-center gap-2 text-sm">
+    <li className="flex items-center gap-2.5 text-sm">
       <span
         className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-black ${
           done
             ? 'bg-[rgb(var(--brand-500))] text-[rgb(var(--brand-ink))]'
-            : 'bg-[rgb(var(--line-strong))] text-[rgb(var(--fg-subtle))]'
+            : active
+              ? 'border-2 border-[rgb(var(--brand-500))] text-[rgb(var(--brand-700))]'
+              : 'bg-[rgb(var(--line-strong))] text-[rgb(var(--fg-subtle))]'
         }`}
       >
         {done ? '✓' : ''}
       </span>
-      <span className={done ? 'text-[rgb(var(--fg-subtle))] line-through' : 'font-semibold'}>
-        {label}
-      </span>
+      <span className={done ? 'text-[rgb(var(--fg-subtle))] line-through' : 'font-semibold'}>{label}</span>
     </li>
   );
 }
 
 /**
- * Whether the account has cleared the checks the platform currently requires.
+ * A labelled slot for one document image.
  *
- * Activation is judged from what the API reports on the user, not from local
- * state, so the gate lifts the instant `reload()` returns a satisfied user.
+ * The value is a URL: this deployment has no binary upload service
+ * (`STORAGE_DRIVER=local`), and inventing one here would be a lie. The field
+ * accepts a link/path, and swapping in a real uploader later only changes this
+ * component.
  */
-function isActivated(user: { emailVerified: boolean; phoneVerified: boolean }): boolean {
+function DocumentField({
+  label, hint, value, onChange,
+}: {
+  label: string;
+  hint: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="label">{label}</span>
+      <span className="mb-1.5 block text-[11px] text-[rgb(var(--fg-subtle))]">{hint}</span>
+      <div className="flex items-center gap-2 rounded-[var(--radius)] border border-dashed border-[rgb(var(--line-strong))] px-3 py-2.5">
+        <CategoryIcon name="doc" size={18} />
+        <input
+          className="min-w-0 flex-1 border-0 bg-transparent text-xs outline-none"
+          dir="ltr"
+          placeholder="https://…"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        {value ? <span className="text-xs font-bold text-[rgb(var(--brand-700))]">✓</span> : null}
+      </div>
+    </label>
+  );
+}
+
+/**
+ * Whether the account has cleared every check the platform requires.
+ *
+ * Judged from the API's `activation` object, so there is one rule in one place.
+ * Falls back to email/phone flags only if the server did not send it.
+ */
+function isActivated(user: {
+  activation?: { complete: boolean };
+  emailVerified: boolean;
+  phoneVerified: boolean;
+}): boolean {
+  if (user.activation) return user.activation.complete;
   return user.emailVerified || user.phoneVerified;
 }
