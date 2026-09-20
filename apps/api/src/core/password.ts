@@ -1,5 +1,5 @@
-import { randomUUID } from 'node:crypto';
-import argon2 from 'argon2';
+import { randomUUID, randomBytes } from 'node:crypto';
+import { argon2id, argon2Verify } from 'hash-wasm';
 import { env } from '@bidly/config';
 
 /**
@@ -8,11 +8,20 @@ import { env } from '@bidly/config';
  * Argon2id with parameters from the environment. The full encoded string
  * (`$argon2id$v=19$m=...`) is stored — it carries the parameters, so they can
  * be raised later without invalidating existing hashes.
+ *
+ * Implemented with `hash-wasm` (WebAssembly) rather than the native `argon2`
+ * addon: the WASM build runs everywhere Node runs, including platforms with no
+ * prebuilt native binary (Termux/Android, some ARM hosts).
  */
 
-function options(): argon2.Options {
+interface Argon2Params {
+  memoryCost: number;
+  timeCost: number;
+  parallelism: number;
+}
+
+function params(): Argon2Params {
   return {
-    type: argon2.argon2id,
     memoryCost: env.ARGON2_MEMORY_KIB,
     timeCost: env.ARGON2_TIME_COST,
     parallelism: env.ARGON2_PARALLELISM,
@@ -55,13 +64,34 @@ export function checkPasswordPolicy(password: string): PasswordPolicyResult {
  */
 let dummyHash: string | null = null;
 
+/**
+ * Encode raw Argon2id output as a standard PHC string so existing hashes
+ * (produced by the native `argon2` package) verify identically.
+ */
+function toPhc(rawHex: string, salt: Uint8Array, p: Argon2Params): string {
+  const saltB64 = Buffer.from(salt).toString('base64').replace(/=+$/, '');
+  const hashB64 = Buffer.from(rawHex, 'hex').toString('base64').replace(/=+$/, '');
+  return `$argon2id$v=19$m=${p.memoryCost},t=${p.timeCost},p=${p.parallelism}$${saltB64}$${hashB64}`;
+}
+
 export async function hashPassword(password: string): Promise<string> {
-  return argon2.hash(password, options());
+  const p = params();
+  const salt = randomBytes(16);
+  const raw = await argon2id({
+    password,
+    salt,
+    parallelism: p.parallelism,
+    memorySize: p.memoryCost,
+    iterations: p.timeCost,
+    hashLength: 32,
+    outputType: 'hex',
+  });
+  return toPhc(raw, salt, p);
 }
 
 export async function verifyPassword(hash: string, password: string): Promise<boolean> {
   try {
-    return await argon2.verify(hash, password);
+    return await argon2Verify({ password, hash });
   } catch {
     return false;
   }
@@ -70,13 +100,20 @@ export async function verifyPassword(hash: string, password: string): Promise<bo
 /** Constant-ish time verification for missing users. */
 export async function verifyAgainstDummy(password: string): Promise<false> {
   if (!dummyHash) dummyHash = await hashPassword(randomUUID());
-  await argon2.verify(dummyHash, password).catch(() => false);
+  await argon2Verify({ password, hash: dummyHash }).catch(() => false);
   return false;
 }
 
+/**
+ * True when the stored hash was produced with weaker parameters than the
+ * current configuration, so it should be re-hashed on the next login.
+ */
 export function needsRehash(hash: string): boolean {
   try {
-    return argon2.needsRehash(hash, options());
+    const m = /\$argon2id\$v=19\$m=(\d+),t=(\d+),p=(\d+)\$/.exec(hash);
+    if (!m) return true;
+    const p = params();
+    return Number(m[1]) < p.memoryCost || Number(m[2]) < p.timeCost || Number(m[3]) < p.parallelism;
   } catch {
     return true;
   }
