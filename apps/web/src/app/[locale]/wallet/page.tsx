@@ -3,21 +3,24 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
+import { useAuth } from '@/lib/auth-provider';
 import { ApiError } from '@/lib/auth-api';
 import { paymentsApi, formatMinor, type LedgerEntry, type Payout, type Wallet } from '@/lib/payments-api';
 import { CategoryIcon } from '@/lib/icons';
 import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
- * Provider wallet.
+ * Wallet and payments.
  *
- * The balance is the ledger's running total: available is spendable, reserved
- * is committed to a pending payout. Actions here only request a payout; moving
- * money is always the server's decision, so the UI never edits a balance.
+ * Every signed-in account owns a balance — a customer tops up to pay for work,
+ * a provider collects earnings — so all roles may open this page. Only a
+ * provider can *withdraw*, because a payout needs a provider entity, so the
+ * request form is shown for that role alone and the balance is read-only for
+ * everyone else.
  */
 export default function WalletPage() {
   return (
-    <RequireAuth roles={['PROVIDER', 'ADMIN']}>
+    <RequireAuth>
       <WalletView />
     </RequireAuth>
   );
@@ -25,6 +28,8 @@ export default function WalletPage() {
 
 function WalletView() {
   const { t, locale } = useI18n();
+  const { user } = useAuth();
+  const isProvider = user?.role === 'PROVIDER';
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [ledger, setLedger] = useState<LedgerEntry[]>([]);
   const [payouts, setPayouts] = useState<Payout[]>([]);
@@ -108,34 +113,36 @@ function WalletView() {
             <Stat label={t('payment.lifetimeOut')} value={formatMinor(wallet?.lifetime_out_minor ?? 0, wallet?.currency, locale)} />
           </section>
 
-          <section className="card mb-6 p-5">
-            <SectionTitle>{t('payment.requestPayout')}</SectionTitle>
-            <form onSubmit={onRequestPayout} className="flex flex-wrap items-end gap-3">
-              <label className="block">
-                <span className="label">{t('payment.payoutAmount')}</span>
-                <input
-                  type="number" min="1" step="0.01" required value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="input tnum w-40"
-                />
-              </label>
-              <label className="block">
-                <span className="label">{t('payment.payoutMethod')}</span>
-                <select
-                  value={method} onChange={(e) => setMethod(e.target.value)}
-                  className="input w-auto"
-                >
-                  <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-                  <option value="CASH">CASH</option>
-                  <option value="WALLET">WALLET</option>
-                </select>
-              </label>
-              <button type="submit" disabled={busy} className="btn btn-primary">
-                {busy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
-                {busy ? t('payment.paying') : t('payment.requestPayout')}
-              </button>
-            </form>
-          </section>
+          {isProvider && (
+            <section className="card mb-6 p-5">
+              <SectionTitle>{t('payment.requestPayout')}</SectionTitle>
+              <form onSubmit={onRequestPayout} className="flex flex-wrap items-end gap-3">
+                <label className="block">
+                  <span className="label">{t('payment.payoutAmount')}</span>
+                  <input
+                    type="number" min="1" step="0.01" required value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="input tnum w-40"
+                  />
+                </label>
+                <label className="block">
+                  <span className="label">{t('payment.payoutMethod')}</span>
+                  <select
+                    value={method} onChange={(e) => setMethod(e.target.value)}
+                    className="input w-auto"
+                  >
+                    <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+                    <option value="CASH">CASH</option>
+                    <option value="WALLET">WALLET</option>
+                  </select>
+                </label>
+                <button type="submit" disabled={busy} className="btn btn-primary">
+                  {busy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
+                  {busy ? t('payment.paying') : t('payment.requestPayout')}
+                </button>
+              </form>
+            </section>
+          )}
 
           <section className="mb-6">
             <SectionTitle>{t('payment.ledger')}</SectionTitle>
