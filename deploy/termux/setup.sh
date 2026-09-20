@@ -39,6 +39,27 @@ if ! command -v node >/dev/null 2>&1; then
 fi
 echo "Node: $(node --version)"
 
+# curl and tar ship with the base Termux image, but a trimmed install (or a
+# Termux that was just cleared) may lack them, and the failure would otherwise
+# surface later as a confusing "command not found" mid-download.
+missing=""
+command -v curl >/dev/null 2>&1 || missing="$missing curl"
+command -v tar  >/dev/null 2>&1 || missing="$missing tar"
+if [ -n "$missing" ]; then
+  echo ""
+  echo "Missing required tools:$missing"
+  echo "Install them first:  pkg install -y$missing"
+  exit 1
+fi
+
+# A directory left behind without a dist/ (an interrupted earlier run) would
+# make --update skip the download yet still have nothing to start, so treat it
+# as a fresh install and fetch the bundle.
+if [ "$1" = "--update" ] && [ -d "$DIR" ] && [ ! -f "$DIR/dist/server.js" ]; then
+  echo "Found an incomplete install; downloading the full bundle."
+  set -- ""
+fi
+
 mkdir -p "$PARTS_DIR"
 cd "$DIR"
 
