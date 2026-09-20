@@ -91,7 +91,27 @@
     "pricingModel": "Modèle de prix",
     "requiresLocation": "Lieu requis",
     "requiresDestination": "Destination requise",
-    "serviceCount": "services"
+    "serviceCount": "services",
+    "badge": "34+ services disponibles",
+    "heroTitle": "Demandez n'importe quel service,",
+    "heroHighlight": "laissez les prestataires concourir",
+    "heroSubtitle": "Décrivez votre besoin, publiez votre demande et recevez des offres concurrentes de prestataires vérifiés près de vous — vous choisissez le meilleur prix et la meilleure note.",
+    "liveProviders": "Prestataires en ligne",
+    "allCategories": "Tout",
+    "categoriesCount": "{count} catégories",
+    "requestNow": "Demander",
+    "priceOnRequest": "Prix après visite",
+    "noServicesHint": "Essayez un autre mot-clé ou parcourez toutes les catégories.",
+    "clearFilters": "Effacer la recherche",
+    "pricing": {
+      "FIXED": "Prix fixe",
+      "FIXED_QUOTE": "Prix sur devis",
+      "OFFER": "Recevoir des offres",
+      "RANGE": "Fourchette estimée",
+      "HOURLY": "Par heure",
+      "QUOTE": "Demander un devis",
+      "INSPECTION": "Visite d'abord"
+    }
   },
   "request": {
     "newTitle": "Demander un service",

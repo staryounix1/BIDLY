@@ -91,7 +91,27 @@
     "pricingModel": "Pricing model",
     "requiresLocation": "Location required",
     "requiresDestination": "Destination required",
-    "serviceCount": "services"
+    "serviceCount": "services",
+    "badge": "34+ services available now",
+    "heroTitle": "Request any service,",
+    "heroHighlight": "let providers compete",
+    "heroSubtitle": "Describe what you need, publish your request, and get competing offers from verified providers near you — you pick the best price and rating.",
+    "liveProviders": "Providers online now",
+    "allCategories": "All",
+    "categoriesCount": "{count} categories",
+    "requestNow": "Request now",
+    "priceOnRequest": "Price after inspection",
+    "noServicesHint": "Try another keyword or browse all categories.",
+    "clearFilters": "Clear search",
+    "pricing": {
+      "FIXED": "Fixed price",
+      "FIXED_QUOTE": "Quoted price",
+      "OFFER": "Get offers",
+      "RANGE": "Estimated range",
+      "HOURLY": "Hourly",
+      "QUOTE": "Request a quote",
+      "INSPECTION": "Inspection first"
+    }
   },
   "request": {
     "newTitle": "Request a service",

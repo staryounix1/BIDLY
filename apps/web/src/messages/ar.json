@@ -91,7 +91,27 @@
     "pricingModel": "نموذج التسعير",
     "requiresLocation": "يتطلب موقعاً",
     "requiresDestination": "يتطلب وجهة",
-    "serviceCount": "خدمة"
+    "serviceCount": "خدمة",
+    "badge": "أكثر من 34 خدمة في متناول يدك",
+    "heroTitle": "اطلب أي خدمة،",
+    "heroHighlight": "ودع المزوّدين يتنافسون",
+    "heroSubtitle": "حدّد ما تحتاجه، انشر طلبك، واستقبل عروضاً من مزوّدين موثوقين قريبين منك — أنت تختار الأفضل سعراً وتقييماً.",
+    "liveProviders": "مزوّدون متاحون الآن",
+    "allCategories": "الكل",
+    "categoriesCount": "{count} أقسام",
+    "requestNow": "اطلب الآن",
+    "priceOnRequest": "السعر بالمعاينة",
+    "noServicesHint": "جرّب كلمة أخرى أو تصفّح كل الأقسام.",
+    "clearFilters": "مسح البحث",
+    "pricing": {
+      "FIXED": "سعر ثابت",
+      "FIXED_QUOTE": "عرض سعر",
+      "OFFER": "استقبل عروضاً",
+      "RANGE": "سعر تقديري",
+      "HOURLY": "بالساعة",
+      "QUOTE": "طلب تسعيرة",
+      "INSPECTION": "معاينة أولاً"
+    }
   },
   "request": {
     "newTitle": "طلب خدمة",
