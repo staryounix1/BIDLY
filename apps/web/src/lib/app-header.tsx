@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useAuth } from './auth-provider';
 import { useI18n } from './i18n-provider';
 import { NotificationBell } from './notification-bell';
@@ -23,11 +24,27 @@ interface Tab {
 
 export function AppHeader() {
   const { t, locale } = useI18n();
-  const { user, ready } = useAuth();
+  const { user, ready, signOut } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
 
   const homeHref = `/${locale}`;
   const isHome = pathname === homeHref;
+
+  /**
+   * Leaving is a first-class action, not a hidden one: shared phones are
+   * normal, so the header always offers a way out of the current account.
+   */
+  const onSignOut = async () => {
+    setBusy(true);
+    try {
+      await signOut();
+      router.push(homeHref);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <header className="surface-blur sticky top-0 z-20 border-b border-[rgb(var(--line))]">
@@ -48,6 +65,16 @@ export function AppHeader() {
                 >
                   <CategoryIcon name="user" size={18} />
                 </Link>
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  disabled={busy}
+                  className="btn btn-secondary h-10 !px-3 gap-1.5 text-xs font-bold disabled:opacity-60"
+                  aria-label={t('common.signOut')}
+                >
+                  <CategoryIcon name="arrow" size={15} className="rotate-180" />
+                  {t('common.signOut')}
+                </button>
               </>
             ) : ready ? (
               <Link href={`/${locale}/login`} className="btn btn-secondary">
