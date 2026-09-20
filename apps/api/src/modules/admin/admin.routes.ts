@@ -39,6 +39,20 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
   const auditRead = can(ADMIN_PERMISSIONS.AUDIT_READ);
   const commissionWrite = can(ADMIN_PERMISSIONS.COMMISSION_WRITE);
 
+  /**
+   * Coerce an audit snapshot into an object so extra keys can be merged in.
+   *
+   * Snapshots are usually rows, but a caller may pass a scalar or null; those
+   * are wrapped under `value` rather than dropped, so the trail never loses the
+   * before/after state.
+   */
+  function toObject(snapshot: unknown): Record<string, unknown> {
+    if (snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot)) {
+      return { ...(snapshot as Record<string, unknown>) };
+    }
+    return snapshot === undefined || snapshot === null ? {} : { value: snapshot };
+  }
+
   async function recordAction(
     client: import('pg').PoolClient,
     adminUserId: string,
@@ -58,12 +72,25 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
       [adminUserId],
     );
     const row = admin.rows[0] ?? null;
+
+    // `target_id` is typed uuid, but settings and feature flags are keyed by
+    // text (e.g. `platform.name`, `sos_requests`). Passing a text key straight
+    // through made Postgres raise 22P02 (invalid input syntax for type uuid),
+    // which surfaced as a generic 400 on every settings update. Keep real ids
+    // as uuids for referential usefulness and park text keys in the JSON
+    // snapshots, where the audit trail can still read them.
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isUuid = typeof targetId === 'string' && UUID_RE.test(targetId);
+    const columnTargetId = isUuid ? targetId : null;
+    const beforeState = isUuid ? (before ?? null) : { ...(toObject(before)), targetId };
+    const afterState = isUuid ? (after ?? null) : { ...(toObject(after)), targetId };
+
     await client.query(
       `insert into admin_actions (admin_id, admin_email, action, target_type, target_id, before_state, after_state, reason)
        values ($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8)`,
       [
-        row?.id ?? null, row?.email ?? null, action, targetType, targetId,
-        JSON.stringify(before ?? null), JSON.stringify(after ?? null), reason ?? null,
+        row?.id ?? null, row?.email ?? null, action, targetType, columnTargetId,
+        JSON.stringify(beforeState), JSON.stringify(afterState), reason ?? null,
       ],
     );
   }
