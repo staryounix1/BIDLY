@@ -1,1 +1,121 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlQ2FsbGJhY2ssIHVzZUVmZmVjdCwgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7CmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluayc7CmltcG9ydCB7IHVzZUkxOG4gfSBmcm9tICdAL2xpYi9pMThuLXByb3ZpZGVyJzsKaW1wb3J0IHsgUmVxdWlyZUF1dGggfSBmcm9tICdAL2xpYi9yZXF1aXJlLWF1dGgnOwppbXBvcnQgeyBBcGlFcnJvciB9IGZyb20gJ0AvbGliL2F1dGgtYXBpJzsKaW1wb3J0IHsgbGlzdENvbnZlcnNhdGlvbnMsIG1hcmtDb252ZXJzYXRpb25SZWFkLCB0eXBlIENvbnZlcnNhdGlvbiB9IGZyb20gJ0AvbGliL2NoYXQtYXBpJzsKaW1wb3J0IHsgQ2F0ZWdvcnlJY29uIH0gZnJvbSAnQC9saWIvaWNvbnMnOwppbXBvcnQgeyBBdmF0YXIsIEVtcHR5U3RhdGUsIFNwaW5uZXIgfSBmcm9tICdAL2xpYi91aSc7CgovKioKICogTWVzc2FnZXMgaW5ib3guCiAqCiAqIE9uZSByb3cgcGVyIGNvdW50ZXJwYXJ0LCBvcmRlcmVkIGJ5IHRoZSBtb3N0IHJlY2VudCBtZXNzYWdlLCB3aXRoIGFuIHVucmVhZAogKiBiYWRnZS4gT3BlbmluZyBhIHJvdyBtYXJrcyBpdCByZWFkIGFuZCBnb2VzIHRvIHRoZSB0aHJlYWQuCiAqLwpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBNZXNzYWdlc1BhZ2UoKSB7CiAgcmV0dXJuICgKICAgIDxSZXF1aXJlQXV0aD4KICAgICAgPEluYm94IC8+CiAgICA8L1JlcXVpcmVBdXRoPgogICk7Cn0KCmZ1bmN0aW9uIEluYm94KCkgewogIGNvbnN0IHsgdCwgbG9jYWxlIH0gPSB1c2VJMThuKCk7CiAgY29uc3QgW2l0ZW1zLCBzZXRJdGVtc10gPSB1c2VTdGF0ZTxDb252ZXJzYXRpb25bXT4oW10pOwogIGNvbnN0IFtsb2FkaW5nLCBzZXRMb2FkaW5nXSA9IHVzZVN0YXRlKHRydWUpOwogIGNvbnN0IFtlcnJvciwgc2V0RXJyb3JdID0gdXNlU3RhdGU8c3RyaW5nIHwgbnVsbD4obnVsbCk7CgogIGNvbnN0IGxvYWQgPSB1c2VDYWxsYmFjayhhc3luYyAoKSA9PiB7CiAgICBzZXRMb2FkaW5nKHRydWUpOwogICAgc2V0RXJyb3IobnVsbCk7CiAgICB0cnkgewogICAgICBzZXRJdGVtcyhhd2FpdCBsaXN0Q29udmVyc2F0aW9ucygpKTsKICAgIH0gY2F0Y2ggKGVycikgewogICAgICBzZXRFcnJvcihlcnIgaW5zdGFuY2VvZiBBcGlFcnJvciA/IGVyci5tZXNzYWdlIDogdCgnY2hhdC5lcnJvckxvYWQnKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRMb2FkaW5nKGZhbHNlKTsKICAgIH0KICB9LCBbdF0pOwoKICB1c2VFZmZlY3QoKCkgPT4gewogICAgdm9pZCBsb2FkKCk7CiAgfSwgW2xvYWRdKTsKCiAgYXN5bmMgZnVuY3Rpb24gb3BlbihjOiBDb252ZXJzYXRpb24pIHsKICAgIGlmIChjLnVucmVhZF9jb3VudCA+IDApIHsKICAgICAgdHJ5IHsKICAgICAgICBhd2FpdCBtYXJrQ29udmVyc2F0aW9uUmVhZChjLmlkKTsKICAgICAgfSBjYXRjaCB7CiAgICAgICAgLyogdGhlIHRocmVhZCB2aWV3IGNsZWFycyBpdCB0b28gKi8KICAgICAgfQogICAgfQogIH0KCiAgcmV0dXJuICgKICAgIDxkaXYgY2xhc3NOYW1lPSJhcHAtc2hlbGwgY29udGFpbmVyLXBhZ2UgcHktNSI+CiAgICAgIDxoZWFkZXI+CiAgICAgICAgPGgxIGNsYXNzTmFtZT0idGV4dC0yeGwgZm9udC1leHRyYWJvbGQgdHJhY2tpbmctdGlnaHQiPnt0KCdjaGF0LnRpdGxlJyl9PC9oMT4KICAgICAgICA8cCBjbGFzc05hbWU9Im10LTEgdGV4dC1zbSB0ZXh0LVtyZ2IodmFyKC0tZmctbXV0ZWQpKV0iPnt0KCdjaGF0LnN1YnRpdGxlJyl9PC9wPgogICAgICA8L2hlYWRlcj4KCiAgICAgIHtlcnJvciAmJiAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgbXQtNCBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMiBib3JkZXItW3JnYih2YXIoLS1kYW5nZXIpLzAuMzUpXSBwLTMgdGV4dC1zbSB0ZXh0LVtyZ2IodmFyKC0tZGFuZ2VyKSldIj4KICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0ic2hpZWxkIiBzaXplPXsxNn0gLz4KICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iZmxleC0xIj57ZXJyb3J9PC9zcGFuPgogICAgICAgICAgPGJ1dHRvbiBvbkNsaWNrPXtsb2FkfSBjbGFzc05hbWU9ImZvbnQtc2VtaWJvbGQgdW5kZXJsaW5lIj57dCgnY29tbW9uLnJldHJ5Jyl9PC9idXR0b24+CiAgICAgICAgPC9kaXY+CiAgICAgICl9CgogICAgICB7bG9hZGluZyA/ICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBtdC01IGZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktY2VudGVyIGdhcC0yIHB4LTUgcHktMTAgdGV4dC1zbSB0ZXh0LVtyZ2IodmFyKC0tZmctbXV0ZWQpKV0iPgogICAgICAgICAgPFNwaW5uZXIgc2l6ZT17MTh9IC8+CiAgICAgICAgICB7dCgnY29tbW9uLmxvYWRpbmcnKX0KICAgICAgICA8L2Rpdj4KICAgICAgKSA6IGl0ZW1zLmxlbmd0aCA9PT0gMCA/ICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibXQtNSI+CiAgICAgICAgICA8RW1wdHlTdGF0ZQogICAgICAgICAgICB0aXRsZT17dCgnY2hhdC5lbXB0eScpfQogICAgICAgICAgICBoaW50PXt0KCdjaGF0LmVtcHR5SGludCcpfQogICAgICAgICAgICBpY29uPXs8Q2F0ZWdvcnlJY29uIG5hbWU9ImNoYXQiIHNpemU9ezI2fSAvPn0KICAgICAgICAgIC8+CiAgICAgICAgPC9kaXY+CiAgICAgICkgOiAoCiAgICAgICAgPHVsIGNsYXNzTmFtZT0iY2FyZCBtdC01IGRpdmlkZS15IGRpdmlkZS1bcmdiKHZhcigtLWxpbmUpKV0gb3ZlcmZsb3ctaGlkZGVuIj4KICAgICAgICAgIHtpdGVtcy5tYXAoKGMsIGkpID0+ICgKICAgICAgICAgICAgPGxpIGtleT17Yy5pZH0gY2xhc3NOYW1lPSJzbGlkZS1pbiIgc3R5bGU9e3sgYW5pbWF0aW9uRGVsYXk6IGAke2kgKiAzNX1tc2AgfX0+CiAgICAgICAgICAgICAgPExpbmsKICAgICAgICAgICAgICAgIGhyZWY9e2AvJHtsb2NhbGV9L21lc3NhZ2VzLyR7Yy5pZH1gfQogICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gdm9pZCBvcGVuKGMpfQogICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMyBwLTQgdHJhbnNpdGlvbi1jb2xvcnMgaG92ZXI6YmctW3JnYih2YXIoLS1zdXJmYWNlLTMpKV0iCiAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAgPEF2YXRhciBuYW1lPXtjLmNvdW50ZXJwYXJ0X25hbWV9IHNpemU9ezQ0fSAvPgogICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJtaW4tdy0wIGZsZXgtMSI+CiAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuIGdhcC0yIj4KICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRydW5jYXRlIGZvbnQtYm9sZCI+e2MuY291bnRlcnBhcnRfbmFtZSA/PyBjLmNvdW50ZXJwYXJ0X2lkLnNsaWNlKDAsIDgpfTwvc3Bhbj4KICAgICAgICAgICAgICAgICAgICB7Yy5sYXN0X21lc3NhZ2VfYXQgJiYgKAogICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0bnVtIHNocmluay0wIHRleHQteHMgdGV4dC1bcmdiKHZhcigtLWZnLXN1YnRsZSkpXSI+CiAgICAgICAgICAgICAgICAgICAgICAgIHtuZXcgRGF0ZShjLmxhc3RfbWVzc2FnZV9hdCkudG9Mb2NhbGVEYXRlU3RyaW5nKGxvY2FsZSl9CiAgICAgICAgICAgICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9Im10LTAuNSBibG9jayB0cnVuY2F0ZSB0ZXh0LXNtIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+CiAgICAgICAgICAgICAgICAgICAge2MubGFzdF9tZXNzYWdlX3ByZXZpZXcgPz8gdCgnY2hhdC5ub01lc3NhZ2VzJyl9CiAgICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgIHtjLnVucmVhZF9jb3VudCA+IDAgJiYgKAogICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRudW0gc2hyaW5rLTAgcm91bmRlZC1mdWxsIGJnLVtyZ2IodmFyKC0tYnJhbmQtNTAwKSldIHB4LTIgcHktMC41IHRleHQteHMgZm9udC1ib2xkIHRleHQtW3JnYih2YXIoLS1icmFuZC1pbmspKV0iPgogICAgICAgICAgICAgICAgICAgIHtjLnVucmVhZF9jb3VudH0KICAgICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICA8L0xpbms+CiAgICAgICAgICAgIDwvbGk+CiAgICAgICAgICApKX0KICAgICAgICA8L3VsPgogICAgICApfQogICAgPC9kaXY+CiAgKTsKfQo=
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useI18n } from '@/lib/i18n-provider';
+import { RequireAuth } from '@/lib/require-auth';
+import { ApiError } from '@/lib/auth-api';
+import { listConversations, markConversationRead, type Conversation } from '@/lib/chat-api';
+import { CategoryIcon } from '@/lib/icons';
+import { Avatar, EmptyState, Spinner } from '@/lib/ui';
+
+/**
+ * Messages inbox.
+ *
+ * One row per counterpart, ordered by the most recent message, with an unread
+ * badge. Opening a row marks it read and goes to the thread.
+ */
+export default function MessagesPage() {
+  return (
+    <RequireAuth>
+      <Inbox />
+    </RequireAuth>
+  );
+}
+
+function Inbox() {
+  const { t, locale } = useI18n();
+  const [items, setItems] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setItems(await listConversations());
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('chat.errorLoad'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function open(c: Conversation) {
+    if (c.unread_count > 0) {
+      try {
+        await markConversationRead(c.id);
+      } catch {
+        /* the thread view clears it too */
+      }
+    }
+  }
+
+  return (
+    <div className="app-shell container-page py-5">
+      <header>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('chat.title')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('chat.subtitle')}</p>
+      </header>
+
+      {error && (
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">{t('common.retry')}</button>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="card mt-5 flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
+      ) : items.length === 0 ? (
+        <div className="mt-5">
+          <EmptyState
+            title={t('chat.empty')}
+            hint={t('chat.emptyHint')}
+            icon={<CategoryIcon name="chat" size={26} />}
+          />
+        </div>
+      ) : (
+        <ul className="card mt-5 divide-y divide-[rgb(var(--line))] overflow-hidden">
+          {items.map((c, i) => (
+            <li key={c.id} className="slide-in" style={{ animationDelay: `${i * 35}ms` }}>
+              <Link
+                href={`/${locale}/messages/${c.id}`}
+                onClick={() => void open(c)}
+                className="flex items-center gap-3 p-4 transition-colors hover:bg-[rgb(var(--surface-3))]"
+              >
+                <Avatar name={c.counterpart_name} size={44} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="truncate font-bold">{c.counterpart_name ?? c.counterpart_id.slice(0, 8)}</span>
+                    {c.last_message_at && (
+                      <span className="tnum shrink-0 text-xs text-[rgb(var(--fg-subtle))]">
+                        {new Date(c.last_message_at).toLocaleDateString(locale)}
+                      </span>
+                    )}
+                  </span>
+                  <span className="mt-0.5 block truncate text-sm text-[rgb(var(--fg-muted))]">
+                    {c.last_message_preview ?? t('chat.noMessages')}
+                  </span>
+                </span>
+                {c.unread_count > 0 && (
+                  <span className="tnum shrink-0 rounded-full bg-[rgb(var(--brand-500))] px-2 py-0.5 text-xs font-bold text-[rgb(var(--brand-ink))]">
+                    {c.unread_count}
+                  </span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

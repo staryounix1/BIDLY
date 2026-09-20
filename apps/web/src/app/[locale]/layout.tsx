@@ -1,1 +1,79 @@
-aW1wb3J0IHR5cGUgeyBNZXRhZGF0YSwgVmlld3BvcnQgfSBmcm9tICduZXh0JzsKaW1wb3J0IHsgbm90Rm91bmQgfSBmcm9tICduZXh0L25hdmlnYXRpb24nOwppbXBvcnQgeyBpc1J0bCwgdHlwZSBMb2NhbGUgfSBmcm9tICdAYmlkbHkvaTE4bic7CmltcG9ydCB7IEkxOG5Qcm92aWRlciB9IGZyb20gJ0AvbGliL2kxOG4tcHJvdmlkZXInOwppbXBvcnQgeyBBdXRoUHJvdmlkZXIgfSBmcm9tICdAL2xpYi9hdXRoLXByb3ZpZGVyJzsKaW1wb3J0IHsgQXBwSGVhZGVyLCBCb3R0b21OYXYgfSBmcm9tICdAL2xpYi9hcHAtaGVhZGVyJzsKaW1wb3J0IHsgaXNBcHBMb2NhbGUsIGxvY2FsZXMgfSBmcm9tICdAL2xpYi9sb2NhbGVzJzsKaW1wb3J0ICdAL2FwcC9nbG9iYWxzLmNzcyc7CgpleHBvcnQgY29uc3QgbWV0YWRhdGE6IE1ldGFkYXRhID0gewogIHRpdGxlOiB7CiAgICBkZWZhdWx0OiAnS2hkZW1saSDigJQg2KfYt9mE2Kgg2KPZiiDYrtiv2YXYqSDZiNiv2Lkg2KfZhNit2LHZgdmK2YrZhiDZitiq2YbYp9mB2LPZiNmGJywKICAgIHRlbXBsYXRlOiAnJXMgwrcgS2hkZW1saScsCiAgfSwKICBkZXNjcmlwdGlvbjoKICAgICdLaGRlbWxpINmF2YbYtdipINmF2LrYsdio2YrYqSDZhNmE2K7Yr9mF2KfYqjog2KfZhti02LEg2LfZhNio2YPYjCDYrdiv2ZHYryDYp9mE2LPYudixINin2YTYsNmKINmK2YbYp9iz2KjZg9iMINmI2K/YuSDYp9mE2K3YsdmB2YrZitmGINin2YTZgtix2YrYqNmK2YYg2YrYqtmG2KfZgdiz2YjZhiDYqNi52LHZiNi22YfZhS4nLAogIG1hbmlmZXN0OiAnL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICBhcHBsaWNhdGlvbk5hbWU6ICdLaGRlbWxpJywKICBhcHBsZVdlYkFwcDogewogICAgY2FwYWJsZTogdHJ1ZSwKICAgIHRpdGxlOiAnS2hkZW1saScsCiAgICBzdGF0dXNCYXJTdHlsZTogJ2JsYWNrLXRyYW5zbHVjZW50JywKICB9LAogIGljb25zOiB7CiAgICBpY29uOiBbCiAgICAgIHsgdXJsOiAnL2ljb24tMTkyLnBuZycsIHNpemVzOiAnMTkyeDE5MicsIHR5cGU6ICdpbWFnZS9wbmcnIH0sCiAgICAgIHsgdXJsOiAnL2ljb24tNTEyLnBuZycsIHNpemVzOiAnNTEyeDUxMicsIHR5cGU6ICdpbWFnZS9wbmcnIH0sCiAgICBdLAogICAgYXBwbGU6IFt7IHVybDogJy9hcHBsZS1pY29uLnBuZycsIHNpemVzOiAnMTgweDE4MCcsIHR5cGU6ICdpbWFnZS9wbmcnIH1dLAogIH0sCn07CgpleHBvcnQgY29uc3Qgdmlld3BvcnQ6IFZpZXdwb3J0ID0gewogIHdpZHRoOiAnZGV2aWNlLXdpZHRoJywKICBpbml0aWFsU2NhbGU6IDEsCiAgdGhlbWVDb2xvcjogJyMzMkY0QkEnLAogIHZpZXdwb3J0Rml0OiAnY292ZXInLAp9OwoKZXhwb3J0IGZ1bmN0aW9uIGdlbmVyYXRlU3RhdGljUGFyYW1zKCkgewogIHJldHVybiBsb2NhbGVzLm1hcCgobG9jYWxlKSA9PiAoeyBsb2NhbGUgfSkpOwp9CgovKioKICogUm9vdCBsYXlvdXQuCiAqCiAqIFNldHMgYGxhbmdgIGFuZCBgZGlyYCBmcm9tIHRoZSBsb2NhbGUgc2VnbWVudCBzbyBBcmFiaWMgcmVuZGVycyByaWdodC10by1sZWZ0CiAqIGZyb20gdGhlIHZlcnkgZmlyc3QgcGFpbnQsIHdpdGggbm8gZmxhc2ggb2YgdGhlIHdyb25nIGRpcmVjdGlvbi4gVGhlIGZpeGVkCiAqIGJvdHRvbSBuYXYgbmVlZHMgYm90dG9tIHBhZGRpbmcgb24gZXZlcnkgcGFnZSwgc28gdGhlIHNoZWxsIG93bnMgaXQgaGVyZQogKiByYXRoZXIgdGhhbiBpbiBlYWNoIHNjcmVlbi4KICovCmV4cG9ydCBkZWZhdWx0IGFzeW5jIGZ1bmN0aW9uIExvY2FsZUxheW91dCh7CiAgY2hpbGRyZW4sCiAgcGFyYW1zLAp9OiB7CiAgY2hpbGRyZW46IFJlYWN0LlJlYWN0Tm9kZTsKICBwYXJhbXM6IFByb21pc2U8eyBsb2NhbGU6IHN0cmluZyB9PjsKfSkgewogIGNvbnN0IHsgbG9jYWxlIH0gPSBhd2FpdCBwYXJhbXM7CiAgaWYgKCFpc0FwcExvY2FsZShsb2NhbGUpKSBub3RGb3VuZCgpOwoKICBjb25zdCB0eXBlZExvY2FsZSA9IGxvY2FsZSBhcyBMb2NhbGU7CgogIHJldHVybiAoCiAgICA8aHRtbCBsYW5nPXt0eXBlZExvY2FsZX0gZGlyPXtpc1J0bCh0eXBlZExvY2FsZSkgPyAncnRsJyA6ICdsdHInfSBzdXBwcmVzc0h5ZHJhdGlvbldhcm5pbmc+CiAgICAgIDxib2R5PgogICAgICAgIDxJMThuUHJvdmlkZXIgbG9jYWxlPXt0eXBlZExvY2FsZX0+CiAgICAgICAgICA8QXV0aFByb3ZpZGVyPgogICAgICAgICAgICA8QXBwSGVhZGVyIC8+CiAgICAgICAgICAgIDxtYWluIHN0eWxlPXt7IHBhZGRpbmdCb3R0b206ICdjYWxjKDQuNXJlbSArIGVudihzYWZlLWFyZWEtaW5zZXQtYm90dG9tKSknIH19PgogICAgICAgICAgICAgIHtjaGlsZHJlbn0KICAgICAgICAgICAgPC9tYWluPgogICAgICAgICAgICA8Qm90dG9tTmF2IC8+CiAgICAgICAgICA8L0F1dGhQcm92aWRlcj4KICAgICAgICA8L0kxOG5Qcm92aWRlcj4KICAgICAgPC9ib2R5PgogICAgPC9odG1sPgogICk7Cn0K
+import type { Metadata, Viewport } from 'next';
+import { notFound } from 'next/navigation';
+import { isRtl, type Locale } from '@bidly/i18n';
+import { I18nProvider } from '@/lib/i18n-provider';
+import { AuthProvider } from '@/lib/auth-provider';
+import { AppHeader, BottomNav } from '@/lib/app-header';
+import { isAppLocale, locales } from '@/lib/locales';
+import '@/app/globals.css';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Khdemli — اطلب أي خدمة ودع الحرفيين يتنافسون',
+    template: '%s · Khdemli',
+  },
+  description:
+    'Khdemli منصة مغربية للخدمات: انشر طلبك، حدّد السعر الذي يناسبك، ودع الحرفيين القريبين يتنافسون بعروضهم.',
+  manifest: '/manifest.webmanifest',
+  applicationName: 'Khdemli',
+  appleWebApp: {
+    capable: true,
+    title: 'Khdemli',
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#32F4BA',
+  viewportFit: 'cover',
+};
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+/**
+ * Root layout.
+ *
+ * Sets `lang` and `dir` from the locale segment so Arabic renders right-to-left
+ * from the very first paint, with no flash of the wrong direction. The fixed
+ * bottom nav needs bottom padding on every page, so the shell owns it here
+ * rather than in each screen.
+ */
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  if (!isAppLocale(locale)) notFound();
+
+  const typedLocale = locale as Locale;
+
+  return (
+    <html lang={typedLocale} dir={isRtl(typedLocale) ? 'rtl' : 'ltr'} suppressHydrationWarning>
+      <body>
+        <I18nProvider locale={typedLocale}>
+          <AuthProvider>
+            <AppHeader />
+            <main style={{ paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}>
+              {children}
+            </main>
+            <BottomNav />
+          </AuthProvider>
+        </I18nProvider>
+      </body>
+    </html>
+  );
+}

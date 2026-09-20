@@ -1,1 +1,116 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlU3RhdGUsIHR5cGUgRm9ybUV2ZW50IH0gZnJvbSAncmVhY3QnOwppbXBvcnQgTGluayBmcm9tICduZXh0L2xpbmsnOwppbXBvcnQgeyB1c2VSb3V0ZXIgfSBmcm9tICduZXh0L25hdmlnYXRpb24nOwppbXBvcnQgeyB1c2VBdXRoIH0gZnJvbSAnQC9saWIvYXV0aC1wcm92aWRlcic7CmltcG9ydCB7IHVzZUkxOG4gfSBmcm9tICdAL2xpYi9pMThuLXByb3ZpZGVyJzsKaW1wb3J0IHsgQXBpRXJyb3IgfSBmcm9tICdAL2xpYi9hdXRoLWFwaSc7CmltcG9ydCB7IENhdGVnb3J5SWNvbiwgS2hkZW1saU1hcmsgfSBmcm9tICdAL2xpYi9pY29ucyc7CmltcG9ydCB7IFNwaW5uZXIgfSBmcm9tICdAL2xpYi91aSc7CgovKioKICogU2lnbi1pbi4gUG9zdHMgdG8gUE9TVCAvYXV0aC9sb2dpbiB0aHJvdWdoIHRoZSBBdXRoUHJvdmlkZXIgYW5kLCBvbiBzdWNjZXNzLAogKiBzZW5kcyB0aGUgdXNlciBob21lIGluIHRoZWlyIGxvY2FsZS4gRXJyb3JzIGFyZSBzaG93biB3aXRoIHRoZWlyIHNhZmUsCiAqIHVzZXItZmFjaW5nIG1lc3NhZ2UuCiAqLwpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBMb2dpblBhZ2UoKSB7CiAgY29uc3QgeyB0LCBsb2NhbGUgfSA9IHVzZUkxOG4oKTsKICBjb25zdCB7IHNpZ25JbiwgaXNBdXRoZW50aWNhdGVkLCByZWFkeSB9ID0gdXNlQXV0aCgpOwogIGNvbnN0IHJvdXRlciA9IHVzZVJvdXRlcigpOwoKICBjb25zdCBbaWRlbnRpZmllciwgc2V0SWRlbnRpZmllcl0gPSB1c2VTdGF0ZSgnJyk7CiAgY29uc3QgW3Bhc3N3b3JkLCBzZXRQYXNzd29yZF0gPSB1c2VTdGF0ZSgnJyk7CiAgY29uc3QgW2Vycm9yLCBzZXRFcnJvcl0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTsKICBjb25zdCBbYnVzeSwgc2V0QnVzeV0gPSB1c2VTdGF0ZShmYWxzZSk7CgogIGFzeW5jIGZ1bmN0aW9uIG9uU3VibWl0KGV2ZW50OiBGb3JtRXZlbnQpIHsKICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7CiAgICBzZXRFcnJvcihudWxsKTsKICAgIHNldEJ1c3kodHJ1ZSk7CiAgICB0cnkgewogICAgICBhd2FpdCBzaWduSW4oaWRlbnRpZmllciwgcGFzc3dvcmQpOwogICAgICByb3V0ZXIucHVzaChgLyR7bG9jYWxlfWApOwogICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgIHNldEVycm9yKGVyciBpbnN0YW5jZW9mIEFwaUVycm9yID8gZXJyLm1lc3NhZ2UgOiB0KCdjb21tb24uZXJyb3InKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRCdXN5KGZhbHNlKTsKICAgIH0KICB9CgogIGlmIChyZWFkeSAmJiBpc0F1dGhlbnRpY2F0ZWQpIHsKICAgIHJldHVybiAoCiAgICAgIDxkaXYgY2xhc3NOYW1lPSJhcHAtc2hlbGwgY29udGFpbmVyLXBhZ2UgZmxleCBmbGV4LWNvbCBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgZ2FwLTQgcHktMjQgdGV4dC1jZW50ZXIiPgogICAgICAgIDxLaGRlbWxpTWFyayBzaXplPXs1Mn0gLz4KICAgICAgICA8cCBjbGFzc05hbWU9ImZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgnYXV0aC53ZWxjb21lQmFjaycpfTwvcD4KICAgICAgICA8TGluayBocmVmPXtgLyR7bG9jYWxlfWB9IGNsYXNzTmFtZT0iYnRuIGJ0bi1wcmltYXJ5Ij4KICAgICAgICAgIHt0KCduYXYuaG9tZScpfQogICAgICAgIDwvTGluaz4KICAgICAgPC9kaXY+CiAgICApOwogIH0KCiAgcmV0dXJuICgKICAgIDxkaXYgY2xhc3NOYW1lPSJhcHAtc2hlbGwgY29udGFpbmVyLXBhZ2UgZmxleCBmbGV4LWNvbCBqdXN0aWZ5LWNlbnRlciBweS0xMCI+CiAgICAgIDxoZWFkZXIgY2xhc3NOYW1lPSJtYi03IGZsZXggZmxleC1jb2wgaXRlbXMtY2VudGVyIHRleHQtY2VudGVyIj4KICAgICAgICA8S2hkZW1saU1hcmsgc2l6ZT17NTh9IC8+CiAgICAgICAgPGgxIGNsYXNzTmFtZT0ibXQtNCB0ZXh0LTN4bCBmb250LWJsYWNrIHRyYWNraW5nLXRpZ2h0Ij57dCgnYXV0aC5zaWduSW5UaXRsZScpfTwvaDE+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJtdC0xIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgnYXV0aC5zaWduSW5TdWJ0aXRsZScpfTwvcD4KICAgICAgPC9oZWFkZXI+CgogICAgICA8Zm9ybSBvblN1Ym1pdD17b25TdWJtaXR9IGNsYXNzTmFtZT0ic3BhY2UteS00IiBub1ZhbGlkYXRlPgogICAgICAgIDxsYWJlbCBjbGFzc05hbWU9ImJsb2NrIj4KICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0ibGFiZWwiPnt0KCdhdXRoLmlkZW50aWZpZXInKX08L3NwYW4+CiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0icmVsYXRpdmUiPgogICAgICAgICAgICA8Q2F0ZWdvcnlJY29uCiAgICAgICAgICAgICAgbmFtZT0idXNlciIKICAgICAgICAgICAgICBzaXplPXsxOX0KICAgICAgICAgICAgICBjbGFzc05hbWU9InBvaW50ZXItZXZlbnRzLW5vbmUgYWJzb2x1dGUgaW5zZXQteS0wIHN0YXJ0LTMuNSBteS1hdXRvIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iCiAgICAgICAgICAgIC8+CiAgICAgICAgICAgIDxpbnB1dAogICAgICAgICAgICAgIHR5cGU9InRleHQiCiAgICAgICAgICAgICAgYXV0b0NvbXBsZXRlPSJ1c2VybmFtZSIKICAgICAgICAgICAgICByZXF1aXJlZAogICAgICAgICAgICAgIHZhbHVlPXtpZGVudGlmaWVyfQogICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0SWRlbnRpZmllcihlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgY2xhc3NOYW1lPSJpbnB1dCBwcy0xMSIKICAgICAgICAgICAgLz4KICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvbGFiZWw+CgogICAgICAgIDxsYWJlbCBjbGFzc05hbWU9ImJsb2NrIj4KICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0ibGFiZWwiPnt0KCdhdXRoLnBhc3N3b3JkJyl9PC9zcGFuPgogICAgICAgICAgPGlucHV0CiAgICAgICAgICAgIHR5cGU9InBhc3N3b3JkIgogICAgICAgICAgICBhdXRvQ29tcGxldGU9ImN1cnJlbnQtcGFzc3dvcmQiCiAgICAgICAgICAgIHJlcXVpcmVkCiAgICAgICAgICAgIHZhbHVlPXtwYXNzd29yZH0KICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRQYXNzd29yZChlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgIGNsYXNzTmFtZT0iaW5wdXQiCiAgICAgICAgICAvPgogICAgICAgIDwvbGFiZWw+CgogICAgICAgIHtlcnJvciAmJiAoCiAgICAgICAgICA8cAogICAgICAgICAgICByb2xlPSJhbGVydCIKICAgICAgICAgICAgY2xhc3NOYW1lPSJyb3VuZGVkLXhsIGJvcmRlciBib3JkZXItW3JnYih2YXIoLS1kYW5nZXIpLzAuMzUpXSBiZy1bcmdiKHZhcigtLWRhbmdlcikvMC4wOCldIHB4LTQgcHktMyB0ZXh0LXNtIGZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKHZhcigtLWRhbmdlcikpXSIKICAgICAgICAgID4KICAgICAgICAgICAge2Vycm9yfQogICAgICAgICAgPC9wPgogICAgICAgICl9CgogICAgICAgIDxidXR0b24gdHlwZT0ic3VibWl0IiBkaXNhYmxlZD17YnVzeX0gY2xhc3NOYW1lPSJidG4gYnRuLXByaW1hcnkgYnRuLWJsb2NrIj4KICAgICAgICAgIHtidXN5ID8gPFNwaW5uZXIgc2l6ZT17MTh9IC8+IDogPENhdGVnb3J5SWNvbiBuYW1lPSJhcnJvdyIgc2l6ZT17MTl9IGNsYXNzTmFtZT0icnRsOnJvdGF0ZS0xODAiIC8+fQogICAgICAgICAge3QoJ2NvbW1vbi5zaWduSW4nKX0KICAgICAgICA8L2J1dHRvbj4KICAgICAgPC9mb3JtPgoKICAgICAgPHAgY2xhc3NOYW1lPSJtdC02IHRleHQtY2VudGVyIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICB7dCgnYXV0aC5ub0FjY291bnQnKX17JyAnfQogICAgICAgIDxMaW5rIGhyZWY9e2AvJHtsb2NhbGV9L3JlZ2lzdGVyYH0gY2xhc3NOYW1lPSJmb250LWJvbGQgdGV4dC1bcmdiKHZhcigtLWJyYW5kLTcwMCkpXSI+CiAgICAgICAgICB7dCgnY29tbW9uLnNpZ25VcCcpfQogICAgICAgIDwvTGluaz4KICAgICAgPC9wPgogICAgPC9kaXY+CiAgKTsKfQo=
+'use client';
+
+import { useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-provider';
+import { useI18n } from '@/lib/i18n-provider';
+import { ApiError } from '@/lib/auth-api';
+import { CategoryIcon, KhdemliMark } from '@/lib/icons';
+import { Spinner } from '@/lib/ui';
+
+/**
+ * Sign-in. Posts to POST /auth/login through the AuthProvider and, on success,
+ * sends the user home in their locale. Errors are shown with their safe,
+ * user-facing message.
+ */
+export default function LoginPage() {
+  const { t, locale } = useI18n();
+  const { signIn, isAuthenticated, ready } = useAuth();
+  const router = useRouter();
+
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setBusy(true);
+    try {
+      await signIn(identifier, password);
+      router.push(`/${locale}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (ready && isAuthenticated) {
+    return (
+      <div className="app-shell container-page flex flex-col items-center justify-center gap-4 py-24 text-center">
+        <KhdemliMark size={52} />
+        <p className="font-semibold text-[rgb(var(--fg-muted))]">{t('auth.welcomeBack')}</p>
+        <Link href={`/${locale}`} className="btn btn-primary">
+          {t('nav.home')}
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-shell container-page flex flex-col justify-center py-10">
+      <header className="mb-7 flex flex-col items-center text-center">
+        <KhdemliMark size={58} />
+        <h1 className="mt-4 text-3xl font-black tracking-tight">{t('auth.signInTitle')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('auth.signInSubtitle')}</p>
+      </header>
+
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <label className="block">
+          <span className="label">{t('auth.identifier')}</span>
+          <div className="relative">
+            <CategoryIcon
+              name="user"
+              size={19}
+              className="pointer-events-none absolute inset-y-0 start-3.5 my-auto text-[rgb(var(--fg-subtle))]"
+            />
+            <input
+              type="text"
+              autoComplete="username"
+              required
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              className="input ps-11"
+            />
+          </div>
+        </label>
+
+        <label className="block">
+          <span className="label">{t('auth.password')}</span>
+          <input
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+          />
+        </label>
+
+        {error && (
+          <p
+            role="alert"
+            className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
+          >
+            {error}
+          </p>
+        )}
+
+        <button type="submit" disabled={busy} className="btn btn-primary btn-block">
+          {busy ? <Spinner size={18} /> : <CategoryIcon name="arrow" size={19} className="rtl:rotate-180" />}
+          {t('common.signIn')}
+        </button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-[rgb(var(--fg-muted))]">
+        {t('auth.noAccount')}{' '}
+        <Link href={`/${locale}/register`} className="font-bold text-[rgb(var(--brand-700))]">
+          {t('common.signUp')}
+        </Link>
+      </p>
+    </div>
+  );
+}

@@ -1,1 +1,204 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlQ2FsbGJhY2ssIHVzZUVmZmVjdCwgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7CmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluayc7CmltcG9ydCB7IHVzZUkxOG4gfSBmcm9tICdAL2xpYi9pMThuLXByb3ZpZGVyJzsKaW1wb3J0IHsgUmVxdWlyZUF1dGggfSBmcm9tICdAL2xpYi9yZXF1aXJlLWF1dGgnOwppbXBvcnQgeyBBcGlFcnJvciB9IGZyb20gJ0AvbGliL2F1dGgtYXBpJzsKaW1wb3J0IHsKICBnZXRQcmVmZXJlbmNlcywgc2F2ZVByZWZlcmVuY2VzLCB0eXBlIE5vdGlmaWNhdGlvblByZWZlcmVuY2VzLAp9IGZyb20gJ0AvbGliL25vdGlmaWNhdGlvbnMtYXBpJzsKaW1wb3J0IHsgdXNlUHVzaE5vdGlmaWNhdGlvbnMgfSBmcm9tICdAL2xpYi9wdXNoLW5vdGlmaWNhdGlvbnMnOwppbXBvcnQgeyBDYXRlZ29yeUljb24gfSBmcm9tICdAL2xpYi9pY29ucyc7CmltcG9ydCB7IFNlY3Rpb25UaXRsZSwgU3Bpbm5lciB9IGZyb20gJ0AvbGliL3VpJzsKCi8qKgogKiBOb3RpZmljYXRpb24gcHJlZmVyZW5jZXMuCiAqCiAqIE9uZSByb3cgcGVyIGV2ZW50IHR5cGUsIG9uZSBjb2x1bW4gcGVyIGNoYW5uZWwuIFRoZSBiYWNrZW5kIG93bnMgdGhlCiAqIGRlZmF1bHRzOyB0aGlzIHNjcmVlbiBvbmx5IGVkaXRzIHRoZW0uIFNhdmluZyBpcyBleHBsaWNpdCBzbyBhIGhhbGYtdG9nZ2xlZAogKiByb3cgbmV2ZXIgcmVhY2hlcyB0aGUgc2VydmVyLgogKi8KZXhwb3J0IGRlZmF1bHQgZnVuY3Rpb24gTm90aWZpY2F0aW9uUHJlZmVyZW5jZXNQYWdlKCkgewogIHJldHVybiAoCiAgICA8UmVxdWlyZUF1dGg+CiAgICAgIDxQcmVmZXJlbmNlcyAvPgogICAgPC9SZXF1aXJlQXV0aD4KICApOwp9Cgpjb25zdCBDSEFOTkVMUyA9IFsnaW5fYXBwJywgJ2VtYWlsJywgJ3NtcycsICdwdXNoJ10gYXMgY29uc3Q7CgpmdW5jdGlvbiBQcmVmZXJlbmNlcygpIHsKICBjb25zdCB7IHQsIGxvY2FsZSB9ID0gdXNlSTE4bigpOwogIGNvbnN0IFtwcmVmcywgc2V0UHJlZnNdID0gdXNlU3RhdGU8Tm90aWZpY2F0aW9uUHJlZmVyZW5jZXNbXT4oW10pOwogIGNvbnN0IFtsb2FkaW5nLCBzZXRMb2FkaW5nXSA9IHVzZVN0YXRlKHRydWUpOwogIGNvbnN0IFtzYXZpbmcsIHNldFNhdmluZ10gPSB1c2VTdGF0ZShmYWxzZSk7CiAgY29uc3QgW2Vycm9yLCBzZXRFcnJvcl0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTsKICBjb25zdCBbc2F2ZWQsIHNldFNhdmVkXSA9IHVzZVN0YXRlKGZhbHNlKTsKCiAgY29uc3QgbG9hZCA9IHVzZUNhbGxiYWNrKGFzeW5jICgpID0+IHsKICAgIHNldExvYWRpbmcodHJ1ZSk7CiAgICBzZXRFcnJvcihudWxsKTsKICAgIHRyeSB7CiAgICAgIHNldFByZWZzKGF3YWl0IGdldFByZWZlcmVuY2VzKCkpOwogICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgIHNldEVycm9yKGVyciBpbnN0YW5jZW9mIEFwaUVycm9yID8gZXJyLm1lc3NhZ2UgOiB0KCdjb21tb24uZXJyb3InKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRMb2FkaW5nKGZhbHNlKTsKICAgIH0KICB9LCBbdF0pOwoKICB1c2VFZmZlY3QoKCkgPT4gewogICAgdm9pZCBsb2FkKCk7CiAgfSwgW2xvYWRdKTsKCiAgZnVuY3Rpb24gdG9nZ2xlKGV2ZW50VHlwZTogc3RyaW5nLCBjaGFubmVsOiAodHlwZW9mIENIQU5ORUxTKVtudW1iZXJdKSB7CiAgICBzZXRTYXZlZChmYWxzZSk7CiAgICBzZXRQcmVmcygocHJldikgPT4KICAgICAgcHJldi5tYXAoKHApID0+IChwLmV2ZW50X3R5cGUgPT09IGV2ZW50VHlwZSA/IHsgLi4ucCwgW2NoYW5uZWxdOiAhcFtjaGFubmVsXSB9IDogcCkpLAogICAgKTsKICB9CgogIGFzeW5jIGZ1bmN0aW9uIG9uU2F2ZSgpIHsKICAgIHNldFNhdmluZyh0cnVlKTsKICAgIHNldEVycm9yKG51bGwpOwogICAgdHJ5IHsKICAgICAgYXdhaXQgc2F2ZVByZWZlcmVuY2VzKHByZWZzKTsKICAgICAgc2V0U2F2ZWQodHJ1ZSk7CiAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgc2V0RXJyb3IoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgPyBlcnIubWVzc2FnZSA6IHQoJ2NvbW1vbi5lcnJvcicpKTsKICAgIH0gZmluYWxseSB7CiAgICAgIHNldFNhdmluZyhmYWxzZSk7CiAgICB9CiAgfQoKICByZXR1cm4gKAogICAgPGRpdiBjbGFzc05hbWU9ImFwcC1zaGVsbCBjb250YWluZXItcGFnZSBweS01Ij4KICAgICAgPGhlYWRlcj4KICAgICAgICA8TGluawogICAgICAgICAgaHJlZj17YC8ke2xvY2FsZX0vbm90aWZpY2F0aW9uc2B9CiAgICAgICAgICBjbGFzc05hbWU9ImJ0biBidG4tZ2hvc3QgbWItMiAtbXMtMiAhcHgtMiIKICAgICAgICA+CiAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9ImFycm93IiBzaXplPXsxNn0gY2xhc3NOYW1lPSJydGw6cm90YXRlLTE4MCIgLz4KICAgICAgICAgIHt0KCdub3RpZmljYXRpb25zLnRpdGxlJyl9CiAgICAgICAgPC9MaW5rPgogICAgICAgIDxoMSBjbGFzc05hbWU9InRleHQtMnhsIGZvbnQtZXh0cmFib2xkIHRyYWNraW5nLXRpZ2h0Ij57dCgnbm90aWZpY2F0aW9ucy5wcmVmZXJlbmNlcycpfTwvaDE+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJtdC0xIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgnbm90aWZpY2F0aW9ucy5wcmVmZXJlbmNlc0hpbnQnKX08L3A+CiAgICAgIDwvaGVhZGVyPgoKICAgICAge2Vycm9yICYmICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBtdC00IGZsZXggaXRlbXMtY2VudGVyIGdhcC0yIGJvcmRlci1bcmdiKHZhcigtLWRhbmdlcikvMC4zNSldIHAtMyB0ZXh0LXNtIHRleHQtW3JnYih2YXIoLS1kYW5nZXIpKV0iPgogICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPSJzaGllbGQiIHNpemU9ezE2fSAvPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJmbGV4LTEiPntlcnJvcn08L3NwYW4+CiAgICAgICAgICA8YnV0dG9uIG9uQ2xpY2s9e2xvYWR9IGNsYXNzTmFtZT0iZm9udC1zZW1pYm9sZCB1bmRlcmxpbmUiPnt0KCdjb21tb24ucmV0cnknKX08L2J1dHRvbj4KICAgICAgICA8L2Rpdj4KICAgICAgKX0KICAgICAge3NhdmVkICYmICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBtdC00IGZsZXggaXRlbXMtY2VudGVyIGdhcC0yIGJvcmRlci1bcmdiKHZhcigtLW9rKS8wLjM1KV0gcC0zIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLW9rKSldIj4KICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0iY2hlY2siIHNpemU9ezE2fSAvPgogICAgICAgICAge3QoJ2NvbW1vbi5zYXZlJyl9CiAgICAgICAgPC9kaXY+CiAgICAgICl9CgogICAgICA8UHVzaFRvZ2dsZSAvPgoKICAgICAge2xvYWRpbmcgPyAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgbXQtNSBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBnYXAtMiBweC01IHB5LTEwIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICAgIDxTcGlubmVyIHNpemU9ezE4fSAvPgogICAgICAgICAge3QoJ2NvbW1vbi5sb2FkaW5nJyl9CiAgICAgICAgPC9kaXY+CiAgICAgICkgOiAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgbXQtNSBvdmVyZmxvdy14LWF1dG8gcC00Ij4KICAgICAgICAgIDx0YWJsZSBjbGFzc05hbWU9InctZnVsbCB0ZXh0LXNtIj4KICAgICAgICAgICAgPHRoZWFkPgogICAgICAgICAgICAgIDx0ciBjbGFzc05hbWU9ImJvcmRlci1iIGJvcmRlci1bcmdiKHZhcigtLWxpbmUpKV0iPgogICAgICAgICAgICAgICAgPHRoIGNsYXNzTmFtZT0icHktMi41IHRleHQtc3RhcnQgZm9udC1zZW1pYm9sZCB0ZXh0LVtyZ2IodmFyKC0tZmctbXV0ZWQpKV0iPnt0KCdub3RpZmljYXRpb25zLnRpdGxlJyl9PC90aD4KICAgICAgICAgICAgICAgIHtDSEFOTkVMUy5tYXAoKGMpID0+ICgKICAgICAgICAgICAgICAgICAgPHRoIGtleT17Y30gY2xhc3NOYW1lPSJweC0yIHB5LTIuNSB0ZXh0LWNlbnRlciBmb250LXNlbWlib2xkIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+CiAgICAgICAgICAgICAgICAgICAge3QoYG5vdGlmaWNhdGlvbnMuJHtjID09PSAnaW5fYXBwJyA/ICdpbkFwcCcgOiBjfWApfQogICAgICAgICAgICAgICAgICA8L3RoPgogICAgICAgICAgICAgICAgKSl9CiAgICAgICAgICAgICAgPC90cj4KICAgICAgICAgICAgPC90aGVhZD4KICAgICAgICAgICAgPHRib2R5PgogICAgICAgICAgICAgIHtwcmVmcy5tYXAoKHApID0+ICgKICAgICAgICAgICAgICAgIDx0ciBrZXk9e3AuZXZlbnRfdHlwZX0gY2xhc3NOYW1lPSJib3JkZXItYiBib3JkZXItW3JnYih2YXIoLS1saW5lKSldIj4KICAgICAgICAgICAgICAgICAgPHRkIGNsYXNzTmFtZT0icHktMi41IHBlLTIiPgogICAgICAgICAgICAgICAgICAgIHt0KGBub3RpZmljYXRpb25zLmV2ZW50VHlwZXMuJHtwLmV2ZW50X3R5cGV9YCkgIT09IGBub3RpZmljYXRpb25zLmV2ZW50VHlwZXMuJHtwLmV2ZW50X3R5cGV9YAogICAgICAgICAgICAgICAgICAgICAgPyB0KGBub3RpZmljYXRpb25zLmV2ZW50VHlwZXMuJHtwLmV2ZW50X3R5cGV9YCkKICAgICAgICAgICAgICAgICAgICAgIDogcC5ldmVudF90eXBlfQogICAgICAgICAgICAgICAgICA8L3RkPgogICAgICAgICAgICAgICAgICB7Q0hBTk5FTFMubWFwKChjKSA9PiAoCiAgICAgICAgICAgICAgICAgICAgPHRkIGtleT17Y30gY2xhc3NOYW1lPSJweC0yIHB5LTIuNSB0ZXh0LWNlbnRlciI+CiAgICAgICAgICAgICAgICAgICAgICA8aW5wdXQKICAgICAgICAgICAgICAgICAgICAgICAgdHlwZT0iY2hlY2tib3giCiAgICAgICAgICAgICAgICAgICAgICAgIGNoZWNrZWQ9e0Jvb2xlYW4ocFtjXSl9CiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoKSA9PiB0b2dnbGUocC5ldmVudF90eXBlLCBjKX0KICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJoLTQgdy00IGFsaWduLW1pZGRsZSBhY2NlbnQtW3JnYih2YXIoLS1icmFuZC01MDApKV0iCiAgICAgICAgICAgICAgICAgICAgICAvPgogICAgICAgICAgICAgICAgICAgIDwvdGQ+CiAgICAgICAgICAgICAgICAgICkpfQogICAgICAgICAgICAgICAgPC90cj4KICAgICAgICAgICAgICApKX0KICAgICAgICAgICAgPC90Ym9keT4KICAgICAgICAgIDwvdGFibGU+CiAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgIG9uQ2xpY2s9e29uU2F2ZX0KICAgICAgICAgICAgZGlzYWJsZWQ9e3NhdmluZ30KICAgICAgICAgICAgY2xhc3NOYW1lPSJidG4gYnRuLXByaW1hcnkgYnRuLWJsb2NrIG10LTUiCiAgICAgICAgICA+CiAgICAgICAgICAgIHtzYXZpbmcgPyA8U3Bpbm5lciBzaXplPXsxOH0gLz4gOiA8Q2F0ZWdvcnlJY29uIG5hbWU9ImNoZWNrIiBzaXplPXsxOH0gLz59CiAgICAgICAgICAgIHt0KCdjb21tb24uc2F2ZScpfQogICAgICAgICAgPC9idXR0b24+CiAgICAgICAgPC9kaXY+CiAgICAgICl9CiAgICA8L2Rpdj4KICApOwp9CgovKioKICogVGhlIGJyb3dzZXItbGV2ZWwgcHVzaCBzd2l0Y2guCiAqCiAqIFNlcGFyYXRlIGZyb20gdGhlIHByZWZlcmVuY2UgdGFibGUgb24gcHVycG9zZTogdGhlIHRhYmxlIHNheXMgKndoaWNoIGV2ZW50cyoKICogbWF5IG5vdGlmeSwgdGhpcyBzYXlzIHdoZXRoZXIgdGhpcyBkZXZpY2UgY2FuIHJlY2VpdmUgbm90aWZpY2F0aW9ucyBhdCBhbGwuCiAqIEJvdGggbXVzdCBiZSBvbiBmb3IgYSBwaG9uZSB0byBidXp6LCBhbmQgY29uZmxhdGluZyB0aGVtIGlzIGhvdyB1c2VycyBlbmQgdXAKICogd2l0aCBhICJQdXNoOiBvbiIgcm93IHRoYXQgbmV2ZXIgZmlyZXMuCiAqLwpmdW5jdGlvbiBQdXNoVG9nZ2xlKCkgewogIGNvbnN0IHsgdCB9ID0gdXNlSTE4bigpOwogIGNvbnN0IHsgc3RhdGUsIGJ1c3ksIGVycm9yLCBzdXBwb3J0ZWQsIHN1YnNjcmliZSwgdW5zdWJzY3JpYmUgfSA9IHVzZVB1c2hOb3RpZmljYXRpb25zKCk7CgogIGlmICghc3VwcG9ydGVkIHx8IHN0YXRlID09PSAnZGlzYWJsZWQnKSB7CiAgICByZXR1cm4gKAogICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBtdC01IHAtNCB0ZXh0LXNtIj4KICAgICAgICA8cCBjbGFzc05hbWU9ImZvbnQtYm9sZCI+e3QoJ3B1c2guZGV2aWNlVGl0bGUnKX08L3A+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJtdC0xIHRleHQteHMgdGV4dC1bcmdiKHZhcigtLWZnLXN1YnRsZSkpXSI+CiAgICAgICAgICB7c3RhdGUgPT09ICdkaXNhYmxlZCcgPyB0KCdwdXNoLm5vdENvbmZpZ3VyZWQnKSA6IHQoJ3B1c2gudW5zdXBwb3J0ZWQnKX0KICAgICAgICA8L3A+CiAgICAgIDwvZGl2PgogICAgKTsKICB9CgogIGNvbnN0IG9uID0gc3RhdGUgPT09ICdncmFudGVkJzsKICByZXR1cm4gKAogICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgbXQtNSBmbGV4IGZsZXgtd3JhcCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuIGdhcC0zIHAtNCI+CiAgICAgIDxkaXY+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJ0ZXh0LXNtIGZvbnQtYm9sZCI+e3QoJ3B1c2guZGV2aWNlVGl0bGUnKX08L3A+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJtdC0wLjUgdGV4dC14cyB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj4KICAgICAgICAgIHtzdGF0ZSA9PT0gJ2RlbmllZCcgPyB0KCdwdXNoLmRlbmllZCcpIDogdCgncHVzaC5kZXZpY2VIaW50Jyl9CiAgICAgICAgPC9wPgogICAgICAgIHtlcnJvciAmJiA8cCBjbGFzc05hbWU9Im10LTEgdGV4dC14cyB0ZXh0LVtyZ2IodmFyKC0td2FybikpXSI+e3QoJ3B1c2guZmFpbGVkJyl9PC9wPn0KICAgICAgPC9kaXY+CiAgICAgIDxidXR0b24KICAgICAgICB0eXBlPSJidXR0b24iCiAgICAgICAgb25DbGljaz17KCkgPT4gdm9pZCAob24gPyB1bnN1YnNjcmliZSgpIDogc3Vic2NyaWJlKCkpfQogICAgICAgIGRpc2FibGVkPXtidXN5IHx8IHN0YXRlID09PSAnZGVuaWVkJ30KICAgICAgICBjbGFzc05hbWU9e2BidG4gJHtvbiA/ICdidG4tc2Vjb25kYXJ5JyA6ICdidG4tcHJpbWFyeSd9YH0KICAgICAgPgogICAgICAgIHtidXN5ID8gPFNwaW5uZXIgc2l6ZT17MTh9IC8+IDogPENhdGVnb3J5SWNvbiBuYW1lPSJiZWxsIiBzaXplPXsxOH0gLz59CiAgICAgICAge2J1c3kgPyB0KCdjb21tb24ubG9hZGluZycpIDogb24gPyB0KCdwdXNoLnR1cm5PZmYnKSA6IHQoJ3B1c2gudHVybk9uJyl9CiAgICAgIDwvYnV0dG9uPgogICAgPC9kaXY+CiAgKTsKfQo=
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useI18n } from '@/lib/i18n-provider';
+import { RequireAuth } from '@/lib/require-auth';
+import { ApiError } from '@/lib/auth-api';
+import {
+  getPreferences, savePreferences, type NotificationPreferences,
+} from '@/lib/notifications-api';
+import { usePushNotifications } from '@/lib/push-notifications';
+import { CategoryIcon } from '@/lib/icons';
+import { SectionTitle, Spinner } from '@/lib/ui';
+
+/**
+ * Notification preferences.
+ *
+ * One row per event type, one column per channel. The backend owns the
+ * defaults; this screen only edits them. Saving is explicit so a half-toggled
+ * row never reaches the server.
+ */
+export default function NotificationPreferencesPage() {
+  return (
+    <RequireAuth>
+      <Preferences />
+    </RequireAuth>
+  );
+}
+
+const CHANNELS = ['in_app', 'email', 'sms', 'push'] as const;
+
+function Preferences() {
+  const { t, locale } = useI18n();
+  const [prefs, setPrefs] = useState<NotificationPreferences[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setPrefs(await getPreferences());
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  function toggle(eventType: string, channel: (typeof CHANNELS)[number]) {
+    setSaved(false);
+    setPrefs((prev) =>
+      prev.map((p) => (p.event_type === eventType ? { ...p, [channel]: !p[channel] } : p)),
+    );
+  }
+
+  async function onSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      await savePreferences(prefs);
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="app-shell container-page py-5">
+      <header>
+        <Link
+          href={`/${locale}/notifications`}
+          className="btn btn-ghost mb-2 -ms-2 !px-2"
+        >
+          <CategoryIcon name="arrow" size={16} className="rtl:rotate-180" />
+          {t('notifications.title')}
+        </Link>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('notifications.preferences')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('notifications.preferencesHint')}</p>
+      </header>
+
+      {error && (
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">{t('common.retry')}</button>
+        </div>
+      )}
+      {saved && (
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          {t('common.save')}
+        </div>
+      )}
+
+      <PushToggle />
+
+      {loading ? (
+        <div className="card mt-5 flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
+      ) : (
+        <div className="card mt-5 overflow-x-auto p-4">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[rgb(var(--line))]">
+                <th className="py-2.5 text-start font-semibold text-[rgb(var(--fg-muted))]">{t('notifications.title')}</th>
+                {CHANNELS.map((c) => (
+                  <th key={c} className="px-2 py-2.5 text-center font-semibold text-[rgb(var(--fg-muted))]">
+                    {t(`notifications.${c === 'in_app' ? 'inApp' : c}`)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {prefs.map((p) => (
+                <tr key={p.event_type} className="border-b border-[rgb(var(--line))]">
+                  <td className="py-2.5 pe-2">
+                    {t(`notifications.eventTypes.${p.event_type}`) !== `notifications.eventTypes.${p.event_type}`
+                      ? t(`notifications.eventTypes.${p.event_type}`)
+                      : p.event_type}
+                  </td>
+                  {CHANNELS.map((c) => (
+                    <td key={c} className="px-2 py-2.5 text-center">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(p[c])}
+                        onChange={() => toggle(p.event_type, c)}
+                        className="h-4 w-4 align-middle accent-[rgb(var(--brand-500))]"
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            onClick={onSave}
+            disabled={saving}
+            className="btn btn-primary btn-block mt-5"
+          >
+            {saving ? <Spinner size={18} /> : <CategoryIcon name="check" size={18} />}
+            {t('common.save')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The browser-level push switch.
+ *
+ * Separate from the preference table on purpose: the table says *which events*
+ * may notify, this says whether this device can receive notifications at all.
+ * Both must be on for a phone to buzz, and conflating them is how users end up
+ * with a "Push: on" row that never fires.
+ */
+function PushToggle() {
+  const { t } = useI18n();
+  const { state, busy, error, supported, subscribe, unsubscribe } = usePushNotifications();
+
+  if (!supported || state === 'disabled') {
+    return (
+      <div className="card mt-5 p-4 text-sm">
+        <p className="font-bold">{t('push.deviceTitle')}</p>
+        <p className="mt-1 text-xs text-[rgb(var(--fg-subtle))]">
+          {state === 'disabled' ? t('push.notConfigured') : t('push.unsupported')}
+        </p>
+      </div>
+    );
+  }
+
+  const on = state === 'granted';
+  return (
+    <div className="card mt-5 flex flex-wrap items-center justify-between gap-3 p-4">
+      <div>
+        <p className="text-sm font-bold">{t('push.deviceTitle')}</p>
+        <p className="mt-0.5 text-xs text-[rgb(var(--fg-subtle))]">
+          {state === 'denied' ? t('push.denied') : t('push.deviceHint')}
+        </p>
+        {error && <p className="mt-1 text-xs text-[rgb(var(--warn))]">{t('push.failed')}</p>}
+      </div>
+      <button
+        type="button"
+        onClick={() => void (on ? unsubscribe() : subscribe())}
+        disabled={busy || state === 'denied'}
+        className={`btn ${on ? 'btn-secondary' : 'btn-primary'}`}
+      >
+        {busy ? <Spinner size={18} /> : <CategoryIcon name="bell" size={18} />}
+        {busy ? t('common.loading') : on ? t('push.turnOff') : t('push.turnOn')}
+      </button>
+    </div>
+  );
+}

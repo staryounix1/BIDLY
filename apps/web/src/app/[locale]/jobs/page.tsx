@@ -1,1 +1,288 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlQ2FsbGJhY2ssIHVzZUVmZmVjdCwgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7CmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluayc7CmltcG9ydCB7IHVzZUkxOG4gfSBmcm9tICdAL2xpYi9pMThuLXByb3ZpZGVyJzsKaW1wb3J0IHsgUmVxdWlyZUF1dGggfSBmcm9tICdAL2xpYi9yZXF1aXJlLWF1dGgnOwppbXBvcnQgeyBBcGlFcnJvciB9IGZyb20gJ0AvbGliL2F1dGgtYXBpJzsKaW1wb3J0IHsgam9ic0FwaSwgVFJBQ0tBQkxFX0pPQl9TVEFUVVNFUywgdHlwZSBKb2JEZXRhaWwsIHR5cGUgSm9iU3VtbWFyeSB9IGZyb20gJ0AvbGliL2pvYnMtYXBpJzsKaW1wb3J0IHsgcGF5bWVudHNBcGkgfSBmcm9tICdAL2xpYi9wYXltZW50cy1hcGknOwppbXBvcnQgeyBUcmFja1Byb3ZpZGVyIH0gZnJvbSAnQC9saWIvbWFwL3RyYWNrLXByb3ZpZGVyJzsKaW1wb3J0IHsgU3RhdHVzQmFkZ2UgfSBmcm9tICdAL2xpYi9zdGF0dXMtYmFkZ2UnOwppbXBvcnQgeyBDYXRlZ29yeUljb24gfSBmcm9tICdAL2xpYi9pY29ucyc7CmltcG9ydCB7IEVtcHR5U3RhdGUsIFByaWNlLCBTcGlubmVyIH0gZnJvbSAnQC9saWIvdWknOwoKLyoqCiAqIEN1c3RvbWVyIGpvYnMgbGlzdC4KICoKICogQSBqb2IgZXhpc3RzIG9uY2UgdGhlIGN1c3RvbWVyIGFjY2VwdHMgYW4gb2ZmZXIuIFRoaXMgc2NyZWVuIGxpc3RzIGNvbmZpcm1lZAogKiBlbmdhZ2VtZW50cyBhbmQsIG9uIGV4cGFuZCwgc2hvd3MgdGhlIGFzc2lnbmVkIHByb3ZpZGVyLCB0aGUgZXZlbnQgdGltZWxpbmUKICogYW5kIHRoZSBwYXltZW50IHN1bW1hcnkg4oCUIGFsbCBmcm9tIGAvam9icy9taW5lYCBhbmQgYC9qb2JzLzppZGAuCiAqLwpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBKb2JzUGFnZSgpIHsKICByZXR1cm4gKAogICAgPFJlcXVpcmVBdXRoIHJvbGVzPXtbJ0NVU1RPTUVSJ119PgogICAgICA8Sm9ic1ZpZXcgLz4KICAgIDwvUmVxdWlyZUF1dGg+CiAgKTsKfQoKZnVuY3Rpb24gSm9ic1ZpZXcoKSB7CiAgY29uc3QgeyB0LCBsb2NhbGUgfSA9IHVzZUkxOG4oKTsKICBjb25zdCBbam9icywgc2V0Sm9ic10gPSB1c2VTdGF0ZTxKb2JTdW1tYXJ5W10+KFtdKTsKICBjb25zdCBbbG9hZGluZywgc2V0TG9hZGluZ10gPSB1c2VTdGF0ZSh0cnVlKTsKICBjb25zdCBbZXJyb3IsIHNldEVycm9yXSA9IHVzZVN0YXRlPHN0cmluZyB8IG51bGw+KG51bGwpOwogIGNvbnN0IFtvcGVuSWQsIHNldE9wZW5JZF0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTsKICBjb25zdCBbZGV0YWlsLCBzZXREZXRhaWxdID0gdXNlU3RhdGU8Sm9iRGV0YWlsIHwgbnVsbD4obnVsbCk7CiAgY29uc3QgW2RldGFpbExvYWRpbmcsIHNldERldGFpbExvYWRpbmddID0gdXNlU3RhdGUoZmFsc2UpOwogIGNvbnN0IFtidXN5LCBzZXRCdXN5XSA9IHVzZVN0YXRlKGZhbHNlKTsKICBjb25zdCBbbm90aWNlLCBzZXROb3RpY2VdID0gdXNlU3RhdGU8c3RyaW5nIHwgbnVsbD4obnVsbCk7CgogIGNvbnN0IGxvYWQgPSB1c2VDYWxsYmFjayhhc3luYyAoKSA9PiB7CiAgICBzZXRMb2FkaW5nKHRydWUpOwogICAgc2V0RXJyb3IobnVsbCk7CiAgICB0cnkgewogICAgICBjb25zdCBkYXRhID0gYXdhaXQgam9ic0FwaS5taW5lKHsgcm9sZTogJ2N1c3RvbWVyJywgbGltaXQ6IDUwIH0pOwogICAgICBzZXRKb2JzKGRhdGEuaXRlbXMgPz8gW10pOwogICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgIHNldEVycm9yKGVyciBpbnN0YW5jZW9mIEFwaUVycm9yID8gZXJyLm1lc3NhZ2UgOiB0KCdjb21tb24uZXJyb3InKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRMb2FkaW5nKGZhbHNlKTsKICAgIH0KICB9LCBbdF0pOwoKICB1c2VFZmZlY3QoKCkgPT4gewogICAgdm9pZCBsb2FkKCk7CiAgfSwgW2xvYWRdKTsKCiAgYXN5bmMgZnVuY3Rpb24gb25FeHBhbmQoaWQ6IHN0cmluZykgewogICAgaWYgKG9wZW5JZCA9PT0gaWQpIHsKICAgICAgc2V0T3BlbklkKG51bGwpOwogICAgICBzZXREZXRhaWwobnVsbCk7CiAgICAgIHJldHVybjsKICAgIH0KICAgIHNldE9wZW5JZChpZCk7CiAgICBzZXREZXRhaWxMb2FkaW5nKHRydWUpOwogICAgc2V0RGV0YWlsKG51bGwpOwogICAgdHJ5IHsKICAgICAgc2V0RGV0YWlsKGF3YWl0IGpvYnNBcGkuZ2V0KGlkKSk7CiAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgc2V0RXJyb3IoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgPyBlcnIubWVzc2FnZSA6IHQoJ2NvbW1vbi5lcnJvcicpKTsKICAgIH0gZmluYWxseSB7CiAgICAgIHNldERldGFpbExvYWRpbmcoZmFsc2UpOwogICAgfQogIH0KCiAgYXN5bmMgZnVuY3Rpb24gb25Db25maXJtKGlkOiBzdHJpbmcpIHsKICAgIHNldEJ1c3kodHJ1ZSk7CiAgICBzZXRFcnJvcihudWxsKTsKICAgIHNldE5vdGljZShudWxsKTsKICAgIHRyeSB7CiAgICAgIGF3YWl0IGpvYnNBcGkuY29uZmlybShpZCk7CiAgICAgIHNldE5vdGljZSh0KCdqb2IuY29uZmlybWVkJykpOwogICAgICBhd2FpdCBsb2FkKCk7CiAgICAgIHNldERldGFpbChhd2FpdCBqb2JzQXBpLmdldChpZCkpOwogICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgIHNldEVycm9yKGVyciBpbnN0YW5jZW9mIEFwaUVycm9yID8gZXJyLm1lc3NhZ2UgOiB0KCdjb21tb24uZXJyb3InKSk7CiAgICB9IGZpbmFsbHkgewogICAgICBzZXRCdXN5KGZhbHNlKTsKICAgIH0KICB9CgogIGFzeW5jIGZ1bmN0aW9uIG9uUGF5KGlkOiBzdHJpbmcpIHsKICAgIHNldEJ1c3kodHJ1ZSk7CiAgICBzZXRFcnJvcihudWxsKTsKICAgIHNldE5vdGljZShudWxsKTsKICAgIHRyeSB7CiAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IHBheW1lbnRzQXBpLnBheUpvYihpZCwgJ0NBUkQnKTsKICAgICAgc2V0Tm90aWNlKHJlc3VsdC5zdGF0dXMgPT09ICdGQUlMRUQnID8gdCgncGF5bWVudC5wYXltZW50RmFpbGVkJykgOiB0KCdwYXltZW50LnBhaWQnKSk7CiAgICAgIGF3YWl0IGxvYWQoKTsKICAgICAgc2V0RGV0YWlsKGF3YWl0IGpvYnNBcGkuZ2V0KGlkKSk7CiAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgc2V0RXJyb3IoZXJyIGluc3RhbmNlb2YgQXBpRXJyb3IgPyBlcnIubWVzc2FnZSA6IHQoJ2NvbW1vbi5lcnJvcicpKTsKICAgIH0gZmluYWxseSB7CiAgICAgIHNldEJ1c3koZmFsc2UpOwogICAgfQogIH0KCiAgcmV0dXJuICgKICAgIDxkaXYgY2xhc3NOYW1lPSJhcHAtc2hlbGwgY29udGFpbmVyLXBhZ2UgcHktNSI+CiAgICAgIDxoZWFkZXI+CiAgICAgICAgPGgxIGNsYXNzTmFtZT0idGV4dC0yeGwgZm9udC1leHRyYWJvbGQgdHJhY2tpbmctdGlnaHQiPnt0KCdqb2IudGl0bGUnKX08L2gxPgogICAgICAgIDxwIGNsYXNzTmFtZT0ibXQtMSB0ZXh0LXNtIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+e3QoJ2pvYi5zdWJ0aXRsZScpfTwvcD4KICAgICAgPC9oZWFkZXI+CgogICAgICB7bm90aWNlICYmICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBtdC00IGZsZXggaXRlbXMtY2VudGVyIGdhcC0yIGJvcmRlci1bcmdiKHZhcigtLW9rKS8wLjM1KV0gcC0zIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLW9rKSldIj4KICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0iY2hlY2siIHNpemU9ezE2fSAvPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJmbGV4LTEiPntub3RpY2V9PC9zcGFuPgogICAgICAgIDwvZGl2PgogICAgICApfQogICAgICB7ZXJyb3IgJiYgKAogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIG10LTQgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTIgYm9yZGVyLVtyZ2IodmFyKC0tZGFuZ2VyKS8wLjM1KV0gcC0zIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWRhbmdlcikpXSI+CiAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9InNoaWVsZCIgc2l6ZT17MTZ9IC8+CiAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9ImZsZXgtMSI+e2Vycm9yfTwvc3Bhbj4KICAgICAgICAgIDxidXR0b24gb25DbGljaz17bG9hZH0gY2xhc3NOYW1lPSJmb250LXNlbWlib2xkIHVuZGVybGluZSI+CiAgICAgICAgICAgIHt0KCdjb21tb24ucmV0cnknKX0KICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgIDwvZGl2PgogICAgICApfQoKICAgICAge2xvYWRpbmcgPyAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgbXQtNSBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBnYXAtMiBweC01IHB5LTEwIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICAgIDxTcGlubmVyIHNpemU9ezE4fSAvPgogICAgICAgICAge3QoJ2NvbW1vbi5sb2FkaW5nJyl9CiAgICAgICAgPC9kaXY+CiAgICAgICkgOiBqb2JzLmxlbmd0aCA9PT0gMCA/ICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibXQtNSI+CiAgICAgICAgICA8RW1wdHlTdGF0ZQogICAgICAgICAgICB0aXRsZT17dCgnam9iLmVtcHR5Jyl9CiAgICAgICAgICAgIGljb249ezxDYXRlZ29yeUljb24gbmFtZT0idHJ1Y2siIHNpemU9ezI2fSAvPn0KICAgICAgICAgICAgYWN0aW9uPXsKICAgICAgICAgICAgICA8TGluayBocmVmPXtgLyR7bG9jYWxlfS9yZXF1ZXN0c2B9IGNsYXNzTmFtZT0iYnRuIGJ0bi1wcmltYXJ5Ij4KICAgICAgICAgICAgICAgIHt0KCdyZXF1ZXN0Lm15VGl0bGUnKX0KICAgICAgICAgICAgICA8L0xpbms+CiAgICAgICAgICAgIH0KICAgICAgICAgIC8+CiAgICAgICAgPC9kaXY+CiAgICAgICkgOiAoCiAgICAgICAgPHVsIGNsYXNzTmFtZT0ibXQtNSBzcGFjZS15LTMiPgogICAgICAgICAge2pvYnMubWFwKChqLCBpKSA9PiAoCiAgICAgICAgICAgIDxsaQogICAgICAgICAgICAgIGtleT17ai5pZH0KICAgICAgICAgICAgICBjbGFzc05hbWU9ImNhcmQgY2FyZC10YXAgc2xpZGUtaW4gb3ZlcmZsb3ctaGlkZGVuIgogICAgICAgICAgICAgIHN0eWxlPXt7IGFuaW1hdGlvbkRlbGF5OiBgJHtpICogNDB9bXNgIH19CiAgICAgICAgICAgID4KICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBvbkV4cGFuZChqLmlkKX0KICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iZmxleCB3LWZ1bGwgaXRlbXMtY2VudGVyIGp1c3RpZnktYmV0d2VlbiBnYXAtNCBwLTQgdGV4dC1zdGFydCIKICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWluLXctMCBmbGV4LTEiPgogICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0idHJ1bmNhdGUgZm9udC1ib2xkIj57ai5zZXJ2aWNlX25hbWUgfHwgai5jb2RlfTwvZGl2PgogICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibXQtMSBmbGV4IGZsZXgtd3JhcCBnYXAteC0zIGdhcC15LTEgdGV4dC14cyB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj4KICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRudW0iPntqLmNvZGV9PC9zcGFuPgogICAgICAgICAgICAgICAgICAgIDxzcGFuPgogICAgICAgICAgICAgICAgICAgICAge3QoJ2pvYi5wcm92aWRlcicpfToge2oucHJvdmlkZXJfbmFtZX0KICAgICAgICAgICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0bnVtIj4KICAgICAgICAgICAgICAgICAgICAgIHt0KCdqb2IucHJpY2UnKX06IHsoai5maW5hbF9wcmljZV9taW5vciAvIDEwMCkudG9GaXhlZCgyKX0ge2ouY3VycmVuY3l9CiAgICAgICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgICAgICAgIDxzcGFuPntuZXcgRGF0ZShqLmNyZWF0ZWRfYXQpLnRvTG9jYWxlRGF0ZVN0cmluZyhsb2NhbGUpfTwvc3Bhbj4KICAgICAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iZmxleCBmbGV4LW5vbmUgaXRlbXMtY2VudGVyIGdhcC0yIj4KICAgICAgICAgICAgICAgICAgPFN0YXR1c0JhZGdlIHN0YXR1cz17ai5zdGF0dXN9IC8+CiAgICAgICAgICAgICAgICAgIDxDYXRlZ29yeUljb24KICAgICAgICAgICAgICAgICAgICBuYW1lPSJjaGV2cm9uIgogICAgICAgICAgICAgICAgICAgIHNpemU9ezE2fQogICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17YHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0gdHJhbnNpdGlvbi10cmFuc2Zvcm0gcnRsOnJvdGF0ZS0xODAgJHtvcGVuSWQgPT09IGouaWQgPyAncm90YXRlLTkwJyA6ICcnfWB9CiAgICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICAgICAgPC9idXR0b24+CgogICAgICAgICAgICAgIHtvcGVuSWQgPT09IGouaWQgJiYgKAogICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImJvcmRlci10IGJvcmRlci1bcmdiKHZhcigtLWxpbmUpKV0gcC00Ij4KICAgICAgICAgICAgICAgICAge2RldGFpbExvYWRpbmcgPyAoCiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktY2VudGVyIGdhcC0yIHB5LTQgdGV4dC1zbSB0ZXh0LVtyZ2IodmFyKC0tZmctbXV0ZWQpKV0iPgogICAgICAgICAgICAgICAgICAgICAgPFNwaW5uZXIgc2l6ZT17MTZ9IC8+CiAgICAgICAgICAgICAgICAgICAgICB7dCgnY29tbW9uLmxvYWRpbmcnKX0KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgKSA6IGRldGFpbCA/ICgKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ic3BhY2UteS01Ij4KICAgICAgICAgICAgICAgICAgICAgIHsoVFJBQ0tBQkxFX0pPQl9TVEFUVVNFUyBhcyByZWFkb25seSBzdHJpbmdbXSkuaW5jbHVkZXMoZGV0YWlsLmpvYi5zdGF0dXMpICYmCiAgICAgICAgICAgICAgICAgICAgICAgIGRldGFpbC5qb2IucHJvdmlkZXJfaWQgJiYgKAogICAgICAgICAgICAgICAgICAgICAgICAgIDxUcmFja1Byb3ZpZGVyCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcm92aWRlcklkPXtkZXRhaWwuam9iLnByb3ZpZGVyX2lkfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJvdmlkZXJOYW1lPXtkZXRhaWwuam9iLnByb3ZpZGVyX25hbWV9CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkZXN0aW5hdGlvbj17CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRldGFpbC5qb2IucGlja3VwX2xhdCAhPSBudWxsICYmIGRldGFpbC5qb2IucGlja3VwX2xuZyAhPSBudWxsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPyB7IGxhdDogTnVtYmVyKGRldGFpbC5qb2IucGlja3VwX2xhdCksIGxuZzogTnVtYmVyKGRldGFpbC5qb2IucGlja3VwX2xuZykgfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDogbnVsbAogICAgICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgcmVmcmVzaEtleT17ZGV0YWlsLmpvYi5zdGF0dXN9CiAgICAgICAgICAgICAgICAgICAgICAgICAgLz4KICAgICAgICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJncmlkIGdyaWQtY29scy0yIGdhcC0zIHRleHQtc20iPgogICAgICAgICAgICAgICAgICAgICAgICA8SW5mbyBsYWJlbD17dCgnam9iLnByb3ZpZGVyJyl9PntkZXRhaWwuam9iLnByb3ZpZGVyX25hbWUgPz8gJ+KAlCd9PC9JbmZvPgogICAgICAgICAgICAgICAgICAgICAgICA8SW5mbyBsYWJlbD17dCgnam9iLnByaWNlJyl9PgogICAgICAgICAgICAgICAgICAgICAgICAgIDxQcmljZSBtaW5vcj17ZGV0YWlsLmpvYi5maW5hbF9wcmljZV9taW5vcn0gY3VycmVuY3k9e2RldGFpbC5qb2IuY3VycmVuY3l9IHNpemU9InNtIiAvPgogICAgICAgICAgICAgICAgICAgICAgICA8L0luZm8+CiAgICAgICAgICAgICAgICAgICAgICAgIDxJbmZvIGxhYmVsPXt0KCdqb2IuY29tbWlzc2lvbicpfT4KICAgICAgICAgICAgICAgICAgICAgICAgICA8UHJpY2UgbWlub3I9e2RldGFpbC5qb2IuY29tbWlzc2lvbl9taW5vcn0gY3VycmVuY3k9e2RldGFpbC5qb2IuY3VycmVuY3l9IHNpemU9InNtIiAvPgogICAgICAgICAgICAgICAgICAgICAgICA8L0luZm8+CiAgICAgICAgICAgICAgICAgICAgICAgIDxJbmZvIGxhYmVsPXt0KCdqb2IucHJvdmlkZXJOZXQnKX0+CiAgICAgICAgICAgICAgICAgICAgICAgICAgPFByaWNlIG1pbm9yPXtkZXRhaWwuam9iLnByb3ZpZGVyX25ldF9taW5vcn0gY3VycmVuY3k9e2RldGFpbC5qb2IuY3VycmVuY3l9IHNpemU9InNtIiAvPgogICAgICAgICAgICAgICAgICAgICAgICA8L0luZm8+CiAgICAgICAgICAgICAgICAgICAgICAgIHtkZXRhaWwucGF5bWVudCAmJiAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgPEluZm8gbGFiZWw9e3QoJ2pvYi5wYXltZW50U3RhdHVzJyl9PgogICAgICAgICAgICAgICAgICAgICAgICAgICAgPFN0YXR1c0JhZGdlIHN0YXR1cz17ZGV0YWlsLnBheW1lbnQuc3RhdHVzfSAvPgogICAgICAgICAgICAgICAgICAgICAgICAgIDwvSW5mbz4KICAgICAgICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgICAgICAgICAge2RldGFpbC5qb2Iuc2NoZWR1bGVkX2F0ICYmICgKICAgICAgICAgICAgICAgICAgICAgICAgICA8SW5mbyBsYWJlbD17dCgncmVxdWVzdC5zY2hlZHVsZWRBdCcpfT4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHtuZXcgRGF0ZShkZXRhaWwuam9iLnNjaGVkdWxlZF9hdCkudG9Mb2NhbGVTdHJpbmcobG9jYWxlKX0KICAgICAgICAgICAgICAgICAgICAgICAgICA8L0luZm8+CiAgICAgICAgICAgICAgICAgICAgICAgICl9CiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICAgICAgICAgICAgICA8ZGl2PgogICAgICAgICAgICAgICAgICAgICAgICA8aDMgY2xhc3NOYW1lPSJtYi0yIHRleHQtc20gZm9udC1ib2xkIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+e3QoJ2pvYi50aW1lbGluZScpfTwvaDM+CiAgICAgICAgICAgICAgICAgICAgICAgIHtkZXRhaWwuZXZlbnRzLmxlbmd0aCA9PT0gMCA/ICgKICAgICAgICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9InRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgnam9iLm5vRXZlbnRzJyl9PC9wPgogICAgICAgICAgICAgICAgICAgICAgICApIDogKAogICAgICAgICAgICAgICAgICAgICAgICAgIDxvbCBjbGFzc05hbWU9InNwYWNlLXktMiBib3JkZXItcy0yIGJvcmRlci1bcmdiKHZhcigtLWxpbmUtc3Ryb25nKSldIHBzLTMiPgogICAgICAgICAgICAgICAgICAgICAgICAgICAge2RldGFpbC5ldmVudHMubWFwKChlKSA9PiAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxsaSBrZXk9e2UuaWR9IGNsYXNzTmFtZT0idGV4dC1zbSI+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZvbnQtc2VtaWJvbGQiPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAge2UudG9fc3RhdHVzID8/IGUudHlwZX0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0idG51bSB0ZXh0LXhzIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAge25ldyBEYXRlKGUuY3JlYXRlZF9hdCkudG9Mb2NhbGVTdHJpbmcobG9jYWxlKX0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHtlLmFjdG9yX3JvbGUgPyBgIMK3ICR7ZS5hY3Rvcl9yb2xlfWAgOiAnJ30KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPC9saT4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICkpfQogICAgICAgICAgICAgICAgICAgICAgICAgIDwvb2w+CiAgICAgICAgICAgICAgICAgICAgICAgICl9CiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICAgICAgICAgICAgICB7ZGV0YWlsLmpvYi5zdGF0dXMgPT09ICdDT01QTEVURUQnICYmIGRldGFpbC5wYXltZW50Py5zdGF0dXMgIT09ICdDQVBUVVJFRCcgJiYgKAogICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBmbGV4LXdyYXAgZ2FwLTMiPgogICAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b24KICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IG9uQ29uZmlybShqLmlkKX0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtidXN5fQogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJidG4gYnRuLXByaW1hcnkgYnRuLWxnIGZsZXgtMSIKICAgICAgICAgICAgICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB7YnVzeSA/IDxTcGlubmVyIHNpemU9ezE4fSAvPiA6IDxDYXRlZ29yeUljb24gbmFtZT0iY2hlY2siIHNpemU9ezE4fSAvPn0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHt0KCdqb2IuY29uZmlybUNvbXBsZXRpb24nKX0KICAgICAgICAgICAgICAgICAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBvblBheShqLmlkKX0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtidXN5fQogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJidG4gYnRuLXNlY29uZGFyeSBidG4tbGcgZmxleC0xIgogICAgICAgICAgICAgICAgICAgICAgICAgID4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHtidXN5ID8gPFNwaW5uZXIgc2l6ZT17MTh9IC8+IDogPENhdGVnb3J5SWNvbiBuYW1lPSJ3YWxsZXQiIHNpemU9ezE4fSAvPn0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHtidXN5ID8gdCgncGF5bWVudC5wYXlpbmcnKSA6IHQoJ3BheW1lbnQucGF5Tm93Jyl9CiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgKSA6IG51bGx9CiAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICApfQogICAgICAgICAgICA8L2xpPgogICAgICAgICAgKSl9CiAgICAgICAgPC91bD4KICAgICAgKX0KICAgIDwvZGl2PgogICk7Cn0KCmZ1bmN0aW9uIEluZm8oeyBsYWJlbCwgY2hpbGRyZW4gfTogeyBsYWJlbDogc3RyaW5nOyBjaGlsZHJlbjogUmVhY3QuUmVhY3ROb2RlIH0pIHsKICByZXR1cm4gKAogICAgPGRpdj4KICAgICAgPGRpdiBjbGFzc05hbWU9InRleHQteHMgZm9udC1zZW1pYm9sZCB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj57bGFiZWx9PC9kaXY+CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0wLjUgZm9udC1zZW1pYm9sZCI+e2NoaWxkcmVufTwvZGl2PgogICAgPC9kaXY+CiAgKTsKfQo=
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useI18n } from '@/lib/i18n-provider';
+import { RequireAuth } from '@/lib/require-auth';
+import { ApiError } from '@/lib/auth-api';
+import { jobsApi, TRACKABLE_JOB_STATUSES, type JobDetail, type JobSummary } from '@/lib/jobs-api';
+import { paymentsApi } from '@/lib/payments-api';
+import { TrackProvider } from '@/lib/map/track-provider';
+import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { EmptyState, Price, Spinner } from '@/lib/ui';
+
+/**
+ * Customer jobs list.
+ *
+ * A job exists once the customer accepts an offer. This screen lists confirmed
+ * engagements and, on expand, shows the assigned provider, the event timeline
+ * and the payment summary — all from `/jobs/mine` and `/jobs/:id`.
+ */
+export default function JobsPage() {
+  return (
+    <RequireAuth roles={['CUSTOMER']}>
+      <JobsView />
+    </RequireAuth>
+  );
+}
+
+function JobsView() {
+  const { t, locale } = useI18n();
+  const [jobs, setJobs] = useState<JobSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<JobDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await jobsApi.mine({ role: 'customer', limit: 50 });
+      setJobs(data.items ?? []);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function onExpand(id: string) {
+    if (openId === id) {
+      setOpenId(null);
+      setDetail(null);
+      return;
+    }
+    setOpenId(id);
+    setDetailLoading(true);
+    setDetail(null);
+    try {
+      setDetail(await jobsApi.get(id));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  async function onConfirm(id: string) {
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      await jobsApi.confirm(id);
+      setNotice(t('job.confirmed'));
+      await load();
+      setDetail(await jobsApi.get(id));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onPay(id: string) {
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await paymentsApi.payJob(id, 'CARD');
+      setNotice(result.status === 'FAILED' ? t('payment.paymentFailed') : t('payment.paid'));
+      await load();
+      setDetail(await jobsApi.get(id));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="app-shell container-page py-5">
+      <header>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('job.title')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('job.subtitle')}</p>
+      </header>
+
+      {notice && (
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          <span className="flex-1">{notice}</span>
+        </div>
+      )}
+      {error && (
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">
+            {t('common.retry')}
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="card mt-5 flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
+      ) : jobs.length === 0 ? (
+        <div className="mt-5">
+          <EmptyState
+            title={t('job.empty')}
+            icon={<CategoryIcon name="truck" size={26} />}
+            action={
+              <Link href={`/${locale}/requests`} className="btn btn-primary">
+                {t('request.myTitle')}
+              </Link>
+            }
+          />
+        </div>
+      ) : (
+        <ul className="mt-5 space-y-3">
+          {jobs.map((j, i) => (
+            <li
+              key={j.id}
+              className="card card-tap slide-in overflow-hidden"
+              style={{ animationDelay: `${i * 40}ms` }}
+            >
+              <button
+                onClick={() => onExpand(j.id)}
+                className="flex w-full items-center justify-between gap-4 p-4 text-start"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-bold">{j.service_name || j.code}</div>
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[rgb(var(--fg-subtle))]">
+                    <span className="tnum">{j.code}</span>
+                    <span>
+                      {t('job.provider')}: {j.provider_name}
+                    </span>
+                    <span className="tnum">
+                      {t('job.price')}: {(j.final_price_minor / 100).toFixed(2)} {j.currency}
+                    </span>
+                    <span>{new Date(j.created_at).toLocaleDateString(locale)}</span>
+                  </div>
+                </div>
+                <span className="flex flex-none items-center gap-2">
+                  <StatusBadge status={j.status} />
+                  <CategoryIcon
+                    name="chevron"
+                    size={16}
+                    className={`text-[rgb(var(--fg-subtle))] transition-transform rtl:rotate-180 ${openId === j.id ? 'rotate-90' : ''}`}
+                  />
+                </span>
+              </button>
+
+              {openId === j.id && (
+                <div className="border-t border-[rgb(var(--line))] p-4">
+                  {detailLoading ? (
+                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-[rgb(var(--fg-muted))]">
+                      <Spinner size={16} />
+                      {t('common.loading')}
+                    </div>
+                  ) : detail ? (
+                    <div className="space-y-5">
+                      {(TRACKABLE_JOB_STATUSES as readonly string[]).includes(detail.job.status) &&
+                        detail.job.provider_id && (
+                          <TrackProvider
+                            providerId={detail.job.provider_id}
+                            providerName={detail.job.provider_name}
+                            destination={
+                              detail.job.pickup_lat != null && detail.job.pickup_lng != null
+                                ? { lat: Number(detail.job.pickup_lat), lng: Number(detail.job.pickup_lng) }
+                                : null
+                            }
+                            refreshKey={detail.job.status}
+                          />
+                        )}
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <Info label={t('job.provider')}>{detail.job.provider_name ?? '—'}</Info>
+                        <Info label={t('job.price')}>
+                          <Price minor={detail.job.final_price_minor} currency={detail.job.currency} size="sm" />
+                        </Info>
+                        <Info label={t('job.commission')}>
+                          <Price minor={detail.job.commission_minor} currency={detail.job.currency} size="sm" />
+                        </Info>
+                        <Info label={t('job.providerNet')}>
+                          <Price minor={detail.job.provider_net_minor} currency={detail.job.currency} size="sm" />
+                        </Info>
+                        {detail.payment && (
+                          <Info label={t('job.paymentStatus')}>
+                            <StatusBadge status={detail.payment.status} />
+                          </Info>
+                        )}
+                        {detail.job.scheduled_at && (
+                          <Info label={t('request.scheduledAt')}>
+                            {new Date(detail.job.scheduled_at).toLocaleString(locale)}
+                          </Info>
+                        )}
+                      </div>
+
+                      <div>
+                        <h3 className="mb-2 text-sm font-bold text-[rgb(var(--fg-muted))]">{t('job.timeline')}</h3>
+                        {detail.events.length === 0 ? (
+                          <p className="text-sm text-[rgb(var(--fg-muted))]">{t('job.noEvents')}</p>
+                        ) : (
+                          <ol className="space-y-2 border-s-2 border-[rgb(var(--line-strong))] ps-3">
+                            {detail.events.map((e) => (
+                              <li key={e.id} className="text-sm">
+                                <div className="font-semibold">
+                                  {e.to_status ?? e.type}
+                                </div>
+                                <div className="tnum text-xs text-[rgb(var(--fg-subtle))]">
+                                  {new Date(e.created_at).toLocaleString(locale)}
+                                  {e.actor_role ? ` · ${e.actor_role}` : ''}
+                                </div>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
+                      </div>
+
+                      {detail.job.status === 'COMPLETED' && detail.payment?.status !== 'CAPTURED' && (
+                        <div className="flex flex-wrap gap-3">
+                          <button
+                            onClick={() => onConfirm(j.id)}
+                            disabled={busy}
+                            className="btn btn-primary btn-lg flex-1"
+                          >
+                            {busy ? <Spinner size={18} /> : <CategoryIcon name="check" size={18} />}
+                            {t('job.confirmCompletion')}
+                          </button>
+                          <button
+                            onClick={() => onPay(j.id)}
+                            disabled={busy}
+                            className="btn btn-secondary btn-lg flex-1"
+                          >
+                            {busy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
+                            {busy ? t('payment.paying') : t('payment.payNow')}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Info({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">{label}</div>
+      <div className="mt-0.5 font-semibold">{children}</div>
+    </div>
+  );
+}
