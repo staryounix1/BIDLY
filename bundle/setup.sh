@@ -49,8 +49,16 @@ echo "==> Downloaded"
 
 echo "==> Unpacking"
 cat "$PARTS_DIR"/c*.bin > bundle.tar.gz
-tar xzf bundle.tar.gz
+# Android storage does not support hard links, which pnpm's store uses.
+# --hard-dereference turns every hard link into a normal file so the
+# extraction succeeds on Termux.
+tar xzf bundle.tar.gz --hard-dereference --no-same-owner --no-same-permissions 2>/dev/null \
+  || tar xzf bundle.tar.gz --hard-dereference --no-same-owner
 rm -rf "$PARTS_DIR" bundle.tar.gz
+if [ ! -f "$DIR/dist/server.js" ]; then
+  echo "!! Extraction failed: dist/server.js is missing."
+  exit 1
+fi
 echo "==> Installed to $DIR"
 
 # --- start script -----------------------------------------------------
