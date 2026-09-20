@@ -1,1 +1,113 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJBZGQgdGhlIHNlY29uZCBiYXRjaCBvZiByZWRlc2lnbiBrZXlzIHRvIHRoZSB3ZWIgaTE4biBjYXRhbG9ncy4KCklkZW1wb3RlbnQ6IGRlZXAtbWVyZ2VzLCBzbyByZS1ydW5uaW5nIG5ldmVyIGR1cGxpY2F0ZXMgb3IgcmVvcmRlcnMgZXhpc3RpbmcKa2V5cy4gUnVuIGFmdGVyIHNjcmlwdHMvcmVkZXNpZ24taTE4bi5weS4KIiIiCmltcG9ydCBqc29uCmltcG9ydCBzeXMKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpST09UID0gUGF0aChfX2ZpbGVfXykucmVzb2x2ZSgpLnBhcmVudHNbMV0KTUVTU0FHRVMgPSBST09UIC8gImFwcHMiIC8gIndlYiIgLyAic3JjIiAvICJtZXNzYWdlcyIKCk5FVyA9IHsKICAgICJhciI6IHsKICAgICAgICAiaG9tZSI6IHsKICAgICAgICAgICAgImdyZWV0aW5nIjogItij2YfZhNin2Ysge25hbWV9IiwKICAgICAgICAgICAgImhvd0l0V29ya3MiOiAi2YPZitmB2KfYtCDYrtiv2KfZhdifIiwKICAgICAgICAgICAgInN0ZXAxIjogItin2YbYtNixINi32YTYqNmDIiwKICAgICAgICAgICAgInN0ZXAxSGludCI6ICLZgtmI2YQg2LTZhtmIINmF2K3Yqtin2Kwg2YjYrdiv2ZHYryDYp9mE2LPYudixIiwKICAgICAgICAgICAgInN0ZXAyIjogItin2YTYrdix2YHZitmK2YYg2YrYqtmG2KfZgdiz2YgiLAogICAgICAgICAgICAic3RlcDJIaW50IjogItiq2YjYtdmE2YMg2LnYsdmI2LYg2YXZhiDYp9mE2YLYsdmK2KjZitmGINmF2YbZgyIsCiAgICAgICAgICAgICJzdGVwMyI6ICLYp9iu2KrYsSDZiNij2YPZkdivIiwKICAgICAgICAgICAgInN0ZXAzSGludCI6ICLYqtiq2KjZkdi5INin2YTYrdix2YHZiiDYrdiq2Ykg2YrZiNi12YQiLAogICAgICAgIH0sCiAgICAgICAgImNhdGFsb2ciOiB7CiAgICAgICAgICAgICJwb3B1bGFyIjogItin2YTYo9mD2KvYsSDYt9mE2KjYp9mLIiwKICAgICAgICB9LAogICAgICAgICJwcm92aWRlckhvbWUiOiB7CiAgICAgICAgICAgICJvbmxpbmUiOiAi2YXYqtin2K0iLAogICAgICAgICAgICAib2ZmbGluZSI6ICLYutmK2LEg2YXYqtin2K0iLAogICAgICAgICAgICAiYXZhaWxhYmxlTm93IjogItij2YbYqiDZhdiq2KfYrSDZhNin2LPYqtmC2KjYp9mEINin2YTYt9mE2KjYp9iqIiwKICAgICAgICAgICAgInVuYXZhaWxhYmxlTm93IjogItij2YbYqiDYutmK2LEg2YXYqtin2K0g4oCUINmE2YYg2KrYtdmE2YMg2LfZhNio2KfYqiIsCiAgICAgICAgICAgICJuZWFyYnlSZXF1ZXN0cyI6ICLYt9mE2KjYp9iqINmC2LHZitio2Kkg2YXZhtmDIiwKICAgICAgICAgICAgImFjdGl2ZUpvYiI6ICLZhdmH2YXYqSDYrNin2LHZitipIiwKICAgICAgICAgICAgInRvZGF5RWFybmluZ3MiOiAi2YXYr9in2K7ZitmEINin2YTZitmI2YUiLAogICAgICAgICAgICAidG9nZ2xlSGludCI6ICLYqNiv2ZHZhCDYrdin2YTYqtmDINio2KfYtCDYqtiz2KrZgtio2YQg2KfZhNi32YTYqNin2KoiLAogICAgICAgIH0sCiAgICB9LAogICAgImVuIjogewogICAgICAgICJob21lIjogewogICAgICAgICAgICAiZ3JlZXRpbmciOiAiSGkge25hbWV9IiwKICAgICAgICAgICAgImhvd0l0V29ya3MiOiAiSG93IGl0IHdvcmtzIiwKICAgICAgICAgICAgInN0ZXAxIjogIlBvc3QgeW91ciByZXF1ZXN0IiwKICAgICAgICAgICAgInN0ZXAxSGludCI6ICJTYXkgd2hhdCB5b3UgbmVlZCBhbmQgc2V0IHlvdXIgcHJpY2UiLAogICAgICAgICAgICAic3RlcDIiOiAiQ3JhZnRzbWVuIGNvbXBldGUiLAogICAgICAgICAgICAic3RlcDJIaW50IjogIk9mZmVycyBhcnJpdmUgZnJvbSBwcm92aWRlcnMgbmVhciB5b3UiLAogICAgICAgICAgICAic3RlcDMiOiAiUGljayBhbmQgY29uZmlybSIsCiAgICAgICAgICAgICJzdGVwM0hpbnQiOiAiVHJhY2sgdGhlIGNyYWZ0c21hbiB1bnRpbCBhcnJpdmFsIiwKICAgICAgICB9LAogICAgICAgICJjYXRhbG9nIjogewogICAgICAgICAgICAicG9wdWxhciI6ICJNb3N0IHJlcXVlc3RlZCIsCiAgICAgICAgfSwKICAgICAgICAicHJvdmlkZXJIb21lIjogewogICAgICAgICAgICAib25saW5lIjogIkF2YWlsYWJsZSIsCiAgICAgICAgICAgICJvZmZsaW5lIjogIlVuYXZhaWxhYmxlIiwKICAgICAgICAgICAgImF2YWlsYWJsZU5vdyI6ICJZb3UgYXJlIGF2YWlsYWJsZSBmb3IgcmVxdWVzdHMiLAogICAgICAgICAgICAidW5hdmFpbGFibGVOb3ciOiAiWW91IGFyZSB1bmF2YWlsYWJsZSDigJQgbm8gcmVxdWVzdHMgd2lsbCBhcnJpdmUiLAogICAgICAgICAgICAibmVhcmJ5UmVxdWVzdHMiOiAiUmVxdWVzdHMgbmVhciB5b3UiLAogICAgICAgICAgICAiYWN0aXZlSm9iIjogIkFjdGl2ZSBqb2IiLAogICAgICAgICAgICAidG9kYXlFYXJuaW5ncyI6ICJUb2RheSdzIGVhcm5pbmdzIiwKICAgICAgICAgICAgInRvZ2dsZUhpbnQiOiAiVG9nZ2xlIHlvdXIgc3RhdHVzIHRvIHJlY2VpdmUgcmVxdWVzdHMiLAogICAgICAgIH0sCiAgICB9LAogICAgImZyIjogewogICAgICAgICJob21lIjogewogICAgICAgICAgICAiZ3JlZXRpbmciOiAiQm9uam91ciB7bmFtZX0iLAogICAgICAgICAgICAiaG93SXRXb3JrcyI6ICJDb21tZW50IMOnYSBtYXJjaGUiLAogICAgICAgICAgICAic3RlcDEiOiAiUHVibGlleiB2b3RyZSBkZW1hbmRlIiwKICAgICAgICAgICAgInN0ZXAxSGludCI6ICJEaXRlcyBjZSBkb250IHZvdXMgYXZleiBiZXNvaW4gZXQgZml4ZXogdm90cmUgcHJpeCIsCiAgICAgICAgICAgICJzdGVwMiI6ICJMZXMgYXJ0aXNhbnMgY29uY3VycmVuY2VudCIsCiAgICAgICAgICAgICJzdGVwMkhpbnQiOiAiTGVzIG9mZnJlcyBhcnJpdmVudCBkZXMgcHJlc3RhdGFpcmVzIHByb2NoZXMiLAogICAgICAgICAgICAic3RlcDMiOiAiQ2hvaXNpc3NleiBldCBjb25maXJtZXoiLAogICAgICAgICAgICAic3RlcDNIaW50IjogIlN1aXZleiBsJ2FydGlzYW4ganVzcXUnw6AgbCdhcnJpdsOpZSIsCiAgICAgICAgfSwKICAgICAgICAiY2F0YWxvZyI6IHsKICAgICAgICAgICAgInBvcHVsYXIiOiAiTGVzIHBsdXMgZGVtYW5kw6lzIiwKICAgICAgICB9LAogICAgICAgICJwcm92aWRlckhvbWUiOiB7CiAgICAgICAgICAgICJvbmxpbmUiOiAiRGlzcG9uaWJsZSIsCiAgICAgICAgICAgICJvZmZsaW5lIjogIkluZGlzcG9uaWJsZSIsCiAgICAgICAgICAgICJhdmFpbGFibGVOb3ciOiAiVm91cyDDqnRlcyBkaXNwb25pYmxlIHBvdXIgZGVzIGRlbWFuZGVzIiwKICAgICAgICAgICAgInVuYXZhaWxhYmxlTm93IjogIlZvdXMgw6p0ZXMgaW5kaXNwb25pYmxlIOKAlCBhdWN1bmUgZGVtYW5kZSBuJ2Fycml2ZXJhIiwKICAgICAgICAgICAgIm5lYXJieVJlcXVlc3RzIjogIkRlbWFuZGVzIHByb2NoZXMgZGUgdm91cyIsCiAgICAgICAgICAgICJhY3RpdmVKb2IiOiAiTWlzc2lvbiBlbiBjb3VycyIsCiAgICAgICAgICAgICJ0b2RheUVhcm5pbmdzIjogIkdhaW5zIGR1IGpvdXIiLAogICAgICAgICAgICAidG9nZ2xlSGludCI6ICJDaGFuZ2V6IHZvdHJlIHN0YXR1dCBwb3VyIHJlY2V2b2lyIGRlcyBkZW1hbmRlcyIsCiAgICAgICAgfSwKICAgIH0sCn0KCgpkZWYgZGVlcF9tZXJnZShiYXNlOiBkaWN0LCBleHRyYTogZGljdCkgLT4gZGljdDoKICAgIGZvciBrZXksIHZhbHVlIGluIGV4dHJhLml0ZW1zKCk6CiAgICAgICAgaWYgaXNpbnN0YW5jZSh2YWx1ZSwgZGljdCkgYW5kIGlzaW5zdGFuY2UoYmFzZS5nZXQoa2V5KSwgZGljdCk6CiAgICAgICAgICAgIGRlZXBfbWVyZ2UoYmFzZVtrZXldLCB2YWx1ZSkKICAgICAgICBlbHNlOgogICAgICAgICAgICBiYXNlW2tleV0gPSB2YWx1ZQogICAgcmV0dXJuIGJhc2UKCgpkZWYgbWFpbigpIC0+IGludDoKICAgIGZvciBsb2NhbGUgaW4gKCJhciIsICJlbiIsICJmciIpOgogICAgICAgIHBhdGggPSBNRVNTQUdFUyAvIGYie2xvY2FsZX0uanNvbiIKICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSkKICAgICAgICBkZWVwX21lcmdlKGRhdGEsIE5FV1tsb2NhbGVdKQogICAgICAgIHBhdGgud3JpdGVfdGV4dChqc29uLmR1bXBzKGRhdGEsIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpICsgIlxuIiwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBwcmludChmIntsb2NhbGV9OiBtZXJnZWQiKQogICAgcmV0dXJuIDAKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgc3lzLmV4aXQobWFpbigpKQo=
+#!/usr/bin/env python3
+"""Add the second batch of redesign keys to the web i18n catalogs.
+
+Idempotent: deep-merges, so re-running never duplicates or reorders existing
+keys. Run after scripts/redesign-i18n.py.
+"""
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+MESSAGES = ROOT / "apps" / "web" / "src" / "messages"
+
+NEW = {
+    "ar": {
+        "home": {
+            "greeting": "أهلاً {name}",
+            "howItWorks": "كيفاش خدام؟",
+            "step1": "انشر طلبك",
+            "step1Hint": "قول شنو محتاج وحدّد السعر",
+            "step2": "الحرفيين يتنافسو",
+            "step2Hint": "توصلك عروض من القريبين منك",
+            "step3": "اختر وأكّد",
+            "step3Hint": "تتبّع الحرفي حتى يوصل",
+        },
+        "catalog": {
+            "popular": "الأكثر طلباً",
+        },
+        "providerHome": {
+            "online": "متاح",
+            "offline": "غير متاح",
+            "availableNow": "أنت متاح لاستقبال الطلبات",
+            "unavailableNow": "أنت غير متاح — لن تصلك طلبات",
+            "nearbyRequests": "طلبات قريبة منك",
+            "activeJob": "مهمة جارية",
+            "todayEarnings": "مداخيل اليوم",
+            "toggleHint": "بدّل حالتك باش تستقبل الطلبات",
+        },
+    },
+    "en": {
+        "home": {
+            "greeting": "Hi {name}",
+            "howItWorks": "How it works",
+            "step1": "Post your request",
+            "step1Hint": "Say what you need and set your price",
+            "step2": "Craftsmen compete",
+            "step2Hint": "Offers arrive from providers near you",
+            "step3": "Pick and confirm",
+            "step3Hint": "Track the craftsman until arrival",
+        },
+        "catalog": {
+            "popular": "Most requested",
+        },
+        "providerHome": {
+            "online": "Available",
+            "offline": "Unavailable",
+            "availableNow": "You are available for requests",
+            "unavailableNow": "You are unavailable — no requests will arrive",
+            "nearbyRequests": "Requests near you",
+            "activeJob": "Active job",
+            "todayEarnings": "Today's earnings",
+            "toggleHint": "Toggle your status to receive requests",
+        },
+    },
+    "fr": {
+        "home": {
+            "greeting": "Bonjour {name}",
+            "howItWorks": "Comment ça marche",
+            "step1": "Publiez votre demande",
+            "step1Hint": "Dites ce dont vous avez besoin et fixez votre prix",
+            "step2": "Les artisans concurrencent",
+            "step2Hint": "Les offres arrivent des prestataires proches",
+            "step3": "Choisissez et confirmez",
+            "step3Hint": "Suivez l'artisan jusqu'à l'arrivée",
+        },
+        "catalog": {
+            "popular": "Les plus demandés",
+        },
+        "providerHome": {
+            "online": "Disponible",
+            "offline": "Indisponible",
+            "availableNow": "Vous êtes disponible pour des demandes",
+            "unavailableNow": "Vous êtes indisponible — aucune demande n'arrivera",
+            "nearbyRequests": "Demandes proches de vous",
+            "activeJob": "Mission en cours",
+            "todayEarnings": "Gains du jour",
+            "toggleHint": "Changez votre statut pour recevoir des demandes",
+        },
+    },
+}
+
+
+def deep_merge(base: dict, extra: dict) -> dict:
+    for key, value in extra.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            deep_merge(base[key], value)
+        else:
+            base[key] = value
+    return base
+
+
+def main() -> int:
+    for locale in ("ar", "en", "fr"):
+        path = MESSAGES / f"{locale}.json"
+        data = json.loads(path.read_text(encoding="utf-8"))
+        deep_merge(data, NEW[locale])
+        path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"{locale}: merged")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
