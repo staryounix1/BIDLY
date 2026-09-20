@@ -10,12 +10,27 @@ import '@/app/globals.css';
 export const metadata: Metadata = {
   title: 'BIDLY',
   description: 'Request any service and let local providers compete for your job.',
+  manifest: '/manifest.webmanifest',
+  applicationName: 'BIDLY',
+  appleWebApp: {
+    capable: true,
+    title: 'BIDLY',
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: '#0f172a',
+  viewportFit: 'cover',
 };
 
 export function generateStaticParams() {
