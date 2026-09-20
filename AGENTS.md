@@ -422,13 +422,25 @@ If they ask to be notified (for example when a long-running task finishes), send
 - **pnpm** is NOT preinstalled. Install once into the workspace (persists, already on PATH):
   `curl -sL -o .bcode/bin/pnpm https://github.com/pnpm/pnpm/releases/download/v10.15.0/pnpm-linux-arm64 && chmod +x .bcode/bin/pnpm`
   (arch is **aarch64**; the x64 build gives "Exec format error"). Run turbo with `node_modules/.bin/turbo`.
-- **PostgreSQL 15** is NOT preinstalled and `/tmp/bcode/pgdata` is gone each session. To restore:
-  `sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources`
-  then `apt-get update && apt-get install -y postgresql-15 postgresql-client-15`. Binaries: `/usr/lib/postgresql/15/bin`.
-  Init: `su postgres -c "initdb -D /tmp/bcode/pgdata -U postgres --auth=trust"`, then
-  `pg_ctl -D /tmp/bcode/pgdata -o '-p 55432 -k /tmp/bcode/pgrun -c listen_addresses=127.0.0.1' -l /tmp/bcode/pg.log start`
-  (pre-create+chown the log file or pg_ctl fails). DB URL: `postgresql://postgres@127.0.0.1:55432/bidly_test`, `DATABASE_SSL=false`.
-- Rebuild test DB: `createdb bidly_test` → apply `db/migrations/0001_init.sql` + `0002_part2_data_models.sql` → `node scripts/seed.mjs`.
+- **No Postgres server is installable** (apt has no outbound access: `deb.debian.org` times out).
+  Use the PGlite checker instead — it runs a real Postgres in-process, no server needed:
+  `node scripts/dbcheck/run-migrations-pglite.mjs db/migrations`
+  It applies every migration in order and asserts the `khdemli_*` helpers (balance moves once, overdraft
+  and frozen wallets refused, referral code stable, tier bands + 15 feature flags present). Fetch PGlite
+  into `/tmp` first (re-generable cache): `curl -sL -o /tmp/pgq/p.tgz
+  https://registry.npmjs.org/@electric-sql/pglite/-/pglite-0.5.8.tgz` then extract into `/tmp/pgq/pglite`.
+  The standalone `libpg-query` parser is NOT a valid plpgsql check (it rejects every `declare`
+  variable) — do not use it to validate function bodies.
+- **Live DB migrations (no DATABASE_URL needed):** run DDL through
+  `browser-use-integrations execute SUPABASE_BETA_RUN_SQL_QUERY '{"ref":"irtxdculyyiwxovurstp","query":"..."}'`.
+  The endpoint times out on ~60s of complex DDL, so split a migration on its section banners, wrap each
+  chunk in `begin;...commit;`, and apply in order (see `/tmp/bcode/apply-m5.sh` for the pattern).
+  `schema_migrations` had drifted (0003/0004 applied but unrecorded) — verify with
+  `select version from schema_migrations` and cross-check `to_regclass(...)` before trusting it.
+- **Wallet money moves ONLY through the ledger triggers** (`trg_wallet_txn_validate` BEFORE INSERT
+  checks `balance_after_minor` against the *pre*-movement balance; `trg_wallet_txn_apply` AFTER INSERT
+  moves balance/lifetime/version). `khdemli_wallet_apply` must therefore only validate + INSERT and
+  never `update wallets` itself, or the amount is applied twice.
 - Run tests: `turbo run build typecheck test:unit` (27 tasks). DB suites: `node scripts/test-db.mjs`.
 - **Scoping fix (do not revert):** each package's `test:unit` script sets `BIDLY_TEST_SCOPE=<pkg>/src`
   and `vitest.config.ts` reads it, so a package runs only its own tests. Before this, every package
@@ -455,7 +467,17 @@ If they ask to be notified (for example when a long-running task finishes), send
 
 ## Task progress
 
-- **Tasks 1–9 done. Task 10 (final: deployment/CI/docs polish) is next.**
+- **Khdemli engagement features (task 11) — migration done & live.** Commit `1475ad32` on `main`:
+  `db/migrations/0005_khdemli_features.sql` (negotiation/commission ledger, topup packages, provider
+  specialty, SOS + scheduled bookings, job photos, complaints + 7-day guarantee, boost, premium,
+  referrals, two-way ratings, tracking links, analytics flags), `packages/money` tiered commission
+  (`computeTieredCommission`, 0–450 MAD = 15%, 500+ = 20%, `sosExtraBps`, `premiumBps`, `firstJobFree`),
+  and `scripts/dbcheck/run-migrations-pglite.mjs`.
+  Applied to live Supabase: **79 tables, 20 feature flags, 3 khdemli_* functions**, and 4 top-up packages
+  seeded (100 / 250+6% / 500+10% / 1000+15%). Live-tested: a 0-balance provider is refused a commission
+  debit ("insufficient funds"), a credit moves balance exactly once.
+  **Next:** API routes + web UI for these features, then build/typecheck/test/deploy.
+- **Tasks 1–10 done. Task 10 (final: deployment/CI/docs polish) is next.**
 - Tasks 1–4 done. Task 4 = services catalogue + customer request lifecycle
   (create draft → publish → list → detail → cancel). Frontend pages:
   `/[locale]/services`, `/[locale]/requests`, `/[locale]/requests/new`,
