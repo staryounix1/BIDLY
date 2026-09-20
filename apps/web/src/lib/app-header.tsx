@@ -110,13 +110,24 @@ export function BottomNav() {
       { href: `/${locale}/login`, key: 'signIn', icon: 'user' },
     ];
   } else if (user.role === 'PROVIDER') {
-    tabs = [
-      { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
-      { href: `/${locale}/provider/requests`, key: 'feed', icon: 'radar' },
-      { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
-      { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
-      { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
-    ];
+    // Until identity is approved a provider has not been vetted, so the
+    // available-requests feed stays hidden: they can set up, see their own
+    // jobs and talk to people, but they cannot browse work to take on.
+    const vetted = user.activation?.identity ?? true;
+    tabs = vetted
+      ? [
+          { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
+          { href: `/${locale}/provider/requests`, key: 'feed', icon: 'radar' },
+          { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
+          { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
+          { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+        ]
+      : [
+          { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
+          { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
+          { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+          { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
+        ];
   } else if (user.role === 'ADMIN') {
     // Staff run the platform, not the marketplace: the admin console replaces
     // the provider tabs. Sending an admin to /provider/* always 403s, because
