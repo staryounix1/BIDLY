@@ -467,6 +467,25 @@ If they ask to be notified (for example when a long-running task finishes), send
 
 ## Task progress
 
+- **Verification switches now actually govern registration (task 14) — fixed, awaiting the phone update.**
+  Reported by the user: with the email check switched **off**, signing up still demanded email
+  verification. Cause: `registerWithEmail` **hard-coded** `status='PENDING'` and always emailed a code —
+  it never read the `settings` table. The switches were pure UI.
+  - `auth.service.ts` now calls `loadVerificationPolicy()` (reads `verification.email_enabled` /
+    `whatsapp_enabled` / `identity_enabled`) and, when email is off, inserts **ACTIVE** with
+    `email_verified_at = now()` and sends no code. On = old PENDING+code flow.
+  - `auth.routes.ts` message is conditional; otherwise it still said "check your email".
+  - `signUp()` in `auth-provider.tsx` used to **discard** the API's `verificationRequired`;
+    `register/page.tsx` rendered "check your email" unconditionally. Now it follows the API.
+  - **Lesson (this keeps recurring):** a switch that writes to `settings` is not wired until something
+    *reads* it. Verify by exercising the behaviour it claims to control, not by watching the toggle
+    change colour. The live old bundle reproduced the bug (`verificationRequired: true` with the
+    switch off) — that is the check to repeat after the phone update.
+- **IMPORTANT: check `verification.*` values before reasoning about sign-up.** Current live values at
+  the time of writing: email **false**, whatsapp **false**, identity **true**.
+
+## Task progress (earlier)
+
 - **Verification switches (task 13) — done, live and click-tested.**
   `/admin/settings` shows a **«التحقق من الحسابات»** section with three site-wide switches:
   **email, WhatsApp, identity**. Each is one click (no Save button), green when on. Scope is the whole
