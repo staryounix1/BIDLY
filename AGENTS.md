@@ -467,25 +467,24 @@ If they ask to be notified (for example when a long-running task finishes), send
 
 ## Task progress
 
-- **Accounts verification tab (task 13) — built, committed, deployed; waiting on the phone update.**
-  `/admin/settings` now has three tabs (Features | Site settings | Accounts). The Accounts tab lists
-  every account with its three checks as switches: **email, WhatsApp, identity**. API:
-  `GET /admin/accounts`, `PUT /admin/accounts/:id/verify/:kind` (`EMAIL|WHATSAPP|IDENTITY`), audited
-  through `recordAction` in the same transaction.
-  - **State mapping:** email/WhatsApp live on `users.email_verified_at` / `phone_verified_at`;
-    identity is a `verification_records` row of type `IDENTITY`; WhatsApp is a `PHONE` record with
-    `payload->>'channel' = 'WHATSAPP'` (keeps the two phone-ish checks distinguishable).
-  - **Migration `0006_verification_records_user.sql` (applied live).** `verification_records.provider_id`
-    was `NOT NULL` — the table was modelled for provider onboarding — so verifying a plain CUSTOMER
-    failed with **23502**. 0006 drops the NOT NULL, adds `idx_verification_records_user`, and adds a
-    partial unique index (`uq_verification_records_live`) allowing one live record per user+type+channel.
-  - **Verified against the live DB, not just types:** the accounts SELECT, the enable INSERT and the
-    disable EXPIRED-update were each run in a rolled-back transaction. This is how the 23502 surfaced —
-    typechecking alone would never have caught it.
-- **`verification_records` has BOTH `provider_id` and `user_id`** (both left-joinable). `provider_id`
-  is null for non-provider accounts after 0006.
-- **`admin_actions` is append-only** — a trigger (`deny_mutation`) blocks DELETE/UPDATE, so test rows
-  cannot be cleaned up. Do live SQL tests inside `begin; … rollback;`.
+- **Verification switches (task 13) — done, live and click-tested.**
+  `/admin/settings` shows a **«التحقق من الحسابات»** section with three site-wide switches:
+  **email, WhatsApp, identity**. Each is one click (no Save button), green when on. Scope is the whole
+  platform, NOT per-account — an earlier cut built a per-account list and that was explicitly rejected.
+  - Stored as ordinary `settings` rows in the **`verification`** group:
+    `verification.email_enabled` (on), `verification.whatsapp_enabled` (off),
+    `verification.identity_enabled` (off). Seeded live; **no migration needed**.
+  - The page lists them via `VERIFICATION_KEYS` and calls `PUT /admin/settings/:key` with a boolean
+    (`toggleBooleanSetting`), optimistic with revert.
+- **Bug found and fixed: `GET /admin/settings` omitted `value_type` and `group_name`.** The page groups
+  by `group_name` and picks an editor per `value_type`, so every setting silently fell into one "other"
+  group as free text. The route now selects both. **This needs the phone update to take effect.**
+- **Removed the per-account API** (`/admin/accounts`, `/verify/:kind`) and the `accounts` i18n keys.
+  There is no `/admin/accounts` route in the current source — if you see one on the live API, the phone
+  is running an older bundle.
+- **Verified by driving the real page:** logged in as admin, clicked the WhatsApp switch, saw (1/3)→(2/3)
+  and confirmed the new value landed in `settings`, then set it back to off. Green = on
+  (`rgb(50,244,234)` family), grey = off.
 
 ## Task progress (earlier)
 
