@@ -1,1 +1,168 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlQ2FsbGJhY2ssIHVzZUVmZmVjdCwgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7CmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluayc7CmltcG9ydCB7IHVzZUkxOG4gfSBmcm9tICdAL2xpYi9pMThuLXByb3ZpZGVyJzsKaW1wb3J0IHsgUmVxdWlyZUF1dGggfSBmcm9tICdAL2xpYi9yZXF1aXJlLWF1dGgnOwppbXBvcnQgeyBBcGlFcnJvciB9IGZyb20gJ0AvbGliL2F1dGgtYXBpJzsKaW1wb3J0IHsgam9ic0FwaSwgcHJvdmlkZXJOZXh0QWN0aW9uLCB0eXBlIEpvYlN1bW1hcnkgfSBmcm9tICdAL2xpYi9qb2JzLWFwaSc7CmltcG9ydCB7IFN0YXR1c0JhZGdlIH0gZnJvbSAnQC9saWIvc3RhdHVzLWJhZGdlJzsKaW1wb3J0IHsgQ2F0ZWdvcnlJY29uIH0gZnJvbSAnQC9saWIvaWNvbnMnOwppbXBvcnQgeyBQcmljZSwgU3Bpbm5lciB9IGZyb20gJ0AvbGliL3VpJzsKCi8qKgogKiBQcm92aWRlciBqb2JzLgogKgogKiBTcGxpdCBpbnRvIGFjdGl2ZSB3b3JrIGFuZCBoaXN0b3J5LiAiQWN0aXZlIiBpcyBldmVyeSBzdGF0dXMgd2hlcmUgdGhlCiAqIHByb3ZpZGVyIHN0aWxsIGhhcyBhbiBhY3Rpb247IGV2ZXJ5dGhpbmcgZWxzZSBpcyBwYXN0IHdvcmsuIEhpc3RvcnkgaXMgc2NvcGVkCiAqIGJ5IHRoZSBBUEkgdG8gdGhlIHNpZ25lZC1pbiBwcm92aWRlciwgc28gb25lIHByb3ZpZGVyIGNhbiBuZXZlciBzZWUgYW5vdGhlcidzCiAqIGpvYnMuCiAqLwoKY29uc3QgQUNUSVZFX1NUQVRVU0VTID0gWwogICdDUkVBVEVEJywKICAnQ09ORklSTUVEJywKICAnUFJPVklERVJfRU5fUk9VVEUnLAogICdQUk9WSURFUl9BUlJJVkVEJywKICAnSU5fUFJPR1JFU1MnLAogICdTVEFSVEVEJywKXTsKCmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIFByb3ZpZGVySm9ic1BhZ2UoKSB7CiAgcmV0dXJuICgKICAgIDxSZXF1aXJlQXV0aCByb2xlcz17WydQUk9WSURFUicsICdBRE1JTiddfT4KICAgICAgPFByb3ZpZGVySm9ic1ZpZXcgLz4KICAgIDwvUmVxdWlyZUF1dGg+CiAgKTsKfQoKZnVuY3Rpb24gUHJvdmlkZXJKb2JzVmlldygpIHsKICBjb25zdCB7IHQsIGxvY2FsZSB9ID0gdXNlSTE4bigpOwogIGNvbnN0IFtqb2JzLCBzZXRKb2JzXSA9IHVzZVN0YXRlPEpvYlN1bW1hcnlbXT4oW10pOwogIGNvbnN0IFtsb2FkaW5nLCBzZXRMb2FkaW5nXSA9IHVzZVN0YXRlKHRydWUpOwogIGNvbnN0IFtlcnJvciwgc2V0RXJyb3JdID0gdXNlU3RhdGU8c3RyaW5nIHwgbnVsbD4obnVsbCk7CiAgY29uc3QgW3RhYiwgc2V0VGFiXSA9IHVzZVN0YXRlPCdhY3RpdmUnIHwgJ2hpc3RvcnknPignYWN0aXZlJyk7CgogIGNvbnN0IGxvYWQgPSB1c2VDYWxsYmFjayhhc3luYyAoKSA9PiB7CiAgICBzZXRMb2FkaW5nKHRydWUpOwogICAgc2V0RXJyb3IobnVsbCk7CiAgICB0cnkgewogICAgICBjb25zdCBkYXRhID0gYXdhaXQgam9ic0FwaS5taW5lKHsgbGltaXQ6IDEwMCwgcm9sZTogJ3Byb3ZpZGVyJyB9KTsKICAgICAgc2V0Sm9icyhkYXRhLml0ZW1zID8/IFtdKTsKICAgIH0gY2F0Y2ggKGVycikgewogICAgICBzZXRFcnJvcihlcnIgaW5zdGFuY2VvZiBBcGlFcnJvciA/IGVyci5tZXNzYWdlIDogdCgnY29tbW9uLmVycm9yJykpOwogICAgfSBmaW5hbGx5IHsKICAgICAgc2V0TG9hZGluZyhmYWxzZSk7CiAgICB9CiAgfSwgW3RdKTsKCiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIHZvaWQgbG9hZCgpOwogIH0sIFtsb2FkXSk7CgogIGNvbnN0IGFjdGl2ZSA9IGpvYnMuZmlsdGVyKChqKSA9PiBBQ1RJVkVfU1RBVFVTRVMuaW5jbHVkZXMoai5zdGF0dXMpKTsKICBjb25zdCBoaXN0b3J5ID0gam9icy5maWx0ZXIoKGopID0+ICFBQ1RJVkVfU1RBVFVTRVMuaW5jbHVkZXMoai5zdGF0dXMpKTsKICBjb25zdCBzaG93biA9IHRhYiA9PT0gJ2FjdGl2ZScgPyBhY3RpdmUgOiBoaXN0b3J5OwoKICByZXR1cm4gKAogICAgPGRpdiBjbGFzc05hbWU9ImFwcC1zaGVsbCBjb250YWluZXItcGFnZSBweS01Ij4KICAgICAgPGhlYWRlciBjbGFzc05hbWU9Im1iLTQiPgogICAgICAgIDxoMSBjbGFzc05hbWU9InRleHQtMnhsIGZvbnQtYmxhY2sgdHJhY2tpbmctdGlnaHQiPnt0KCdwcm92aWRlckpvYi50aXRsZScpfTwvaDE+CiAgICAgICAgPHAgY2xhc3NOYW1lPSJtdC0xIHRleHQtc20gdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgncHJvdmlkZXJKb2Iuc3VidGl0bGUnKX08L3A+CiAgICAgIDwvaGVhZGVyPgoKICAgICAgPGRpdiBjbGFzc05hbWU9Im1iLTQgZmxleCBnYXAtMiI+CiAgICAgICAgeyhbJ2FjdGl2ZScsICdoaXN0b3J5J10gYXMgY29uc3QpLm1hcCgoa2V5KSA9PiB7CiAgICAgICAgICBjb25zdCBjb3VudCA9IGtleSA9PT0gJ2FjdGl2ZScgPyBhY3RpdmUubGVuZ3RoIDogaGlzdG9yeS5sZW5ndGg7CiAgICAgICAgICByZXR1cm4gKAogICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAga2V5PXtrZXl9CiAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0VGFiKGtleSl9CiAgICAgICAgICAgICAgY2xhc3NOYW1lPXsKICAgICAgICAgICAgICAgIHRhYiA9PT0ga2V5ID8gJ2NoaXAgY2hpcC1icmFuZCBoLTkgZmxleC0xIHB4LTQgdGV4dC1zbScgOiAnY2hpcCBjaGlwLW5ldXRyYWwgaC05IGZsZXgtMSBweC00IHRleHQtc20nCiAgICAgICAgICAgICAgfQogICAgICAgICAgICA+CiAgICAgICAgICAgICAge3QoYHByb3ZpZGVySm9iLnRhYi4ke2tleX1gKX0KICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRudW0iPih7Y291bnR9KTwvc3Bhbj4KICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICApOwogICAgICAgIH0pfQogICAgICA8L2Rpdj4KCiAgICAgIHtlcnJvciAmJiAoCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgbWItNCBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gZ2FwLTMgYm9yZGVyLVtyZ2IodmFyKC0tZGFuZ2VyKS8wLjM1KV0gcC0zLjUiPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LXNtIGZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKHZhcigtLWRhbmdlcikpXSI+e2Vycm9yfTwvc3Bhbj4KICAgICAgICAgIDxidXR0b24gb25DbGljaz17KCkgPT4gdm9pZCBsb2FkKCl9IGNsYXNzTmFtZT0idGV4dC1zbSBmb250LWJvbGQgdW5kZXJsaW5lIj4KICAgICAgICAgICAge3QoJ2NvbW1vbi5yZXRyeScpfQogICAgICAgICAgPC9idXR0b24+CiAgICAgICAgPC9kaXY+CiAgICAgICl9CgogICAgICB7bG9hZGluZyA/ICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBqdXN0aWZ5LWNlbnRlciBweS0xNiI+CiAgICAgICAgICA8U3Bpbm5lciBzaXplPXsyNn0gLz4KICAgICAgICA8L2Rpdj4KICAgICAgKSA6IHNob3duLmxlbmd0aCA9PT0gMCA/ICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iY2FyZCBmbGV4IGZsZXgtY29sIGl0ZW1zLWNlbnRlciBnYXAtMyBweC02IHB5LTE0IHRleHQtY2VudGVyIj4KICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iaWNvbi10aWxlIGgtMTYgdy0xNiI+CiAgICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0icm91dGUiIHNpemU9ezI4fSAvPgogICAgICAgICAgPC9zcGFuPgogICAgICAgICAgPHAgY2xhc3NOYW1lPSJ0ZXh0LWJhc2UgZm9udC1ib2xkIj4KICAgICAgICAgICAge3RhYiA9PT0gJ2FjdGl2ZScgPyB0KCdwcm92aWRlckpvYi5ub0FjdGl2ZScpIDogdCgncHJvdmlkZXJKb2Iubm9IaXN0b3J5Jyl9CiAgICAgICAgICA8L3A+CiAgICAgICAgPC9kaXY+CiAgICAgICkgOiAoCiAgICAgICAgPHVsIGNsYXNzTmFtZT0ic3BhY2UteS0yLjUiPgogICAgICAgICAge3Nob3duLm1hcCgoaiwgaW5kZXgpID0+IHsKICAgICAgICAgICAgY29uc3QgbmV4dCA9IHByb3ZpZGVyTmV4dEFjdGlvbihqLnN0YXR1cyk7CiAgICAgICAgICAgIGNvbnN0IGlzQWN0aXZlID0gQUNUSVZFX1NUQVRVU0VTLmluY2x1ZGVzKGouc3RhdHVzKTsKICAgICAgICAgICAgcmV0dXJuICgKICAgICAgICAgICAgICA8bGkKICAgICAgICAgICAgICAgIGtleT17ai5pZH0KICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17YGNhcmQgc2xpZGUtaW4gcC00ICR7aXNBY3RpdmUgPyAnY2FyZC1mZWF0dXJlZCcgOiAnJ31gfQogICAgICAgICAgICAgICAgc3R5bGU9e3sgYW5pbWF0aW9uRGVsYXk6IGAke01hdGgubWluKGluZGV4LCAxMikgKiA0MH1tc2AgfX0KICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBpdGVtcy1zdGFydCBqdXN0aWZ5LWJldHdlZW4gZ2FwLTMiPgogICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBtaW4tdy0wIGZsZXgtMSBpdGVtcy1zdGFydCBnYXAtMyI+CiAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJpY29uLXRpbGUgaC0xMSB3LTExIj4KICAgICAgICAgICAgICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT17aXNBY3RpdmUgPyAncm91dGUnIDogJ2NoZWNrJ30gc2l6ZT17MjF9IC8+CiAgICAgICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtaW4tdy0wIj4KICAgICAgICAgICAgICAgICAgICAgIDxMaW5rCiAgICAgICAgICAgICAgICAgICAgICAgIGhyZWY9e2AvJHtsb2NhbGV9L3Byb3ZpZGVyL2pvYnMvJHtqLmlkfWB9CiAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iYmxvY2sgdHJ1bmNhdGUgdGV4dC1bMC45Mzc1cmVtXSBmb250LWJvbGQiCiAgICAgICAgICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICAgICAgICAgIHtqLmNvZGV9IMK3IHtqLnNlcnZpY2VfbmFtZSA/PyB0KCdqb2IudGl0bGUnKX0KICAgICAgICAgICAgICAgICAgICAgIDwvTGluaz4KICAgICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT0ibXQtMC41IHRydW5jYXRlIHRleHQteHMgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICAgICAgICAgICAgICAgICAge2oucGlja3VwX2NpdHlfbmFtZSA/PyAn4oCUJ30KICAgICAgICAgICAgICAgICAgICAgICAge2ouc2NoZWR1bGVkX2F0CiAgICAgICAgICAgICAgICAgICAgICAgICAgPyBgIMK3ICR7bmV3IERhdGUoai5zY2hlZHVsZWRfYXQpLnRvTG9jYWxlRGF0ZVN0cmluZyhsb2NhbGUpfWAKICAgICAgICAgICAgICAgICAgICAgICAgICA6ICcnfQogICAgICAgICAgICAgICAgICAgICAgPC9wPgogICAgICAgICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgPFN0YXR1c0JhZGdlIHN0YXR1cz17ai5zdGF0dXN9IC8+CiAgICAgICAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibXQtMyBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gZ2FwLTMgYm9yZGVyLXQgYm9yZGVyLVtyZ2IodmFyKC0tbGluZSkpXSBwdC0zIj4KICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LXhzIGZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICAgICAgICAgICAgICB7dCgnam9iLnByb3ZpZGVyTmV0Jyl9CiAgICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgICAgPFByaWNlIG1pbm9yPXtqLnByb3ZpZGVyX25ldF9taW5vcn0gY3VycmVuY3k9e2ouY3VycmVuY3l9IHNpemU9Im1kIiAvPgogICAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgICAge25leHQgJiYgKAogICAgICAgICAgICAgICAgICA8TGluayBocmVmPXtgLyR7bG9jYWxlfS9wcm92aWRlci9qb2JzLyR7ai5pZH1gfSBjbGFzc05hbWU9ImJ0biBidG4tcHJpbWFyeSBidG4tYmxvY2sgbXQtMyI+CiAgICAgICAgICAgICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPSJhcnJvdyIgc2l6ZT17MTh9IGNsYXNzTmFtZT0icnRsOnJvdGF0ZS0xODAiIC8+CiAgICAgICAgICAgICAgICAgICAge3QoYHByb3ZpZGVySm9iLm5leHQuJHtuZXh0fWApfQogICAgICAgICAgICAgICAgICA8L0xpbms+CiAgICAgICAgICAgICAgICApfQogICAgICAgICAgICAgIDwvbGk+CiAgICAgICAgICAgICk7CiAgICAgICAgICB9KX0KICAgICAgICA8L3VsPgogICAgICApfQogICAgPC9kaXY+CiAgKTsKfQo=
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useI18n } from '@/lib/i18n-provider';
+import { RequireAuth } from '@/lib/require-auth';
+import { ApiError } from '@/lib/auth-api';
+import { jobsApi, providerNextAction, type JobSummary } from '@/lib/jobs-api';
+import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Price, Spinner } from '@/lib/ui';
+
+/**
+ * Provider jobs.
+ *
+ * Split into active work and history. "Active" is every status where the
+ * provider still has an action; everything else is past work. History is scoped
+ * by the API to the signed-in provider, so one provider can never see another's
+ * jobs.
+ */
+
+const ACTIVE_STATUSES = [
+  'CREATED',
+  'CONFIRMED',
+  'PROVIDER_EN_ROUTE',
+  'PROVIDER_ARRIVED',
+  'IN_PROGRESS',
+  'STARTED',
+];
+
+export default function ProviderJobsPage() {
+  return (
+    <RequireAuth roles={['PROVIDER', 'ADMIN']}>
+      <ProviderJobsView />
+    </RequireAuth>
+  );
+}
+
+function ProviderJobsView() {
+  const { t, locale } = useI18n();
+  const [jobs, setJobs] = useState<JobSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<'active' | 'history'>('active');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await jobsApi.mine({ limit: 100, role: 'provider' });
+      setJobs(data.items ?? []);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const active = jobs.filter((j) => ACTIVE_STATUSES.includes(j.status));
+  const history = jobs.filter((j) => !ACTIVE_STATUSES.includes(j.status));
+  const shown = tab === 'active' ? active : history;
+
+  return (
+    <div className="app-shell container-page py-5">
+      <header className="mb-4">
+        <h1 className="text-2xl font-black tracking-tight">{t('providerJob.title')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('providerJob.subtitle')}</p>
+      </header>
+
+      <div className="mb-4 flex gap-2">
+        {(['active', 'history'] as const).map((key) => {
+          const count = key === 'active' ? active.length : history.length;
+          return (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={
+                tab === key ? 'chip chip-brand h-9 flex-1 px-4 text-sm' : 'chip chip-neutral h-9 flex-1 px-4 text-sm'
+              }
+            >
+              {t(`providerJob.tab.${key}`)}
+              <span className="tnum">({count})</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {error && (
+        <div className="card mb-4 flex items-center justify-between gap-3 border-[rgb(var(--danger)/0.35)] p-3.5">
+          <span className="text-sm font-semibold text-[rgb(var(--danger))]">{error}</span>
+          <button onClick={() => void load()} className="text-sm font-bold underline">
+            {t('common.retry')}
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <Spinner size={26} />
+        </div>
+      ) : shown.length === 0 ? (
+        <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
+          <span className="icon-tile h-16 w-16">
+            <CategoryIcon name="route" size={28} />
+          </span>
+          <p className="text-base font-bold">
+            {tab === 'active' ? t('providerJob.noActive') : t('providerJob.noHistory')}
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-2.5">
+          {shown.map((j, index) => {
+            const next = providerNextAction(j.status);
+            const isActive = ACTIVE_STATUSES.includes(j.status);
+            return (
+              <li
+                key={j.id}
+                className={`card slide-in p-4 ${isActive ? 'card-featured' : ''}`}
+                style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-start gap-3">
+                    <span className="icon-tile h-11 w-11">
+                      <CategoryIcon name={isActive ? 'route' : 'check'} size={21} />
+                    </span>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/${locale}/provider/jobs/${j.id}`}
+                        className="block truncate text-[0.9375rem] font-bold"
+                      >
+                        {j.code} · {j.service_name ?? t('job.title')}
+                      </Link>
+                      <p className="mt-0.5 truncate text-xs text-[rgb(var(--fg-muted))]">
+                        {j.pickup_city_name ?? '—'}
+                        {j.scheduled_at
+                          ? ` · ${new Date(j.scheduled_at).toLocaleDateString(locale)}`
+                          : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <StatusBadge status={j.status} />
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-[rgb(var(--line))] pt-3">
+                  <span className="text-xs font-semibold text-[rgb(var(--fg-muted))]">
+                    {t('job.providerNet')}
+                  </span>
+                  <Price minor={j.provider_net_minor} currency={j.currency} size="md" />
+                </div>
+
+                {next && (
+                  <Link href={`/${locale}/provider/jobs/${j.id}`} className="btn btn-primary btn-block mt-3">
+                    <CategoryIcon name="arrow" size={18} className="rtl:rotate-180" />
+                    {t(`providerJob.next.${next}`)}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
