@@ -29,6 +29,8 @@ export default function RegisterPage() {
   const [role, setRole] = useState<'CUSTOMER' | 'PROVIDER'>('CUSTOMER');
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  /** True when the platform's email check is on and a code was sent. */
+  const [needsVerify, setNeedsVerify] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: FormEvent) {
@@ -50,7 +52,11 @@ export default function RegisterPage() {
 
     setBusy(true);
     try {
-      await signUp(parsed.data);
+      // Whether a code was emailed is the platform's decision (the admin
+      // verification switches), so the confirmation screen follows the API
+      // rather than assuming the email step always happens.
+      const result = await signUp(parsed.data);
+      setNeedsVerify(result.verificationRequired);
       setDone(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
@@ -63,9 +69,11 @@ export default function RegisterPage() {
     return (
       <div className="app-shell container-page flex flex-col items-center justify-center gap-4 py-24 text-center">
         <span className="icon-tile h-16 w-16">
-          <CategoryIcon name="doc" size={28} />
+          <CategoryIcon name={needsVerify ? 'doc' : 'check'} size={28} />
         </span>
-        <h1 className="text-xl font-black tracking-tight">{t('auth.verifyNotice')}</h1>
+        <h1 className="text-xl font-black tracking-tight">
+          {needsVerify ? t('auth.verifyNotice') : t('auth.accountReady')}
+        </h1>
         <Link href={`/${locale}/login`} className="btn btn-primary">
           {t('common.signIn')}
         </Link>

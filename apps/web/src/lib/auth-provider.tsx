@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { authApi, setUnauthorizedHandler, tokenStore, type AuthUser, type Profile } from './auth-api';
+import { authApi, setUnauthorizedHandler, tokenStore, type AuthUser, type Profile, type RegisterResponse } from './auth-api';
 
 /**
  * Client authentication state.
@@ -32,7 +32,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   hasRole: (...roles: Array<AuthUser['role']>) => boolean;
   signIn: (identifier: string, password: string) => Promise<AuthUser>;
-  signUp: (payload: Parameters<typeof authApi.register>[0]) => Promise<void>;
+  signUp: (payload: Parameters<typeof authApi.register>[0]) => Promise<RegisterResponse>;
   signOut: () => Promise<void>;
   reload: () => Promise<void>;
   saveProfile: (patch: Record<string, unknown>) => Promise<Profile>;
@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signUp = useCallback(async (payload: Parameters<typeof authApi.register>[0]) => {
-    await authApi.register(payload);
+    return authApi.register(payload);
   }, []);
 
   const signOut = useCallback(async () => {
