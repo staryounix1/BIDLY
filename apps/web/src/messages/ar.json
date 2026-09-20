@@ -538,10 +538,6 @@
     "balance": "الرصيد"
   },
   "admin": {
-    "accountsEmpty": "لا يوجد حساب مطابق",
-    "accountsHint": "فعّل أو ألغِ التحقق لكل حساب",
-    "accountsSearch": "ابحث بالبريد أو الهاتف أو الاسم…",
-    "accountsSection": "الحسابات والتحقق",
     "activeProviders": "المزودون النشطون",
     "activeUsers": "المستخدمون النشطون",
     "adjust": "تعديل الرصيد",
@@ -594,20 +590,10 @@
     "settingsHint": "عدّل القيم ثم اضغط حفظ. التغيير مسجّل في سجل الإدارة.",
     "settingsSection": "إعدادات الموقع",
     "settingsSubtitle": "الميزات وإعدادات الموقع والحسابات في مكان واحد",
-    "tab_accounts": "الحسابات",
-    "tab_features": "الميزات",
-    "tab_settings": "إعدادات الموقع",
     "title": "لوحة الإدارة",
     "transactions": "الحركات",
-    "verify_EMAIL": "تحقق الإيميل",
-    "verify_EMAIL_off": "تم إلغاء تحقق الإيميل",
-    "verify_EMAIL_on": "تم تفعيل تحقق الإيميل",
-    "verify_IDENTITY": "تحقق الهوية",
-    "verify_IDENTITY_off": "تم إلغاء تحقق الهوية",
-    "verify_IDENTITY_on": "تم تفعيل تحقق الهوية",
-    "verify_WHATSAPP": "تحقق واتساب",
-    "verify_WHATSAPP_off": "تم إلغاء تحقق واتساب",
-    "verify_WHATSAPP_on": "تم تفعيل تحقق واتساب",
+    "verificationHint": "فعّل أو ألغِ التحقق لجميع الحسابات",
+    "verificationSection": "التحقق من الحسابات",
     "wallets": "المحافظ"
   },
   "map": {

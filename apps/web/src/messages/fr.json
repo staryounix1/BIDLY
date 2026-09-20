@@ -538,10 +538,6 @@
     "balance": "Solde"
   },
   "admin": {
-    "accountsEmpty": "Aucun compte correspondant",
-    "accountsHint": "Activez ou annulez chaque vérification",
-    "accountsSearch": "Rechercher par e-mail, téléphone ou nom…",
-    "accountsSection": "Comptes et vérification",
     "activeProviders": "Prestataires actifs",
     "activeUsers": "Utilisateurs actifs",
     "adjust": "Ajuster le solde",
@@ -594,20 +590,10 @@
     "settingsHint": "Modifiez les valeurs puis enregistrez. Chaque changement est journalisé.",
     "settingsSection": "Paramètres du site",
     "settingsSubtitle": "Fonctionnalités, réglages du site et comptes au même endroit",
-    "tab_accounts": "Comptes",
-    "tab_features": "Fonctionnalités",
-    "tab_settings": "Réglages du site",
     "title": "Console d'administration",
     "transactions": "Transactions",
-    "verify_EMAIL": "Vérif. e-mail",
-    "verify_EMAIL_off": "Vérification e-mail annulée",
-    "verify_EMAIL_on": "Vérification e-mail activée",
-    "verify_IDENTITY": "Vérif. identité",
-    "verify_IDENTITY_off": "Vérification identité annulée",
-    "verify_IDENTITY_on": "Vérification identité activée",
-    "verify_WHATSAPP": "Vérif. WhatsApp",
-    "verify_WHATSAPP_off": "Vérification WhatsApp annulée",
-    "verify_WHATSAPP_on": "Vérification WhatsApp activée",
+    "verificationHint": "Activez ou désactivez chaque vérification pour tout le site",
+    "verificationSection": "Vérification des comptes",
     "wallets": "Portefeuilles"
   },
   "map": {
