@@ -122,12 +122,12 @@ export interface RegisterResponse {
 
 export const authApi = {
   async register(payload: RegisterPayload): Promise<RegisterResponse> {
-    const res = await api.post<RegisterResponse>('/auth/register', payload);
+    const res = await api.post<RegisterResponse>('/register', payload);
     return res.data;
   },
 
   async login(identifier: string, password: string): Promise<AuthSession> {
-    const res = await api.post<AuthSession>('/auth/login', { identifier, password });
+    const res = await api.post<AuthSession>('/login', { identifier, password });
     tokenStore.set(res.data.accessToken, res.data.refreshToken);
     return res.data;
   },
@@ -136,7 +136,7 @@ export const authApi = {
     const refreshToken = tokenStore.refresh();
     if (!refreshToken) return null;
     try {
-      const res = await api.post<AuthSession>('/auth/refresh', { refreshToken });
+      const res = await api.post<AuthSession>('/refresh', { refreshToken });
       tokenStore.set(res.data.accessToken, res.data.refreshToken);
       return res.data;
     } catch {
@@ -147,7 +147,7 @@ export const authApi = {
 
   async logout(): Promise<void> {
     try {
-      await api.post('/auth/logout');
+      await api.post('/logout');
     } catch {
       // Even if the server call fails, drop local credentials.
     } finally {
@@ -156,7 +156,7 @@ export const authApi = {
   },
 
   async me(): Promise<AuthUser> {
-    const res = await api.get<AuthUser & { admin_role: string | null }>('/auth/me');
+    const res = await api.get<AuthUser & { admin_role: string | null }>('/me');
     return res.data;
   },
 
@@ -171,11 +171,11 @@ export const authApi = {
   },
 
   async verifyEmail(code: string, email?: string): Promise<void> {
-    await api.post('/auth/verify-email', email ? { code, email } : { code });
+    await api.post('/verify-email', email ? { code, email } : { code });
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    await api.post('/auth/password/change', { currentPassword, newPassword });
+    await api.post('/password/change', { currentPassword, newPassword });
   },
 };
 
