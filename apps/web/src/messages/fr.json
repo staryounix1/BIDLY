@@ -398,7 +398,9 @@
     "viewAll": "Tout voir",
     "noActiveJob": "Aucune mission active pour le moment.",
     "notActive": "Votre compte prestataire n’est pas encore actif.",
-    "notActiveHint": "Vous pouvez préparer votre profil ; un administrateur doit le vérifier avant que vous puissiez envoyer des offres."
+    "notActiveHint": "Vous pouvez préparer votre profil ; un administrateur doit le vérifier avant que vous puissiez envoyer des offres.",
+    "completeProfile": "Complétez votre profil professionnel",
+    "completeProfileHint": "Ajoutez vos services, villes et tarifs pour recevoir plus de demandes."
   },
   "providerJob": {
     "title": "Mes missions",
@@ -700,16 +702,28 @@
     "toggleHint": "Changez votre statut pour recevoir des demandes"
   },
   "activation": {
-    "badge": "Une étape restante",
+    "badge": "Activation du compte",
     "title": "Activez votre compte et commencez",
-    "subtitle": "Votre compte est prêt. Confirmez-le pour publier des demandes, contacter des artisans et recevoir des offres.",
-    "codeTitle": "Saisissez votre code de vérification",
-    "codeSubtitle": "Nous vous avons envoyé un code. Saisissez-le pour activer votre compte.",
-    "email": "Confirmation de l’e-mail",
-    "whatsapp": "Confirmation du numéro WhatsApp",
-    "code": "Code de vérification",
-    "activate": "Activer mon compte",
-    "confirm": "Confirmer le code",
-    "locked": "Pour garantir la qualité, la plateforme reste bloquée jusqu’à l’activation de votre compte."
+    "subtitle": "Votre compte est prêt. Deux courtes étapes et vous pourrez publier des demandes et contacter des artisans.",
+    "start": "Commençons",
+    "stepWhatsapp": "Confirmation WhatsApp",
+    "stepIdentity": "Confirmation d’identité",
+    "whatsappSubtitle": "Saisissez votre numéro WhatsApp pour confirmer comment vous joindre.",
+    "whatsappNumber": "Numéro WhatsApp",
+    "activateWhatsapp": "Confirmer WhatsApp",
+    "verifying": "Vérification…",
+    "verifyingHint": "Vérification du numéro — gardez cette fenêtre ouverte.",
+    "identityTitle": "Vérification d’identité",
+    "identitySubtitle": "Téléversez le recto et le verso de votre carte nationale d’identité.",
+    "recto": "Recto",
+    "rectoHint": "Le côté avec votre photo et le numéro.",
+    "verso": "Verso",
+    "versoHint": "Le côté avec les informations complémentaires.",
+    "submitIdentity": "Valider l’identité",
+    "identityNote": "Notre équipe examinera votre dossier. Vous pouvez continuer à naviguer entre-temps.",
+    "reviewTitle": "Dossier reçu",
+    "reviewSubtitle": "Nous avons vos documents. Ils seront examinés bientôt, et vous pouvez naviguer dès maintenant.",
+    "continueBrowsing": "Compris, continuer",
+    "locked": "La plateforme reste bloquée jusqu’à la fin de l’activation. La déconnexion reste disponible."
   }
 }

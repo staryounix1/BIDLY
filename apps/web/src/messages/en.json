@@ -398,7 +398,9 @@
     "viewAll": "View all",
     "noActiveJob": "No active job right now.",
     "notActive": "Your provider account is not active yet.",
-    "notActiveHint": "You can prepare your profile; an admin must verify it before you can send offers."
+    "notActiveHint": "You can prepare your profile; an admin must verify it before you can send offers.",
+    "completeProfile": "Complete your professional profile",
+    "completeProfileHint": "Add your services, cities and pricing to reach more requests."
   },
   "providerJob": {
     "title": "My jobs",
@@ -700,16 +702,28 @@
     "toggleHint": "Toggle your status to receive requests"
   },
   "activation": {
-    "badge": "One step left",
+    "badge": "Account activation",
     "title": "Activate your account and get started",
-    "subtitle": "Your account is ready. Confirm it to post requests, message professionals and receive offers.",
-    "codeTitle": "Enter your verification code",
-    "codeSubtitle": "We sent you a code. Enter it to activate your account.",
-    "email": "Email confirmation",
-    "whatsapp": "WhatsApp number confirmation",
-    "code": "Verification code",
-    "activate": "Activate my account",
-    "confirm": "Confirm code",
-    "locked": "To keep quality high, the platform stays locked until your account is activated."
+    "subtitle": "Your account is ready. Two short steps and you can post requests and message professionals.",
+    "start": "Let's start",
+    "stepWhatsapp": "WhatsApp confirmation",
+    "stepIdentity": "Identity confirmation",
+    "whatsappSubtitle": "Enter your WhatsApp number so we can confirm how to reach you.",
+    "whatsappNumber": "WhatsApp number",
+    "activateWhatsapp": "Confirm WhatsApp",
+    "verifying": "Verifying…",
+    "verifyingHint": "Checking your number — keep this window open.",
+    "identityTitle": "Identity verification",
+    "identitySubtitle": "Upload the front and back of your national ID.",
+    "recto": "Front (recto)",
+    "rectoHint": "The side with your photo and ID number.",
+    "verso": "Back (verso)",
+    "versoHint": "The side with the additional details.",
+    "submitIdentity": "Submit identity",
+    "identityNote": "Our team will review your submission. You can keep browsing in the meantime.",
+    "reviewTitle": "Submission received",
+    "reviewSubtitle": "We have your documents. They will be reviewed shortly, and you can browse now.",
+    "continueBrowsing": "Got it, continue",
+    "locked": "The platform stays locked until activation is complete. Sign-out is always available."
   }
 }

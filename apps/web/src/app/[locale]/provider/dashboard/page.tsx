@@ -148,6 +148,27 @@ function ProviderDashboardView() {
         </div>
       )}
 
+      {/* Once identity clears, the account is approved but the profile behind it
+          is still bare. This is the one moment to say so, before they go looking
+          for work. */}
+      {profile.verification_status === 'VERIFIED' && (
+        <Link
+          href={`/${locale}/provider/profile`}
+          className="card card-tap mb-4 flex items-center gap-3 border-[rgb(var(--brand-500)/0.45)] bg-[rgb(var(--brand-500)/0.08)] p-4"
+        >
+          <span className="icon-tile h-11 w-11 shrink-0">
+            <CategoryIcon name="wrench" size={21} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-bold">{t('providerDash.completeProfile')}</span>
+            <span className="mt-0.5 block text-xs text-[rgb(var(--fg-muted))]">
+              {t('providerDash.completeProfileHint')}
+            </span>
+          </span>
+          <CategoryIcon name="arrow" size={18} className="shrink-0 rtl:rotate-180" />
+        </Link>
+      )}
+
       {/* Availability — the loudest control on the screen. */}
       <button
         type="button"
