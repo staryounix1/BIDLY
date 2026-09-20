@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
@@ -108,6 +109,10 @@ function AdminView() {
             {t(`admin.${x}`)}
           </button>
         ))}
+        {/* Settings lives on its own page: it is an editor, not a table view. */}
+        <Link href={`/${locale}/admin/settings`} className="chip chip-neutral">
+          {t('admin.settings')}
+        </Link>
       </nav>
 
       {error && (

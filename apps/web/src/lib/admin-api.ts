@@ -176,4 +176,42 @@ export const adminApi = {
   async settings() {
     return (await api.get<Array<Record<string, unknown>>>('/admin/settings')).data;
   },
+  async featureFlags(): Promise<AdminFeatureFlag[]> {
+    return (await api.get<AdminFeatureFlag[]>('/admin/feature-flags')).data;
+  },
+  async setFeatureFlag(key: string, enabled: boolean, rolloutPercent?: number) {
+    const body: { enabled: boolean; rolloutPercent?: number } = { enabled };
+    if (typeof rolloutPercent === 'number') body.rolloutPercent = rolloutPercent;
+    return (await api.put<AdminFeatureFlag>(`/admin/feature-flags/${encodeURIComponent(key)}`, body)).data;
+  },
+  async updateSetting(key: string, value: unknown) {
+    return (await api.put(`/admin/settings/${encodeURIComponent(key)}`, { value })).data;
+  },
 };
+
+/**
+ * A platform setting as returned by `GET /admin/settings`.
+ *
+ * `value` is whatever JSON the key holds (string, number, boolean, array or
+ * object), so the settings page inspects `value_type` to pick an editor rather
+ * than guessing from the runtime shape.
+ */
+export interface AdminSetting {
+  key: string;
+  value: unknown;
+  value_type?: string | null;
+  description?: string | null;
+  group_name?: string | null;
+  is_public?: boolean;
+  is_editable?: boolean;
+  updated_at?: string;
+}
+
+/** A switchable platform module from `GET /admin/feature-flags`. */
+export interface AdminFeatureFlag {
+  key: string;
+  enabled: boolean;
+  rollout_percent: number;
+  description?: string | null;
+  updated_at?: string;
+}
