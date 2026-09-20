@@ -10,6 +10,7 @@ import { requestsApi, type RequestSummary } from '@/lib/requests-api';
 import { jobsApi } from '@/lib/jobs-api';
 import { NearbyProvidersMap } from '@/lib/map/nearby-providers';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon, iconForSlug, type IconName } from '@/lib/icons';
 
 /**
  * Customer dashboard.
@@ -18,7 +19,38 @@ import { StatusBadge } from '@/lib/status-badge';
  * request currently in flight, headline counts, and shortcuts into the flows
  * they can act on. Everything is computed from the real APIs — the request
  * list, the offers received across requests, and the confirmed jobs.
+ *
+ * Layout follows the marketplace pattern: a greeting banner carrying the
+ * primary action, the live request elevated above everything else, a compact
+ * stat strip, then supply (nearby providers) and history.
  */
+
+const OPEN_STATUSES = [
+  'PUBLISHED',
+  'MATCHING',
+  'RECEIVING_OFFERS',
+  'PROVIDER_SELECTED',
+  'CONFIRMED',
+  'IN_PROGRESS',
+];
+
+/** Statuses that mean "someone is on their way to you right now". */
+const TRACKABLE = ['PROVIDER_SELECTED', 'CONFIRMED', 'IN_PROGRESS'];
+
+/** Currency formatting that never crashes on a null/NaN amount. */
+function money(minor: number | null | undefined, currency: string): string {
+  if (minor == null || !Number.isFinite(minor)) return '—';
+  return `${Math.round(minor / 100).toLocaleString()} ${currency}`;
+}
+
+function relativeDays(iso: string | null, locale: string): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const days = Math.round((d.getTime() - Date.now()) / 86_400_000);
+  return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(days, 'day');
+}
+
 export default function DashboardPage() {
   return (
     <RequireAuth roles={['CUSTOMER']}>
@@ -27,8 +59,6 @@ export default function DashboardPage() {
   );
 }
 
-const OPEN_STATUSES = ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED', 'CONFIRMED', 'IN_PROGRESS'];
-
 function DashboardView() {
   const { t, locale } = useI18n();
   const { user } = useAuth();
@@ -36,6 +66,7 @@ function DashboardView() {
   const [requests, setRequests] = useState<RequestSummary[]>([]);
   const [offerCount, setOfferCount] = useState(0);
   const [jobCount, setJobCount] = useState(0);
+  const [activeJob, setActiveJob] = useState<{ id: string; status: string; code: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,14 +80,18 @@ function DashboardView() {
       ]);
       const items = mine.items ?? [];
       setRequests(items);
-      setJobCount((jobs.items ?? []).filter((j) => j.status !== 'COMPLETED' && j.status !== 'CANCELLED').length);
+
+      const liveJobs = (jobs.items ?? []).filter(
+        (j) => j.status !== 'COMPLETED' && j.status !== 'CANCELLED',
+      );
+      setJobCount(liveJobs.length);
+      const running = liveJobs.find((j) => TRACKABLE.includes(j.status));
+      setActiveJob(running ? { id: running.id, status: running.status, code: running.code } : null);
 
       // Total offers received on the customer's own requests. The detail call
       // is owner-scoped, so this never leaks another customer's offers.
       const withOffers = items.filter((r) => r.offer_count > 0).slice(0, 10);
-      const details = await Promise.all(
-        withOffers.map((r) => requestsApi.get(r.id).catch(() => null)),
-      );
+      const details = await Promise.all(withOffers.map((r) => requestsApi.get(r.id).catch(() => null)));
       setOfferCount(details.reduce((sum, d) => sum + (d?.offers?.length ?? 0), 0));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
@@ -69,154 +104,500 @@ function DashboardView() {
     void load();
   }, [load]);
 
-  if (loading) {
-    return <main className="mx-auto max-w-5xl px-4 py-10 opacity-60">{t('common.loading')}</main>;
-  }
-
   const active = requests.find((r) => OPEN_STATUSES.includes(r.status));
   const openCount = requests.filter((r) => OPEN_STATUSES.includes(r.status)).length;
+  const completedCount = requests.filter((r) => r.status === 'COMPLETED').length;
+  const firstName = (user?.email?.split('@')[0] ?? '').trim();
+
+  /** Pending offers across every open request — the customer's to-do list. */
+  const pendingOffers = requests
+    .filter((r) => OPEN_STATUSES.includes(r.status) && r.offer_count > 0)
+    .reduce((n, r) => n + r.offer_count, 0);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">
-            {t('dashboard.welcome')}
-            {user?.email ? `، ${user.email.split('@')[0]}` : ''}
-          </h1>
-          <p className="mt-1 text-sm opacity-70">{t('dashboard.subtitle')}</p>
+    <main className="min-h-screen pb-14">
+      {/* Greeting banner — carries identity and the primary action. */}
+      <section className="mesh border-b border-[rgb(var(--line))]">
+        <div className="container-page py-8">
+          <div className="flex flex-wrap items-center justify-between gap-5">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                {t('dashboard.title')}
+              </p>
+              <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
+                {t('dashboard.welcome')}
+                {firstName ? `، ${firstName}` : ''}
+              </h1>
+              <p className="mt-1.5 text-sm text-[rgb(var(--fg-muted))]">{t('dashboard.subtitle')}</p>
+            </div>
+            <Link href={`/${locale}/requests/new`} className="btn btn-primary btn-lg">
+              <CategoryIcon name="spark" size={17} />
+              {t('dashboard.newRequest')}
+            </Link>
+          </div>
+
+          {/* Headline numbers, on the banner so they read at a glance. */}
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Stat
+              icon="layers"
+              label={t('dashboard.openRequests')}
+              value={openCount}
+              tone="brand"
+              href={`/${locale}/requests`}
+              loading={loading}
+            />
+            <Stat
+              icon="bolt"
+              label={t('dashboard.receivedOffers')}
+              value={offerCount}
+              tone="warn"
+              href={`/${locale}/requests`}
+              loading={loading}
+              highlight={pendingOffers > 0}
+            />
+            <Stat
+              icon="truck"
+              label={t('dashboard.activeJobs')}
+              value={jobCount}
+              tone="ok"
+              href={`/${locale}/jobs`}
+              loading={loading}
+            />
+            <Stat
+              icon="checklist"
+              label={t('dashboard.totalRequests')}
+              value={requests.length}
+              tone="neutral"
+              href={`/${locale}/requests`}
+              loading={loading}
+            />
+          </div>
         </div>
-        <Link
-          href={`/${locale}/requests/new`}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
-        >
-          + {t('dashboard.newRequest')}
-        </Link>
-      </header>
-
-      {error && (
-        <p className="mt-5 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}{' '}
-          <button onClick={load} className="underline">
-            {t('common.retry')}
-          </button>
-        </p>
-      )}
-
-      {/* Who is around — the marketplace's supply, made visible. */}
-      <section className="mt-6">
-        <NearbyProvidersMap radiusKm={15} height={280} />
       </section>
 
-      {/* Active request — the most important thing on the screen. */}
-      <section className="mt-6">
-        <h2 className="text-sm font-semibold opacity-70">{t('dashboard.activeRequest')}</h2>
-        {active ? (
-          <Link
-            href={`/${locale}/requests/${active.id}`}
-            className="mt-2 block rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 transition hover:border-emerald-500/60"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-lg font-semibold">{active.title || active.service_name}</div>
-                <p className="mt-0.5 text-xs opacity-60">
-                  <span className="mono">{active.code}</span> · {active.service_name}
-                  {active.pickup_city_name ? ` · ${active.pickup_city_name}` : ''}
-                </p>
-              </div>
-              <StatusBadge status={active.status} />
-            </div>
-            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs opacity-70">
-              <span>
-                {t('request.offersCount')}: <strong>{active.offer_count}</strong>
-              </span>
-              {active.expires_at && (
-                <span>
-                  {t('feed.expires')}: {new Date(active.expires_at).toLocaleDateString(locale)}
-                </span>
-              )}
-            </div>
-          </Link>
-        ) : (
-          <div className="mt-2 rounded-2xl border border-dashed border-black/15 p-8 text-center dark:border-white/15">
-            <p className="opacity-70">{t('dashboard.noActive')}</p>
-            <p className="mt-1 text-sm opacity-50">{t('dashboard.noActiveHint')}</p>
-            <Link
-              href={`/${locale}/services`}
-              className="mt-3 inline-block text-sm font-medium underline"
-            >
-              {t('dashboard.browseServices')}
-            </Link>
+      <div className="container-page py-7">
+        {error && (
+          <div className="card mb-6 flex flex-wrap items-center gap-3 border-red-300/60 bg-red-50/70 p-4 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">
+            <CategoryIcon name="shield" size={18} />
+            <span className="flex-1">{error}</span>
+            <button onClick={load} className="btn btn-secondary !py-1.5 !text-xs">
+              {t('common.retry')}
+            </button>
           </div>
         )}
-      </section>
 
-      {/* Headline numbers. */}
-      <section className="mt-8">
-        <h2 className="text-sm font-semibold opacity-70">{t('dashboard.stats')}</h2>
-        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label={t('dashboard.totalRequests')} value={requests.length} />
-          <Stat label={t('dashboard.openRequests')} value={openCount} />
-          <Stat label={t('dashboard.receivedOffers')} value={offerCount} />
-          <Stat label={t('dashboard.activeJobs')} value={jobCount} />
-        </div>
-      </section>
-
-      {/* Shortcuts. */}
-      <section className="mt-8">
-        <h2 className="text-sm font-semibold opacity-70">{t('dashboard.quickActions')}</h2>
-        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Action href={`/${locale}/services`} label={t('dashboard.browseServices')} />
-          <Action href={`/${locale}/requests`} label={t('request.myTitle')} />
-          <Action href={`/${locale}/jobs`} label={t('dashboard.myJobs')} />
-          <Action href={`/${locale}/profile`} label={t('nav.profile')} />
-        </div>
-      </section>
-
-      {/* Recent requests. */}
-      {requests.length > 0 && (
-        <section className="mt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold opacity-70">{t('dashboard.recentRequests')}</h2>
-            <Link href={`/${locale}/requests`} className="text-xs underline">
-              {t('dashboard.viewAll')}
-            </Link>
-          </div>
-          <ul className="mt-2 space-y-2">
-            {requests.slice(0, 5).map((r) => (
-              <li key={r.id}>
+        <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+          <div className="space-y-6">
+            {/* Live job — highest priority once a provider is assigned. */}
+            {activeJob && (
+              <section>
+                <SectionTitle icon="truck" title={t('dashboard.liveJob')} hint={t('dashboard.liveJobHint')} />
                 <Link
-                  href={`/${locale}/requests/${r.id}`}
-                  className="flex items-center justify-between gap-4 rounded-xl border border-black/10 p-3 text-sm transition hover:border-slate-400 dark:border-white/15 dark:hover:border-white/40"
+                  href={`/${locale}/jobs/${activeJob.id}`}
+                  className="card card-hover fade-rise mt-3 block border-emerald-500/40 bg-emerald-500/[0.06] p-5"
                 >
-                  <span className="min-w-0 truncate">{r.title || r.service_name}</span>
-                  <StatusBadge status={r.status} />
+                  <div className="flex items-center gap-4">
+                    <span className="relative grid h-12 w-12 flex-none place-items-center rounded-xl bg-emerald-500 text-white shadow-sm">
+                      <span className="pulse-ring absolute inset-0 rounded-xl bg-emerald-400" />
+                      <CategoryIcon name="truck" size={22} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-bold">{t('dashboard.providerOnTheWay')}</span>
+                        <StatusBadge status={activeJob.status} />
+                      </div>
+                      <p className="mt-0.5 text-xs text-[rgb(var(--fg-muted))]">
+                        <span className="tnum">{activeJob.code}</span>
+                      </p>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                      {t('dashboard.trackNow')}
+                    </span>
+                  </div>
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+              </section>
+            )}
+
+            {/* Active request — the most important thing on the screen. */}
+            <section>
+              <SectionTitle
+                icon="bolt"
+                title={t('dashboard.activeRequest')}
+                action={
+                  active ? { href: `/${locale}/requests/${active.id}`, label: t('dashboard.openRequest') } : undefined
+                }
+              />
+              {loading ? (
+                <RequestSkeleton />
+              ) : active ? (
+                <ActiveRequestCard request={active} locale={locale} />
+              ) : (
+                <EmptyActive />
+              )}
+            </section>
+
+            {/* Recent requests. */}
+            {loading ? (
+              <section>
+                <SectionTitle icon="clock" title={t('dashboard.recentRequests')} />
+                <div className="mt-3 space-y-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="card flex items-center justify-between gap-4 p-3.5">
+                      <div className="skeleton h-3.5 w-1/2" />
+                      <div className="skeleton h-6 w-24 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : requests.length > 0 ? (
+              <section>
+                <SectionTitle
+                  icon="clock"
+                  title={t('dashboard.recentRequests')}
+                  action={{ href: `/${locale}/requests`, label: t('dashboard.viewAll') }}
+                />
+                <ul className="mt-3 space-y-2">
+                  {requests.slice(0, 5).map((r, i) => (
+                    <li key={r.id} className="fade-rise" style={{ animationDelay: `${i * 40}ms` }}>
+                      <RequestRow request={r} locale={locale} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+
+          {/* Side column: supply + shortcuts + follow-ups. */}
+          <div className="space-y-6">
+            <section>
+              <SectionTitle icon="pin" title={t('dashboard.nearbyProviders')} hint={t('dashboard.nearbyHint')} />
+              <div className="card mt-3 overflow-hidden">
+                <NearbyProvidersMap radiusKm={15} height={230} />
+              </div>
+            </section>
+
+            <section>
+              <SectionTitle icon="spark" title={t('dashboard.quickActions')} />
+              <div className="mt-3 grid grid-cols-2 gap-2.5">
+                <Action icon="layers" href={`/${locale}/services`} label={t('dashboard.browseServices')} />
+                <Action icon="checklist" href={`/${locale}/requests`} label={t('request.myTitle')} />
+                <Action icon="truck" href={`/${locale}/jobs`} label={t('dashboard.myJobs')} />
+                <Action icon="shield" href={`/${locale}/profile`} label={t('nav.profile')} />
+              </div>
+            </section>
+
+            {/* Follow-ups: what actually needs the customer's attention. */}
+            {!loading && (pendingOffers > 0 || completedCount > 0 || jobCount > 0) && (
+              <section>
+                <SectionTitle icon="bolt" title={t('dashboard.needsAttention')} />
+                <div className="card mt-3 divide-y divide-[rgb(var(--line))]">
+                  {pendingOffers > 0 && (
+                    <FollowUp
+                      icon="bolt"
+                      tone="warn"
+                      href={`/${locale}/requests`}
+                      title={t('dashboard.offersWaiting', { count: pendingOffers })}
+                      hint={t('dashboard.offersWaitingHint')}
+                    />
+                  )}
+                  {activeJob && (
+                    <FollowUp
+                      icon="truck"
+                      tone="ok"
+                      href={`/${locale}/jobs/${activeJob.id}`}
+                      title={t('dashboard.jobInProgress')}
+                      hint={t('dashboard.jobInProgressHint')}
+                    />
+                  )}
+                  {completedCount > 0 && (
+                    <FollowUp
+                      icon="checklist"
+                      tone="brand"
+                      href={`/${locale}/requests`}
+                      title={t('dashboard.completedCount', { count: completedCount })}
+                      hint={t('dashboard.completedCountHint')}
+                    />
+                  )}
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+const TONES: Record<string, { tile: string; value: string }> = {
+  brand: { tile: 'bg-gradient-to-br from-indigo-500 to-violet-500 text-white', value: 'text-[rgb(var(--brand-600))] dark:text-[rgb(var(--brand-300))]' },
+  warn: { tile: 'bg-gradient-to-br from-amber-500 to-orange-600 text-white', value: 'text-amber-600 dark:text-amber-300' },
+  ok: { tile: 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white', value: 'text-emerald-600 dark:text-emerald-300' },
+  neutral: { tile: 'bg-[rgb(var(--surface-3))] text-[rgb(var(--fg-muted))]', value: 'text-[rgb(var(--fg))]' },
+};
+
+function Stat({
+  icon,
+  label,
+  value,
+  tone,
+  href,
+  loading,
+  highlight,
+}: {
+  icon: IconName | string;
+  label: string;
+  value: number;
+  tone: keyof typeof TONES;
+  href: string;
+  loading: boolean;
+  highlight?: boolean;
+}) {
+  const tn = TONES[tone] ?? TONES.neutral!;
   return (
-    <div className="rounded-2xl border border-black/10 p-4 text-center dark:border-white/15">
-      <div className="text-3xl font-bold">{value}</div>
-      <div className="mt-1 text-xs opacity-60">{label}</div>
+    <Link
+      href={href}
+      className={`card card-hover flex items-center gap-3 p-3.5 ${
+        highlight ? 'ring-2 ring-amber-400/60' : ''
+      }`}
+    >
+      <span className={`icon-tile h-10 w-10 ${tn.tile}`}>
+        <CategoryIcon name={icon as IconName} size={19} />
+      </span>
+      <div className="min-w-0">
+        {loading ? (
+          <div className="skeleton h-6 w-9" />
+        ) : (
+          <div className={`tnum text-2xl font-black leading-none ${tn.value}`}>{value}</div>
+        )}
+        <div className="mt-1 truncate text-[0.6875rem] font-semibold text-[rgb(var(--fg-subtle))]">
+          {label}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function SectionTitle({
+  icon,
+  title,
+  hint,
+  action,
+}: {
+  icon: IconName | string;
+  title: string;
+  hint?: string;
+  action?: { href: string; label: string };
+}) {
+  return (
+    <div className="flex items-end justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <span className="icon-tile h-7 w-7 bg-[rgb(var(--surface-3))] text-[rgb(var(--fg-muted))]">
+          <CategoryIcon name={icon as IconName} size={15} />
+        </span>
+        <div>
+          <h2 className="text-sm font-bold leading-tight">{title}</h2>
+          {hint && <p className="text-[0.6875rem] text-[rgb(var(--fg-subtle))]">{hint}</p>}
+        </div>
+      </div>
+      {action && (
+        <Link
+          href={action.href}
+          className="text-xs font-bold text-[rgb(var(--brand-600))] hover:underline dark:text-[rgb(var(--brand-300))]"
+        >
+          {action.label}
+        </Link>
+      )}
     </div>
   );
 }
 
-function Action({ href, label }: { href: string; label: string }) {
+/** The in-flight request, with the offer signal called out. */
+function ActiveRequestCard({ request, locale }: { request: RequestSummary; locale: string }) {
+  const { t } = useI18n();
+  const icon = iconForSlug(request.service_slug || request.service_name || '');
+  const expiry = relativeDays(request.expires_at, locale);
+
   return (
     <Link
-      href={href}
-      className="rounded-2xl border border-black/10 p-4 text-center text-sm font-medium transition hover:border-slate-400 dark:border-white/15 dark:hover:border-white/40"
+      href={`/${locale}/requests/${request.id}`}
+      className="card card-hover fade-rise mt-3 block border-[rgb(var(--brand-500))]/40 bg-[rgb(var(--brand-500))]/[0.05] p-5"
     >
-      {label}
+      <div className="flex items-start gap-4">
+        <span className="icon-tile h-12 w-12 bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm">
+          <CategoryIcon name={icon as IconName} size={22} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="truncate font-bold">{request.title || request.service_name}</h3>
+            <StatusBadge status={request.status} />
+          </div>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[rgb(var(--fg-muted))]">
+            <span className="tnum font-semibold">{request.code}</span>
+            <span aria-hidden>·</span>
+            <span>{request.service_name}</span>
+            {request.pickup_city_name && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{request.pickup_city_name}</span>
+              </>
+            )}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="rounded-xl bg-[rgb(var(--surface))] px-3 py-2.5">
+          <div className="text-[0.6875rem] font-semibold text-[rgb(var(--fg-subtle))]">
+            {t('dashboard.receivedOffers')}
+          </div>
+          <div className="tnum mt-0.5 text-lg font-black">{request.offer_count}</div>
+        </div>
+        <div className="rounded-xl bg-[rgb(var(--surface))] px-3 py-2.5">
+          <div className="text-[0.6875rem] font-semibold text-[rgb(var(--fg-subtle))]">{t('request.budget')}</div>
+          <div className="tnum mt-0.5 truncate text-sm font-bold">
+            {request.budget_min_minor == null && request.budget_max_minor == null
+              ? t('catalog.priceOnRequest')
+              : `${money(request.budget_min_minor, request.currency)} – ${money(request.budget_max_minor, request.currency)}`}
+          </div>
+        </div>
+        {expiry && (
+          <div className="rounded-xl bg-[rgb(var(--surface))] px-3 py-2.5">
+            <div className="text-[0.6875rem] font-semibold text-[rgb(var(--fg-subtle))]">{t('feed.expires')}</div>
+            <div className="mt-0.5 truncate text-sm font-bold">{expiry}</div>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between border-t border-[rgb(var(--line))] pt-3.5">
+        <span className="text-xs text-[rgb(var(--fg-muted))]">
+          {request.offer_count > 0 ? t('dashboard.offersReady') : t('dashboard.waitingOffers')}
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[rgb(var(--brand-600))] dark:text-[rgb(var(--brand-300))]">
+          {request.offer_count > 0 ? t('dashboard.compareOffers') : t('dashboard.openRequest')}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180 rtl:rotate-0">
+            <path d="M5 12h13M12 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
     </Link>
+  );
+}
+
+/** A compact row in the recent-requests list. */
+function RequestRow({ request, locale }: { request: RequestSummary; locale: string }) {
+  const icon = iconForSlug(request.service_slug || request.service_name || '');
+  return (
+    <Link
+      href={`/${locale}/requests/${request.id}`}
+      className="card card-hover flex items-center gap-3.5 p-3.5"
+    >
+      <span className="icon-tile h-10 w-10 bg-[rgb(var(--surface-3))] text-[rgb(var(--fg-muted))]">
+        <CategoryIcon name={icon as IconName} size={19} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-sm font-semibold">{request.title || request.service_name}</div>
+        <div className="tnum truncate text-xs text-[rgb(var(--fg-subtle))]">
+          {request.code} · {request.service_name}
+        </div>
+      </div>
+      {request.offer_count > 0 && (
+        <span className="chip chip-brand tnum">
+          <CategoryIcon name="bolt" size={12} />
+          {request.offer_count}
+        </span>
+      )}
+      <StatusBadge status={request.status} />
+    </Link>
+  );
+}
+
+function Action({
+  icon,
+  href,
+  label,
+}: {
+  icon: IconName | string;
+  href: string;
+  label: string;
+}) {
+  return (
+    <Link href={href} className="card card-hover flex items-center gap-2.5 p-3.5">
+      <span className="icon-tile h-9 w-9 bg-[rgb(var(--surface-3))] text-[rgb(var(--fg-muted))]">
+        <CategoryIcon name={icon as IconName} size={17} />
+      </span>
+      <span className="truncate text-[0.8125rem] font-semibold">{label}</span>
+    </Link>
+  );
+}
+
+function FollowUp({
+  icon,
+  tone,
+  href,
+  title,
+  hint,
+}: {
+  icon: IconName | string;
+  tone: keyof typeof TONES;
+  href: string;
+  title: string;
+  hint: string;
+}) {
+  const tn = TONES[tone] ?? TONES.neutral!;
+  return (
+    <Link href={href} className="flex items-center gap-3 p-3.5 transition hover:bg-[rgb(var(--surface-3))]">
+      <span className={`icon-tile h-9 w-9 ${tn.tile}`}>
+        <CategoryIcon name={icon as IconName} size={17} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[0.8125rem] font-bold">{title}</div>
+        <div className="truncate text-[0.6875rem] text-[rgb(var(--fg-subtle))]">{hint}</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180 text-[rgb(var(--fg-subtle))] rtl:rotate-0">
+        <path d="M5 12h13M12 5l7 7-7 7" />
+      </svg>
+    </Link>
+  );
+}
+
+/** Empty state for "no active request" — an invitation, not a dead end. */
+function EmptyActive() {
+  const { t, locale } = useI18n();
+  return (
+    <div className="card fade-rise mt-3 border-dashed px-6 py-10 text-center">
+      <span className="icon-tile mx-auto h-16 w-16 bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-lg">
+        <CategoryIcon name="spark" size={30} />
+      </span>
+      <p className="mt-4 font-bold">{t('dashboard.noActive')}</p>
+      <p className="mx-auto mt-1 max-w-sm text-sm text-[rgb(var(--fg-muted))]">{t('dashboard.noActiveHint')}</p>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+        <Link href={`/${locale}/requests/new`} className="btn btn-primary">
+          <CategoryIcon name="spark" size={16} />
+          {t('dashboard.newRequest')}
+        </Link>
+        <Link href={`/${locale}/services`} className="btn btn-secondary">
+          {t('dashboard.browseServices')}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function RequestSkeleton() {
+  return (
+    <div className="card mt-3 p-5">
+      <div className="flex items-start gap-4">
+        <div className="skeleton h-12 w-12 rounded-xl" />
+        <div className="flex-1 space-y-2">
+          <div className="skeleton h-4 w-1/2" />
+          <div className="skeleton h-3 w-1/3" />
+        </div>
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="skeleton h-14 rounded-xl" />
+        ))}
+      </div>
+    </div>
   );
 }
