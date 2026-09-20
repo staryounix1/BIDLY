@@ -174,6 +174,16 @@ export const authApi = {
     await api.post('/verify-email', email ? { code, email } : { code });
   },
 
+  /** Ask for a fresh email code. Requires a session. */
+  async resendVerification(): Promise<void> {
+    await api.post('/resend-verification', {});
+  },
+
+  /** Confirm the phone number with the OTP sent at sign-up. */
+  async verifyPhone(phone: string, code: string): Promise<void> {
+    await api.post('/phone/verify', { phone, code });
+  },
+
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
     await api.post('/password/change', { currentPassword, newPassword });
   },

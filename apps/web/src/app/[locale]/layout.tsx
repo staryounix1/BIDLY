@@ -4,6 +4,7 @@ import { isRtl, type Locale } from '@bidly/i18n';
 import { I18nProvider } from '@/lib/i18n-provider';
 import { AuthProvider } from '@/lib/auth-provider';
 import { AppHeader, BottomNav } from '@/lib/app-header';
+import { ActivationGate } from '@/lib/activation-gate';
 import { isAppLocale, locales } from '@/lib/locales';
 import '@/app/globals.css';
 
@@ -71,6 +72,9 @@ export default async function LocaleLayout({
               {children}
             </main>
             <BottomNav />
+            {/* Blocks the app until a new account is activated. Sits last so it
+                paints over the header and nav. */}
+            <ActivationGate />
           </AuthProvider>
         </I18nProvider>
       </body>
