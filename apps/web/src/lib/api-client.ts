@@ -54,7 +54,10 @@ export class ApiClient {
     this.baseUrl = options.baseUrl.replace(/\/$/, '');
     this.getAccessToken = options.getAccessToken ?? (() => null);
     this.onUnauthorized = options.onUnauthorized;
-    this.fetchImpl = options.fetchImpl ?? fetch;
+    // Browsers throw "Illegal invocation" when `fetch` is called with a
+    // `this` that is not the global object — which is exactly what happens
+    // when we invoke it as `this.fetchImpl(...)`. Bind it once here.
+    this.fetchImpl = (options.fetchImpl ?? fetch).bind(globalThis);
   }
 
   async request<T>(
