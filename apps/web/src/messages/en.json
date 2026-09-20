@@ -698,5 +698,18 @@
     "activeJob": "Active job",
     "todayEarnings": "Today's earnings",
     "toggleHint": "Toggle your status to receive requests"
+  },
+  "activation": {
+    "badge": "One step left",
+    "title": "Activate your account and get started",
+    "subtitle": "Your account is ready. Confirm it to post requests, message professionals and receive offers.",
+    "codeTitle": "Enter your verification code",
+    "codeSubtitle": "We sent you a code. Enter it to activate your account.",
+    "email": "Email confirmation",
+    "whatsapp": "WhatsApp number confirmation",
+    "code": "Verification code",
+    "activate": "Activate my account",
+    "confirm": "Confirm code",
+    "locked": "To keep quality high, the platform stays locked until your account is activated."
   }
 }
