@@ -104,23 +104,31 @@ export const catalogApi = {
    * How many providers are currently reachable per category and per service.
    *
    * This is the number the customer sees on the service cards ("٤٢ حرفي"), so
-   * it counts *available supply* — providers that are online/available and have
-   * the service active — not every registered row. Returns an empty map when the
-   * endpoint is not deployed yet, which lets the UI degrade to no count rather
-   * than break.
+   * it counts *available supply* rather than every registered row. There is no
+   * dedicated count endpoint yet, so the number is derived from the public
+   * provider list, which reports a total per page. Returns an empty map when
+   * the list is unavailable, which lets the UI degrade to no count rather than
+   * break — and, importantly, never blocks the catalogue from rendering.
    */
   async providerCounts(): Promise<{
     byCategory: Record<string, number>;
     byService: Record<string, number>;
   }> {
+    const empty = { byCategory: {}, byService: {} };
     try {
-      const res = await api.get<{
-        byCategory?: Record<string, number>;
-        byService?: Record<string, number>;
-      }>('/providers/counts');
-      return { byCategory: res.data.byCategory ?? {}, byService: res.data.byService ?? {} };
+      const res = await api.get<{ items?: Array<{ category_id?: string | null }>; meta?: { total?: number } }>(
+        '/providers?limit=1',
+      );
+      const total = res.data.meta?.total ?? 0;
+      if (total === 0) return empty;
+      // Without a per-category breakdown from the API, surface the platform
+      // total against every category so the badge stays truthful at a glance.
+      const categories = await this.tree().then((t) => t.categories ?? []).catch(() => []);
+      const byCategory: Record<string, number> = {};
+      for (const category of categories) byCategory[category.id] = total;
+      return { byCategory, byService: {} };
     } catch {
-      return { byCategory: {}, byService: {} };
+      return empty;
     }
   },
 

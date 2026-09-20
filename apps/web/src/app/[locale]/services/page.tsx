@@ -103,7 +103,9 @@ export default function ServicesPage() {
       try {
         const [tree, providerCounts] = await Promise.all([
           catalogApi.tree(),
-          catalogApi.providerCounts(),
+          // Counts are decoration: never let a slow or missing count endpoint
+          // hold up the catalogue the customer came for.
+          catalogApi.providerCounts().catch(() => ({ byCategory: {}, byService: {} })),
         ]);
         if (!alive) return;
         setCategories(tree.categories ?? []);
