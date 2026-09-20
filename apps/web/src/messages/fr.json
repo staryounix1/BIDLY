@@ -698,5 +698,18 @@
     "activeJob": "Mission en cours",
     "todayEarnings": "Gains du jour",
     "toggleHint": "Changez votre statut pour recevoir des demandes"
+  },
+  "activation": {
+    "badge": "Une étape restante",
+    "title": "Activez votre compte et commencez",
+    "subtitle": "Votre compte est prêt. Confirmez-le pour publier des demandes, contacter des artisans et recevoir des offres.",
+    "codeTitle": "Saisissez votre code de vérification",
+    "codeSubtitle": "Nous vous avons envoyé un code. Saisissez-le pour activer votre compte.",
+    "email": "Confirmation de l’e-mail",
+    "whatsapp": "Confirmation du numéro WhatsApp",
+    "code": "Code de vérification",
+    "activate": "Activer mon compte",
+    "confirm": "Confirmer le code",
+    "locked": "Pour garantir la qualité, la plateforme reste bloquée jusqu’à l’activation de votre compte."
   }
 }
