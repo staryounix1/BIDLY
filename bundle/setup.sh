@@ -10,7 +10,7 @@ set -e
 
 REPO="staryounix1/BIDLY"
 REF="main"
-PARTS=61
+PARTS=62
 DIR="$HOME/bidly-api"
 PARTS_DIR="$DIR/parts"
 
@@ -38,7 +38,7 @@ while [ "$i" -lt "$PARTS" ]; do
   num=$(printf "%03d" "$i")
   out="$PARTS_DIR/c$num.bin"
   if [ ! -s "$out" ]; then
-    url="https://raw.githubusercontent.com/${REPO}/${REF}/bundle/c${num}.b64"
+    url="https://raw.githubusercontent.com/${REPO}/${REF}/bundle2/c${num}.bin"
     curl -fsSL -o "$out" "$url" || { echo "Failed to download part $num"; exit 1; }
   fi
   printf "\r  part %s/%s" "$((i+1))" "$PARTS"
@@ -49,11 +49,10 @@ echo "==> Downloaded"
 
 echo "==> Unpacking"
 cat "$PARTS_DIR"/c*.bin > bundle.tar.gz
-# Android storage does not support hard links, which pnpm's store uses.
-# --hard-dereference turns every hard link into a normal file so the
-# extraction succeeds on Termux.
-tar xzf bundle.tar.gz --hard-dereference --no-same-owner --no-same-permissions 2>/dev/null \
-  || tar xzf bundle.tar.gz --hard-dereference --no-same-owner
+# The archive contains no hard links (they are unsupported on Android storage),
+# so a plain extraction works. --no-same-owner avoids chown failures.
+tar xzf bundle.tar.gz --no-same-owner --no-same-permissions 2>/dev/null \
+  || tar xzf bundle.tar.gz --no-same-owner
 rm -rf "$PARTS_DIR" bundle.tar.gz
 if [ ! -f "$DIR/dist/server.js" ]; then
   echo "!! Extraction failed: dist/server.js is missing."
