@@ -564,7 +564,8 @@
     "credit": "Créditer",
     "debit": "Débiter",
     "noPermission": "Vous n'avez pas accès à cette section.",
-    "empty": "Rien à afficher."
+    "empty": "Rien à afficher.",
+    "audit": "Journal d’audit"
   },
   "map": {
     "title": "Choisissez l'emplacement sur la carte",

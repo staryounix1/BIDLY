@@ -564,7 +564,8 @@
     "credit": "Credit",
     "debit": "Debit",
     "noPermission": "You do not have access to this section.",
-    "empty": "Nothing to show here."
+    "empty": "Nothing to show here.",
+    "audit": "Audit log"
   },
   "map": {
     "title": "Pick the location on the map",
