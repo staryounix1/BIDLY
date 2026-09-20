@@ -97,11 +97,17 @@ export function loadLeaflet(): Promise<LeafletNamespace> {
   return loader;
 }
 
-/** Tailwind-styled tile layer: light and dark variants from CARTO's free CDN. */
-export const TILE_URL =
-  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+/**
+ * Tile layer: OpenStreetMap's own raster tiles.
+ *
+ * Deliberately NOT a third-party tile CDN (CARTO, Stadia, Mapbox): several of
+ * those now serve an "API KEY REQUIRED" watermark for unregistered domains,
+ * which is exactly what a keyless map must avoid. OSM's own tiles need no key
+ * and allow light, non-commercial traffic under the tile usage policy.
+ */
+export const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 export const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 export function useLeaflet() {
   const [ready, setReady] = useState<boolean>(() => typeof window !== 'undefined' && !!window.L);
