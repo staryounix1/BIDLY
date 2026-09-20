@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
 import { env } from '@bidly/config';
 import type { AdminRole, AuthenticatedUser, UserRole } from '@bidly/types';
-import { clientQuery, queryOne, transaction } from '../../db/pool.js';
+import { clientQuery, queryMany, queryOne, transaction } from '../../db/pool.js';
 import {
   AppError,
   ERROR_CODES,
@@ -31,6 +31,37 @@ import {
   type IssuedTokens,
 } from '../../core/tokens.js';
 import { LOG_EVENTS, logEvent, newRequestId } from '../../core/logger.js';
+
+/**
+ * Which account verifications the platform currently demands.
+ *
+ * These are the three switches on the admin settings page
+ * (`verification.*` in the `settings` table). They were previously display-only:
+ * turning one off changed nothing, because registration hard-coded the email
+ * step and ignored the table entirely. Reading them here makes the switches
+ * actually govern sign-up.
+ *
+ * A missing row means "not required", so a half-configured database lets people
+ * sign up rather than locking everyone out.
+ */
+interface VerificationPolicy {
+  email: boolean;
+  whatsapp: boolean;
+  identity: boolean;
+}
+
+async function loadVerificationPolicy(): Promise<VerificationPolicy> {
+  const rows = await queryMany<{ key: string; value: unknown }>(
+    `select key, value from settings where key in
+       ('verification.email_enabled', 'verification.whatsapp_enabled', 'verification.identity_enabled')`,
+  );
+  const on = (key: string) => rows.find((r) => r.key === key)?.value === true;
+  return {
+    email: on('verification.email_enabled'),
+    whatsapp: on('verification.whatsapp_enabled'),
+    identity: on('verification.identity_enabled'),
+  };
+}
 
 /**
  * Authentication & session service.
@@ -154,15 +185,26 @@ export class AuthService {
 
     const passwordHash = await hashPassword(input.password);
 
+    // Only demand the checks the platform has switched on. With the email check
+    // off, the account is usable immediately and no code is sent; with it on,
+    // the account starts PENDING until the code is entered.
+    const verification = await loadVerificationPolicy();
+    const emailCheckRequired = verification.email;
+    const initialStatus = emailCheckRequired ? 'PENDING' : 'ACTIVE';
+
     return transaction(async (client) => {
       const c = clientQuery(client);
       const inserted = await c.one<UserRow>(
-        `insert into users (email, phone, password_hash, role, status, locale)
-         values ($1, $2, $3, $4, 'PENDING', $5)
+        `insert into users (email, phone, password_hash, role, status, locale, email_verified_at)
+         values ($1, $2, $3, $4, $5, $6, $7)
          returning id, email, phone, password_hash, role, status,
                    email_verified_at, phone_verified_at, failed_login_count,
                    locked_until, locale, deleted_at`,
-        [email, input.phone ?? null, passwordHash, input.role ?? 'CUSTOMER', input.locale ?? env.DEFAULT_LOCALE],
+        [
+          email, input.phone ?? null, passwordHash, input.role ?? 'CUSTOMER',
+          initialStatus, input.locale ?? env.DEFAULT_LOCALE,
+          emailCheckRequired ? null : new Date(),
+        ],
       );
       if (!inserted) throw new AppError({ code: ERROR_CODES.INTERNAL_ERROR, cause: 'user insert failed' });
 
@@ -172,6 +214,17 @@ export class AuthService {
         [inserted.id, input.fullName ?? null, input.locale ?? env.DEFAULT_LOCALE, env.DEFAULT_CURRENCY],
       );
 
+      logEvent(LOG_EVENTS.USER_REGISTERED, {
+        userId: inserted.id,
+        role: inserted.role,
+        method: 'email',
+        emailCheckRequired,
+      });
+
+      if (!emailCheckRequired) {
+        return { user: toAuthenticatedUser(inserted, null), verificationRequired: false };
+      }
+
       const code = generateOtp();
       await this.createVerificationCode(client, {
         userId: inserted.id,
@@ -179,12 +232,6 @@ export class AuthService {
         channel: 'EMAIL',
         destination: email,
         code,
-      });
-
-      logEvent(LOG_EVENTS.USER_REGISTERED, {
-        userId: inserted.id,
-        role: inserted.role,
-        method: 'email',
       });
 
       // Delivery is best-effort; the user can request a new code.

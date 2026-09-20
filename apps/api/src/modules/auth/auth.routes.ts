@@ -84,7 +84,9 @@ export async function registerAuthRoutes(app: FastifyInstance, opts: AuthRoutesO
       data: {
         user: result.user,
         verificationRequired: result.verificationRequired,
-        message: 'Account created. Check your email for the verification code.',
+        message: result.verificationRequired
+          ? 'Account created. Check your email for the verification code.'
+          : 'Account created. You can sign in now.',
       },
     });
   });
