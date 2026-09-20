@@ -77,7 +77,26 @@
     "changePassword": "Changer le mot de passe",
     "currentPassword": "Mot de passe actuel",
     "newPassword": "Nouveau mot de passe",
-    "passwordChanged": "Mot de passe modifié."
+    "passwordChanged": "Mot de passe modifié.",
+    "roleName": {
+      "CUSTOMER": "Client",
+      "PROVIDER": "Prestataire",
+      "ADMIN": "Administrateur"
+    },
+    "accountInfo": "Informations du compte",
+    "security": "Sécurité",
+    "completeness": "Complétion du profil",
+    "memberSince": "Type de compte",
+    "activeAccount": "Compte actif",
+    "fullNameHint": "Nom officiel",
+    "fullNamePlaceholder": "ex. Youssef Alami",
+    "displayNameHint": "Nom visible par les prestataires",
+    "displayNamePlaceholder": "ex. Youssef",
+    "bioHint": "Une courte présentation",
+    "bioPlaceholder": "Rédigez une note courte pour aider les prestataires à comprendre votre demande…",
+    "avatarHint": "Lien direct vers une image",
+    "privacyNote": "Vos données sont sécurisées et jamais partagées.",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères."
   },
   "catalog": {
     "title": "Services disponibles",
@@ -174,7 +193,14 @@
     "EXPIRED": "Expirée",
     "DISPUTED": "Litige",
     "REFUNDED": "Remboursée",
-    "FAILED": "Échouée"
+    "FAILED": "Échouée",
+    "ACTIVE": "Actif",
+    "PENDING": "En attente",
+    "SUSPENDED": "Suspendu",
+    "BLOCKED": "Bloqué",
+    "VERIFIED": "Vérifié",
+    "PENDING_REVIEW": "En révision",
+    "DEACTIVATED": "Désactivé"
   },
   "urgency": {
     "LOW": "Faible",

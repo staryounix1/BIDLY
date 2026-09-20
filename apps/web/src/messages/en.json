@@ -77,7 +77,26 @@
     "changePassword": "Change password",
     "currentPassword": "Current password",
     "newPassword": "New password",
-    "passwordChanged": "Password changed."
+    "passwordChanged": "Password changed.",
+    "roleName": {
+      "CUSTOMER": "Customer",
+      "PROVIDER": "Service provider",
+      "ADMIN": "Administrator"
+    },
+    "accountInfo": "Account information",
+    "security": "Security",
+    "completeness": "Profile completeness",
+    "memberSince": "Account type",
+    "activeAccount": "Active account",
+    "fullNameHint": "Official name",
+    "fullNamePlaceholder": "e.g. Youssef Alami",
+    "displayNameHint": "Name providers will see",
+    "displayNamePlaceholder": "e.g. Youssef",
+    "bioHint": "A short introduction",
+    "bioPlaceholder": "Write a short note that helps providers understand your request…",
+    "avatarHint": "Direct image link",
+    "privacyNote": "Your data is stored securely and never shared.",
+    "passwordTooShort": "Password must be at least 8 characters."
   },
   "catalog": {
     "title": "Available services",
@@ -174,7 +193,14 @@
     "EXPIRED": "Expired",
     "DISPUTED": "Disputed",
     "REFUNDED": "Refunded",
-    "FAILED": "Failed"
+    "FAILED": "Failed",
+    "ACTIVE": "Active",
+    "PENDING": "Pending",
+    "SUSPENDED": "Suspended",
+    "BLOCKED": "Blocked",
+    "VERIFIED": "Verified",
+    "PENDING_REVIEW": "Under review",
+    "DEACTIVATED": "Deactivated"
   },
   "urgency": {
     "LOW": "Low",

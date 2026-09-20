@@ -77,7 +77,26 @@
     "changePassword": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "newPassword": "كلمة المرور الجديدة",
-    "passwordChanged": "تم تغيير كلمة المرور."
+    "passwordChanged": "تم تغيير كلمة المرور.",
+    "roleName": {
+      "CUSTOMER": "عميل",
+      "PROVIDER": "مزوّد خدمة",
+      "ADMIN": "مشرف"
+    },
+    "accountInfo": "معلومات الحساب",
+    "security": "الأمان",
+    "completeness": "اكتمال الملف",
+    "memberSince": "نوع الحساب",
+    "activeAccount": "حساب نشط",
+    "fullNameHint": "الاسم الرسمي كما في الهوية",
+    "fullNamePlaceholder": "مثال: يوسف العلوي",
+    "displayNameHint": "الاسم الظاهر للمزوّدين",
+    "displayNamePlaceholder": "مثال: يوسف",
+    "bioHint": "نبذة قصيرة عنك",
+    "bioPlaceholder": "اكتب نبذة مختصرة تساعد المزوّدين على فهم طلبك…",
+    "avatarHint": "رابط صورة مباشر",
+    "privacyNote": "بياناتك محفوظة ولا تُشارك مع أي طرف.",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل."
   },
   "catalog": {
     "title": "الخدمات المتاحة",
@@ -174,7 +193,14 @@
     "EXPIRED": "منتهي",
     "DISPUTED": "نزاع",
     "REFUNDED": "مُسترد",
-    "FAILED": "فشل"
+    "FAILED": "فشل",
+    "ACTIVE": "نشط",
+    "PENDING": "قيد الانتظار",
+    "SUSPENDED": "موقوف",
+    "BLOCKED": "محظور",
+    "VERIFIED": "موثّق",
+    "PENDING_REVIEW": "قيد المراجعة",
+    "DEACTIVATED": "معطّل"
   },
   "urgency": {
     "LOW": "منخفض",
