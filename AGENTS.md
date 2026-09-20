@@ -467,28 +467,38 @@ If they ask to be notified (for example when a long-running task finishes), send
 
 ## Task progress
 
-- **Admin settings page (task 12) — built and deployed; needs a bundle refresh on the phone.**
-  `/admin/settings` (commit `5f4a8ca1`, i18n `35176675`) with a Settings tab in the console. Two sections:
-  20 feature toggles + 40 settings grouped by `group_name`. Values are edited by `value_type`, staged
-  locally, written only on Save; toggles are optimistic.
-  `feature_flags` had **no API at all** before this — added `GET`/`PUT /admin/feature-flags/:key`
-  (commit `e0fa42c2`) under `settings:read`/`settings:write`, audited via `recordAction`.
-  **Refresh the phone's API** so the new endpoints exist:
-  `bash ~/bidly-api/setup.sh --update` then `bash ~/bidly-api/run.sh`.
-- **Building the Termux API bundle:** `node scripts/build-api-bundle.mjs --out bundle2 --parts 62`.
-  Must use `cp -RL` (dereference): pnpm's `node_modules` is a symlink tree and a plain `cp -R` ships
-  **broken links** (~190 KB instead of ~3.5 MB). Deps are an explicit list in the script — keep it in
-  sync with the last bundle that booted. `--out` must be an absolute path or it lands under the repo.
-  **Committing bundle parts:** the integrations CLI rejects arguments above ~122 KB
-  ("Argument list too long"), and base64 of one 56 KB part is ~75 KB, so commit **one part per
-  GITHUB_COMMIT_MULTIPLE_FILES call** (62 calls). Transient 403s happen — retry.
-- **The live frontend reaches the API through a rewrite**, not a direct call: `apps/web/vercel.json`
-  proxies `/api/*` to the Termux Cloudflare tunnel. When the tunnel changes, update that file's two
-  `destination` values and redeploy, or every request 502s (`DNS_HOSTNAME_NOT_FOUND`). A quick tunnel
-  is temporary — it **will** expire again.
-- **Local API cannot reach Supabase from this VM** (PG connect times out), so verify API behaviour
-  through `SUPABASE_BETA_RUN_SQL_QUERY` and by booting the bundle against a dead DB — a 401 (auth
-  required) instead of 404 proves a route is registered.
+- **Admin settings page (task 12) — live and working.** `/admin/settings` with a Settings tab in the
+  console: 20 feature toggles + 40 settings in 9 groups. `feature_flags` had **no API at all** before
+  this; added `GET`/`PUT /admin/feature-flags/:key` under `settings:read`/`settings:write`.
+- **Two bugs found only by driving the real page (both fixed):**
+  1. **Undefined design tokens.** The page used `--brand`, `--border-strong`, `--fg-dim`, none of which
+     exist in `globals.css`. Undefined vars resolve to **transparent**, so every toggle rendered as an
+     empty circle. Real names: `--brand-500`, `--line-strong`, `--fg-subtle`. Commits `4f38ad5e`.
+  2. **`admin_actions.target_id` is a `uuid`.** `recordAction` passed text keys (`platform.name`,
+     `ai_categorisation`) straight into it → Postgres `22P02` → the error handler maps that to a generic
+     **400 INVALID_INPUT**, so *every* settings/flag update failed with an unhelpful message. This was a
+     **pre-existing bug** in the settings route, invisible until there was a UI. `recordAction` now
+     writes a uuid or null and keeps the text key in the JSON snapshots. Commit `358324eb`.
+- **Verifying a route exists without a working DB:** boot the bundle against a dead `DATABASE_URL`
+  (`postgresql://u:p@127.0.0.1:1/none`) — a **401** means the route registered, a **404** means it did
+  not. This VM cannot reach Supabase's Postgres at all, so this is the only local signal available.
+- **Rebuild + ship the Termux bundle after ANY API change** (see the bundle notes below), then on the
+  phone: `bash ~/bidly-api/setup.sh --update` and `bash ~/bidly-api/run.sh`.
+
+## Termux API bundle (how the live API is shipped and reached)
+
+- **Build:** `node scripts/build-api-bundle.mjs --out bundle2 --parts 62` (use an absolute `--out` or
+  it lands under the repo). Must use `cp -RL`: pnpm's `node_modules` is a symlink tree and a plain
+  `cp -R` ships **broken links** (~190 KB instead of ~3.5 MB). Third-party deps are an explicit list in
+  the script — keep it in sync with the last bundle that booted.
+- **Commit the parts:** the integrations CLI rejects arguments above ~122 KB ("Argument list too
+  long"), and base64 of one 56 KB part is ~75 KB, so commit **one part per
+  `GITHUB_COMMIT_MULTIPLE_FILES` call** (62 calls). Transient 403s happen; retry them.
+- **The live frontend reaches the API through a Vercel rewrite**, not a direct call:
+  `apps/web/vercel.json` proxies `/api/*` to the Cloudflare tunnel serving the phone. When the tunnel
+  changes, update both `destination` values and redeploy, or every request 502s
+  (`DNS_HOSTNAME_NOT_FOUND`). A quick tunnel is temporary — **it will expire again**; the real fix is
+  the Oracle VPS in `deploy/oracle/`.
 
 - **Khdemli engagement features (task 11) — migration done & live.** Commit `1475ad32` on `main`:
   `db/migrations/0005_khdemli_features.sql` (negotiation/commission ledger, topup packages, provider
