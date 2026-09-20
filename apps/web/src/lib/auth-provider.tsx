@@ -123,9 +123,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [loadProfile],
   );
 
-  const signUp = useCallback(async (payload: Parameters<typeof authApi.register>[0]) => {
-    return authApi.register(payload);
-  }, []);
+  const signUp = useCallback(
+    async (payload: Parameters<typeof authApi.register>[0]) => {
+      const result = await authApi.register(payload);
+
+      // Sign the new account in on the spot. Registration used to drop the user
+      // back on the login page to type the same credentials again, which is a
+      // pointless step: the account is active the moment it is created (unless
+      // the email check is on, in which case the guard still lets them in and
+      // asks for the code). Creating a session here means "sign up" really
+      // takes you into the product.
+      try {
+        const session = await authApi.login(payload.email, payload.password);
+        setUser(session.user);
+        await loadProfile();
+      } catch {
+        // Login should not fail right after a successful register (the account
+        // was just created with this exact password). If it somehow does, the
+        // caller still gets `verificationRequired` and can route to login.
+      }
+
+      return result;
+    },
+    [loadProfile],
+  );
 
   const signOut = useCallback(async () => {
     await authApi.logout();
