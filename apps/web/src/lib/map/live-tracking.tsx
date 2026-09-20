@@ -1,1 +1,121 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IExpbmsgZnJvbSAnbmV4dC9saW5rJzsKaW1wb3J0IHsgdXNlSTE4biB9IGZyb20gJ0AvbGliL2kxOG4tcHJvdmlkZXInOwppbXBvcnQgeyBUcmFja1Byb3ZpZGVyIH0gZnJvbSAnQC9saWIvbWFwL3RyYWNrLXByb3ZpZGVyJzsKaW1wb3J0IHsgQ2F0ZWdvcnlJY29uIH0gZnJvbSAnQC9saWIvaWNvbnMnOwppbXBvcnQgeyBBdmF0YXIsIFN0YXJzIH0gZnJvbSAnQC9saWIvdWknOwoKLyoqCiAqIEZ1bGwtc2NyZWVuIGxpdmUgdHJhY2tpbmcgd2l0aCBhIHNsaWRpbmcgYm90dG9tIHNoZWV0LgogKgogKiBUaGUgbWFwIG93bnMgdGhlIHdob2xlIHZpZXdwb3J0IOKAlCB0aGF0IGlzIHRoZSBwb2ludCBvZiB0aGlzIHNjcmVlbiDigJQgYW5kIHRoZQogKiBwcm92aWRlciBjYXJkIHNsaWRlcyB1cCBvdmVyIGl0LCB0aGUgc2FtZSBzaGFwZSBhcyBldmVyeSByaWRlLWhhaWxpbmcgYXBwLgogKiBUaGUgc2hlZXQgY2FycmllcyB0aGUgb25seSB0aHJlZSB0aGluZ3MgYSB3YWl0aW5nIGN1c3RvbWVyIHdhbnRzOiB3aG8gaXMKICogY29taW5nLCBob3cgZmFyIGF3YXksIGFuZCBob3cgdG8gcmVhY2ggdGhlbS4KICovCgpleHBvcnQgaW50ZXJmYWNlIExpdmVUcmFja2luZ1Byb3BzIHsKICBwcm92aWRlcklkOiBzdHJpbmc7CiAgcHJvdmlkZXJOYW1lOiBzdHJpbmc7CiAgcHJvdmlkZXJBdmF0YXI/OiBzdHJpbmcgfCBudWxsOwogIHJhdGluZ0F2Zz86IG51bWJlciB8IG51bGw7CiAgY29tcGxldGVkSm9icz86IG51bWJlciB8IG51bGw7CiAgcHJpY2VNaW5vcj86IG51bWJlciB8IG51bGw7CiAgY3VycmVuY3k/OiBzdHJpbmcgfCBudWxsOwogIGV0YU1pbnV0ZXM/OiBudW1iZXIgfCBudWxsOwogIGRlc3RpbmF0aW9uPzogeyBsYXQ6IG51bWJlcjsgbG5nOiBudW1iZXIgfSB8IG51bGw7CiAgam9iSHJlZj86IHN0cmluZzsKICBtZXNzYWdlSHJlZj86IHN0cmluZzsKICAvKiogSW1tZWRpYXRlIGZpcnN0IHBhaW50OiBtYXAgaGVpZ2h0IGluIHB4LiAqLwogIG1hcEhlaWdodD86IG51bWJlcjsKfQoKZXhwb3J0IGZ1bmN0aW9uIExpdmVUcmFja2luZyh7CiAgcHJvdmlkZXJJZCwKICBwcm92aWRlck5hbWUsCiAgcHJvdmlkZXJBdmF0YXIsCiAgcmF0aW5nQXZnLAogIGNvbXBsZXRlZEpvYnMsCiAgcHJpY2VNaW5vciwKICBjdXJyZW5jeSwKICBldGFNaW51dGVzLAogIGRlc3RpbmF0aW9uID0gbnVsbCwKICBqb2JIcmVmLAogIG1lc3NhZ2VIcmVmLAogIG1hcEhlaWdodCA9IDQyMCwKfTogTGl2ZVRyYWNraW5nUHJvcHMpIHsKICBjb25zdCB7IHQgfSA9IHVzZUkxOG4oKTsKCiAgcmV0dXJuICgKICAgIDxzZWN0aW9uIGNsYXNzTmFtZT0icmVsYXRpdmUiPgogICAgICB7LyogTWFwIGZpbGxzIHRoZSBzdGFnZS4gKi99CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIG1hcC1jYW52YXMgb3ZlcmZsb3ctaGlkZGVuICFyb3VuZGVkLW5vbmUgIWJvcmRlci14LTAgc206IXJvdW5kZWQtMnhsIHNtOiFib3JkZXIteCI+CiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktYmV0d2VlbiBnYXAtMiBweC00IHB0LTMuNSBwYi0yIj4KICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTIgdGV4dC1zbSBmb250LWJvbGQiPgogICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InJlbGF0aXZlIGZsZXggaC0yLjUgdy0yLjUiPgogICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iYWJzb2x1dGUgaW5saW5lLWZsZXggaC1mdWxsIHctZnVsbCBhbmltYXRlLXBpbmcgcm91bmRlZC1mdWxsIGJnLVtyZ2IodmFyKC0tYnJhbmQtNTAwKSldIG9wYWNpdHktNzUiIC8+CiAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJyZWxhdGl2ZSBpbmxpbmUtZmxleCBoLTIuNSB3LTIuNSByb3VuZGVkLWZ1bGwgYmctW3JnYih2YXIoLS1icmFuZC02MDApKV0iIC8+CiAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAge3QoJ3RyYWNraW5nLnByb3ZpZGVyQ29taW5nJyl9CiAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICB7ZXRhTWludXRlcyAhPSBudWxsICYmICgKICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJjaGlwIGNoaXAtYnJhbmQgdG51bSI+e3QoJ3RyYWNraW5nLmV0YScsIHsgbWludXRlczogZXRhTWludXRlcyB9KX08L3NwYW4+CiAgICAgICAgICApfQogICAgICAgIDwvZGl2PgoKICAgICAgICA8VHJhY2tQcm92aWRlcgogICAgICAgICAgcHJvdmlkZXJJZD17cHJvdmlkZXJJZH0KICAgICAgICAgIGRlc3RpbmF0aW9uPXtkZXN0aW5hdGlvbn0KICAgICAgICAgIHByb3ZpZGVyTmFtZT17cHJvdmlkZXJOYW1lfQogICAgICAgICAgaGVpZ2h0PXttYXBIZWlnaHR9CiAgICAgICAgLz4KICAgICAgPC9kaXY+CgogICAgICB7LyogQm90dG9tIHNoZWV0OiB3aG8sIGFuZCBob3cgdG8gcmVhY2ggdGhlbS4gKi99CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJzaGVldCBzaGVldC11cCI+CiAgICAgICAgPGRpdiBjbGFzc05hbWU9InNoZWV0LWhhbmRsZSIgLz4KCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImFwcC1zaGVsbCBweC00IHBiLTQgcHQtMyI+CiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTMiPgogICAgICAgICAgICA8QXZhdGFyIG5hbWU9e3Byb3ZpZGVyTmFtZX0gc3JjPXtwcm92aWRlckF2YXRhcn0gc2l6ZT17NTR9IC8+CgogICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWluLXctMCBmbGV4LTEiPgogICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT0idHJ1bmNhdGUgdGV4dC1iYXNlIGZvbnQtYmxhY2sgdHJhY2tpbmctdGlnaHQiPntwcm92aWRlck5hbWV9PC9wPgogICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0wLjUgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTIiPgogICAgICAgICAgICAgICAgPFN0YXJzIHZhbHVlPXtyYXRpbmdBdmd9IGNvdW50PXtjb21wbGV0ZWRKb2JzfSAvPgogICAgICAgICAgICAgICAge2V0YU1pbnV0ZXMgIT0gbnVsbCAmJiAoCiAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC14cyBmb250LXNlbWlib2xkIHRleHQtW3JnYih2YXIoLS1icmFuZC03MDApKV0iPgogICAgICAgICAgICAgICAgICAgIMK3IHt0KCd0cmFja2luZy5ldGEnLCB7IG1pbnV0ZXM6IGV0YU1pbnV0ZXMgfSl9CiAgICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgICl9CiAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgICAge3ByaWNlTWlub3IgIT0gbnVsbCAmJiAoCiAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LWVuZCI+CiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InByaWNlIGJsb2NrIHRleHQteGwgdGV4dC1bcmdiKHZhcigtLWZnKSldIj4KICAgICAgICAgICAgICAgICAge01hdGgucm91bmQocHJpY2VNaW5vciAvIDEwMCkudG9Mb2NhbGVTdHJpbmcoKX0KICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC14cyBmb250LWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj4KICAgICAgICAgICAgICAgICAge2N1cnJlbmN5ID8/ICdNQUQnfQogICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgKX0KICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0zLjUgZmxleCBnYXAtMiI+CiAgICAgICAgICAgIDxMaW5rIGhyZWY9e21lc3NhZ2VIcmVmID8/ICcjJ30gY2xhc3NOYW1lPSJidG4gYnRuLXByaW1hcnkgZmxleC0xIj4KICAgICAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9ImNoYXQiIHNpemU9ezE5fSAvPgogICAgICAgICAgICAgIHt0KCd0cmFja2luZy5tZXNzYWdlJyl9CiAgICAgICAgICAgIDwvTGluaz4KICAgICAgICAgICAgPExpbmsgaHJlZj17am9iSHJlZiA/PyAnIyd9IGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkgZmxleC0xIj4KICAgICAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9InJvdXRlIiBzaXplPXsxOX0gLz4KICAgICAgICAgICAgICB7dCgnam9iLmRldGFpbHMnKX0KICAgICAgICAgICAgPC9MaW5rPgogICAgICAgICAgPC9kaXY+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgogICAgPC9zZWN0aW9uPgogICk7Cn0K
+'use client';
+
+import Link from 'next/link';
+import { useI18n } from '@/lib/i18n-provider';
+import { TrackProvider } from '@/lib/map/track-provider';
+import { CategoryIcon } from '@/lib/icons';
+import { Avatar, Stars } from '@/lib/ui';
+
+/**
+ * Full-screen live tracking with a sliding bottom sheet.
+ *
+ * The map owns the whole viewport — that is the point of this screen — and the
+ * provider card slides up over it, the same shape as every ride-hailing app.
+ * The sheet carries the only three things a waiting customer wants: who is
+ * coming, how far away, and how to reach them.
+ */
+
+export interface LiveTrackingProps {
+  providerId: string;
+  providerName: string;
+  providerAvatar?: string | null;
+  ratingAvg?: number | null;
+  completedJobs?: number | null;
+  priceMinor?: number | null;
+  currency?: string | null;
+  etaMinutes?: number | null;
+  destination?: { lat: number; lng: number } | null;
+  jobHref?: string;
+  messageHref?: string;
+  /** Immediate first paint: map height in px. */
+  mapHeight?: number;
+}
+
+export function LiveTracking({
+  providerId,
+  providerName,
+  providerAvatar,
+  ratingAvg,
+  completedJobs,
+  priceMinor,
+  currency,
+  etaMinutes,
+  destination = null,
+  jobHref,
+  messageHref,
+  mapHeight = 420,
+}: LiveTrackingProps) {
+  const { t } = useI18n();
+
+  return (
+    <section className="relative">
+      {/* Map fills the stage. */}
+      <div className="card map-canvas overflow-hidden !rounded-none !border-x-0 sm:!rounded-2xl sm:!border-x">
+        <div className="flex items-center justify-between gap-2 px-4 pt-3.5 pb-2">
+          <span className="flex items-center gap-2 text-sm font-bold">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[rgb(var(--brand-500))] opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[rgb(var(--brand-600))]" />
+            </span>
+            {t('tracking.providerComing')}
+          </span>
+          {etaMinutes != null && (
+            <span className="chip chip-brand tnum">{t('tracking.eta', { minutes: etaMinutes })}</span>
+          )}
+        </div>
+
+        <TrackProvider
+          providerId={providerId}
+          destination={destination}
+          providerName={providerName}
+          height={mapHeight}
+        />
+      </div>
+
+      {/* Bottom sheet: who, and how to reach them. */}
+      <div className="sheet sheet-up">
+        <div className="sheet-handle" />
+
+        <div className="app-shell px-4 pb-4 pt-3">
+          <div className="flex items-center gap-3">
+            <Avatar name={providerName} src={providerAvatar} size={54} />
+
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-base font-black tracking-tight">{providerName}</p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <Stars value={ratingAvg} count={completedJobs} />
+                {etaMinutes != null && (
+                  <span className="text-xs font-semibold text-[rgb(var(--brand-700))]">
+                    · {t('tracking.eta', { minutes: etaMinutes })}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {priceMinor != null && (
+              <span className="text-end">
+                <span className="price block text-xl text-[rgb(var(--fg))]">
+                  {Math.round(priceMinor / 100).toLocaleString()}
+                </span>
+                <span className="text-xs font-bold text-[rgb(var(--fg-muted))]">
+                  {currency ?? 'MAD'}
+                </span>
+              </span>
+            )}
+          </div>
+
+          <div className="mt-3.5 flex gap-2">
+            <Link href={messageHref ?? '#'} className="btn btn-primary flex-1">
+              <CategoryIcon name="chat" size={19} />
+              {t('tracking.message')}
+            </Link>
+            <Link href={jobHref ?? '#'} className="btn btn-secondary flex-1">
+              <CategoryIcon name="route" size={19} />
+              {t('job.details')}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -1,1 +1,171 @@
-aW1wb3J0IHsgYXBpIH0gZnJvbSAnLi9hdXRoLWFwaSc7CgovKioKICogQ2F0YWxvZyBBUEkg4oCUIGNhdGVnb3JpZXMsIHNlcnZpY2VzLCBkeW5hbWljIGZvcm0gZGVmaW5pdGlvbnMsIGFuZCBsb2NhdGlvbnMuCiAqCiAqIFRoZSB3aG9sZSBwcm9kdWN0IHJlbmRlcnMgZHluYW1pYyBmb3JtcyBmcm9tIHRoZXNlIHBheWxvYWRzOyB0aGVyZSBpcyBubwogKiBwZXItc2VydmljZSBmb3JtIGNvbXBvbmVudC4gQSBzZXJ2aWNlJ3MgYGZpZWxkc2AgZGVzY3JpYmUgZXhhY3RseSB3aGF0IHRoZQogKiBjdXN0b21lciBtdXN0IGFuc3dlci4KICovCgpleHBvcnQgaW50ZXJmYWNlIExvY2FsaXplZE5hbWUgewogIG5hbWVfZW46IHN0cmluZzsKICBuYW1lX2ZyOiBzdHJpbmcgfCBudWxsOwogIG5hbWVfYXI6IHN0cmluZyB8IG51bGw7CiAgc2x1Zzogc3RyaW5nOwp9CgpleHBvcnQgaW50ZXJmYWNlIFNlcnZpY2UgZXh0ZW5kcyBMb2NhbGl6ZWROYW1lIHsKICBpZDogc3RyaW5nOwogIHN1YmNhdGVnb3J5X2lkOiBzdHJpbmc7CiAgcHJpY2luZ19tb2RlbDogJ0ZJWEVEJyB8ICdGSVhFRF9RVU9URScgfCAnT0ZGRVInIHwgJ1JBTkdFJyB8ICdIT1VSTFknIHwgJ1FVT1RFJzsKICBkZWZhdWx0X2N1cnJlbmN5OiBzdHJpbmc7CiAgbWluX3ByaWNlX21pbm9yOiBudW1iZXIgfCBudWxsOwogIG1heF9wcmljZV9taW5vcjogbnVtYmVyIHwgbnVsbDsKICByZXF1aXJlc19sb2NhdGlvbjogYm9vbGVhbjsKICByZXF1aXJlc19kZXN0aW5hdGlvbjogYm9vbGVhbjsKICByZXF1aXJlc19zY2hlZHVsZTogYm9vbGVhbjsKICBkdXJhdGlvbl9taW51dGVzOiBudW1iZXIgfCBudWxsOwp9CgpleHBvcnQgaW50ZXJmYWNlIFN1YmNhdGVnb3J5IGV4dGVuZHMgTG9jYWxpemVkTmFtZSB7CiAgaWQ6IHN0cmluZzsKICBjYXRlZ29yeV9pZDogc3RyaW5nOwogIHNlcnZpY2VzOiBTZXJ2aWNlW107Cn0KCmV4cG9ydCBpbnRlcmZhY2UgQ2F0ZWdvcnkgZXh0ZW5kcyBMb2NhbGl6ZWROYW1lIHsKICBpZDogc3RyaW5nOwogIGljb246IHN0cmluZyB8IG51bGw7CiAgY29sb3I6IHN0cmluZyB8IG51bGw7CiAgZGVzY3JpcHRpb25fZW4/OiBzdHJpbmcgfCBudWxsOwogIGRlc2NyaXB0aW9uX2ZyPzogc3RyaW5nIHwgbnVsbDsKICBkZXNjcmlwdGlvbl9hcj86IHN0cmluZyB8IG51bGw7CiAgc3ViY2F0ZWdvcmllczogU3ViY2F0ZWdvcnlbXTsKfQoKZXhwb3J0IGludGVyZmFjZSBTZXJ2aWNlRmllbGRPcHRpb24gewogIGlkOiBzdHJpbmc7CiAgZmllbGRfaWQ6IHN0cmluZzsKICB2YWx1ZTogc3RyaW5nOwogIGxhYmVsX2VuOiBzdHJpbmc7CiAgbGFiZWxfZnI6IHN0cmluZyB8IG51bGw7CiAgbGFiZWxfYXI6IHN0cmluZyB8IG51bGw7CiAgc29ydF9vcmRlcjogbnVtYmVyOwp9CgpleHBvcnQgaW50ZXJmYWNlIFNlcnZpY2VGaWVsZCB7CiAgaWQ6IHN0cmluZzsKICBzZXJ2aWNlX2lkOiBzdHJpbmc7CiAga2V5OiBzdHJpbmc7CiAgbGFiZWxfZW46IHN0cmluZzsKICBsYWJlbF9mcjogc3RyaW5nIHwgbnVsbDsKICBsYWJlbF9hcjogc3RyaW5nIHwgbnVsbDsKICBwbGFjZWhvbGRlcl9lbjogc3RyaW5nIHwgbnVsbDsKICBwbGFjZWhvbGRlcl9mcjogc3RyaW5nIHwgbnVsbDsKICBwbGFjZWhvbGRlcl9hcjogc3RyaW5nIHwgbnVsbDsKICBoZWxwX2VuOiBzdHJpbmcgfCBudWxsOwogIGhlbHBfZnI6IHN0cmluZyB8IG51bGw7CiAgaGVscF9hcjogc3RyaW5nIHwgbnVsbDsKICB0eXBlOiAnVEVYVCcgfCAnVEVYVEFSRUEnIHwgJ05VTUJFUicgfCAnQk9PTEVBTicgfCAnU0VMRUNUJyB8ICdNVUxUSVNFTEVDVCcgfCAnREFURScgfCAnREFURVRJTUUnIHwgJ1BIT05FJyB8ICdMT0NBVElPTicgfCAnQUREUkVTUycgfCAnUEhPVE8nIHwgJ1ZJREVPJzsKICBpc19yZXF1aXJlZDogYm9vbGVhbjsKICBzb3J0X29yZGVyOiBudW1iZXI7CiAgbWluX3ZhbHVlOiBzdHJpbmcgfCBudWxsOwogIG1heF92YWx1ZTogc3RyaW5nIHwgbnVsbDsKICBtaW5fbGVuZ3RoOiBudW1iZXIgfCBudWxsOwogIG1heF9sZW5ndGg6IG51bWJlciB8IG51bGw7CiAgcmVnZXg6IHN0cmluZyB8IG51bGw7CiAgZGVmYXVsdF92YWx1ZTogc3RyaW5nIHwgbnVsbDsKICBkZXBlbmRzX29uX2tleTogc3RyaW5nIHwgbnVsbDsKICBkZXBlbmRzX29uX3ZhbHVlOiBzdHJpbmcgfCBudWxsOwogIG9wdGlvbnM6IFNlcnZpY2VGaWVsZE9wdGlvbltdOwp9CgpleHBvcnQgaW50ZXJmYWNlIENpdHkgewogIGlkOiBzdHJpbmc7CiAgc2x1Zzogc3RyaW5nOwogIG5hbWVfZW46IHN0cmluZzsKICBuYW1lX2ZyOiBzdHJpbmcgfCBudWxsOwogIG5hbWVfYXI6IHN0cmluZyB8IG51bGw7CiAgY291bnRyeV9jb2RlOiBzdHJpbmc7CiAgbGF0OiBudW1iZXIgfCBudWxsOwogIGxuZzogbnVtYmVyIHwgbnVsbDsKfQoKZXhwb3J0IGNvbnN0IGNhdGFsb2dBcGkgPSB7CiAgYXN5bmMgdHJlZSh3aXRoRmllbGRzID0gZmFsc2UpOiBQcm9taXNlPHsgY2F0ZWdvcmllczogQ2F0ZWdvcnlbXSB9PiB7CiAgICBjb25zdCByZXMgPSBhd2FpdCBhcGkuZ2V0PHsgY2F0ZWdvcmllczogQ2F0ZWdvcnlbXSB9PigKICAgICAgYC9jYXRlZ29yaWVzJHt3aXRoRmllbGRzID8gJz93aXRoRmllbGRzPXRydWUnIDogJyd9YCwKICAgICk7CiAgICByZXR1cm4gcmVzLmRhdGE7CiAgfSwKCiAgLyoqCiAgICogSG93IG1hbnkgcHJvdmlkZXJzIGFyZSBjdXJyZW50bHkgcmVhY2hhYmxlIHBlciBjYXRlZ29yeSBhbmQgcGVyIHNlcnZpY2UuCiAgICoKICAgKiBUaGlzIGlzIHRoZSBudW1iZXIgdGhlIGN1c3RvbWVyIHNlZXMgb24gdGhlIHNlcnZpY2UgY2FyZHMgKCLZpNmiINit2LHZgdmKIiksIHNvCiAgICogaXQgY291bnRzICphdmFpbGFibGUgc3VwcGx5KiDigJQgcHJvdmlkZXJzIHRoYXQgYXJlIG9ubGluZS9hdmFpbGFibGUgYW5kIGhhdmUKICAgKiB0aGUgc2VydmljZSBhY3RpdmUg4oCUIG5vdCBldmVyeSByZWdpc3RlcmVkIHJvdy4gUmV0dXJucyBhbiBlbXB0eSBtYXAgd2hlbiB0aGUKICAgKiBlbmRwb2ludCBpcyBub3QgZGVwbG95ZWQgeWV0LCB3aGljaCBsZXRzIHRoZSBVSSBkZWdyYWRlIHRvIG5vIGNvdW50IHJhdGhlcgogICAqIHRoYW4gYnJlYWsuCiAgICovCiAgYXN5bmMgcHJvdmlkZXJDb3VudHMoKTogUHJvbWlzZTx7CiAgICBieUNhdGVnb3J5OiBSZWNvcmQ8c3RyaW5nLCBudW1iZXI+OwogICAgYnlTZXJ2aWNlOiBSZWNvcmQ8c3RyaW5nLCBudW1iZXI+OwogIH0+IHsKICAgIHRyeSB7CiAgICAgIGNvbnN0IHJlcyA9IGF3YWl0IGFwaS5nZXQ8ewogICAgICAgIGJ5Q2F0ZWdvcnk/OiBSZWNvcmQ8c3RyaW5nLCBudW1iZXI+OwogICAgICAgIGJ5U2VydmljZT86IFJlY29yZDxzdHJpbmcsIG51bWJlcj47CiAgICAgIH0+KCcvcHJvdmlkZXJzL2NvdW50cycpOwogICAgICByZXR1cm4geyBieUNhdGVnb3J5OiByZXMuZGF0YS5ieUNhdGVnb3J5ID8/IHt9LCBieVNlcnZpY2U6IHJlcy5kYXRhLmJ5U2VydmljZSA/PyB7fSB9OwogICAgfSBjYXRjaCB7CiAgICAgIHJldHVybiB7IGJ5Q2F0ZWdvcnk6IHt9LCBieVNlcnZpY2U6IHt9IH07CiAgICB9CiAgfSwKCiAgYXN5bmMgc2VydmljZUZvcm0oc2x1Zzogc3RyaW5nKTogUHJvbWlzZTx7IHNlcnZpY2U6IFNlcnZpY2UgJiB7IGNhdGVnb3J5X3NsdWc6IHN0cmluZzsgc3ViY2F0ZWdvcnlfc2x1Zzogc3RyaW5nIH07IGZpZWxkczogU2VydmljZUZpZWxkW10gfT4gewogICAgY29uc3QgcmVzID0gYXdhaXQgYXBpLmdldDx7IHNlcnZpY2U6IFNlcnZpY2UgJiB7IGNhdGVnb3J5X3NsdWc6IHN0cmluZzsgc3ViY2F0ZWdvcnlfc2x1Zzogc3RyaW5nIH07IGZpZWxkczogU2VydmljZUZpZWxkW10gfT4oCiAgICAgIGAvc2VydmljZXMvJHtzbHVnfS9mb3JtYCwKICAgICk7CiAgICByZXR1cm4gcmVzLmRhdGE7CiAgfSwKCiAgYXN5bmMgY2l0aWVzKGNvdW50cnlDb2RlPzogc3RyaW5nKTogUHJvbWlzZTxDaXR5W10+IHsKICAgIGNvbnN0IHJlcyA9IGF3YWl0IGFwaS5nZXQ8Q2l0eVtdPihgL2NpdGllcyR7Y291bnRyeUNvZGUgPyBgP2NvdW50cnlDb2RlPSR7Y291bnRyeUNvZGV9YCA6ICcnfWApOwogICAgcmV0dXJuIHJlcy5kYXRhOwogIH0sCn07CgovKiogUGljayB0aGUgbGFiZWwgZm9yIHRoZSBhY3RpdmUgbG9jYWxlLCBmYWxsaW5nIGJhY2sgdG8gRW5nbGlzaC4gKi8KZXhwb3J0IGZ1bmN0aW9uIGxvY2FsaXplZCgKICByb3c6IHsgbmFtZV9lbj86IHN0cmluZyB8IG51bGw7IG5hbWVfZnI/OiBzdHJpbmcgfCBudWxsOyBuYW1lX2FyPzogc3RyaW5nIHwgbnVsbCB9LAogIGxvY2FsZTogc3RyaW5nLAopOiBzdHJpbmcgewogIGlmIChsb2NhbGUgPT09ICdhcicpIHJldHVybiByb3cubmFtZV9hciB8fCByb3cubmFtZV9lbiB8fCAnJzsKICBpZiAobG9jYWxlID09PSAnZnInKSByZXR1cm4gcm93Lm5hbWVfZnIgfHwgcm93Lm5hbWVfZW4gfHwgJyc7CiAgcmV0dXJuIHJvdy5uYW1lX2VuIHx8ICcnOwp9CgpleHBvcnQgZnVuY3Rpb24gZmllbGRMYWJlbChmaWVsZDogU2VydmljZUZpZWxkLCBsb2NhbGU6IHN0cmluZyk6IHN0cmluZyB7CiAgaWYgKGxvY2FsZSA9PT0gJ2FyJykgcmV0dXJuIGZpZWxkLmxhYmVsX2FyIHx8IGZpZWxkLmxhYmVsX2VuOwogIGlmIChsb2NhbGUgPT09ICdmcicpIHJldHVybiBmaWVsZC5sYWJlbF9mciB8fCBmaWVsZC5sYWJlbF9lbjsKICByZXR1cm4gZmllbGQubGFiZWxfZW47Cn0KCmV4cG9ydCBmdW5jdGlvbiBmaWVsZFBsYWNlaG9sZGVyKGZpZWxkOiBTZXJ2aWNlRmllbGQsIGxvY2FsZTogc3RyaW5nKTogc3RyaW5nIHwgdW5kZWZpbmVkIHsKICBjb25zdCB2YWx1ZSA9CiAgICBsb2NhbGUgPT09ICdhcicgPyBmaWVsZC5wbGFjZWhvbGRlcl9hciA6IGxvY2FsZSA9PT0gJ2ZyJyA/IGZpZWxkLnBsYWNlaG9sZGVyX2ZyIDogZmllbGQucGxhY2Vob2xkZXJfZW47CiAgcmV0dXJuIHZhbHVlID8/IHVuZGVmaW5lZDsKfQoKZXhwb3J0IGZ1bmN0aW9uIGZpZWxkSGVscChmaWVsZDogU2VydmljZUZpZWxkLCBsb2NhbGU6IHN0cmluZyk6IHN0cmluZyB8IHVuZGVmaW5lZCB7CiAgY29uc3QgdmFsdWUgPSBsb2NhbGUgPT09ICdhcicgPyBmaWVsZC5oZWxwX2FyIDogbG9jYWxlID09PSAnZnInID8gZmllbGQuaGVscF9mciA6IGZpZWxkLmhlbHBfZW47CiAgcmV0dXJuIHZhbHVlID8/IHVuZGVmaW5lZDsKfQoKZXhwb3J0IGZ1bmN0aW9uIG9wdGlvbkxhYmVsKG9wdGlvbjogU2VydmljZUZpZWxkT3B0aW9uLCBsb2NhbGU6IHN0cmluZyk6IHN0cmluZyB7CiAgaWYgKGxvY2FsZSA9PT0gJ2FyJykgcmV0dXJuIG9wdGlvbi5sYWJlbF9hciB8fCBvcHRpb24ubGFiZWxfZW47CiAgaWYgKGxvY2FsZSA9PT0gJ2ZyJykgcmV0dXJuIG9wdGlvbi5sYWJlbF9mciB8fCBvcHRpb24ubGFiZWxfZW47CiAgcmV0dXJuIG9wdGlvbi5sYWJlbF9lbjsKfQo=
+import { api } from './auth-api';
+
+/**
+ * Catalog API — categories, services, dynamic form definitions, and locations.
+ *
+ * The whole product renders dynamic forms from these payloads; there is no
+ * per-service form component. A service's `fields` describe exactly what the
+ * customer must answer.
+ */
+
+export interface LocalizedName {
+  name_en: string;
+  name_fr: string | null;
+  name_ar: string | null;
+  slug: string;
+}
+
+export interface Service extends LocalizedName {
+  id: string;
+  subcategory_id: string;
+  pricing_model: 'FIXED' | 'FIXED_QUOTE' | 'OFFER' | 'RANGE' | 'HOURLY' | 'QUOTE';
+  default_currency: string;
+  min_price_minor: number | null;
+  max_price_minor: number | null;
+  requires_location: boolean;
+  requires_destination: boolean;
+  requires_schedule: boolean;
+  duration_minutes: number | null;
+}
+
+export interface Subcategory extends LocalizedName {
+  id: string;
+  category_id: string;
+  services: Service[];
+}
+
+export interface Category extends LocalizedName {
+  id: string;
+  icon: string | null;
+  color: string | null;
+  description_en?: string | null;
+  description_fr?: string | null;
+  description_ar?: string | null;
+  subcategories: Subcategory[];
+}
+
+export interface ServiceFieldOption {
+  id: string;
+  field_id: string;
+  value: string;
+  label_en: string;
+  label_fr: string | null;
+  label_ar: string | null;
+  sort_order: number;
+}
+
+export interface ServiceField {
+  id: string;
+  service_id: string;
+  key: string;
+  label_en: string;
+  label_fr: string | null;
+  label_ar: string | null;
+  placeholder_en: string | null;
+  placeholder_fr: string | null;
+  placeholder_ar: string | null;
+  help_en: string | null;
+  help_fr: string | null;
+  help_ar: string | null;
+  type: 'TEXT' | 'TEXTAREA' | 'NUMBER' | 'BOOLEAN' | 'SELECT' | 'MULTISELECT' | 'DATE' | 'DATETIME' | 'PHONE' | 'LOCATION' | 'ADDRESS' | 'PHOTO' | 'VIDEO';
+  is_required: boolean;
+  sort_order: number;
+  min_value: string | null;
+  max_value: string | null;
+  min_length: number | null;
+  max_length: number | null;
+  regex: string | null;
+  default_value: string | null;
+  depends_on_key: string | null;
+  depends_on_value: string | null;
+  options: ServiceFieldOption[];
+}
+
+export interface City {
+  id: string;
+  slug: string;
+  name_en: string;
+  name_fr: string | null;
+  name_ar: string | null;
+  country_code: string;
+  lat: number | null;
+  lng: number | null;
+}
+
+export const catalogApi = {
+  async tree(withFields = false): Promise<{ categories: Category[] }> {
+    const res = await api.get<{ categories: Category[] }>(
+      `/categories${withFields ? '?withFields=true' : ''}`,
+    );
+    return res.data;
+  },
+
+  /**
+   * How many providers are currently reachable per category and per service.
+   *
+   * This is the number the customer sees on the service cards ("٤٢ حرفي"), so
+   * it counts *available supply* — providers that are online/available and have
+   * the service active — not every registered row. Returns an empty map when the
+   * endpoint is not deployed yet, which lets the UI degrade to no count rather
+   * than break.
+   */
+  async providerCounts(): Promise<{
+    byCategory: Record<string, number>;
+    byService: Record<string, number>;
+  }> {
+    try {
+      const res = await api.get<{
+        byCategory?: Record<string, number>;
+        byService?: Record<string, number>;
+      }>('/providers/counts');
+      return { byCategory: res.data.byCategory ?? {}, byService: res.data.byService ?? {} };
+    } catch {
+      return { byCategory: {}, byService: {} };
+    }
+  },
+
+  async serviceForm(slug: string): Promise<{ service: Service & { category_slug: string; subcategory_slug: string }; fields: ServiceField[] }> {
+    const res = await api.get<{ service: Service & { category_slug: string; subcategory_slug: string }; fields: ServiceField[] }>(
+      `/services/${slug}/form`,
+    );
+    return res.data;
+  },
+
+  async cities(countryCode?: string): Promise<City[]> {
+    const res = await api.get<City[]>(`/cities${countryCode ? `?countryCode=${countryCode}` : ''}`);
+    return res.data;
+  },
+};
+
+/** Pick the label for the active locale, falling back to English. */
+export function localized(
+  row: { name_en?: string | null; name_fr?: string | null; name_ar?: string | null },
+  locale: string,
+): string {
+  if (locale === 'ar') return row.name_ar || row.name_en || '';
+  if (locale === 'fr') return row.name_fr || row.name_en || '';
+  return row.name_en || '';
+}
+
+export function fieldLabel(field: ServiceField, locale: string): string {
+  if (locale === 'ar') return field.label_ar || field.label_en;
+  if (locale === 'fr') return field.label_fr || field.label_en;
+  return field.label_en;
+}
+
+export function fieldPlaceholder(field: ServiceField, locale: string): string | undefined {
+  const value =
+    locale === 'ar' ? field.placeholder_ar : locale === 'fr' ? field.placeholder_fr : field.placeholder_en;
+  return value ?? undefined;
+}
+
+export function fieldHelp(field: ServiceField, locale: string): string | undefined {
+  const value = locale === 'ar' ? field.help_ar : locale === 'fr' ? field.help_fr : field.help_en;
+  return value ?? undefined;
+}
+
+export function optionLabel(option: ServiceFieldOption, locale: string): string {
+  if (locale === 'ar') return option.label_ar || option.label_en;
+  if (locale === 'fr') return option.label_fr || option.label_en;
+  return option.label_en;
+}

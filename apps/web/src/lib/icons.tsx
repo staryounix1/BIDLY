@@ -1,1 +1,425 @@
-aW1wb3J0IHR5cGUgeyBSZWFjdEVsZW1lbnQsIFNWR1Byb3BzIH0gZnJvbSAncmVhY3QnOwoKLyoqCiAqIEtoZGVtbGkgYnJhbmQgbWFyay4KICoKICogQSBoYW5kLWFuZC13cmVuY2ggaW5zaWRlIGEgcm91bmRlZCBzcXVhcmU6IGNyYWZ0c21hbidzIHRvb2wgcGx1cyBhIHBhbG0gdGhhdAogKiByZWFkcyBhcyAic29tZW9uZSB3aWxsIGRvIGl0IGZvciB5b3UiLiBEcmF3biBvbiB0aGUgc2FtZSAyNC1ncmlkIGFzIHRoZSByZXN0CiAqIG9mIHRoZSBpY29ub2dyYXBoeSBzbyBpdCBvcHRpY2FsbHkgbWF0Y2hlcyB0aGUgVUksIHdpdGggdGhlIGJyYW5kIGFxdWEgYXMgdGhlCiAqIGZpbGwgYW5kIGEgZGVlcCBpbmsgc3Ryb2tlIHRoYXQgc3Vydml2ZXMgb24gd2hpdGUsIG9uIGFxdWEsIGFuZCBpbiBkYXJrIG1vZGUuCiAqLwoKZXhwb3J0IGZ1bmN0aW9uIEtoZGVtbGlNYXJrKHsKICBzaXplID0gMzIsCiAgdmFyaWFudCA9ICdicmFuZCcsCiAgY2xhc3NOYW1lLAogIC4uLnJlc3QKfTogU1ZHUHJvcHM8U1ZHU1ZHRWxlbWVudD4gJiB7IHNpemU/OiBudW1iZXI7IHZhcmlhbnQ/OiAnYnJhbmQnIHwgJ2luaycgfCAnbW9ubycgfSkgewogIGNvbnN0IGZpbGwgPSB2YXJpYW50ID09PSAnaW5rJyA/ICcjMDYxZjFhJyA6ICcjMzJGNEJBJzsKICBjb25zdCBnbHlwaCA9IHZhcmlhbnQgPT09ICdpbmsnID8gJyMzMkY0QkEnIDogJyMwNjIzMWMnOwoKICByZXR1cm4gKAogICAgPHN2ZwogICAgICB3aWR0aD17c2l6ZX0KICAgICAgaGVpZ2h0PXtzaXplfQogICAgICB2aWV3Qm94PSIwIDAgNDggNDgiCiAgICAgIGZpbGw9Im5vbmUiCiAgICAgIGFyaWEtaGlkZGVuPSJ0cnVlIgogICAgICBmb2N1c2FibGU9ImZhbHNlIgogICAgICBjbGFzc05hbWU9e2NsYXNzTmFtZX0KICAgICAgey4uLnJlc3R9CiAgICA+CiAgICAgIDxyZWN0IHg9IjEuNSIgeT0iMS41IiB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHJ4PSIxMyIgZmlsbD17ZmlsbH0gLz4KICAgICAgPHJlY3QgeD0iMS41IiB5PSIxLjUiIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSIgcng9IjEzIiBzdHJva2U9InJnYmEoNiwzNSwyOCwwLjE0KSIgc3Ryb2tlV2lkdGg9IjEuNSIgLz4KICAgICAgey8qIHdyZW5jaCAqL30KICAgICAgPHBhdGgKICAgICAgICBkPSJNMzIuNiAxMi40YTYuMSA2LjEgMCAwIDEtNy45IDcuOWwtOC4yIDguMmEyLjMgMi4zIDAgMSAwIDMuMiAzLjJsOC4yLTguMmE2LjEgNi4xIDAgMCAxIDcuOS03LjlsLTMuNyAzLjcgMS45IDEuOXoiCiAgICAgICAgZmlsbD17Z2x5cGh9CiAgICAgIC8+CiAgICAgIHsvKiBwYWxtIGxpbmU6ICJraGRlbWxpIiA9IGRvIGl0IGZvciBtZSAqL30KICAgICAgPHBhdGgKICAgICAgICBkPSJNMTEuNSAzMC41YzMuNiA0LjQgOC4zIDYuNiAxNCA2LjYgMy4xIDAgNS44LS43IDguMS0yLjEiCiAgICAgICAgc3Ryb2tlPXtnbHlwaH0KICAgICAgICBzdHJva2VXaWR0aD0iMi42IgogICAgICAgIHN0cm9rZUxpbmVjYXA9InJvdW5kIgogICAgICAvPgogICAgPC9zdmc+CiAgKTsKfQoKLyoqIE1hcmsgKyB3b3JkbWFyaywgZm9yIGhlYWRlcnMgYW5kIGZvb3RlcnMuICovCmV4cG9ydCBmdW5jdGlvbiBLaGRlbWxpTG9nbyh7CiAgc2l6ZSA9IDMwLAogIHNob3dUYWdsaW5lID0gZmFsc2UsCiAgY2xhc3NOYW1lLAp9OiB7CiAgc2l6ZT86IG51bWJlcjsKICBzaG93VGFnbGluZT86IGJvb2xlYW47CiAgY2xhc3NOYW1lPzogc3RyaW5nOwp9KSB7CiAgcmV0dXJuICgKICAgIDxzcGFuIGNsYXNzTmFtZT17YGlubGluZS1mbGV4IGl0ZW1zLWNlbnRlciBnYXAtMiAke2NsYXNzTmFtZSA/PyAnJ31gfT4KICAgICAgPEtoZGVtbGlNYXJrIHNpemU9e3NpemV9IC8+CiAgICAgIDxzcGFuIGNsYXNzTmFtZT0iZmxleCBmbGV4LWNvbCBsZWFkaW5nLW5vbmUiPgogICAgICAgIDxzcGFuCiAgICAgICAgICBjbGFzc05hbWU9ImZvbnQtYmxhY2sgdHJhY2tpbmctdGlnaHQiCiAgICAgICAgICBzdHlsZT17eyBmb250U2l6ZTogc2l6ZSAqIDAuNjIsIGxldHRlclNwYWNpbmc6ICctMC4wM2VtJyB9fQogICAgICAgID4KICAgICAgICAgIEtoZGVtbGkKICAgICAgICA8L3NwYW4+CiAgICAgICAge3Nob3dUYWdsaW5lICYmICgKICAgICAgICAgIDxzcGFuCiAgICAgICAgICAgIGNsYXNzTmFtZT0ibXQtMC41IGZvbnQtc2VtaWJvbGQiCiAgICAgICAgICAgIHN0eWxlPXt7IGZvbnRTaXplOiBzaXplICogMC4yNiwgY29sb3I6ICdyZ2IodmFyKC0tZmctbXV0ZWQpKScgfX0KICAgICAgICAgID4KICAgICAgICAgICAg2K7Yr9mF2KfYqiDYqNin2YTYqtmC2LPZiti3CiAgICAgICAgICA8L3NwYW4+CiAgICAgICAgKX0KICAgICAgPC9zcGFuPgogICAgPC9zcGFuPgogICk7Cn0KCi8qKgogKiBDYXRlZ29yeSAvIHNlcnZpY2UgaWNvbm9ncmFwaHkuCiAqCiAqIElubGluZSBTVkcgcmF0aGVyIHRoYW4gYW4gaWNvbiBmb250OiB0aGVzZSBpbmhlcml0IGBjdXJyZW50Q29sb3JgLCBzdGF5IGNyaXNwCiAqIGF0IGFueSBzaXplLCBhbmQgcmVuZGVyIGlkZW50aWNhbGx5IG9uIEFuZHJvaWQsIGlPUyBhbmQgZGVza3RvcC4gVGhlIERCCiAqIHN0b3JlcyBhIHNob3J0IGljb24gKm5hbWUqIHBlciBjYXRlZ29yeSwgd2hpY2ggYGljb25Gb3JTbHVnYCBtYXBzIGhlcmUg4oCUIHNvCiAqIGFuIGFkbWluIGNhbiBhZGQgYSBjYXRlZ29yeSB3aXRob3V0IGEgZGVwbG95IGFuZCBzdGlsbCBnZXQgYSBzYW5lIGdseXBoLgogKi8KCmV4cG9ydCB0eXBlIEljb25OYW1lID0KICB8ICdob21lJwogIHwgJ2FwYXJ0bWVudCcKICB8ICd0cnVjaycKICB8ICdjaGVja2xpc3QnCiAgfCAnYm9sdCcKICB8ICd3cmVuY2gnCiAgfCAnaGFtbWVyJwogIHwgJ3BhaW50JwogIHwgJ3NwYXJrbGVzJwogIHwgJ3BsdWcnCiAgfCAnd2F0ZXInCiAgfCAnZmxhbWUnCiAgfCAnYm94JwogIHwgJ2NhcnQnCiAgfCAnY2xvY2snCiAgfCAnc3BhcmsnCiAgfCAnc2hpZWxkJwogIHwgJ3BpbicKICB8ICdsYXllcnMnCiAgfCAnZnJpZGdlJwogIHwgJ3dhc2hlcicKICB8ICdvdmVuJwogIHwgJ3NvZmEnCiAgfCAnZHJpbGwnCiAgfCAnc2VhcmNoJwogIHwgJ3N0YXInCiAgfCAnY2hhdCcKICB8ICdwaG9uZScKICB8ICduYXYnCiAgfCAnd2FsbGV0JwogIHwgJ2JlbGwnCiAgfCAndXNlcicKICB8ICdwbHVzJwogIHwgJ21pbnVzJwogIHwgJ2NoZWNrJwogIHwgJ3gnCiAgfCAnY2hldnJvbicKICB8ICdhcnJvdycKICB8ICdjYW1lcmEnCiAgfCAnZG9jJwogIHwgJ2Nyb3duJwogIHwgJ2JhZGdlJwogIHwgJ3JhZGFyJwogIHwgJ3JvdXRlJzsKCnR5cGUgSWNvblByb3BzID0gU1ZHUHJvcHM8U1ZHU1ZHRWxlbWVudD4gJiB7IG5hbWU6IEljb25OYW1lIHwgc3RyaW5nOyBzaXplPzogbnVtYmVyIH07Cgpjb25zdCBQQVRIUzogUmVjb3JkPEljb25OYW1lLCBSZWFjdEVsZW1lbnQ+ID0gewogIGhvbWU6ICgKICAgIDw+CiAgICAgIDxwYXRoIGQ9Ik0zIDEwLjUgMTIgM2w5IDcuNSIgLz4KICAgICAgPHBhdGggZD0iTTUuNSA5LjVWMjBhMSAxIDAgMCAwIDEgMWgxMWExIDEgMCAwIDAgMS0xVjkuNSIgLz4KICAgICAgPHBhdGggZD0iTTkuNSAyMXYtNmg1djYiIC8+CiAgICA8Lz4KICApLAogIGFwYXJ0bWVudDogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTQgMjFWNWExIDEgMCAwIDEgMS0xaDlhMSAxIDAgMCAxIDEgMXYxNiIgLz4KICAgICAgPHBhdGggZD0iTTE1IDloNGExIDEgMCAwIDEgMSAxdjExIiAvPgogICAgICA8cGF0aCBkPSJNNyA4aDJNNyAxMmgyTTcgMTZoMk0xOCAxM2gtMU0xOCAxN2gtMSIgLz4KICAgIDwvPgogICksCiAgdHJ1Y2s6ICgKICAgIDw+CiAgICAgIDxwYXRoIGQ9Ik0yIDdhMSAxIDAgMCAxIDEtMWg5YTEgMSAwIDAgMSAxIDF2OEgyeiIgLz4KICAgICAgPHBhdGggZD0iTTEzIDloNGwzIDMuNVYxNWgtN3oiIC8+CiAgICAgIDxjaXJjbGUgY3g9IjYiIGN5PSIxOCIgcj0iMS44IiAvPgogICAgICA8Y2lyY2xlIGN4PSIxNi41IiBjeT0iMTgiIHI9IjEuOCIgLz4KICAgICAgPHBhdGggZD0iTTcuOCAxOGg2LjlNMiAxOGgyLjJNMTguMyAxOEgyMSIgLz4KICAgIDwvPgogICksCiAgY2hlY2tsaXN0OiAoCiAgICA8PgogICAgICA8cGF0aCBkPSJNOSA2aDExTTkgMTJoMTFNOSAxOGgxMSIgLz4KICAgICAgPHBhdGggZD0ibTIuNSA2IDEuNSAxLjVMNyA0LjUiIC8+CiAgICAgIDxwYXRoIGQ9Im0yLjUgMTIgMS41IDEuNUw3IDEwLjUiIC8+CiAgICAgIDxwYXRoIGQ9Im0yLjUgMTggMS41IDEuNUw3IDE2LjUiIC8+CiAgICA8Lz4KICApLAogIGJvbHQ6IDxwYXRoIGQ9Ik0xMy41IDIgNCAxMy4yaDYuMkwxMCAyMmw5LjYtMTEuMkgxMy40eiIgLz4sCiAgd3JlbmNoOiAoCiAgICA8cGF0aCBkPSJNMjAuNSAzLjVhNSA1IDAgMCAxLTYuNyA2LjdMNSAxOWEyLjEgMi4xIDAgMCAxLTMtM2w4LjgtOC44YTUgNSAwIDAgMSA2LjctNi43bC0zIDMgMiAyeiIgLz4KICApLAogIGhhbW1lcjogKAogICAgPHBhdGggZD0iTTE0IDMuNSAyMC41IDEwbC0yLjYgMi42LTItMi04LjYgOC42YTEuOCAxLjggMCAwIDEtMi42LTIuNmw4LjYtOC42LTItMnoiIC8+CiAgKSwKICBwYWludDogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTQgNGgxMWEyIDIgMCAwIDEgMiAydjRhMiAyIDAgMCAxLTIgMkg5djIiIC8+CiAgICAgIDxyZWN0IHg9IjcuNSIgeT0iMTQiIHdpZHRoPSIzIiBoZWlnaHQ9IjciIHJ4PSIxLjIiIC8+CiAgICA8Lz4KICApLAogIHNwYXJrbGVzOiAoCiAgICA8PgogICAgICA8cGF0aCBkPSJtMTIgMyAxLjcgNC45TDE4LjUgOS41bC00LjggMS42TDEyIDE2bC0xLjctNC45TDUuNSA5LjVsNC44LTEuNnoiIC8+CiAgICAgIDxwYXRoIGQ9Ik0xOC41IDE1LjUgMTkuNiAxOGwyLjQgMS0yLjQuOS0xLjEgMi42LTEuMS0yLjZMMTUgMTlsMi40LTF6IiAvPgogICAgPC8+CiAgKSwKICBwbHVnOiAoCiAgICA8PgogICAgICA8cGF0aCBkPSJNOSAzdjVNMTUgM3Y1IiAvPgogICAgICA8cGF0aCBkPSJNNiA4aDEydjNhNiA2IDAgMCAxLTYgNiA2IDYgMCAwIDEtNi02eiIgLz4KICAgICAgPHBhdGggZD0iTTEyIDE3djQiIC8+CiAgICA8Lz4KICApLAogIHdhdGVyOiA8cGF0aCBkPSJNMTIgM3M1LjUgNi4xIDUuNSAxMGE1LjUgNS41IDAgMCAxLTExIDBDNi41IDkuMSAxMiAzIDEyIDN6IiAvPiwKICBmbGFtZTogKAogICAgPHBhdGggZD0iTTEyIDNjLjggMy4yLTIuNiA0LjctMi42IDguMkEzLjQgMy40IDAgMCAwIDEyIDE0LjZhMy40IDMuNCAwIDAgMCAyLjYtMy40YzAtMS0uMy0xLjgtLjgtMi41IDIuNCAxIDQuMiAzLjMgNC4yIDZBNiA2IDAgMCAxIDYgMTQuN2MwLTQuNiA0LjYtNS42IDYtMTEuN3oiIC8+CiAgKSwKICBib3g6ICgKICAgIDw+CiAgICAgIDxwYXRoIGQ9Ik0zLjUgNy41IDEyIDNsOC41IDQuNXY5TDEyIDIxbC04LjUtNC41eiIgLz4KICAgICAgPHBhdGggZD0iTTMuNSA3LjUgMTIgMTJsOC41LTQuNU0xMiAxMnY5IiAvPgogICAgPC8+CiAgKSwKICBjYXJ0OiAoCiAgICA8PgogICAgICA8Y2lyY2xlIGN4PSI5IiBjeT0iMjAiIHI9IjEuNiIgLz4KICAgICAgPGNpcmNsZSBjeD0iMTgiIGN5PSIyMCIgcj0iMS42IiAvPgogICAgICA8cGF0aCBkPSJNMi41IDNoMi4ybDIuNiAxMi4yaDEyTDIxIDYuNUg1LjUiIC8+CiAgICA8Lz4KICApLAogIGNsb2NrOiAoCiAgICA8PgogICAgICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI5IiAvPgogICAgICA8cGF0aCBkPSJNMTIgN3Y1LjRsMy40IDIiIC8+CiAgICA8Lz4KICApLAogIHNwYXJrOiA8cGF0aCBkPSJNMTIgMi41IDE0IDlsNi41IDItNi41IDItMiA2LjUtMi02LjVMMy41IDExIDEwIDl6IiAvPiwKICBzaGllbGQ6ICgKICAgIDw+CiAgICAgIDxwYXRoIGQ9Ik0xMiAzbDcuNSAyLjh2NS40YzAgNC40LTMuMSA4LjItNy41IDkuNi00LjQtMS40LTcuNS01LjItNy41LTkuNlY1Ljh6IiAvPgogICAgICA8cGF0aCBkPSJtOSAxMiAyLjIgMi4yTDE1LjUgMTAiIC8+CiAgICA8Lz4KICApLAogIHBpbjogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTEyIDIxczYuNS01LjYgNi41LTEwLjVhNi41IDYuNSAwIDEgMC0xMyAwQzUuNSAxNS40IDEyIDIxIDEyIDIxeiIgLz4KICAgICAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMC41IiByPSIyLjQiIC8+CiAgICA8Lz4KICApLAogIGxheWVyczogKAogICAgPD4KICAgICAgPHBhdGggZD0ibTEyIDMgOSA1LTkgNS05LTV6IiAvPgogICAgICA8cGF0aCBkPSJtMyAxMyA5IDUgOS01IiAvPgogICAgPC8+CiAgKSwKICBmcmlkZ2U6ICgKICAgIDw+CiAgICAgIDxyZWN0IHg9IjYiIHk9IjIuNSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjE5IiByeD0iMiIgLz4KICAgICAgPHBhdGggZD0iTTYgMTBoMTJNOSA2djJNOSAxMy41djIiIC8+CiAgICA8Lz4KICApLAogIHdhc2hlcjogKAogICAgPD4KICAgICAgPHJlY3QgeD0iNCIgeT0iMyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE4IiByeD0iMiIgLz4KICAgICAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxNCIgcj0iNCIgLz4KICAgICAgPHBhdGggZD0iTTggN2guMDFNMTEgN2guMDEiIC8+CiAgICA8Lz4KICApLAogIG92ZW46ICgKICAgIDw+CiAgICAgIDxyZWN0IHg9IjQiIHk9IjMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxOCIgcng9IjIiIC8+CiAgICAgIDxwYXRoIGQ9Ik00IDloMTZNOCA2aC4wMU0xMSA2aC4wMSIgLz4KICAgICAgPHJlY3QgeD0iOCIgeT0iMTIuNSIgd2lkdGg9IjgiIGhlaWdodD0iNS41IiByeD0iMSIgLz4KICAgIDwvPgogICksCiAgc29mYTogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTQgMTJWOC41QTIuNSAyLjUgMCAwIDEgNi41IDZoMTFBMi41IDIuNSAwIDAgMSAyMCA4LjVWMTIiIC8+CiAgICAgIDxwYXRoIGQ9Ik0zIDEyLjVhMiAyIDAgMCAxIDIgMlYxN2gxNHYtMi41YTIgMiAwIDAgMSAyLTIiIC8+CiAgICAgIDxwYXRoIGQ9Ik02IDE3djEuNU0xOCAxN3YxLjUiIC8+CiAgICA8Lz4KICApLAogIGRyaWxsOiAoCiAgICA8PgogICAgICA8cGF0aCBkPSJNNCA4aDlhMiAyIDAgMCAxIDIgMnYxYTIgMiAwIDAgMS0yIDJIOWwtMSA1SDVsLTEtNXoiIC8+CiAgICAgIDxwYXRoIGQ9Ik0xNSA5aDQuNWExLjUgMS41IDAgMCAxIDAgM0gxNSIgLz4KICAgICAgPHBhdGggZD0iTTcgOFY1LjVoNFY4IiAvPgogICAgPC8+CiAgKSwKICBzZWFyY2g6ICgKICAgIDw+CiAgICAgIDxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjciIC8+CiAgICAgIDxwYXRoIGQ9Im0xNi41IDE2LjUgNCA0IiAvPgogICAgPC8+CiAgKSwKICBzdGFyOiA8cGF0aCBkPSJtMTIgMy4yIDIuNyA1LjYgNi4xLjktNC40IDQuMyAxIDYuMS01LjQtMi45LTUuNCAyLjkgMS02LjFMMy4yIDkuN2w2LjEtLjl6IiAvPiwKICBjaGF0OiAoCiAgICA8cGF0aCBkPSJNNCA1LjVBMS41IDEuNSAwIDAgMSA1LjUgNGgxM0ExLjUgMS41IDAgMCAxIDIwIDUuNXY5YTEuNSAxLjUgMCAwIDEtMS41IDEuNUg5bC00IDMuNVYxNS45QTEuNSAxLjUgMCAwIDEgNCAxNC41eiIgLz4KICApLAogIHBob25lOiAoCiAgICA8cGF0aCBkPSJNNi41IDMuNWgyLjJsMS42IDQtMiAxLjNhMTEuNSAxMS41IDAgMCAwIDUuNCA1LjRsMS4zLTIgNCAxLjZ2Mi4yYTIgMiAwIDAgMS0yLjIgMkExNS41IDE1LjUgMCAwIDEgNC41IDUuN2EyIDIgMCAwIDEgMi0yLjJ6IiAvPgogICksCiAgbmF2OiA8cGF0aCBkPSJNMTIgMyAyMCAyMWwtOC0zLjRMNCAyMXoiIC8+LAogIHdhbGxldDogKAogICAgPD4KICAgICAgPHJlY3QgeD0iMyIgeT0iNiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjEzIiByeD0iMi41IiAvPgogICAgICA8cGF0aCBkPSJNMyAxMGgxOCIgLz4KICAgICAgPGNpcmNsZSBjeD0iMTYuNSIgY3k9IjE0IiByPSIxLjIiIC8+CiAgICA8Lz4KICApLAogIGJlbGw6ICgKICAgIDw+CiAgICAgIDxwYXRoIGQ9Ik02IDEwYTYgNiAwIDEgMSAxMiAwYzAgNCAxLjUgNS41IDEuNSA1LjVINC41UzYgMTQgNiAxMHoiIC8+CiAgICAgIDxwYXRoIGQ9Ik0xMCAxOWEyIDIgMCAwIDAgNCAwIiAvPgogICAgPC8+CiAgKSwKICB1c2VyOiAoCiAgICA8PgogICAgICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjgiIHI9IjMuNSIgLz4KICAgICAgPHBhdGggZD0iTTUgMjBhNyA3IDAgMCAxIDE0IDAiIC8+CiAgICA8Lz4KICApLAogIHBsdXM6IDxwYXRoIGQ9Ik0xMiA1djE0TTUgMTJoMTQiIC8+LAogIG1pbnVzOiA8cGF0aCBkPSJNNSAxMmgxNCIgLz4sCiAgY2hlY2s6IDxwYXRoIGQ9Im01IDEyLjUgNC41IDQuNUwxOSA3IiAvPiwKICB4OiA8cGF0aCBkPSJNNiA2bDEyIDEyTTE4IDYgNiAxOCIgLz4sCiAgY2hldnJvbjogPHBhdGggZD0ibTkgNiA2IDYtNiA2IiAvPiwKICBhcnJvdzogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTQgMTJoMTUiIC8+CiAgICAgIDxwYXRoIGQ9Im0xMyA2IDYgNi02IDYiIC8+CiAgICA8Lz4KICApLAogIGNhbWVyYTogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTMgOC41QTIuNSAyLjUgMCAwIDEgNS41IDZoMS44bDEuMi0yaDdsMS4yIDJoMS44QTIuNSAyLjUgMCAwIDEgMjEgOC41djhBMi41IDIuNSAwIDAgMSAxOC41IDE5aC0xM0EyLjUgMi41IDAgMCAxIDMgMTYuNXoiIC8+CiAgICAgIDxjaXJjbGUgY3g9IjEyIiBjeT0iMTIuNSIgcj0iMy40IiAvPgogICAgPC8+CiAgKSwKICBkb2M6ICgKICAgIDw+CiAgICAgIDxwYXRoIGQ9Ik02IDNoOGw0IDR2MTRINnoiIC8+CiAgICAgIDxwYXRoIGQ9Ik0xNCAzdjRoNE05IDEyaDZNOSAxNmg2IiAvPgogICAgPC8+CiAgKSwKICBjcm93bjogPHBhdGggZD0iTTQgMThoMTZsLTEuMi05LTMuOCAzLjJMMTIgNmwtMyA2LjJMNS4yIDl6IiAvPiwKICBiYWRnZTogKAogICAgPD4KICAgICAgPHBhdGggZD0iTTEyIDNsMiAxLjYgMi41LS4zIDEuMSAyLjMgMi4zIDEuMS0uMyAyLjVMMjEgMTJsLTEuNCAxLjguMyAyLjUtMi4zIDEuMS0xLjEgMi4zLTIuNS0uM0wxMiAyMWwtMi0xLjYtMi41LjMtMS4xLTIuM0w0IDE2LjNsLjMtMi41TDMgMTJsMS40LTEuOC0uMy0yLjUgMi4zLTEuMUw3LjUgNC4zbDIuNS4zeiIgLz4KICAgICAgPHBhdGggZD0ibTkgMTIgMiAyIDQtNCIgLz4KICAgIDwvPgogICksCiAgcmFkYXI6ICgKICAgIDw+CiAgICAgIDxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjkiIC8+CiAgICAgIDxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjQuNSIgLz4KICAgICAgPHBhdGggZD0iTTEyIDEybDYtNCIgLz4KICAgIDwvPgogICksCiAgcm91dGU6ICgKICAgIDw+CiAgICAgIDxjaXJjbGUgY3g9IjYiIGN5PSIxOCIgcj0iMi41IiAvPgogICAgICA8Y2lyY2xlIGN4PSIxOCIgY3k9IjYiIHI9IjIuNSIgLz4KICAgICAgPHBhdGggZD0iTTguNSAxOGg1YTQgNCAwIDAgMCAwLThoLTNhNCA0IDAgMCAxIDAtOGg1IiAvPgogICAgPC8+CiAgKSwKfTsKCi8qKiBEQiBpY29uIG5hbWUgLT4gY29tcG9uZW50LiBVbmtub3duIG5hbWVzIGZhbGwgYmFjayB0byBhIG5ldXRyYWwgZ2x5cGguICovCmV4cG9ydCBmdW5jdGlvbiBDYXRlZ29yeUljb24oeyBuYW1lLCBzaXplID0gMjIsIC4uLnJlc3QgfTogSWNvblByb3BzKSB7CiAgY29uc3Qga2V5ID0gKG5hbWUgaW4gUEFUSFMgPyBuYW1lIDogJ2xheWVycycpIGFzIEljb25OYW1lOwogIHJldHVybiAoCiAgICA8c3ZnCiAgICAgIHdpZHRoPXtzaXplfQogICAgICBoZWlnaHQ9e3NpemV9CiAgICAgIHZpZXdCb3g9IjAgMCAyNCAyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJjdXJyZW50Q29sb3IiCiAgICAgIHN0cm9rZVdpZHRoPXsxLjd9CiAgICAgIHN0cm9rZUxpbmVjYXA9InJvdW5kIgogICAgICBzdHJva2VMaW5lam9pbj0icm91bmQiCiAgICAgIGFyaWEtaGlkZGVuPSJ0cnVlIgogICAgICBmb2N1c2FibGU9ImZhbHNlIgogICAgICB7Li4ucmVzdH0KICAgID4KICAgICAge1BBVEhTW2tleV19CiAgICA8L3N2Zz4KICApOwp9CgovKiogRmlsbGVkIHZhcmlhbnQgZm9yIHN0YXJzLiAqLwpleHBvcnQgZnVuY3Rpb24gU3Rhckljb24oeyBzaXplID0gMTYsIGZpbGxlZCA9IGZhbHNlIH06IHsgc2l6ZT86IG51bWJlcjsgZmlsbGVkPzogYm9vbGVhbiB9KSB7CiAgcmV0dXJuICgKICAgIDxzdmcKICAgICAgd2lkdGg9e3NpemV9CiAgICAgIGhlaWdodD17c2l6ZX0KICAgICAgdmlld0JveD0iMCAwIDI0IDI0IgogICAgICBmaWxsPXtmaWxsZWQgPyAnY3VycmVudENvbG9yJyA6ICdub25lJ30KICAgICAgc3Ryb2tlPSJjdXJyZW50Q29sb3IiCiAgICAgIHN0cm9rZVdpZHRoPXsxLjd9CiAgICAgIHN0cm9rZUxpbmVqb2luPSJyb3VuZCIKICAgICAgYXJpYS1oaWRkZW49InRydWUiCiAgICA+CiAgICAgIHtQQVRIUy5zdGFyfQogICAgPC9zdmc+CiAgKTsKfQoKLyoqCiAqIE1hcCBhIGNhdGVnb3J5IG9yIHNlcnZpY2Ugc2x1ZyB0byBhbiBpY29uIHdoZW4gdGhlIHJvdyBoYXMgbm9uZS4KICogS2V5d29yZC1iYXNlZCBzbyBuZXdseSBzZWVkZWQgcm93cyBzdGlsbCBsb29rIGludGVudGlvbmFsLgogKi8KY29uc3QgU0xVR19JQ09OUzogQXJyYXk8W1JlZ0V4cCwgSWNvbk5hbWVdPiA9IFsKICBbL3BsdW1ifGxlYWt8ZHJhaW58cGlwZXxmYXVjZXR8c2lwaG9ufHdhdGVyLWhlYXRlci8sICd3YXRlciddLAogIFsvZWxlY3RyaWN8b3V0bGV0fGxpZ2h0aW5nfHBhbmVsfHN3aXRjaHxzb2NrZXR8d2lyaW5nLywgJ2JvbHQnXSwKICBbL2hhbmR5bWFufGFzc2VtYmx5fG1vdW50aW5nfGdlbmVyYWx8dG9vbHxyZXBhaXIvLCAnd3JlbmNoJ10sCiAgWy93YXNoaW5nfHdhc2hlci8sICd3YXNoZXInXSwKICBbL3JlZnJpZ2VyYXR8ZnJpZGdlLywgJ2ZyaWRnZSddLAogIFsvb3ZlbnxzdG92ZXxjb29rZXIvLCAnb3ZlbiddLAogIFsvYXBwbGlhbmNlfGRpc2h3YXNoZXJ8bWljcm93YXZlLywgJ3BsdWcnXSwKICBbL3BhaW50fHBsYXN0ZXJ8Y29hdGluZ3x3YWxsLXBhaW50LywgJ3BhaW50J10sCiAgWy9jbGVhbnxob3VzZWtlZXB8bWFpZHxzYW5pdHxkZWVwLWNsZWFuLywgJ3NwYXJrbGVzJ10sCiAgWy9mdXJuaXR1cmV8c29mYXxjb3VjaC8sICdzb2ZhJ10sCiAgWy9tb3ZlfG1vdmVyfHJlbG9jYXR8YXBhcnRtZW50LW1vdmUvLCAndHJ1Y2snXSwKICBbL2RlbGl2ZXJ8ZGVsaXZlcnl8Y291cmllcnxleHByZXNzfHBhY2thZ2V8cGFyY2VsLywgJ2JveCddLAogIFsvcGlja3VwfGRyb3BvZmZ8Y29sbGVjdHxwb3N0LW9mZmljZXxkb2N1bWVudC8sICdkb2MnXSwKICBbL2dyb2NlcnxzaG9wcGluZ3xtYXJrZXR8cGhhcm1hYy8sICdjYXJ0J10sCiAgWy9lcnJhbmR8cXVldWV8d2FpdGluZ3xob3VyLywgJ2Nsb2NrJ10sCiAgWy9hc3Npc3R8ZWxkZXJ8aGVscHxjYXJlfGNhcnJ5fHN1cHBvcnQvLCAnc2hpZWxkJ10sCiAgWy9idWlsZHxjb25zdHJ1Y3R8cmVub3ZhdHxtYXNvbnxjZW1lbnR8ZHJpbGwvLCAnaGFtbWVyJ10sCiAgWy9ob21lfGhvdXNlfGFwYXJ0bWVudHx2aWxsYXxzdHVkaW8vLCAnaG9tZSddLAogIFsvdGFza3xjaGVja2xpc3R8aW5zcGVjdGlvbnxzdXJ2ZXkvLCAnY2hlY2tsaXN0J10sCiAgWy9jaXR5fGFyZWF8bG9jYXRpb258bWFwLywgJ3BpbiddLApdOwoKZXhwb3J0IGZ1bmN0aW9uIGljb25Gb3JTbHVnKHNsdWc6IHN0cmluZywgZmFsbGJhY2tJY29uPzogc3RyaW5nIHwgbnVsbCk6IEljb25OYW1lIHsKICBpZiAoZmFsbGJhY2tJY29uICYmIGZhbGxiYWNrSWNvbiBpbiBQQVRIUykgcmV0dXJuIGZhbGxiYWNrSWNvbiBhcyBJY29uTmFtZTsKICBjb25zdCBzID0gc2x1Zy50b0xvd2VyQ2FzZSgpOwogIGZvciAoY29uc3QgW3JlLCBpY29uXSBvZiBTTFVHX0lDT05TKSBpZiAocmUudGVzdChzKSkgcmV0dXJuIGljb247CiAgcmV0dXJuICdzcGFyayc7Cn0K
+import type { ReactElement, SVGProps } from 'react';
+
+/**
+ * Khdemli brand mark.
+ *
+ * A hand-and-wrench inside a rounded square: craftsman's tool plus a palm that
+ * reads as "someone will do it for you". Drawn on the same 24-grid as the rest
+ * of the iconography so it optically matches the UI, with the brand aqua as the
+ * fill and a deep ink stroke that survives on white, on aqua, and in dark mode.
+ */
+
+export function KhdemliMark({
+  size = 32,
+  variant = 'brand',
+  className,
+  ...rest
+}: SVGProps<SVGSVGElement> & { size?: number; variant?: 'brand' | 'ink' | 'mono' }) {
+  const fill = variant === 'ink' ? '#061f1a' : '#32F4BA';
+  const glyph = variant === 'ink' ? '#32F4BA' : '#06231c';
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+      {...rest}
+    >
+      <rect x="1.5" y="1.5" width="45" height="45" rx="13" fill={fill} />
+      <rect x="1.5" y="1.5" width="45" height="45" rx="13" stroke="rgba(6,35,28,0.14)" strokeWidth="1.5" />
+      {/* wrench */}
+      <path
+        d="M32.6 12.4a6.1 6.1 0 0 1-7.9 7.9l-8.2 8.2a2.3 2.3 0 1 0 3.2 3.2l8.2-8.2a6.1 6.1 0 0 1 7.9-7.9l-3.7 3.7 1.9 1.9z"
+        fill={glyph}
+      />
+      {/* palm line: "khdemli" = do it for me */}
+      <path
+        d="M11.5 30.5c3.6 4.4 8.3 6.6 14 6.6 3.1 0 5.8-.7 8.1-2.1"
+        stroke={glyph}
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/** Mark + wordmark, for headers and footers. */
+export function KhdemliLogo({
+  size = 30,
+  showTagline = false,
+  className,
+}: {
+  size?: number;
+  showTagline?: boolean;
+  className?: string;
+}) {
+  return (
+    <span className={`inline-flex items-center gap-2 ${className ?? ''}`}>
+      <KhdemliMark size={size} />
+      <span className="flex flex-col leading-none">
+        <span
+          className="font-black tracking-tight"
+          style={{ fontSize: size * 0.62, letterSpacing: '-0.03em' }}
+        >
+          Khdemli
+        </span>
+        {showTagline && (
+          <span
+            className="mt-0.5 font-semibold"
+            style={{ fontSize: size * 0.26, color: 'rgb(var(--fg-muted))' }}
+          >
+            خدمات بالتقسيط
+          </span>
+        )}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Category / service iconography.
+ *
+ * Inline SVG rather than an icon font: these inherit `currentColor`, stay crisp
+ * at any size, and render identically on Android, iOS and desktop. The DB
+ * stores a short icon *name* per category, which `iconForSlug` maps here — so
+ * an admin can add a category without a deploy and still get a sane glyph.
+ */
+
+export type IconName =
+  | 'home'
+  | 'apartment'
+  | 'truck'
+  | 'checklist'
+  | 'bolt'
+  | 'wrench'
+  | 'hammer'
+  | 'paint'
+  | 'sparkles'
+  | 'plug'
+  | 'water'
+  | 'flame'
+  | 'box'
+  | 'cart'
+  | 'clock'
+  | 'spark'
+  | 'shield'
+  | 'pin'
+  | 'layers'
+  | 'fridge'
+  | 'washer'
+  | 'oven'
+  | 'sofa'
+  | 'drill'
+  | 'search'
+  | 'star'
+  | 'chat'
+  | 'phone'
+  | 'nav'
+  | 'wallet'
+  | 'bell'
+  | 'user'
+  | 'plus'
+  | 'minus'
+  | 'check'
+  | 'x'
+  | 'chevron'
+  | 'arrow'
+  | 'camera'
+  | 'doc'
+  | 'crown'
+  | 'badge'
+  | 'radar'
+  | 'route';
+
+type IconProps = SVGProps<SVGSVGElement> & { name: IconName | string; size?: number };
+
+const PATHS: Record<IconName, ReactElement> = {
+  home: (
+    <>
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5" />
+      <path d="M9.5 21v-6h5v6" />
+    </>
+  ),
+  apartment: (
+    <>
+      <path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16" />
+      <path d="M15 9h4a1 1 0 0 1 1 1v11" />
+      <path d="M7 8h2M7 12h2M7 16h2M18 13h-1M18 17h-1" />
+    </>
+  ),
+  truck: (
+    <>
+      <path d="M2 7a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v8H2z" />
+      <path d="M13 9h4l3 3.5V15h-7z" />
+      <circle cx="6" cy="18" r="1.8" />
+      <circle cx="16.5" cy="18" r="1.8" />
+      <path d="M7.8 18h6.9M2 18h2.2M18.3 18H21" />
+    </>
+  ),
+  checklist: (
+    <>
+      <path d="M9 6h11M9 12h11M9 18h11" />
+      <path d="m2.5 6 1.5 1.5L7 4.5" />
+      <path d="m2.5 12 1.5 1.5L7 10.5" />
+      <path d="m2.5 18 1.5 1.5L7 16.5" />
+    </>
+  ),
+  bolt: <path d="M13.5 2 4 13.2h6.2L10 22l9.6-11.2H13.4z" />,
+  wrench: (
+    <path d="M20.5 3.5a5 5 0 0 1-6.7 6.7L5 19a2.1 2.1 0 0 1-3-3l8.8-8.8a5 5 0 0 1 6.7-6.7l-3 3 2 2z" />
+  ),
+  hammer: (
+    <path d="M14 3.5 20.5 10l-2.6 2.6-2-2-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l8.6-8.6-2-2z" />
+  ),
+  paint: (
+    <>
+      <path d="M4 4h11a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H9v2" />
+      <rect x="7.5" y="14" width="3" height="7" rx="1.2" />
+    </>
+  ),
+  sparkles: (
+    <>
+      <path d="m12 3 1.7 4.9L18.5 9.5l-4.8 1.6L12 16l-1.7-4.9L5.5 9.5l4.8-1.6z" />
+      <path d="M18.5 15.5 19.6 18l2.4 1-2.4.9-1.1 2.6-1.1-2.6L15 19l2.4-1z" />
+    </>
+  ),
+  plug: (
+    <>
+      <path d="M9 3v5M15 3v5" />
+      <path d="M6 8h12v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6z" />
+      <path d="M12 17v4" />
+    </>
+  ),
+  water: <path d="M12 3s5.5 6.1 5.5 10a5.5 5.5 0 0 1-11 0C6.5 9.1 12 3 12 3z" />,
+  flame: (
+    <path d="M12 3c.8 3.2-2.6 4.7-2.6 8.2A3.4 3.4 0 0 0 12 14.6a3.4 3.4 0 0 0 2.6-3.4c0-1-.3-1.8-.8-2.5 2.4 1 4.2 3.3 4.2 6A6 6 0 0 1 6 14.7c0-4.6 4.6-5.6 6-11.7z" />
+  ),
+  box: (
+    <>
+      <path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z" />
+      <path d="M3.5 7.5 12 12l8.5-4.5M12 12v9" />
+    </>
+  ),
+  cart: (
+    <>
+      <circle cx="9" cy="20" r="1.6" />
+      <circle cx="18" cy="20" r="1.6" />
+      <path d="M2.5 3h2.2l2.6 12.2h12L21 6.5H5.5" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5.4l3.4 2" />
+    </>
+  ),
+  spark: <path d="M12 2.5 14 9l6.5 2-6.5 2-2 6.5-2-6.5L3.5 11 10 9z" />,
+  shield: (
+    <>
+      <path d="M12 3l7.5 2.8v5.4c0 4.4-3.1 8.2-7.5 9.6-4.4-1.4-7.5-5.2-7.5-9.6V5.8z" />
+      <path d="m9 12 2.2 2.2L15.5 10" />
+    </>
+  ),
+  pin: (
+    <>
+      <path d="M12 21s6.5-5.6 6.5-10.5a6.5 6.5 0 1 0-13 0C5.5 15.4 12 21 12 21z" />
+      <circle cx="12" cy="10.5" r="2.4" />
+    </>
+  ),
+  layers: (
+    <>
+      <path d="m12 3 9 5-9 5-9-5z" />
+      <path d="m3 13 9 5 9-5" />
+    </>
+  ),
+  fridge: (
+    <>
+      <rect x="6" y="2.5" width="12" height="19" rx="2" />
+      <path d="M6 10h12M9 6v2M9 13.5v2" />
+    </>
+  ),
+  washer: (
+    <>
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <circle cx="12" cy="14" r="4" />
+      <path d="M8 7h.01M11 7h.01" />
+    </>
+  ),
+  oven: (
+    <>
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M4 9h16M8 6h.01M11 6h.01" />
+      <rect x="8" y="12.5" width="8" height="5.5" rx="1" />
+    </>
+  ),
+  sofa: (
+    <>
+      <path d="M4 12V8.5A2.5 2.5 0 0 1 6.5 6h11A2.5 2.5 0 0 1 20 8.5V12" />
+      <path d="M3 12.5a2 2 0 0 1 2 2V17h14v-2.5a2 2 0 0 1 2-2" />
+      <path d="M6 17v1.5M18 17v1.5" />
+    </>
+  ),
+  drill: (
+    <>
+      <path d="M4 8h9a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H9l-1 5H5l-1-5z" />
+      <path d="M15 9h4.5a1.5 1.5 0 0 1 0 3H15" />
+      <path d="M7 8V5.5h4V8" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m16.5 16.5 4 4" />
+    </>
+  ),
+  star: <path d="m12 3.2 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.7l6.1-.9z" />,
+  chat: (
+    <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-4 3.5V15.9A1.5 1.5 0 0 1 4 14.5z" />
+  ),
+  phone: (
+    <path d="M6.5 3.5h2.2l1.6 4-2 1.3a11.5 11.5 0 0 0 5.4 5.4l1.3-2 4 1.6v2.2a2 2 0 0 1-2.2 2A15.5 15.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2z" />
+  ),
+  nav: <path d="M12 3 20 21l-8-3.4L4 21z" />,
+  wallet: (
+    <>
+      <rect x="3" y="6" width="18" height="13" rx="2.5" />
+      <path d="M3 10h18" />
+      <circle cx="16.5" cy="14" r="1.2" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M6 10a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 14 6 10z" />
+      <path d="M10 19a2 2 0 0 0 4 0" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20a7 7 0 0 1 14 0" />
+    </>
+  ),
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  check: <path d="m5 12.5 4.5 4.5L19 7" />,
+  x: <path d="M6 6l12 12M18 6 6 18" />,
+  chevron: <path d="m9 6 6 6-6 6" />,
+  arrow: (
+    <>
+      <path d="M4 12h15" />
+      <path d="m13 6 6 6-6 6" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-2h7l1.2 2h1.8A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z" />
+      <circle cx="12" cy="12.5" r="3.4" />
+    </>
+  ),
+  doc: (
+    <>
+      <path d="M6 3h8l4 4v14H6z" />
+      <path d="M14 3v4h4M9 12h6M9 16h6" />
+    </>
+  ),
+  crown: <path d="M4 18h16l-1.2-9-3.8 3.2L12 6l-3 6.2L5.2 9z" />,
+  badge: (
+    <>
+      <path d="M12 3l2 1.6 2.5-.3 1.1 2.3 2.3 1.1-.3 2.5L21 12l-1.4 1.8.3 2.5-2.3 1.1-1.1 2.3-2.5-.3L12 21l-2-1.6-2.5.3-1.1-2.3L4 16.3l.3-2.5L3 12l1.4-1.8-.3-2.5 2.3-1.1L7.5 4.3l2.5.3z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  radar: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="4.5" />
+      <path d="M12 12l6-4" />
+    </>
+  ),
+  route: (
+    <>
+      <circle cx="6" cy="18" r="2.5" />
+      <circle cx="18" cy="6" r="2.5" />
+      <path d="M8.5 18h5a4 4 0 0 0 0-8h-3a4 4 0 0 1 0-8h5" />
+    </>
+  ),
+};
+
+/** DB icon name -> component. Unknown names fall back to a neutral glyph. */
+export function CategoryIcon({ name, size = 22, ...rest }: IconProps) {
+  const key = (name in PATHS ? name : 'layers') as IconName;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      {...rest}
+    >
+      {PATHS[key]}
+    </svg>
+  );
+}
+
+/** Filled variant for stars. */
+export function StarIcon({ size = 16, filled = false }: { size?: number; filled?: boolean }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {PATHS.star}
+    </svg>
+  );
+}
+
+/**
+ * Map a category or service slug to an icon when the row has none.
+ * Keyword-based so newly seeded rows still look intentional.
+ */
+const SLUG_ICONS: Array<[RegExp, IconName]> = [
+  [/plumb|leak|drain|pipe|faucet|siphon|water-heater/, 'water'],
+  [/electric|outlet|lighting|panel|switch|socket|wiring/, 'bolt'],
+  [/handyman|assembly|mounting|general|tool|repair/, 'wrench'],
+  [/washing|washer/, 'washer'],
+  [/refrigerat|fridge/, 'fridge'],
+  [/oven|stove|cooker/, 'oven'],
+  [/appliance|dishwasher|microwave/, 'plug'],
+  [/paint|plaster|coating|wall-paint/, 'paint'],
+  [/clean|housekeep|maid|sanit|deep-clean/, 'sparkles'],
+  [/furniture|sofa|couch/, 'sofa'],
+  [/move|mover|relocat|apartment-move/, 'truck'],
+  [/deliver|delivery|courier|express|package|parcel/, 'box'],
+  [/pickup|dropoff|collect|post-office|document/, 'doc'],
+  [/grocer|shopping|market|pharmac/, 'cart'],
+  [/errand|queue|waiting|hour/, 'clock'],
+  [/assist|elder|help|care|carry|support/, 'shield'],
+  [/build|construct|renovat|mason|cement|drill/, 'hammer'],
+  [/home|house|apartment|villa|studio/, 'home'],
+  [/task|checklist|inspection|survey/, 'checklist'],
+  [/city|area|location|map/, 'pin'],
+];
+
+export function iconForSlug(slug: string, fallbackIcon?: string | null): IconName {
+  if (fallbackIcon && fallbackIcon in PATHS) return fallbackIcon as IconName;
+  const s = slug.toLowerCase();
+  for (const [re, icon] of SLUG_ICONS) if (re.test(s)) return icon;
+  return 'spark';
+}

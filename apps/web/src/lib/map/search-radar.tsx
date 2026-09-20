@@ -1,1 +1,301 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgdXNlRWZmZWN0LCB1c2VNZW1vLCB1c2VSZWYsIHVzZVN0YXRlIH0gZnJvbSAncmVhY3QnOwppbXBvcnQgeyB1c2VJMThuIH0gZnJvbSAnQC9saWIvaTE4bi1wcm92aWRlcic7CmltcG9ydCB7IHVzZVJlYWx0aW1lIH0gZnJvbSAnQC9saWIvcmVhbHRpbWUtY2xpZW50JzsKaW1wb3J0IHsgdXNlTWFwLCBUSUxFX1VSTCwgVElMRV9BVFRSSUJVVElPTiB9IGZyb20gJ0AvbGliL21hcC9sZWFmbGV0JzsKaW1wb3J0IHsgQ2F0ZWdvcnlJY29uIH0gZnJvbSAnQC9saWIvaWNvbnMnOwoKLyoqCiAqIFRoZSAiZmluZGluZyBjcmFmdHNtZW4iIHNjcmVlbi4KICoKICogVGhlIGluRHJpdmUgbW9tZW50OiB0aGUgcmVxdWVzdCBpcyBwdWJsaXNoZWQsIG1hdGNoaW5nIGlzIGZhbm5pbmcgb3V0LCBhbmQKICogdGhlIGN1c3RvbWVyIHdhdGNoZXMgYSByYWRhciB3aGlsZSBvZmZlcnMgc3RyZWFtIGluIG9uZSBhZnRlciBhbm90aGVyLiBUaGUKICogc2NyZWVuIGRlY2lkZXMgbm90aGluZyDigJQgaXQgbWFrZXMgYW4gb3RoZXJ3aXNlIGludmlzaWJsZSBzZXJ2ZXItc2lkZSBwcm9jZXNzCiAqIGZlZWwgYWxpdmUgYW5kIGhvbmVzdCBhYm91dCBob3cgbG9uZyB0aGUgc2VhcmNoIHJ1bnMuCiAqLwoKZXhwb3J0IGludGVyZmFjZSBSYWRhck9mZmVyIHsKICBpZDogc3RyaW5nOwp9CgpleHBvcnQgaW50ZXJmYWNlIFNlYXJjaFJhZGFyUHJvcHMgewogIHJlcXVlc3RJZDogc3RyaW5nOwogIG9mZmVyczogUmFkYXJPZmZlcltdOwogIHBvaW50OiB7IGxhdDogbnVtYmVyOyBsbmc6IG51bWJlciB9IHwgbnVsbDsKICBleHBpcmVzQXQ/OiBzdHJpbmcgfCBudWxsOwogIHJhZGl1c0ttPzogbnVtYmVyOwogIGNhbmRpZGF0ZUNvdW50PzogbnVtYmVyOwogIG9uVmlld09mZmVyczogKCkgPT4gdm9pZDsKICBvblN0b3A/OiAoKSA9PiB2b2lkOwp9CgpleHBvcnQgZnVuY3Rpb24gU2VhcmNoUmFkYXIoewogIHJlcXVlc3RJZCwKICBvZmZlcnMsCiAgcG9pbnQsCiAgZXhwaXJlc0F0LAogIHJhZGl1c0ttID0gMjUsCiAgY2FuZGlkYXRlQ291bnQgPSAwLAogIG9uVmlld09mZmVycywKICBvblN0b3AsCn06IFNlYXJjaFJhZGFyUHJvcHMpIHsKICBjb25zdCB7IHQgfSA9IHVzZUkxOG4oKTsKICBjb25zdCBbbm93LCBzZXROb3ddID0gdXNlU3RhdGUoKCkgPT4gRGF0ZS5ub3coKSk7CiAgY29uc3QgW2ZsYXNoLCBzZXRGbGFzaF0gPSB1c2VTdGF0ZShmYWxzZSk7CiAgY29uc3QgW2xpdmVPZmZlcnMsIHNldExpdmVPZmZlcnNdID0gdXNlU3RhdGU8UmFkYXJPZmZlcltdPihvZmZlcnMpOwogIGNvbnN0IHNlZW5PZmZlcnMgPSB1c2VSZWY8bnVtYmVyPihvZmZlcnMubGVuZ3RoKTsKCiAgLy8gQSBuZXcgb2ZmZXIgaXMgdGhlIHBheW9mZiBmb3IgdGhlIHdob2xlIHNjcmVlbiwgc28gcHVsc2UgdGhlIGNvdW50ZXIgYW5kCiAgLy8gcmUtc2VlZCB0aGUgbGlzdCB3aGVuIHJlYWx0aW1lIHB1c2hlcyBvbmUgaW4uCiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIHNldExpdmVPZmZlcnMob2ZmZXJzKTsKICAgIGlmIChvZmZlcnMubGVuZ3RoID4gc2Vlbk9mZmVycy5jdXJyZW50KSB7CiAgICAgIHNlZW5PZmZlcnMuY3VycmVudCA9IG9mZmVycy5sZW5ndGg7CiAgICAgIHNldEZsYXNoKHRydWUpOwogICAgICBjb25zdCBpZCA9IHNldFRpbWVvdXQoKCkgPT4gc2V0Rmxhc2goZmFsc2UpLCAxNDAwKTsKICAgICAgcmV0dXJuICgpID0+IGNsZWFyVGltZW91dChpZCk7CiAgICB9CiAgICBzZWVuT2ZmZXJzLmN1cnJlbnQgPSBvZmZlcnMubGVuZ3RoOwogIH0sIFtvZmZlcnNdKTsKCiAgY29uc3QgeyBjb25uZWN0ZWQgfSA9IHVzZVJlYWx0aW1lKAogICAgeyByZXF1ZXN0SWQgfSwKICAgIHsKICAgICAgb25FdmVudDogKGVudikgPT4gewogICAgICAgIGlmIChlbnYuZXZlbnQgPT09ICdvZmZlcjpjcmVhdGVkJyB8fCBlbnYuZXZlbnQgPT09ICdvZmZlcjp1cGRhdGVkJykgewogICAgICAgICAgc2V0Rmxhc2godHJ1ZSk7CiAgICAgICAgICBzZXRUaW1lb3V0KCgpID0+IHNldEZsYXNoKGZhbHNlKSwgMTQwMCk7CiAgICAgICAgfQogICAgICB9LAogICAgfSwKICApOwoKICAvLyBUaWNrIG9uY2UgYSBzZWNvbmQgc28gdGhlIGVsYXBzZWQgdGltZSByZWFkcyBhcyBtb3Rpb24sIG5vdCBhIHN0YWxsLgogIHVzZUVmZmVjdCgoKSA9PiB7CiAgICBjb25zdCBpZCA9IHNldEludGVydmFsKCgpID0+IHNldE5vdyhEYXRlLm5vdygpKSwgMTAwMCk7CiAgICByZXR1cm4gKCkgPT4gY2xlYXJJbnRlcnZhbChpZCk7CiAgfSwgW10pOwoKICBjb25zdCBzdGFydGVkQXQgPSB1c2VSZWYoRGF0ZS5ub3coKSk7CiAgY29uc3QgZWxhcHNlZFNlY29uZHMgPSBNYXRoLm1heCgwLCBNYXRoLmZsb29yKChub3cgLSBzdGFydGVkQXQuY3VycmVudCkgLyAxMDAwKSk7CgogIGNvbnN0IHJlbWFpbmluZ01zID0gdXNlTWVtbygoKSA9PiB7CiAgICBpZiAoIWV4cGlyZXNBdCkgcmV0dXJuIG51bGw7CiAgICByZXR1cm4gTWF0aC5tYXgoMCwgbmV3IERhdGUoZXhwaXJlc0F0KS5nZXRUaW1lKCkgLSBub3cpOwogIH0sIFtleHBpcmVzQXQsIG5vd10pOwoKICBjb25zdCBleHBpcmVkID0gcmVtYWluaW5nTXMgIT09IG51bGwgJiYgcmVtYWluaW5nTXMgPT09IDA7CgogIHJldHVybiAoCiAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBtaW4taC1bNjh2aF0gZmxleC1jb2wiPgogICAgICB7LyogUmFkYXIgc3RhZ2UgKi99CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJyZWxhdGl2ZSBmbGV4IGZsZXgtMSBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgb3ZlcmZsb3ctaGlkZGVuIj4KICAgICAgICA8UmFkYXJTdGFnZSBhY3RpdmU9eyFleHBpcmVkfSAvPgoKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0icmVsYXRpdmUgei0xMCBmbGV4IGZsZXgtY29sIGl0ZW1zLWNlbnRlciB0ZXh0LWNlbnRlciI+CiAgICAgICAgICA8Q291bnRlclBpbGwgY291bnQ9e2xpdmVPZmZlcnMubGVuZ3RofSBmbGFzaD17Zmxhc2h9IC8+CgogICAgICAgICAgey8qIE1vdmluZyBkb3RzIGltcGx5IHRoZSBzZWFyY2ggaXMgc3RpbGwgcnVubmluZy4gKi99CiAgICAgICAgICA8cCBjbGFzc05hbWU9Im10LTYgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTEuNSB0ZXh0LVswLjkzNzVyZW1dIGZvbnQtYm9sZCI+CiAgICAgICAgICAgIHtleHBpcmVkID8gdCgnc2VhcmNoLmV4cGlyZWQnKSA6IHQoJ3NlYXJjaGluZy5sb29raW5nJyl9CiAgICAgICAgICAgIHshZXhwaXJlZCAmJiA8RG90cyAvPn0KICAgICAgICAgIDwvcD4KCiAgICAgICAgICB7IWV4cGlyZWQgJiYgKAogICAgICAgICAgICA8cCBjbGFzc05hbWU9InRudW0gbXQtMiB0ZXh0LXhzIGZvbnQtc2VtaWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnLXN1YnRsZSkpXSI+CiAgICAgICAgICAgICAge3QoJ3NlYXJjaGluZy5lbGFwc2VkJywgeyBzZWNvbmRzOiBlbGFwc2VkU2Vjb25kcyB9KX0KICAgICAgICAgICAgPC9wPgogICAgICAgICAgKX0KCiAgICAgICAgICA8cCBjbGFzc05hbWU9Im10LTMgdGV4dC14cyB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj4KICAgICAgICAgICAge3QoJ3NlYXJjaC5zY2FubmluZycsIHsga206IHJhZGl1c0ttIH0pfQogICAgICAgICAgICB7Y2FuZGlkYXRlQ291bnQgPiAwICYmIDw+IMK3IHt0KCdzZWFyY2guZm91bmQnLCB7IGNvdW50OiBjYW5kaWRhdGVDb3VudCB9KX08Lz59CiAgICAgICAgICA8L3A+CgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJtdC00IGlubGluZS1mbGV4IGl0ZW1zLWNlbnRlciBnYXAtMiB0ZXh0LVsxMXB4XSBmb250LXNlbWlib2xkIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iPgogICAgICAgICAgICA8c3BhbgogICAgICAgICAgICAgIGNsYXNzTmFtZT17YGlubGluZS1ibG9jayBoLTIgdy0yIHJvdW5kZWQtZnVsbCAkewogICAgICAgICAgICAgICAgY29ubmVjdGVkID8gJ2JnLVtyZ2IodmFyKC0tYnJhbmQtNjAwKSldJyA6ICdiZy1bcmdiKHZhcigtLXdhcm4pKV0nCiAgICAgICAgICAgICAgfWB9CiAgICAgICAgICAgIC8+CiAgICAgICAgICAgIHtjb25uZWN0ZWQgPyB0KCdzZWFyY2gud2FpdGluZycpIDogdCgnY29tbW9uLmxvYWRpbmcnKX0KICAgICAgICAgIDwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgogICAgICB7cG9pbnQgJiYgPE1pbmlNYXAgcG9pbnQ9e3BvaW50fSBvZmZlcnM9e2xpdmVPZmZlcnN9IGhlaWdodD17MTYwfSAvPn0KCiAgICAgIHsvKiBCb3R0b20gYWN0aW9uczogdGhlIGxvdWQgcGF0aCBpcyBvZmZlcnMsIHRoZSBxdWlldCBvbmUgaXMgY2FuY2VsLiAqL30KICAgICAgPGRpdiBjbGFzc05hbWU9Im10LTQgc3BhY2UteS0yLjUiPgogICAgICAgIHtsaXZlT2ZmZXJzLmxlbmd0aCA+IDAgPyAoCiAgICAgICAgICA8YnV0dG9uIHR5cGU9ImJ1dHRvbiIgb25DbGljaz17b25WaWV3T2ZmZXJzfSBjbGFzc05hbWU9ImJ0biBidG4tcHJpbWFyeSBidG4tYmxvY2siPgogICAgICAgICAgICB7dCgnc2VhcmNoaW5nLnZpZXdPZmZlcnMnKX0KICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0bnVtIHJvdW5kZWQtZnVsbCBiZy1bcmdiKHZhcigtLWJyYW5kLWluaykvMC4xNildIHB4LTIuNSBweS0wLjUgdGV4dC1zbSI+CiAgICAgICAgICAgICAge2xpdmVPZmZlcnMubGVuZ3RofQogICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICApIDogKAogICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgcC00IHRleHQtY2VudGVyIj4KICAgICAgICAgICAgPHAgY2xhc3NOYW1lPSJ0ZXh0LXNtIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+CiAgICAgICAgICAgICAge2V4cGlyZWQKICAgICAgICAgICAgICAgID8gdCgnc2VhcmNoLmV4cGlyZWQnKQogICAgICAgICAgICAgICAgOiB0KCdzZWFyY2gubm9PbmVZZXQnLCB7IGV4cGlyZXM6IGV4cGlyZXNBdCA/IGZvcm1hdFdoZW4oZXhwaXJlc0F0KSA6ICfigJQnIH0pfQogICAgICAgICAgICA8L3A+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICApfQoKICAgICAgICB7b25TdG9wICYmICFleHBpcmVkICYmICgKICAgICAgICAgIDxidXR0b24gdHlwZT0iYnV0dG9uIiBvbkNsaWNrPXtvblN0b3B9IGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkgYnRuLWJsb2NrIj4KICAgICAgICAgICAgPENhdGVnb3J5SWNvbiBuYW1lPSJ4IiBzaXplPXsxOH0gLz4KICAgICAgICAgICAge3QoJ3NlYXJjaGluZy5jYW5jZWwnKX0KICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICl9CiAgICAgIDwvZGl2PgogICAgPC9kaXY+CiAgKTsKfQoKLyoqIENvbmNlbnRyaWMgcmluZ3MgcHVsc2luZyBvdXQgZnJvbSB0aGUgY3VzdG9tZXIncyBkb3QuICovCmZ1bmN0aW9uIFJhZGFyU3RhZ2UoeyBhY3RpdmUgfTogeyBhY3RpdmU6IGJvb2xlYW4gfSkgewogIHJldHVybiAoCiAgICA8ZGl2IGNsYXNzTmFtZT0icG9pbnRlci1ldmVudHMtbm9uZSBhYnNvbHV0ZSBpbnNldC0wIGdyaWQgcGxhY2UtaXRlbXMtY2VudGVyIiBhcmlhLWhpZGRlbj4KICAgICAge1swLCAxLCAyXS5tYXAoKGkpID0+ICgKICAgICAgICA8c3BhbgogICAgICAgICAga2V5PXtpfQogICAgICAgICAgY2xhc3NOYW1lPSJhYnNvbHV0ZSByb3VuZGVkLWZ1bGwgYm9yZGVyLTIiCiAgICAgICAgICBzdHlsZT17ewogICAgICAgICAgICB3aWR0aDogMTIwLAogICAgICAgICAgICBoZWlnaHQ6IDEyMCwKICAgICAgICAgICAgYm9yZGVyQ29sb3I6ICdyZ2IoNTAgMjQ0IDE4NiAvIDAuNDUpJywKICAgICAgICAgICAgYW5pbWF0aW9uOiBhY3RpdmUgPyBga2hkZW1saS1wdWxzZSAyLjRzICR7aSAqIDAuOH1zIGN1YmljLWJlemllcigwLjI0LDAsMC4zOCwxKSBpbmZpbml0ZWAgOiAnbm9uZScsCiAgICAgICAgICB9fQogICAgICAgIC8+CiAgICAgICkpfQoKICAgICAgey8qIFRoZSBjdXN0b21lcidzIG93biBwb3NpdGlvbi4gKi99CiAgICAgIDxzcGFuCiAgICAgICAgY2xhc3NOYW1lPSJyZWxhdGl2ZSBncmlkIGgtMTYgdy0xNiBwbGFjZS1pdGVtcy1jZW50ZXIgcm91bmRlZC1mdWxsIgogICAgICAgIHN0eWxlPXt7IGJhY2tncm91bmQ6ICdyZ2IoNTAgMjQ0IDE4NiAvIDAuMTgpJyB9fQogICAgICA+CiAgICAgICAgPHNwYW4KICAgICAgICAgIGNsYXNzTmFtZT0iZ3JpZCBoLTExIHctMTEgcGxhY2UtaXRlbXMtY2VudGVyIHJvdW5kZWQtZnVsbCB0ZXh0LVtyZ2IodmFyKC0tYnJhbmQtaW5rKSldIgogICAgICAgICAgc3R5bGU9e3sgYmFja2dyb3VuZDogJ3JnYig1MCAyNDQgMTg2KScgfX0KICAgICAgICA+CiAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9InBpbiIgc2l6ZT17MjJ9IHN0cm9rZVdpZHRoPXsyLjJ9IC8+CiAgICAgICAgPC9zcGFuPgogICAgICA8L3NwYW4+CiAgICA8L2Rpdj4KICApOwp9CgpmdW5jdGlvbiBDb3VudGVyUGlsbCh7IGNvdW50LCBmbGFzaCB9OiB7IGNvdW50OiBudW1iZXI7IGZsYXNoOiBib29sZWFuIH0pIHsKICBjb25zdCB7IHQgfSA9IHVzZUkxOG4oKTsKICByZXR1cm4gKAogICAgPGRpdgogICAgICBjbGFzc05hbWU9ImlubGluZS1mbGV4IGl0ZW1zLWJhc2VsaW5lIGdhcC0yIHJvdW5kZWQtMnhsIHB4LTUgcHktMyB0cmFuc2l0aW9uLWFsbCBkdXJhdGlvbi0zMDAiCiAgICAgIHN0eWxlPXt7CiAgICAgICAgYmFja2dyb3VuZDogZmxhc2ggPyAncmdiKDUwIDI0NCAxODYgLyAwLjI4KScgOiAncmdiKHZhcigtLXN1cmZhY2UpKScsCiAgICAgICAgYm94U2hhZG93OiBmbGFzaAogICAgICAgICAgPyAnMCAwIDAgNHB4IHJnYig1MCAyNDQgMTg2IC8gMC4zNSksIHZhcigtLXNoYWRvdy1tZCknCiAgICAgICAgICA6ICd2YXIoLS1zaGFkb3ctbWQpJywKICAgICAgfX0KICAgID4KICAgICAgPHNwYW4gY2xhc3NOYW1lPSJ0bnVtIHRleHQtNHhsIGZvbnQtYmxhY2sgdHJhY2tpbmctdGlnaHQiPntjb3VudH08L3NwYW4+CiAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC1zbSBmb250LWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57dCgnb2ZmZXIub2ZmZXJzJyl9PC9zcGFuPgogICAgPC9kaXY+CiAgKTsKfQoKLyoqIFRocmVlIGFuaW1hdGVkIGRvdHMg4oCUICJzdGlsbCB3b3JraW5nIiB3aXRob3V0IGEgc3Bpbm5lci4gKi8KZnVuY3Rpb24gRG90cygpIHsKICByZXR1cm4gKAogICAgPHNwYW4gY2xhc3NOYW1lPSJpbmxpbmUtZmxleCBpdGVtcy1lbmQgZ2FwLTAuNSIgYXJpYS1oaWRkZW4+CiAgICAgIHtbMCwgMSwgMl0ubWFwKChpKSA9PiAoCiAgICAgICAgPHNwYW4KICAgICAgICAgIGtleT17aX0KICAgICAgICAgIGNsYXNzTmFtZT0iYm91bmNlLXNvZnQgaW5saW5lLWJsb2NrIGgtMS41IHctMS41IHJvdW5kZWQtZnVsbCBiZy1bcmdiKHZhcigtLWJyYW5kLTYwMCkpXSIKICAgICAgICAgIHN0eWxlPXt7IGFuaW1hdGlvbkRlbGF5OiBgJHtpICogMC4xOH1zYCB9fQogICAgICAgIC8+CiAgICAgICkpfQogICAgPC9zcGFuPgogICk7Cn0KCi8qKiBTbWFsbCBtYXAgc2hvd2luZyB0aGUgcmVxdWVzdCBwb2ludCBhbmQgZXZlcnkgb2ZmZXIgZmFubmluZyBhcm91bmQgaXQuICovCmZ1bmN0aW9uIE1pbmlNYXAoewogIHBvaW50LAogIG9mZmVycywKICBoZWlnaHQgPSAxNjAsCn06IHsKICBwb2ludDogeyBsYXQ6IG51bWJlcjsgbG5nOiBudW1iZXIgfTsKICBvZmZlcnM6IFJhZGFyT2ZmZXJbXTsKICBoZWlnaHQ/OiBudW1iZXI7Cn0pIHsKICBjb25zdCByZWYgPSB1c2VSZWY8SFRNTERpdkVsZW1lbnQgfCBudWxsPihudWxsKTsKCiAgLy8gT2ZmZXJzIGNhcnJ5IG5vIGNvb3JkaW5hdGVzOiBhbiBvZmZlciBpcyBhIHByaWNlLCBhbmQgdGhlIHByb3ZpZGVyJ3MKICAvLyBwb3NpdGlvbiBsaXZlcyBpbiBgcHJvdmlkZXJfbG9jYXRpb25zYC4gVW50aWwgdHJhY2tpbmcgZmVlZHMgcmVhbCBwaW5zIGluLAogIC8vIGRyYXcgb25lIG1hcmtlciBwZXIgb2ZmZXIgZmFubmVkIGFyb3VuZCB0aGUgcmVxdWVzdCBwb2ludCBzbyB0aGUgbWFwIHN0aWxsCiAgLy8gY29tbXVuaWNhdGVzICJOIHByb3ZpZGVycyBlbmdhZ2VkIi4KICBjb25zdCByaW5nID0gdXNlTWVtbygoKSA9PiB7CiAgICBjb25zdCBuID0gTWF0aC5tYXgob2ZmZXJzLmxlbmd0aCwgMCk7CiAgICBjb25zdCBvdXQ6IEFycmF5PHsgbGF0OiBudW1iZXI7IGxuZzogbnVtYmVyIH0+ID0gW107CiAgICBmb3IgKGxldCBpID0gMDsgaSA8IG47IGkrKykgewogICAgICBjb25zdCBhbmdsZSA9IChpIC8gbikgKiBNYXRoLlBJICogMjsKICAgICAgb3V0LnB1c2goewogICAgICAgIGxhdDogcG9pbnQubGF0ICsgTWF0aC5jb3MoYW5nbGUpICogMC4wMTIsCiAgICAgICAgbG5nOiBwb2ludC5sbmcgKyBNYXRoLnNpbihhbmdsZSkgKiAwLjAxMiwKICAgICAgfSk7CiAgICB9CiAgICByZXR1cm4gb3V0OwogIH0sIFtvZmZlcnMubGVuZ3RoLCBwb2ludC5sYXQsIHBvaW50LmxuZ10pOwogIGNvbnN0IHJpbmdLZXkgPSByaW5nLm1hcCgocCkgPT4gYCR7cC5sYXQudG9GaXhlZCg1KX0sJHtwLmxuZy50b0ZpeGVkKDUpfWApLmpvaW4oJ3wnKTsKCiAgdXNlTWFwKAogICAgcmVmLAogICAgKEwsIG1hcCkgPT4gewogICAgICBMLnRpbGVMYXllcihUSUxFX1VSTCwgeyBhdHRyaWJ1dGlvbjogVElMRV9BVFRSSUJVVElPTiwgbWF4Wm9vbTogMTkgfSkuYWRkVG8obWFwKTsKICAgICAgbWFwLnNldFZpZXcoW3BvaW50LmxhdCwgcG9pbnQubG5nXSwgMTIpOwoKICAgICAgTC5jaXJjbGUoW3BvaW50LmxhdCwgcG9pbnQubG5nXSwgewogICAgICAgIHJhZGl1czogNzAwLAogICAgICAgIGNvbG9yOiAnIzEwY2Q5OScsCiAgICAgICAgZmlsbENvbG9yOiAnIzMyZjRiYScsCiAgICAgICAgZmlsbE9wYWNpdHk6IDAuMywKICAgICAgfSkuYWRkVG8obWFwKTsKICAgICAgTC5tYXJrZXIoW3BvaW50LmxhdCwgcG9pbnQubG5nXSkuYWRkVG8obWFwKTsKCiAgICAgIGZvciAoY29uc3QgcCBvZiByaW5nKSB7CiAgICAgICAgTC5jaXJjbGUoW3AubGF0LCBwLmxuZ10sIHsKICAgICAgICAgIHJhZGl1czogMzUwLAogICAgICAgICAgY29sb3I6ICcjMTBjZDk5JywKICAgICAgICAgIGZpbGxDb2xvcjogJyMzMmY0YmEnLAogICAgICAgICAgZmlsbE9wYWNpdHk6IDAuNTUsCiAgICAgICAgfSkuYWRkVG8obWFwKTsKICAgICAgfQogICAgICByZXR1cm4gdW5kZWZpbmVkOwogICAgfSwKICAgIFtwb2ludC5sYXQsIHBvaW50LmxuZywgcmluZ0tleV0sCiAgKTsKCiAgcmV0dXJuICgKICAgIDxkaXYKICAgICAgcmVmPXtyZWZ9CiAgICAgIGNsYXNzTmFtZT0ibWFwLWNhbnZhcyBtdC00IHctZnVsbCBvdmVyZmxvdy1oaWRkZW4gcm91bmRlZC0yeGwgYm9yZGVyIGJvcmRlci1bcmdiKHZhcigtLWxpbmUpKV0iCiAgICAgIHN0eWxlPXt7IGhlaWdodCB9fQogICAgLz4KICApOwp9CgpmdW5jdGlvbiBmb3JtYXRDbG9jayh0b3RhbFNlY29uZHM6IG51bWJlcik6IHN0cmluZyB7CiAgY29uc3QgbSA9IE1hdGguZmxvb3IodG90YWxTZWNvbmRzIC8gNjApOwogIGNvbnN0IHMgPSB0b3RhbFNlY29uZHMgJSA2MDsKICByZXR1cm4gYCR7bX06JHtTdHJpbmcocykucGFkU3RhcnQoMiwgJzAnKX1gOwp9CgpmdW5jdGlvbiBmb3JtYXRXaGVuKGlzbzogc3RyaW5nKTogc3RyaW5nIHsKICBjb25zdCBkID0gbmV3IERhdGUoaXNvKTsKICBpZiAoTnVtYmVyLmlzTmFOKGQuZ2V0VGltZSgpKSkgcmV0dXJuICfigJQnOwogIHJldHVybiBmb3JtYXRDbG9jayhNYXRoLm1heCgwLCBNYXRoLmNlaWwoKGQuZ2V0VGltZSgpIC0gRGF0ZS5ub3coKSkgLyAxMDAwKSkpOwp9Cg==
+'use client';
+
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useI18n } from '@/lib/i18n-provider';
+import { useRealtime } from '@/lib/realtime-client';
+import { useMap, TILE_URL, TILE_ATTRIBUTION } from '@/lib/map/leaflet';
+import { CategoryIcon } from '@/lib/icons';
+
+/**
+ * The "finding craftsmen" screen.
+ *
+ * The inDrive moment: the request is published, matching is fanning out, and
+ * the customer watches a radar while offers stream in one after another. The
+ * screen decides nothing — it makes an otherwise invisible server-side process
+ * feel alive and honest about how long the search runs.
+ */
+
+export interface RadarOffer {
+  id: string;
+}
+
+export interface SearchRadarProps {
+  requestId: string;
+  offers: RadarOffer[];
+  point: { lat: number; lng: number } | null;
+  expiresAt?: string | null;
+  radiusKm?: number;
+  candidateCount?: number;
+  onViewOffers: () => void;
+  onStop?: () => void;
+}
+
+export function SearchRadar({
+  requestId,
+  offers,
+  point,
+  expiresAt,
+  radiusKm = 25,
+  candidateCount = 0,
+  onViewOffers,
+  onStop,
+}: SearchRadarProps) {
+  const { t } = useI18n();
+  const [now, setNow] = useState(() => Date.now());
+  const [flash, setFlash] = useState(false);
+  const [liveOffers, setLiveOffers] = useState<RadarOffer[]>(offers);
+  const seenOffers = useRef<number>(offers.length);
+
+  // A new offer is the payoff for the whole screen, so pulse the counter and
+  // re-seed the list when realtime pushes one in.
+  useEffect(() => {
+    setLiveOffers(offers);
+    if (offers.length > seenOffers.current) {
+      seenOffers.current = offers.length;
+      setFlash(true);
+      const id = setTimeout(() => setFlash(false), 1400);
+      return () => clearTimeout(id);
+    }
+    seenOffers.current = offers.length;
+  }, [offers]);
+
+  const { connected } = useRealtime(
+    { requestId },
+    {
+      onEvent: (env) => {
+        if (env.event === 'offer:created' || env.event === 'offer:updated') {
+          setFlash(true);
+          setTimeout(() => setFlash(false), 1400);
+        }
+      },
+    },
+  );
+
+  // Tick once a second so the elapsed time reads as motion, not a stall.
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const startedAt = useRef(Date.now());
+  const elapsedSeconds = Math.max(0, Math.floor((now - startedAt.current) / 1000));
+
+  const remainingMs = useMemo(() => {
+    if (!expiresAt) return null;
+    return Math.max(0, new Date(expiresAt).getTime() - now);
+  }, [expiresAt, now]);
+
+  const expired = remainingMs !== null && remainingMs === 0;
+
+  return (
+    <div className="flex min-h-[68vh] flex-col">
+      {/* Radar stage */}
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden">
+        <RadarStage active={!expired} />
+
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <CounterPill count={liveOffers.length} flash={flash} />
+
+          {/* Moving dots imply the search is still running. */}
+          <p className="mt-6 flex items-center gap-1.5 text-[0.9375rem] font-bold">
+            {expired ? t('search.expired') : t('searching.looking')}
+            {!expired && <Dots />}
+          </p>
+
+          {!expired && (
+            <p className="tnum mt-2 text-xs font-semibold text-[rgb(var(--fg-subtle))]">
+              {t('searching.elapsed', { seconds: elapsedSeconds })}
+            </p>
+          )}
+
+          <p className="mt-3 text-xs text-[rgb(var(--fg-subtle))]">
+            {t('search.scanning', { km: radiusKm })}
+            {candidateCount > 0 && <> · {t('search.found', { count: candidateCount })}</>}
+          </p>
+
+          <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[rgb(var(--fg-subtle))]">
+            <span
+              className={`inline-block h-2 w-2 rounded-full ${
+                connected ? 'bg-[rgb(var(--brand-600))]' : 'bg-[rgb(var(--warn))]'
+              }`}
+            />
+            {connected ? t('search.waiting') : t('common.loading')}
+          </span>
+        </div>
+      </div>
+
+      {point && <MiniMap point={point} offers={liveOffers} height={160} />}
+
+      {/* Bottom actions: the loud path is offers, the quiet one is cancel. */}
+      <div className="mt-4 space-y-2.5">
+        {liveOffers.length > 0 ? (
+          <button type="button" onClick={onViewOffers} className="btn btn-primary btn-block">
+            {t('searching.viewOffers')}
+            <span className="tnum rounded-full bg-[rgb(var(--brand-ink)/0.16)] px-2.5 py-0.5 text-sm">
+              {liveOffers.length}
+            </span>
+          </button>
+        ) : (
+          <div className="card p-4 text-center">
+            <p className="text-sm text-[rgb(var(--fg-muted))]">
+              {expired
+                ? t('search.expired')
+                : t('search.noOneYet', { expires: expiresAt ? formatWhen(expiresAt) : '—' })}
+            </p>
+          </div>
+        )}
+
+        {onStop && !expired && (
+          <button type="button" onClick={onStop} className="btn btn-secondary btn-block">
+            <CategoryIcon name="x" size={18} />
+            {t('searching.cancel')}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Concentric rings pulsing out from the customer's dot. */
+function RadarStage({ active }: { active: boolean }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="absolute rounded-full border-2"
+          style={{
+            width: 120,
+            height: 120,
+            borderColor: 'rgb(50 244 186 / 0.45)',
+            animation: active ? `khdemli-pulse 2.4s ${i * 0.8}s cubic-bezier(0.24,0,0.38,1) infinite` : 'none',
+          }}
+        />
+      ))}
+
+      {/* The customer's own position. */}
+      <span
+        className="relative grid h-16 w-16 place-items-center rounded-full"
+        style={{ background: 'rgb(50 244 186 / 0.18)' }}
+      >
+        <span
+          className="grid h-11 w-11 place-items-center rounded-full text-[rgb(var(--brand-ink))]"
+          style={{ background: 'rgb(50 244 186)' }}
+        >
+          <CategoryIcon name="pin" size={22} strokeWidth={2.2} />
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function CounterPill({ count, flash }: { count: number; flash: boolean }) {
+  const { t } = useI18n();
+  return (
+    <div
+      className="inline-flex items-baseline gap-2 rounded-2xl px-5 py-3 transition-all duration-300"
+      style={{
+        background: flash ? 'rgb(50 244 186 / 0.28)' : 'rgb(var(--surface))',
+        boxShadow: flash
+          ? '0 0 0 4px rgb(50 244 186 / 0.35), var(--shadow-md)'
+          : 'var(--shadow-md)',
+      }}
+    >
+      <span className="tnum text-4xl font-black tracking-tight">{count}</span>
+      <span className="text-sm font-bold text-[rgb(var(--fg-muted))]">{t('offer.offers')}</span>
+    </div>
+  );
+}
+
+/** Three animated dots — "still working" without a spinner. */
+function Dots() {
+  return (
+    <span className="inline-flex items-end gap-0.5" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="bounce-soft inline-block h-1.5 w-1.5 rounded-full bg-[rgb(var(--brand-600))]"
+          style={{ animationDelay: `${i * 0.18}s` }}
+        />
+      ))}
+    </span>
+  );
+}
+
+/** Small map showing the request point and every offer fanning around it. */
+function MiniMap({
+  point,
+  offers,
+  height = 160,
+}: {
+  point: { lat: number; lng: number };
+  offers: RadarOffer[];
+  height?: number;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  // Offers carry no coordinates: an offer is a price, and the provider's
+  // position lives in `provider_locations`. Until tracking feeds real pins in,
+  // draw one marker per offer fanned around the request point so the map still
+  // communicates "N providers engaged".
+  const ring = useMemo(() => {
+    const n = Math.max(offers.length, 0);
+    const out: Array<{ lat: number; lng: number }> = [];
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2;
+      out.push({
+        lat: point.lat + Math.cos(angle) * 0.012,
+        lng: point.lng + Math.sin(angle) * 0.012,
+      });
+    }
+    return out;
+  }, [offers.length, point.lat, point.lng]);
+  const ringKey = ring.map((p) => `${p.lat.toFixed(5)},${p.lng.toFixed(5)}`).join('|');
+
+  useMap(
+    ref,
+    (L, map) => {
+      L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map);
+      map.setView([point.lat, point.lng], 12);
+
+      L.circle([point.lat, point.lng], {
+        radius: 700,
+        color: '#10cd99',
+        fillColor: '#32f4ba',
+        fillOpacity: 0.3,
+      }).addTo(map);
+      L.marker([point.lat, point.lng]).addTo(map);
+
+      for (const p of ring) {
+        L.circle([p.lat, p.lng], {
+          radius: 350,
+          color: '#10cd99',
+          fillColor: '#32f4ba',
+          fillOpacity: 0.55,
+        }).addTo(map);
+      }
+      return undefined;
+    },
+    [point.lat, point.lng, ringKey],
+  );
+
+  return (
+    <div
+      ref={ref}
+      className="map-canvas mt-4 w-full overflow-hidden rounded-2xl border border-[rgb(var(--line))]"
+      style={{ height }}
+    />
+  );
+}
+
+function formatClock(totalSeconds: number): string {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function formatWhen(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return formatClock(Math.max(0, Math.ceil((d.getTime() - Date.now()) / 1000)));
+}

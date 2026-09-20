@@ -1,1 +1,240 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IHsgU3Rhckljb24gfSBmcm9tICcuL2ljb25zJzsKCi8qKgogKiBTbWFsbCBwcmVzZW50YXRpb25hbCBwaWVjZXMgc2hhcmVkIGJ5IGV2ZXJ5IHNjcmVlbi4KICoKICogVGhlc2UgYXJlIGRlbGliZXJhdGVseSBkdW1iOiBubyBkYXRhIGZldGNoaW5nLCBubyBpMThuIGxvb2t1cHMgdGhhdCBuZWVkIGEKICogcHJvdmlkZXIsIG5vIHJvdXRpbmcuIFNjcmVlbnMgY29tcG9zZSB0aGVtLCB3aGljaCBpcyB3aGF0IGtlZXBzIDE5IHBhZ2VzCiAqIGxvb2tpbmcgbGlrZSBvbmUgcHJvZHVjdCBpbnN0ZWFkIG9mIDE5IGRlc2lnbnMuCiAqLwoKLyogLS0tIHN0YXJzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tICovCgpleHBvcnQgZnVuY3Rpb24gU3RhcnMoewogIHZhbHVlLAogIGNvdW50LAogIHNpemUgPSAxNSwKICBzaG93VmFsdWUgPSB0cnVlLAp9OiB7CiAgdmFsdWU6IG51bWJlciB8IG51bGwgfCB1bmRlZmluZWQ7CiAgY291bnQ/OiBudW1iZXIgfCBudWxsOwogIHNpemU/OiBudW1iZXI7CiAgc2hvd1ZhbHVlPzogYm9vbGVhbjsKfSkgewogIGNvbnN0IHJhdGluZyA9IHZhbHVlID8/IDA7CgogIGlmICghdmFsdWUpIHsKICAgIHJldHVybiA8c3BhbiBjbGFzc05hbWU9InRleHQteHMgZm9udC1zZW1pYm9sZCB0ZXh0LVtyZ2IodmFyKC0tZmctc3VidGxlKSldIj7igJQ8L3NwYW4+OwogIH0KCiAgcmV0dXJuICgKICAgIDxzcGFuIGNsYXNzTmFtZT0iaW5saW5lLWZsZXggaXRlbXMtY2VudGVyIGdhcC0xIj4KICAgICAgPHNwYW4gY2xhc3NOYW1lPSJpbmxpbmUtZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTAuNSB0ZXh0LVtyZ2IodmFyKC0td2FybikpXSI+CiAgICAgICAge1swLCAxLCAyLCAzLCA0XS5tYXAoKGkpID0+ICgKICAgICAgICAgIDxTdGFySWNvbiBrZXk9e2l9IHNpemU9e3NpemV9IGZpbGxlZD17aSA8IE1hdGgucm91bmQocmF0aW5nKX0gLz4KICAgICAgICApKX0KICAgICAgPC9zcGFuPgogICAgICB7c2hvd1ZhbHVlICYmICgKICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRudW0gdGV4dC14cyBmb250LWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnKSldIj57cmF0aW5nLnRvRml4ZWQoMSl9PC9zcGFuPgogICAgICApfQogICAgICB7Y291bnQgIT0gbnVsbCAmJiBjb3VudCA+IDAgJiYgKAogICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idG51bSB0ZXh0LXhzIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iPih7Y291bnR9KTwvc3Bhbj4KICAgICAgKX0KICAgIDwvc3Bhbj4KICApOwp9CgovKiAtLS0gYXZhdGFyIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gKi8KCmV4cG9ydCBmdW5jdGlvbiBBdmF0YXIoewogIG5hbWUsCiAgc3JjLAogIHNpemUgPSA0NCwKfTogewogIG5hbWU/OiBzdHJpbmcgfCBudWxsOwogIHNyYz86IHN0cmluZyB8IG51bGw7CiAgc2l6ZT86IG51bWJlcjsKfSkgewogIGNvbnN0IGluaXRpYWxzID0gKG5hbWUgPz8gJz8nKQogICAgLnRyaW0oKQogICAgLnNwbGl0KC9ccysvKQogICAgLnNsaWNlKDAsIDIpCiAgICAubWFwKCh3KSA9PiB3WzBdKQogICAgLmpvaW4oJycpCiAgICAudG9VcHBlckNhc2UoKTsKCiAgaWYgKHNyYykgewogICAgcmV0dXJuICgKICAgICAgLy8gZXNsaW50LWRpc2FibGUtbmV4dC1saW5lIEBuZXh0L25leHQvbm8taW1nLWVsZW1lbnQKICAgICAgPGltZwogICAgICAgIHNyYz17c3JjfQogICAgICAgIGFsdD17bmFtZSA/PyAnJ30KICAgICAgICB3aWR0aD17c2l6ZX0KICAgICAgICBoZWlnaHQ9e3NpemV9CiAgICAgICAgY2xhc3NOYW1lPSJmbGV4LW5vbmUgcm91bmRlZC1mdWxsIG9iamVjdC1jb3ZlciIKICAgICAgICBzdHlsZT17eyB3aWR0aDogc2l6ZSwgaGVpZ2h0OiBzaXplIH19CiAgICAgIC8+CiAgICApOwogIH0KCiAgcmV0dXJuICgKICAgIDxzcGFuCiAgICAgIGNsYXNzTmFtZT0iZ3JpZCBmbGV4LW5vbmUgcGxhY2UtaXRlbXMtY2VudGVyIHJvdW5kZWQtZnVsbCBiZy1bcmdiKHZhcigtLWJyYW5kLTUwMCkvMC4yMCldIGZvbnQtYm9sZCB0ZXh0LVtyZ2IodmFyKC0tYnJhbmQtODAwKSldIgogICAgICBzdHlsZT17eyB3aWR0aDogc2l6ZSwgaGVpZ2h0OiBzaXplLCBmb250U2l6ZTogc2l6ZSAqIDAuMzYgfX0KICAgICAgYXJpYS1oaWRkZW49InRydWUiCiAgICA+CiAgICAgIHtpbml0aWFsc30KICAgIDwvc3Bhbj4KICApOwp9CgovKiAtLS0gcHJpY2UgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gKi8KCi8qKiBCaWcsIHVubWlzc2FibGUgcHJpY2UuIFVzZWQgb24gb2ZmZXIgY2FyZHMgYW5kIHRoZSByZXF1ZXN0IGNvbXBvc2VyLiAqLwpleHBvcnQgZnVuY3Rpb24gUHJpY2UoewogIG1pbm9yLAogIGN1cnJlbmN5LAogIHNpemUgPSAnbWQnLAp9OiB7CiAgbWlub3I6IG51bWJlciB8IG51bGwgfCB1bmRlZmluZWQ7CiAgY3VycmVuY3k/OiBzdHJpbmcgfCBudWxsOwogIHNpemU/OiAnc20nIHwgJ21kJyB8ICdsZycgfCAneGwnOwp9KSB7CiAgY29uc3Qgc2l6ZXMgPSB7CiAgICBzbTogJ3RleHQtYmFzZScsCiAgICBtZDogJ3RleHQteGwnLAogICAgbGc6ICd0ZXh0LTJ4bCcsCiAgICB4bDogJ3RleHQtM3hsJywKICB9IGFzIGNvbnN0OwoKICBpZiAobWlub3IgPT0gbnVsbCkgcmV0dXJuIG51bGw7CiAgY29uc3Qgd2hvbGUgPSBNYXRoLnJvdW5kKG1pbm9yIC8gMTAwKTsKCiAgcmV0dXJuICgKICAgIDxzcGFuIGNsYXNzTmFtZT0iaW5saW5lLWZsZXggaXRlbXMtYmFzZWxpbmUgZ2FwLTEiPgogICAgICA8c3BhbiBjbGFzc05hbWU9e2BwcmljZSAke3NpemVzW3NpemVdfSB0ZXh0LVtyZ2IodmFyKC0tZmcpKV1gfT4KICAgICAgICB7d2hvbGUudG9Mb2NhbGVTdHJpbmcoKX0KICAgICAgPC9zcGFuPgogICAgICA8c3BhbiBjbGFzc05hbWU9InRleHQteHMgZm9udC1ib2xkIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+e2N1cnJlbmN5ID8/ICdNQUQnfTwvc3Bhbj4KICAgIDwvc3Bhbj4KICApOwp9CgovKiAtLS0gcHJpY2Ugc3RlcHBlciAoKyAvIC0pIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gKi8KCi8qKgogKiBUaGUgb2ZmZXIgY29tcG9zZXIuIExhcmdlICsvLSB0YXJnZXRzIGFuZCBhIG51bWVyaWMgZmllbGQsIGJlY2F1c2Ugc2V0dGluZwogKiB5b3VyIG93biBwcmljZSBpcyB0aGUgd2hvbGUgcG9pbnQgb2YgdGhlIHByb2R1Y3QgYW5kIHRodW1icyBhcmUgaW1wcmVjaXNlLgogKi8KZXhwb3J0IGZ1bmN0aW9uIFByaWNlU3RlcHBlcih7CiAgdmFsdWUsCiAgb25DaGFuZ2UsCiAgc3RlcCA9IDEwLAogIG1pbiA9IDAsCiAgbWF4ID0gMTAwMDAwLAogIGN1cnJlbmN5ID0gJ01BRCcsCiAgbGFiZWwsCn06IHsKICB2YWx1ZTogbnVtYmVyOwogIG9uQ2hhbmdlOiAobmV4dDogbnVtYmVyKSA9PiB2b2lkOwogIHN0ZXA/OiBudW1iZXI7CiAgbWluPzogbnVtYmVyOwogIG1heD86IG51bWJlcjsKICBjdXJyZW5jeT86IHN0cmluZzsKICBsYWJlbD86IHN0cmluZzsKfSkgewogIGNvbnN0IGNsYW1wID0gKG46IG51bWJlcikgPT4gTWF0aC5taW4obWF4LCBNYXRoLm1heChtaW4sIE1hdGgucm91bmQobikpKTsKICBjb25zdCBzZXQgPSAobjogbnVtYmVyKSA9PiBvbkNoYW5nZShjbGFtcChuKSk7CgogIHJldHVybiAoCiAgICA8ZGl2PgogICAgICB7bGFiZWwgJiYgPHNwYW4gY2xhc3NOYW1lPSJsYWJlbCI+e2xhYmVsfTwvc3Bhbj59CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLXN0cmV0Y2ggZ2FwLTIiPgogICAgICAgIDxidXR0b24KICAgICAgICAgIHR5cGU9ImJ1dHRvbiIKICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldCh2YWx1ZSAtIHN0ZXApfQogICAgICAgICAgZGlzYWJsZWQ9e3ZhbHVlIDw9IG1pbn0KICAgICAgICAgIGFyaWEtbGFiZWw9ItmG2YLYtSIKICAgICAgICAgIGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkgdy0xNiBmbGV4LW5vbmUgdGV4dC0yeGwiCiAgICAgICAgPgogICAgICAgICAg4oiSCiAgICAgICAgPC9idXR0b24+CgogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJjYXJkIGZsZXggZmxleC0xIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBnYXAtMiBweC0zIHB5LTIiPgogICAgICAgICAgPGlucHV0CiAgICAgICAgICAgIHR5cGU9Im51bWJlciIKICAgICAgICAgICAgaW5wdXRNb2RlPSJudW1lcmljIgogICAgICAgICAgICB2YWx1ZT17dmFsdWV9CiAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0KE51bWJlcihlLnRhcmdldC52YWx1ZSkpfQogICAgICAgICAgICBjbGFzc05hbWU9InRudW0gdy1mdWxsIGJnLXRyYW5zcGFyZW50IHRleHQtY2VudGVyIHRleHQtM3hsIGZvbnQtZXh0cmFib2xkIHRyYWNraW5nLXRpZ2h0IG91dGxpbmUtbm9uZSIKICAgICAgICAgICAgYXJpYS1sYWJlbD17bGFiZWx9CiAgICAgICAgICAvPgogICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJmbGV4LW5vbmUgdGV4dC1zbSBmb250LWJvbGQgdGV4dC1bcmdiKHZhcigtLWZnLW11dGVkKSldIj57Y3VycmVuY3l9PC9zcGFuPgogICAgICAgIDwvZGl2PgoKICAgICAgICA8YnV0dG9uCiAgICAgICAgICB0eXBlPSJidXR0b24iCiAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXQodmFsdWUgKyBzdGVwKX0KICAgICAgICAgIGRpc2FibGVkPXt2YWx1ZSA+PSBtYXh9CiAgICAgICAgICBhcmlhLWxhYmVsPSLYstmK2K8iCiAgICAgICAgICBjbGFzc05hbWU9ImJ0biBidG4tcHJpbWFyeSB3LTE2IGZsZXgtbm9uZSB0ZXh0LTJ4bCIKICAgICAgICA+CiAgICAgICAgICArCiAgICAgICAgPC9idXR0b24+CiAgICAgIDwvZGl2PgogICAgPC9kaXY+CiAgKTsKfQoKLyogLS0tIHNlY3Rpb24gaGVhZGluZyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tICovCgpleHBvcnQgZnVuY3Rpb24gU2VjdGlvblRpdGxlKHsKICBjaGlsZHJlbiwKICBhY3Rpb24sCn06IHsKICBjaGlsZHJlbjogUmVhY3QuUmVhY3ROb2RlOwogIGFjdGlvbj86IFJlYWN0LlJlYWN0Tm9kZTsKfSkgewogIHJldHVybiAoCiAgICA8ZGl2IGNsYXNzTmFtZT0ibWItMyBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gZ2FwLTMiPgogICAgICA8aDIgY2xhc3NOYW1lPSJ0ZXh0LWxnIGZvbnQtZXh0cmFib2xkIHRyYWNraW5nLXRpZ2h0Ij57Y2hpbGRyZW59PC9oMj4KICAgICAge2FjdGlvbn0KICAgIDwvZGl2PgogICk7Cn0KCi8qIC0tLSBlbXB0eSAvIGVycm9yIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAqLwoKZXhwb3J0IGZ1bmN0aW9uIEVtcHR5U3RhdGUoewogIHRpdGxlLAogIGhpbnQsCiAgaWNvbiwKICBhY3Rpb24sCn06IHsKICB0aXRsZTogc3RyaW5nOwogIGhpbnQ/OiBzdHJpbmc7CiAgaWNvbj86IFJlYWN0LlJlYWN0Tm9kZTsKICBhY3Rpb24/OiBSZWFjdC5SZWFjdE5vZGU7Cn0pIHsKICByZXR1cm4gKAogICAgPGRpdiBjbGFzc05hbWU9ImNhcmQgZmxleCBmbGV4LWNvbCBpdGVtcy1jZW50ZXIgZ2FwLTMgcHgtNiBweS0xMiB0ZXh0LWNlbnRlciI+CiAgICAgIHtpY29uICYmIDxkaXYgY2xhc3NOYW1lPSJpY29uLXRpbGUgaC0xNCB3LTE0Ij57aWNvbn08L2Rpdj59CiAgICAgIDxwIGNsYXNzTmFtZT0idGV4dC1iYXNlIGZvbnQtYm9sZCI+e3RpdGxlfTwvcD4KICAgICAge2hpbnQgJiYgPHAgY2xhc3NOYW1lPSJtYXgtdy1zbSB0ZXh0LXNtIHRleHQtW3JnYih2YXIoLS1mZy1tdXRlZCkpXSI+e2hpbnR9PC9wPn0KICAgICAge2FjdGlvbn0KICAgIDwvZGl2PgogICk7Cn0KCi8qIC0tLSBidXN5IGJ1dHRvbiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAqLwoKZXhwb3J0IGZ1bmN0aW9uIFNwaW5uZXIoeyBzaXplID0gMTggfTogeyBzaXplPzogbnVtYmVyIH0pIHsKICByZXR1cm4gKAogICAgPHN2ZyB3aWR0aD17c2l6ZX0gaGVpZ2h0PXtzaXplfSB2aWV3Qm94PSIwIDAgMjQgMjQiIGNsYXNzTmFtZT0iYW5pbWF0ZS1zcGluIiBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICAgIDxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjkiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2VPcGFjaXR5PSIwLjI1IiBzdHJva2VXaWR0aD0iMyIgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTTIxIDEyYTkgOSAwIDAgMC05LTkiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2VXaWR0aD0iMyIgc3Ryb2tlTGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiIC8+CiAgICA8L3N2Zz4KICApOwp9Cg==
+'use client';
+
+import { StarIcon } from './icons';
+
+/**
+ * Small presentational pieces shared by every screen.
+ *
+ * These are deliberately dumb: no data fetching, no i18n lookups that need a
+ * provider, no routing. Screens compose them, which is what keeps 19 pages
+ * looking like one product instead of 19 designs.
+ */
+
+/* --- stars -------------------------------------------------------------- */
+
+export function Stars({
+  value,
+  count,
+  size = 15,
+  showValue = true,
+}: {
+  value: number | null | undefined;
+  count?: number | null;
+  size?: number;
+  showValue?: boolean;
+}) {
+  const rating = value ?? 0;
+
+  if (!value) {
+    return <span className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">—</span>;
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="inline-flex items-center gap-0.5 text-[rgb(var(--warn))]">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <StarIcon key={i} size={size} filled={i < Math.round(rating)} />
+        ))}
+      </span>
+      {showValue && (
+        <span className="tnum text-xs font-bold text-[rgb(var(--fg))]">{rating.toFixed(1)}</span>
+      )}
+      {count != null && count > 0 && (
+        <span className="tnum text-xs text-[rgb(var(--fg-subtle))]">({count})</span>
+      )}
+    </span>
+  );
+}
+
+/* --- avatar ------------------------------------------------------------- */
+
+export function Avatar({
+  name,
+  src,
+  size = 44,
+}: {
+  name?: string | null;
+  src?: string | null;
+  size?: number;
+}) {
+  const initials = (name ?? '?')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
+
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={name ?? ''}
+        width={size}
+        height={size}
+        className="flex-none rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+
+  return (
+    <span
+      className="grid flex-none place-items-center rounded-full bg-[rgb(var(--brand-500)/0.20)] font-bold text-[rgb(var(--brand-800))]"
+      style={{ width: size, height: size, fontSize: size * 0.36 }}
+      aria-hidden="true"
+    >
+      {initials}
+    </span>
+  );
+}
+
+/* --- price -------------------------------------------------------------- */
+
+/** Big, unmissable price. Used on offer cards and the request composer. */
+export function Price({
+  minor,
+  currency,
+  size = 'md',
+}: {
+  minor: number | null | undefined;
+  currency?: string | null;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+}) {
+  const sizes = {
+    sm: 'text-base',
+    md: 'text-xl',
+    lg: 'text-2xl',
+    xl: 'text-3xl',
+  } as const;
+
+  if (minor == null) return null;
+  const whole = Math.round(minor / 100);
+
+  return (
+    <span className="inline-flex items-baseline gap-1">
+      <span className={`price ${sizes[size]} text-[rgb(var(--fg))]`}>
+        {whole.toLocaleString()}
+      </span>
+      <span className="text-xs font-bold text-[rgb(var(--fg-muted))]">{currency ?? 'MAD'}</span>
+    </span>
+  );
+}
+
+/* --- price stepper (+ / -) ---------------------------------------------- */
+
+/**
+ * The offer composer. Large +/- targets and a numeric field, because setting
+ * your own price is the whole point of the product and thumbs are imprecise.
+ */
+export function PriceStepper({
+  value,
+  onChange,
+  step = 10,
+  min = 0,
+  max = 100000,
+  currency = 'MAD',
+  label,
+}: {
+  value: number;
+  onChange: (next: number) => void;
+  step?: number;
+  min?: number;
+  max?: number;
+  currency?: string;
+  label?: string;
+}) {
+  const clamp = (n: number) => Math.min(max, Math.max(min, Math.round(n)));
+  const set = (n: number) => onChange(clamp(n));
+
+  return (
+    <div>
+      {label && <span className="label">{label}</span>}
+      <div className="flex items-stretch gap-2">
+        <button
+          type="button"
+          onClick={() => set(value - step)}
+          disabled={value <= min}
+          aria-label="نقص"
+          className="btn btn-secondary w-16 flex-none text-2xl"
+        >
+          −
+        </button>
+
+        <div className="card flex flex-1 items-center justify-center gap-2 px-3 py-2">
+          <input
+            type="number"
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => set(Number(e.target.value))}
+            className="tnum w-full bg-transparent text-center text-3xl font-extrabold tracking-tight outline-none"
+            aria-label={label}
+          />
+          <span className="flex-none text-sm font-bold text-[rgb(var(--fg-muted))]">{currency}</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => set(value + step)}
+          disabled={value >= max}
+          aria-label="زيد"
+          className="btn btn-primary w-16 flex-none text-2xl"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* --- section heading ---------------------------------------------------- */
+
+export function SectionTitle({
+  children,
+  action,
+}: {
+  children: React.ReactNode;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-3 flex items-center justify-between gap-3">
+      <h2 className="text-lg font-extrabold tracking-tight">{children}</h2>
+      {action}
+    </div>
+  );
+}
+
+/* --- empty / error ------------------------------------------------------ */
+
+export function EmptyState({
+  title,
+  hint,
+  icon,
+  action,
+}: {
+  title: string;
+  hint?: string;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="card flex flex-col items-center gap-3 px-6 py-12 text-center">
+      {icon && <div className="icon-tile h-14 w-14">{icon}</div>}
+      <p className="text-base font-bold">{title}</p>
+      {hint && <p className="max-w-sm text-sm text-[rgb(var(--fg-muted))]">{hint}</p>}
+      {action}
+    </div>
+  );
+}
+
+/* --- busy button -------------------------------------------------------- */
+
+export function Spinner({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className="animate-spin" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" fill="none" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}

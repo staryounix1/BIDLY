@@ -1,1 +1,148 @@
-J3VzZSBjbGllbnQnOwoKaW1wb3J0IExpbmsgZnJvbSAnbmV4dC9saW5rJzsKaW1wb3J0IHsgdXNlUGF0aG5hbWUgfSBmcm9tICduZXh0L25hdmlnYXRpb24nOwppbXBvcnQgeyB1c2VBdXRoIH0gZnJvbSAnLi9hdXRoLXByb3ZpZGVyJzsKaW1wb3J0IHsgdXNlSTE4biB9IGZyb20gJy4vaTE4bi1wcm92aWRlcic7CmltcG9ydCB7IE5vdGlmaWNhdGlvbkJlbGwgfSBmcm9tICcuL25vdGlmaWNhdGlvbi1iZWxsJzsKaW1wb3J0IHsgQ2F0ZWdvcnlJY29uLCBLaGRlbWxpTG9nbyB9IGZyb20gJy4vaWNvbnMnOwoKLyoqCiAqIEFwcCBjaHJvbWUg4oCUIGhlYWRlciBhbmQgdGh1bWItcmVhY2ggYm90dG9tIG5hdi4KICoKICogVGhlIHByb2R1Y3QgaXMgdXNlZCBvbmUtaGFuZGVkIG5leHQgdG8gYSBqb2Igc2l0ZSwgc28gdGhlIHByaW1hcnkKICogZGVzdGluYXRpb25zIGxpdmUgYXQgdGhlIGJvdHRvbSBvZiB0aGUgc2NyZWVuIGFuZCB0aGUgaGVhZGVyIG9ubHkgY2FycmllcwogKiBpZGVudGl0eTogd2hlcmUgeW91IGFyZSwgYW5kIHdoZXRoZXIgeW91IGhhdmUgbm90aWZpY2F0aW9ucy4KICovCgppbnRlcmZhY2UgVGFiIHsKICBocmVmOiBzdHJpbmc7CiAga2V5OiBzdHJpbmc7CiAgaWNvbjogc3RyaW5nOwp9CgpleHBvcnQgZnVuY3Rpb24gQXBwSGVhZGVyKCkgewogIGNvbnN0IHsgdCwgbG9jYWxlIH0gPSB1c2VJMThuKCk7CiAgY29uc3QgeyB1c2VyLCByZWFkeSB9ID0gdXNlQXV0aCgpOwogIGNvbnN0IHBhdGhuYW1lID0gdXNlUGF0aG5hbWUoKTsKCiAgY29uc3QgaG9tZUhyZWYgPSBgLyR7bG9jYWxlfWA7CiAgY29uc3QgaXNIb21lID0gcGF0aG5hbWUgPT09IGhvbWVIcmVmOwoKICByZXR1cm4gKAogICAgPGhlYWRlciBjbGFzc05hbWU9InN1cmZhY2UtYmx1ciBzdGlja3kgdG9wLTAgei0yMCBib3JkZXItYiBib3JkZXItW3JnYih2YXIoLS1saW5lKSldIj4KICAgICAgPGRpdiBjbGFzc05hbWU9ImNvbnRhaW5lci1wYWdlIj4KICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuIGdhcC0zIHB5LTMiPgogICAgICAgICAgPExpbmsgaHJlZj17aG9tZUhyZWZ9IGFyaWEtbGFiZWw9e3QoJ2FwcC5uYW1lJyl9PgogICAgICAgICAgICA8S2hkZW1saUxvZ28gc2l6ZT17MzB9IC8+CiAgICAgICAgICA8L0xpbms+CgogICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC0yIHRleHQtc20iPgogICAgICAgICAgICB7cmVhZHkgJiYgdXNlciA/ICgKICAgICAgICAgICAgICA8PgogICAgICAgICAgICAgICAgPE5vdGlmaWNhdGlvbkJlbGwgLz4KICAgICAgICAgICAgICAgIDxMaW5rCiAgICAgICAgICAgICAgICAgIGhyZWY9e3VzZXIucm9sZSA9PT0gJ1BST1ZJREVSJyA/IGAvJHtsb2NhbGV9L3Byb3ZpZGVyL3Byb2ZpbGVgIDogYC8ke2xvY2FsZX0vcHJvZmlsZWB9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkgaC0xMCB3LTEwICFwLTAiCiAgICAgICAgICAgICAgICAgIGFyaWEtbGFiZWw9e3QoJ25hdi5wcm9maWxlJyl9CiAgICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICAgIDxDYXRlZ29yeUljb24gbmFtZT0idXNlciIgc2l6ZT17MTh9IC8+CiAgICAgICAgICAgICAgICA8L0xpbms+CiAgICAgICAgICAgICAgPC8+CiAgICAgICAgICAgICkgOiByZWFkeSA/ICgKICAgICAgICAgICAgICA8TGluayBocmVmPXtgLyR7bG9jYWxlfS9sb2dpbmB9IGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkiPgogICAgICAgICAgICAgICAge3QoJ2NvbW1vbi5zaWduSW4nKX0KICAgICAgICAgICAgICA8L0xpbms+CiAgICAgICAgICAgICkgOiBudWxsfQogICAgICAgICAgPC9kaXY+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgoKICAgICAgey8qIEEgdGhpbiBhcXVhIHByb2dyZXNzIGhhaXJsaW5lIGtlZXBzIHRoZSBiYXIgZnJvbSBmZWVsaW5nIGRlYWQuICovfQogICAgICB7IWlzSG9tZSAmJiA8ZGl2IGNsYXNzTmFtZT0iaC0wLjUgdy1mdWxsIGJnLVtyZ2IodmFyKC0tYnJhbmQtNTAwKS8wLjM1KV0iIC8+fQogICAgPC9oZWFkZXI+CiAgKTsKfQoKLyoqCiAqIEJvdHRvbSBuYXZpZ2F0aW9uLiBSZW5kZXJlZCBwZXIgcm9sZSBzbyBhIHByb3ZpZGVyIG5ldmVyIHNlZXMgY3VzdG9tZXIgdGFicwogKiAoYW5kIHZpY2UgdmVyc2EpOyB2aXNpdG9ycyBnZXQgYnJvd3NlICsgc2lnbi1pbiBwcm9tcHRzIGluc3RlYWQuCiAqLwpleHBvcnQgZnVuY3Rpb24gQm90dG9tTmF2KCkgewogIGNvbnN0IHsgdCwgbG9jYWxlIH0gPSB1c2VJMThuKCk7CiAgY29uc3QgeyB1c2VyIH0gPSB1c2VBdXRoKCk7CiAgY29uc3QgcGF0aG5hbWUgPSB1c2VQYXRobmFtZSgpOwoKICBsZXQgdGFiczogVGFiW107CgogIGlmICghdXNlcikgewogICAgdGFicyA9IFsKICAgICAgeyBocmVmOiBgLyR7bG9jYWxlfWAsIGtleTogJ2hvbWUnLCBpY29uOiAnaG9tZScgfSwKICAgICAgeyBocmVmOiBgLyR7bG9jYWxlfS9zZXJ2aWNlc2AsIGtleTogJ3NlcnZpY2VzJywgaWNvbjogJ2xheWVycycgfSwKICAgICAgeyBocmVmOiBgLyR7bG9jYWxlfS9yZXF1ZXN0cy9uZXdgLCBrZXk6ICduZXdSZXF1ZXN0JywgaWNvbjogJ3BsdXMnIH0sCiAgICAgIHsgaHJlZjogYC8ke2xvY2FsZX0vbG9naW5gLCBrZXk6ICdzaWduSW4nLCBpY29uOiAndXNlcicgfSwKICAgIF07CiAgfSBlbHNlIGlmICh1c2VyLnJvbGUgPT09ICdQUk9WSURFUicgfHwgdXNlci5yb2xlID09PSAnQURNSU4nKSB7CiAgICB0YWJzID0gWwogICAgICB7IGhyZWY6IGAvJHtsb2NhbGV9L3Byb3ZpZGVyL2Rhc2hib2FyZGAsIGtleTogJ3Byb3ZpZGVyRGFzaCcsIGljb246ICdob21lJyB9LAogICAgICB7IGhyZWY6IGAvJHtsb2NhbGV9L3Byb3ZpZGVyL3JlcXVlc3RzYCwga2V5OiAnZmVlZCcsIGljb246ICdyYWRhcicgfSwKICAgICAgeyBocmVmOiBgLyR7bG9jYWxlfS9wcm92aWRlci9qb2JzYCwga2V5OiAncHJvdmlkZXJKb2JzJywgaWNvbjogJ3JvdXRlJyB9LAogICAgICB7IGhyZWY6IGAvJHtsb2NhbGV9L3Byb3ZpZGVyL2hpc3RvcnlgLCBrZXk6ICdwcm92aWRlckhpc3RvcnknLCBpY29uOiAnd2FsbGV0JyB9LAogICAgICB7IGhyZWY6IGAvJHtsb2NhbGV9L21lc3NhZ2VzYCwga2V5OiAnbWVzc2FnZXMnLCBpY29uOiAnY2hhdCcgfSwKICAgIF07CiAgfSBlbHNlIHsKICAgIHRhYnMgPSBbCiAgICAgIHsgaHJlZjogYC8ke2xvY2FsZX1gLCBrZXk6ICdob21lJywgaWNvbjogJ2hvbWUnIH0sCiAgICAgIHsgaHJlZjogYC8ke2xvY2FsZX0vc2VydmljZXNgLCBrZXk6ICdzZXJ2aWNlcycsIGljb246ICdsYXllcnMnIH0sCiAgICAgIHsgaHJlZjogYC8ke2xvY2FsZX0vcmVxdWVzdHNgLCBrZXk6ICdyZXF1ZXN0cycsIGljb246ICdjaGVja2xpc3QnIH0sCiAgICAgIHsgaHJlZjogYC8ke2xvY2FsZX0vbWVzc2FnZXNgLCBrZXk6ICdtZXNzYWdlcycsIGljb246ICdjaGF0JyB9LAogICAgICB7IGhyZWY6IGAvJHtsb2NhbGV9L3Byb2ZpbGVgLCBrZXk6ICdwcm9maWxlJywgaWNvbjogJ3VzZXInIH0sCiAgICBdOwogIH0KCiAgY29uc3QgaXNBY3RpdmUgPSAoaHJlZjogc3RyaW5nKSA9PgogICAgaHJlZiA9PT0gYC8ke2xvY2FsZX1gID8gcGF0aG5hbWUgPT09IGhyZWYgOiBwYXRobmFtZS5zdGFydHNXaXRoKGhyZWYpOwoKICByZXR1cm4gKAogICAgPG5hdgogICAgICBjbGFzc05hbWU9InN1cmZhY2UtYmx1ciBmaXhlZCBpbnNldC14LTAgYm90dG9tLTAgei0yMCBib3JkZXItdCBib3JkZXItW3JnYih2YXIoLS1saW5lKSldIgogICAgICBzdHlsZT17eyBwYWRkaW5nQm90dG9tOiAnZW52KHNhZmUtYXJlYS1pbnNldC1ib3R0b20pJyB9fQogICAgPgogICAgICA8ZGl2IGNsYXNzTmFtZT0iYXBwLXNoZWxsIGZsZXggaXRlbXMtc3RyZXRjaCBqdXN0aWZ5LWFyb3VuZCBweC0xIj4KICAgICAgICB7dGFicy5tYXAoKHRhYikgPT4gewogICAgICAgICAgY29uc3QgYWN0aXZlID0gaXNBY3RpdmUodGFiLmhyZWYpOwogICAgICAgICAgcmV0dXJuICgKICAgICAgICAgICAgPExpbmsKICAgICAgICAgICAgICBrZXk9e3RhYi5rZXl9CiAgICAgICAgICAgICAgaHJlZj17dGFiLmhyZWZ9CiAgICAgICAgICAgICAgY2xhc3NOYW1lPSJyZWxhdGl2ZSBmbGV4IGZsZXgtMSBmbGV4LWNvbCBpdGVtcy1jZW50ZXIgZ2FwLTEgcHktMi41IgogICAgICAgICAgICAgIHN0eWxlPXt7CiAgICAgICAgICAgICAgICBjb2xvcjogYWN0aXZlID8gJ3JnYih2YXIoLS1icmFuZC03MDApKScgOiAncmdiKHZhcigtLWZnLW11dGVkKSknLAogICAgICAgICAgICAgIH19CiAgICAgICAgICAgID4KICAgICAgICAgICAgICB7YWN0aXZlICYmICgKICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iYWJzb2x1dGUgdG9wLTAgaC0xIHctOCByb3VuZGVkLWZ1bGwgYmctW3JnYih2YXIoLS1icmFuZC01MDApKV0iIC8+CiAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICA8Q2F0ZWdvcnlJY29uIG5hbWU9e3RhYi5pY29ufSBzaXplPXsyMn0gLz4KICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRleHQtWzAuNjg3NXJlbV0gZm9udC1ib2xkIj57dChgbmF2LiR7dGFiLmtleX1gKX08L3NwYW4+CiAgICAgICAgICAgIDwvTGluaz4KICAgICAgICAgICk7CiAgICAgICAgfSl9CiAgICAgIDwvZGl2PgogICAgPC9uYXY+CiAgKTsKfQoKLyoqCiAqIFNpdGUgZm9vdGVyIHdpdGggdGhlIGNvcHlyaWdodCBsaW5lLiBLZXB0IG91dCBvZiB0aGUgZml4ZWQgY2hyb21lIHNvIGl0IG9ubHkKICogYXBwZWFycyB3aGVyZSB0aGVyZSBpcyByZWFsIHBhZ2UgY29udGVudCB0byBjbG9zZS4KICovCmV4cG9ydCBmdW5jdGlvbiBBcHBGb290ZXIoKSB7CiAgcmV0dXJuICgKICAgIDxmb290ZXIgY2xhc3NOYW1lPSJib3JkZXItdCBib3JkZXItW3JnYih2YXIoLS1saW5lKSldIHB4LTQgcHktOCB0ZXh0LWNlbnRlciI+CiAgICAgIDxwIGNsYXNzTmFtZT0idGV4dC14cyBmb250LXNlbWlib2xkIHRleHQtW3JnYih2YXIoLS1mZy1zdWJ0bGUpKV0iPgogICAgICAgIMKpIHtuZXcgRGF0ZSgpLmdldEZ1bGxZZWFyKCl9IEtoZGVtbGkg4oCUINis2YXZiti5INin2YTYrdmC2YjZgiDZhdit2YHZiNi42KkKICAgICAgPC9wPgogICAgPC9mb290ZXI+CiAgKTsKfQo=
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from './auth-provider';
+import { useI18n } from './i18n-provider';
+import { NotificationBell } from './notification-bell';
+import { CategoryIcon, KhdemliLogo } from './icons';
+
+/**
+ * App chrome — header and thumb-reach bottom nav.
+ *
+ * The product is used one-handed next to a job site, so the primary
+ * destinations live at the bottom of the screen and the header only carries
+ * identity: where you are, and whether you have notifications.
+ */
+
+interface Tab {
+  href: string;
+  key: string;
+  icon: string;
+}
+
+export function AppHeader() {
+  const { t, locale } = useI18n();
+  const { user, ready } = useAuth();
+  const pathname = usePathname();
+
+  const homeHref = `/${locale}`;
+  const isHome = pathname === homeHref;
+
+  return (
+    <header className="surface-blur sticky top-0 z-20 border-b border-[rgb(var(--line))]">
+      <div className="container-page">
+        <div className="flex items-center justify-between gap-3 py-3">
+          <Link href={homeHref} aria-label={t('app.name')}>
+            <KhdemliLogo size={30} />
+          </Link>
+
+          <div className="flex items-center gap-2 text-sm">
+            {ready && user ? (
+              <>
+                <NotificationBell />
+                <Link
+                  href={user.role === 'PROVIDER' ? `/${locale}/provider/profile` : `/${locale}/profile`}
+                  className="btn btn-secondary h-10 w-10 !p-0"
+                  aria-label={t('nav.profile')}
+                >
+                  <CategoryIcon name="user" size={18} />
+                </Link>
+              </>
+            ) : ready ? (
+              <Link href={`/${locale}/login`} className="btn btn-secondary">
+                {t('common.signIn')}
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* A thin aqua progress hairline keeps the bar from feeling dead. */}
+      {!isHome && <div className="h-0.5 w-full bg-[rgb(var(--brand-500)/0.35)]" />}
+    </header>
+  );
+}
+
+/**
+ * Bottom navigation. Rendered per role so a provider never sees customer tabs
+ * (and vice versa); visitors get browse + sign-in prompts instead.
+ */
+export function BottomNav() {
+  const { t, locale } = useI18n();
+  const { user } = useAuth();
+  const pathname = usePathname();
+
+  let tabs: Tab[];
+
+  if (!user) {
+    tabs = [
+      { href: `/${locale}`, key: 'home', icon: 'home' },
+      { href: `/${locale}/services`, key: 'services', icon: 'layers' },
+      { href: `/${locale}/requests/new`, key: 'newRequest', icon: 'plus' },
+      { href: `/${locale}/login`, key: 'signIn', icon: 'user' },
+    ];
+  } else if (user.role === 'PROVIDER' || user.role === 'ADMIN') {
+    tabs = [
+      { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
+      { href: `/${locale}/provider/requests`, key: 'feed', icon: 'radar' },
+      { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
+      { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
+      { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+    ];
+  } else {
+    tabs = [
+      { href: `/${locale}`, key: 'home', icon: 'home' },
+      { href: `/${locale}/services`, key: 'services', icon: 'layers' },
+      { href: `/${locale}/requests`, key: 'requests', icon: 'checklist' },
+      { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+      { href: `/${locale}/profile`, key: 'profile', icon: 'user' },
+    ];
+  }
+
+  const isActive = (href: string) =>
+    href === `/${locale}` ? pathname === href : pathname.startsWith(href);
+
+  return (
+    <nav
+      className="surface-blur fixed inset-x-0 bottom-0 z-20 border-t border-[rgb(var(--line))]"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      <div className="app-shell flex items-stretch justify-around px-1">
+        {tabs.map((tab) => {
+          const active = isActive(tab.href);
+          return (
+            <Link
+              key={tab.key}
+              href={tab.href}
+              className="relative flex flex-1 flex-col items-center gap-1 py-2.5"
+              style={{
+                color: active ? 'rgb(var(--brand-700))' : 'rgb(var(--fg-muted))',
+              }}
+            >
+              {active && (
+                <span className="absolute top-0 h-1 w-8 rounded-full bg-[rgb(var(--brand-500))]" />
+              )}
+              <CategoryIcon name={tab.icon} size={22} />
+              <span className="text-[0.6875rem] font-bold">{t(`nav.${tab.key}`)}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+/**
+ * Site footer with the copyright line. Kept out of the fixed chrome so it only
+ * appears where there is real page content to close.
+ */
+export function AppFooter() {
+  return (
+    <footer className="border-t border-[rgb(var(--line))] px-4 py-8 text-center">
+      <p className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">
+        © {new Date().getFullYear()} Khdemli — جميع الحقوق محفوظة
+      </p>
+    </footer>
+  );
+}
