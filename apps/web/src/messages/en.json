@@ -64,7 +64,8 @@
     "invalidCredentials": "The email or password is incorrect.",
     "accountExists": "An account with this email already exists.",
     "verifyNotice": "Account created. Check your email for the verification code.",
-    "welcomeBack": "Signed in successfully."
+    "welcomeBack": "Signed in successfully.",
+    "accountReady": "Account created. You can sign in now."
   },
   "profile": {
     "title": "Profile",
