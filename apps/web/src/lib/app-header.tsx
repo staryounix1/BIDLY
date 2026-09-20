@@ -109,13 +109,24 @@ export function BottomNav() {
       { href: `/${locale}/requests/new`, key: 'newRequest', icon: 'plus' },
       { href: `/${locale}/login`, key: 'signIn', icon: 'user' },
     ];
-  } else if (user.role === 'PROVIDER' || user.role === 'ADMIN') {
+  } else if (user.role === 'PROVIDER') {
     tabs = [
       { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
       { href: `/${locale}/provider/requests`, key: 'feed', icon: 'radar' },
       { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
       { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
       { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+    ];
+  } else if (user.role === 'ADMIN') {
+    // Staff run the platform, not the marketplace: the admin console replaces
+    // the provider tabs. Sending an admin to /provider/* always 403s, because
+    // those routes are gated on the PROVIDER role.
+    tabs = [
+      { href: `/${locale}/admin`, key: 'admin', icon: 'shield' },
+      { href: `/${locale}/requests`, key: 'requests', icon: 'checklist' },
+      { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+      { href: `/${locale}/wallet`, key: 'wallet', icon: 'wallet' },
+      { href: `/${locale}/profile`, key: 'profile', icon: 'user' },
     ];
   } else {
     tabs = [
