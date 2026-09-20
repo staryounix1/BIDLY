@@ -258,22 +258,37 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
   });
 
   // -------- wallets ------------------------------------------------------
+  /**
+   * Resolve the wallet that belongs to the signed-in user.
+   *
+   * A person's balance is held under one of two owner kinds: a provider is paid
+   * into a PROVIDER wallet keyed by their `providers.id`, while everyone else
+   * (customers, and staff browsing their own account) holds a USER wallet keyed
+   * by `users.id`. Returning `null` is a valid answer — it simply means the
+   * account has no wallet yet — so the caller decides how to present that.
+   */
+  async function walletForUser(userId: string) {
+    return queryOne(
+      `select w.* from wallets w
+       where (w.owner_type = 'PROVIDER' and w.owner_id = (select id from providers where user_id = $1))
+          or (w.owner_type = 'USER' and w.owner_id = $1)
+       order by (w.owner_type = 'PROVIDER') desc
+       limit 1`,
+      [userId],
+    );
+  }
+
   app.get('/wallets/me', {
-    preHandler: [app.requireProvider],
-    schema: { tags: ['payments'], summary: 'My provider wallet', security: [{ bearerAuth: [] }] },
+    preHandler: [app.requireUser],
+    schema: { tags: ['payments'], summary: 'My wallet', security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
     const auth = request.auth!;
-    const wallet = await queryOne(
-      `select w.* from wallets w
-       join providers p on p.user_id = w.owner_id
-       where p.user_id = $1 and w.owner_type = 'PROVIDER'`,
-      [auth.userId],
-    );
+    const wallet = await walletForUser(auth.userId);
     return reply.send({ success: true, data: wallet });
   });
 
   app.get('/wallets/me/transactions', {
-    preHandler: [app.requireProvider],
+    preHandler: [app.requireUser],
     schema: {
       tags: ['payments'], summary: 'My wallet ledger', security: [{ bearerAuth: [] }],
       querystring: {
@@ -288,16 +303,17 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
     const auth = request.auth!;
     const q = request.query as Record<string, unknown>;
     const page = parsePagination(q);
-    const where = ['p.user_id = $1'];
-    const params: unknown[] = [auth.userId];
+    const wallet = await walletForUser(auth.userId);
+    if (!wallet) return reply.send({ success: true, data: [] });
+
+    const where = ['wt.wallet_id = $1'];
+    const params: unknown[] = [(wallet as { id: string }).id];
     if (q.type) { params.push(q.type); where.push(`wt.type = $${params.length}`); }
 
     const rows = await queryMany(
       `select wt.id, wt.type, wt.direction, wt.amount_minor, wt.currency, wt.balance_after_minor,
               wt.reference_type, wt.reference_id, wt.job_id, wt.description, wt.created_at
        from wallet_transactions wt
-       join wallets w on w.id = wt.wallet_id
-       join providers p on p.user_id = w.owner_id
        where ${where.join(' and ')} order by wt.created_at desc
        limit $${params.length + 1} offset $${params.length + 2}`,
       [...params, page.limit, page.offset],
@@ -382,7 +398,7 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
   });
 
   app.get('/payouts/mine', {
-    preHandler: [app.requireProvider],
+    preHandler: [app.requireUser],
     schema: { tags: ['payments'], summary: 'My payouts', security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
     const auth = request.auth!;

@@ -21,6 +21,7 @@ declare module 'fastify' {
     requireRole: (...roles: Array<'CUSTOMER' | 'PROVIDER' | 'ADMIN'>) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     requireCustomer: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     requireProvider: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    requireUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     requireAdmin: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     requirePermission: (permission: AdminPermission | AdminPermission[]) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
@@ -116,6 +117,20 @@ export const authPlugin = fp<AuthPluginOptions>(async (app: FastifyInstance, opt
   app.decorate('requireProvider', async (request: FastifyRequest, reply: FastifyReply) => {
     await app.authenticate(request, reply);
     if (request.auth?.role !== 'PROVIDER') throw new AppError({ code: ERROR_CODES.FORBIDDEN });
+  });
+
+  /**
+   * Require a signed-in user of any role.
+   *
+   * Personal money — a wallet, its ledger, its payouts — belongs to the person
+   * signed in, not to a role. A customer holds a balance to pay for work and a
+   * provider holds one to be paid; only the *owner* of the row is returned, so
+   * allowing every role here leaks nothing. Endpoints that must stay
+   * provider-only keep `requireProvider`.
+   */
+  app.decorate('requireUser', async (request: FastifyRequest, reply: FastifyReply) => {
+    await app.authenticate(request, reply);
+    if (!request.auth) throw new AppError({ code: ERROR_CODES.FORBIDDEN });
   });
 
   app.decorate('requireAdmin', async (request: FastifyRequest, reply: FastifyReply) => {
