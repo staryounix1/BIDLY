@@ -8,6 +8,7 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { requestsApi, type RequestSummary } from '@/lib/requests-api';
 import { jobsApi } from '@/lib/jobs-api';
+import { NearbyProvidersMap } from '@/lib/map/nearby-providers';
 import { StatusBadge } from '@/lib/status-badge';
 
 /**
@@ -101,6 +102,11 @@ function DashboardView() {
           </button>
         </p>
       )}
+
+      {/* Who is around — the marketplace's supply, made visible. */}
+      <section className="mt-6">
+        <NearbyProvidersMap radiusKm={15} height={280} />
+      </section>
 
       {/* Active request — the most important thing on the screen. */}
       <section className="mt-6">

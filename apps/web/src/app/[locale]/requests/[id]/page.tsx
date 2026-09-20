@@ -8,6 +8,7 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { requestsApi, type RequestDetail } from '@/lib/requests-api';
 import { offersApi } from '@/lib/offers-api';
+import { SearchRadar } from '@/lib/map/search-radar';
 import { StatusBadge } from '@/lib/status-badge';
 
 /**
@@ -146,6 +147,17 @@ function RequestDetailView() {
   const canSelectOffer = ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED'].includes(request.status);
   const selectedOffer = offers.find((o) => o.id === request.selected_offer_id || o.status === 'ACCEPTED') ?? null;
 
+  // The radar replaces the top of the page while the search is live: matching
+  // is a server-side process the customer would otherwise see nothing of.
+  const searching =
+    !selectedOffer &&
+    !request.cancelled_at &&
+    ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS'].includes(request.status);
+  const requestPoint =
+    request.pickup_lat != null && request.pickup_lng != null
+      ? { lat: Number(request.pickup_lat), lng: Number(request.pickup_lng) }
+      : null;
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <button onClick={() => router.push(`/${locale}/requests`)} className="mb-4 text-sm opacity-60 hover:opacity-100">
@@ -161,6 +173,22 @@ function RequestDetailView() {
         </div>
         <StatusBadge status={request.status} />
       </div>
+
+      {searching && (
+        <div className="mt-5">
+          <SearchRadar
+            requestId={request.id}
+            offers={offers}
+            point={requestPoint}
+            expiresAt={request.expires_at}
+            candidateCount={offers.length}
+            onViewOffers={() => {
+              document.getElementById('bidly-offers')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            onStop={canCancel ? () => setShowCancel(true) : undefined}
+          />
+        </div>
+      )}
 
       {/* Assigned provider — shown once an offer has been accepted. */}
       {selectedOffer && request.job_id && (
@@ -247,7 +275,7 @@ function RequestDetailView() {
         </section>
       )}
 
-      <section className="mt-8">
+      <section id="bidly-offers" className="mt-8">
         <h2 className="font-semibold">{t('request.offers')}</h2>
         {offers.length === 0 ? (
           <p className="mt-2 text-sm opacity-60">{t('request.noOffers')}</p>

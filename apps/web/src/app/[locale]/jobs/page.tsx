@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
-import { jobsApi, type JobDetail, type JobSummary } from '@/lib/jobs-api';
+import { jobsApi, TRACKABLE_JOB_STATUSES, type JobDetail, type JobSummary } from '@/lib/jobs-api';
 import { paymentsApi } from '@/lib/payments-api';
+import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
 
 /**
@@ -162,6 +163,19 @@ function JobsView() {
                     <p className="text-sm opacity-60">{t('common.loading')}</p>
                   ) : detail ? (
                     <div className="space-y-5">
+                      {(TRACKABLE_JOB_STATUSES as readonly string[]).includes(detail.job.status) &&
+                        detail.job.provider_id && (
+                          <TrackProvider
+                            providerId={detail.job.provider_id}
+                            providerName={detail.job.provider_name}
+                            destination={
+                              detail.job.pickup_lat != null && detail.job.pickup_lng != null
+                                ? { lat: Number(detail.job.pickup_lat), lng: Number(detail.job.pickup_lng) }
+                                : null
+                            }
+                            refreshKey={detail.job.status}
+                          />
+                        )}
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <Info label={t('job.provider')}>{detail.job.provider_name ?? '—'}</Info>
                         <Info label={t('job.price')}>

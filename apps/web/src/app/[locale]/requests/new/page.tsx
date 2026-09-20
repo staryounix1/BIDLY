@@ -18,6 +18,7 @@ import {
   type ServiceField,
 } from '@/lib/catalog-api';
 import { requestsApi } from '@/lib/requests-api';
+import { MapPicker } from '@/lib/map/map-picker';
 import { createRequestSchema, validateServiceAnswers } from '@bidly/validation';
 
 /**
@@ -61,6 +62,8 @@ function NewRequestView() {
 
   const [pickup, setPickup] = useState({ line1: '', district: '', cityId: '', notes: '' });
   const [destination, setDestination] = useState({ line1: '', cityId: '', notes: '' });
+  const [pickupPoint, setPickupPoint] = useState<{ lat: number; lng: number } | null>(null);
+  const [destinationPoint, setDestinationPoint] = useState<{ lat: number; lng: number } | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -160,6 +163,7 @@ function NewRequestView() {
               line1: pickup.line1,
               ...(pickup.district ? { district: pickup.district } : {}),
               ...(pickup.cityId ? { cityId: pickup.cityId } : {}),
+              ...(pickupPoint ? { lat: pickupPoint.lat, lng: pickupPoint.lng } : {}),
               ...(pickup.notes ? { notes: pickup.notes } : {}),
             },
           }
@@ -169,6 +173,7 @@ function NewRequestView() {
             destination: {
               line1: destination.line1,
               ...(destination.cityId ? { cityId: destination.cityId } : {}),
+              ...(destinationPoint ? { lat: destinationPoint.lat, lng: destinationPoint.lng } : {}),
               ...(destination.notes ? { notes: destination.notes } : {}),
             },
           }
@@ -280,6 +285,15 @@ function NewRequestView() {
         {service.requires_location && (
           <section className="space-y-4 rounded-2xl border border-black/10 p-5 dark:border-white/15">
             <h2 className="font-semibold">{t('request.pickup')}</h2>
+            <MapPicker
+              value={pickupPoint}
+              onChange={(p) => {
+                setPickupPoint(p);
+                setFormErrors((prev) => ({ ...prev, pickup: '' }));
+              }}
+              address={pickup.line1}
+              onAddressChange={(line1) => setPickup((prev) => ({ ...prev, line1 }))}
+            />
             <Field label={t('request.line1')} required error={formErrors.pickup}>
               <input value={pickup.line1} onChange={(e) => setPickup({ ...pickup, line1: e.target.value })} className={inputClass} />
             </Field>
@@ -300,6 +314,13 @@ function NewRequestView() {
         {service.requires_destination && (
           <section className="space-y-4 rounded-2xl border border-black/10 p-5 dark:border-white/15">
             <h2 className="font-semibold">{t('request.destination')}</h2>
+            <MapPicker
+              value={destinationPoint}
+              onChange={setDestinationPoint}
+              address={destination.line1}
+              onAddressChange={(line1) => setDestination((prev) => ({ ...prev, line1 }))}
+              height={220}
+            />
             <Field label={t('request.line1')} required error={formErrors.destination}>
               <input value={destination.line1} onChange={(e) => setDestination({ ...destination, line1: e.target.value })} className={inputClass} />
             </Field>
