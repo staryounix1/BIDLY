@@ -467,6 +467,26 @@ If they ask to be notified (for example when a long-running task finishes), send
 
 ## Task progress
 
+- **Sign-up now signs you in + a blocking activation gate (task 15) — code deployed; live test blocked by the phone.**
+  - `signUp()` in `auth-provider.tsx` no longer just registers: it registers, then **logs in** with the
+    same credentials and sets the session, so "إنشاء حساب" lands the user inside the product instead of
+    bouncing to the login page to retype them.
+  - New `apps/web/src/lib/activation-gate.tsx`, mounted last in `apps/web/src/app/[locale]/layout.tsx`.
+    A full-screen **non-dismissible** sheet (no backdrop click, no Escape — the keydown is captured and
+    swallowed — no close button) that covers header + bottom nav until the account is activated.
+    Sign-out stays reachable on purpose: a gate you cannot escape is a dead end.
+    It reads `emailVerified`/`phoneVerified` off the API user, so it lifts on `reload()` and follows
+    whichever checks the platform has on. Renders `intro` (request a code) → `code` (enter it).
+  - New auth-api clients: `resendVerification()` (`POST /resend-verification`), `verifyPhone(phone, code)`
+    (`POST /phone/verify`). `verifyEmail` already existed.
+  - **Do not use `--brand-950` or `--bg`: they do not exist.** Real tokens are `--brand-ink` and
+    `--surface*` / `--fg*`. An undefined token silently renders as transparent.
+- **2026-09-20: the workspace toolchain was wiped mid-session** (`node_modules`, `.bcode/bin` gone, the
+  repo files survived). Reinstall with the aarch64 pnpm in the Local dev notes, then
+  `pnpm install --frozen-lockfile` (~15s). Source changes are safe; only the toolchain disappeared.
+
+## Task progress (earlier)
+
 - **Verification switches now actually govern registration (task 14) — fixed, awaiting the phone update.**
   Reported by the user: with the email check switched **off**, signing up still demanded email
   verification. Cause: `registerWithEmail` **hard-coded** `status='PENDING'` and always emailed a code —
