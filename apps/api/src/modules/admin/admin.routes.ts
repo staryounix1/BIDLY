@@ -560,6 +560,68 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     return reply.send({ success: true, data: result });
   });
 
+  // ---- Feature flags -------------------------------------------------
+  // The `feature_flags` table existed but nothing exposed it, so an operator
+  // had to edit the database by hand to turn a module on or off. These two
+  // endpoints make the table the switchboard it was designed to be.
+
+  app.get('/admin/feature-flags', {
+    preHandler: settingsRead,
+    schema: { tags: ['admin'], summary: 'All feature flags', security: [{ bearerAuth: [] }] },
+  }, async (_request, reply) => {
+    const rows = await queryMany(
+      `select key, enabled, rollout_percent, description, updated_at
+         from feature_flags order by key`,
+    );
+    return reply.send({ success: true, data: rows });
+  });
+
+  app.put('/admin/feature-flags/:key', {
+    preHandler: settingsWrite,
+    schema: {
+      tags: ['admin'], summary: 'Enable or disable a feature flag', security: [{ bearerAuth: [] }],
+      params: { type: 'object', required: ['key'], properties: { key: { type: 'string', maxLength: 100 } } },
+      body: {
+        type: 'object', required: ['enabled'], additionalProperties: false,
+        properties: {
+          enabled: { type: 'boolean' },
+          // Rollout is a percentage so a flag can be enabled for a slice of
+          // traffic; 100 means everyone.
+          rolloutPercent: { type: 'integer', minimum: 0, maximum: 100 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const { key } = request.params as { key: string };
+    const { enabled, rolloutPercent } = request.body as { enabled: boolean; rolloutPercent?: number };
+
+    const result = await transaction(async (client) => {
+      const c = clientQuery(client);
+      const before = await c.one<{ enabled: boolean; rollout_percent: number }>(
+        'select enabled, rollout_percent from feature_flags where key = $1 for update',
+        [key],
+      );
+      if (!before) throw notFound('Feature flag');
+
+      // Only touch rollout when it was supplied, so a plain on/off switch
+      // never silently resets a staged rollout someone configured on purpose.
+      const next = await c.one<{ key: string; enabled: boolean; rollout_percent: number }>(
+        `update feature_flags
+            set enabled = $2,
+                rollout_percent = coalesce($3, rollout_percent),
+                updated_at = now()
+          where key = $1
+          returning key, enabled, rollout_percent`,
+        [key, enabled, rolloutPercent ?? null],
+      );
+
+      await recordAction(client, auth.userId, 'UPDATE_FEATURE_FLAG', 'feature_flag', key, before, next);
+      return next;
+    });
+    return reply.send({ success: true, data: result });
+  });
+
   app.get('/admin/commission-rules', {
     preHandler: catalogRead,
     schema: { tags: ['admin'], summary: 'Active commission rules', security: [{ bearerAuth: [] }] },

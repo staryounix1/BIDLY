@@ -324,7 +324,9 @@ export interface TieredCommissionResult {
 /** Pick the band a price falls into. Bands are ascending, first match wins. */
 export function tierForPrice(priceMinor: number, tiers: CommissionTier[]): number {
   for (let i = 0; i < tiers.length; i += 1) {
-    const bound = tiers[i].upToMinor;
+    const tier = tiers[i];
+    if (!tier) continue;
+    const bound = tier.upToMinor;
     if (bound == null || priceMinor <= bound) return i;
   }
   return Math.max(tiers.length - 1, 0);
