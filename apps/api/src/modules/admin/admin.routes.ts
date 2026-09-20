@@ -649,6 +649,159 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     return reply.send({ success: true, data: result });
   });
 
+  // ---- Accounts & verification ---------------------------------------
+  // One place to see who is on the platform and to flip the three checks an
+  // operator actually cares about: email, WhatsApp (a verified phone a human
+  // reached on WhatsApp) and identity. Email/phone state lives on `users`;
+  // identity is a `verification_records` row of type IDENTITY. WhatsApp is a
+  // phone check, so it records as PHONE and is flagged `channel: 'WHATSAPP'`
+  // in the record payload so the two can be told apart later.
+
+  const VERIFICATION_KINDS = ['EMAIL', 'WHATSAPP', 'IDENTITY'] as const;
+  type VerificationKind = (typeof VERIFICATION_KINDS)[number];
+
+  app.get('/admin/accounts', {
+    preHandler: usersRead,
+    schema: { tags: ['admin'], summary: 'Accounts with their verification state', security: [{ bearerAuth: [] }] },
+  }, async (request, reply) => {
+    const pageReq = parsePagination(request.query as Record<string, unknown>);
+    const { page, limit, offset } = pageReq;
+    const q = (request.query as Record<string, unknown>).q as string | undefined;
+    const role = (request.query as Record<string, unknown>).role as string | undefined;
+
+    const where: string[] = ['u.deleted_at is null'];
+    const params: unknown[] = [];
+    if (q) { params.push(`%${q}%`); where.push(`(u.email ilike $${params.length} or u.phone ilike $${params.length} or up.display_name ilike $${params.length})`); }
+    if (role) { params.push(role); where.push(`u.role = $${params.length}::bidly_user_role`); }
+
+    const rows = await queryMany(
+      `select u.id, u.email, u.phone, u.role, u.status, u.locale, u.created_at, u.last_login_at,
+              (u.email_verified_at is not null) as email_verified,
+              (u.phone_verified_at is not null) as phone_verified,
+              up.display_name,
+              p.id as provider_id, p.verification_status,
+              exists (
+                select 1 from verification_records vr
+                 where vr.user_id = u.id and vr.type = 'IDENTITY' and vr.status = 'VERIFIED'
+              ) as identity_verified,
+              exists (
+                select 1 from verification_records vr
+                 where vr.user_id = u.id and vr.type = 'PHONE' and vr.status = 'VERIFIED'
+                   and vr.payload->>'channel' = 'WHATSAPP'
+              ) as whatsapp_verified
+         from users u
+         left join user_profiles up on up.user_id = u.id
+         left join providers p on p.user_id = u.id
+        where ${where.join(' and ')}
+        order by u.created_at desc
+        limit ${limit} offset ${offset}`,
+      params,
+    );
+
+    const total = await queryOne<{ count: number }>(
+      `select count(*)::int as count from users u
+         left join user_profiles up on up.user_id = u.id
+        where ${where.join(' and ')}`,
+      params,
+    );
+
+    return reply.send({ success: true, data: { items: rows, meta: pageMeta(pageReq, total?.count ?? 0) } });
+  });
+
+  app.put('/admin/accounts/:id/verify/:kind', {
+    preHandler: usersWrite,
+    schema: {
+      tags: ['admin'], summary: 'Enable or disable an account verification', security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object', required: ['id', 'kind'],
+        properties: { id: { type: 'string' }, kind: { type: 'string', enum: [...VERIFICATION_KINDS] } },
+      },
+      body: {
+        type: 'object', required: ['enabled'], additionalProperties: false,
+        properties: { enabled: { type: 'boolean' }, reason: { type: 'string', maxLength: 500 } },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const { id, kind } = request.params as { id: string; kind: VerificationKind };
+    const { enabled, reason } = request.body as { enabled: boolean; reason?: string };
+
+    const result = await transaction(async (client) => {
+      const c = clientQuery(client);
+      const user = await c.one<{ id: string; email: string | null; phone: string | null; email_verified_at: string | null; phone_verified_at: string | null; provider_id: string | null }>(
+        `select u.id, u.email, u.phone, u.email_verified_at, u.phone_verified_at, p.id as provider_id
+           from users u left join providers p on p.user_id = u.id
+          where u.id = $1 and u.deleted_at is null for update of u`,
+        [id],
+      );
+      if (!user) throw notFound('Account');
+
+      const before = { kind, enabled: await readVerification(c, user.id, user.email_verified_at, user.phone_verified_at, kind) };
+
+      if (kind === 'EMAIL') {
+        // Turning the email check off clears the timestamp so the account
+        // returns to exactly the state it had before it was ever verified.
+        await c.query(`update users set email_verified_at = $2, updated_at = now() where id = $1`, [id, enabled ? new Date() : null]);
+      } else if (kind === 'WHATSAPP') {
+        await c.query(`update users set phone_verified_at = $2, updated_at = now() where id = $1`, [id, enabled ? new Date() : null]);
+      }
+
+      if (kind === 'IDENTITY' || kind === 'WHATSAPP') {
+        const type = kind === 'IDENTITY' ? 'IDENTITY' : 'PHONE';
+        const channel = kind === 'WHATSAPP' ? 'WHATSAPP' : 'IDENTITY';
+        // Retire any open record for this (user, type, channel) before writing a
+        // new one. On disable this is the whole job, so the check really is off
+        // rather than silently satisfied by a still-open row.
+        await c.query(
+          `update verification_records
+              set status = 'EXPIRED', reviewed_at = now(), updated_at = now()
+            where user_id = $1 and type = $2::bidly_verification_type
+              and coalesce(payload->>'channel', '') = $3 and status in ('PENDING','VERIFIED')`,
+          [id, type, channel],
+        );
+        if (enabled) {
+          await c.query(
+            `insert into verification_records (provider_id, user_id, type, status, method, reviewed_at, reviewed_by, notes, payload)
+             values ($1, $2, $3::bidly_verification_type, 'VERIFIED', 'ADMIN_MANUAL', now(), $4, $5, $6::jsonb)`,
+            [user.provider_id, id, type, auth.userId, reason ?? null, JSON.stringify({ channel, by: auth.userId })],
+          );
+        }
+      }
+
+      const after = { kind, enabled };
+      await recordAction(client, auth.userId, enabled ? 'VERIFY_ACCOUNT' : 'UNVERIFY_ACCOUNT', 'user', id, before, after, reason);
+      return { id, kind, enabled };
+    });
+
+    logEvent(LOG_EVENTS.ADMIN_ACTION, { adminId: auth.userId, action: 'VERIFY_ACCOUNT', entityId: id, kind });
+    return reply.send({ success: true, data: result });
+  });
+
+  /** Current state of one verification kind, used for the audit before-state. */
+  async function readVerification(
+    c: ReturnType<typeof clientQuery>,
+    userId: string,
+    emailVerifiedAt: string | null,
+    phoneVerifiedAt: string | null,
+    kind: VerificationKind,
+  ): Promise<boolean> {
+    if (kind === 'EMAIL') return emailVerifiedAt !== null;
+    if (kind === 'WHATSAPP') {
+      const row = await c.one(
+        `select 1 as ok from verification_records
+          where user_id = $1 and type = 'PHONE' and status = 'VERIFIED' and payload->>'channel' = 'WHATSAPP' limit 1`,
+        [userId],
+      );
+      return row !== null;
+    }
+    const row = await c.one(
+      `select 1 as ok from verification_records
+        where user_id = $1 and type = 'IDENTITY' and status = 'VERIFIED' limit 1`,
+      [userId],
+    );
+    return row !== null;
+  }
+
   app.get('/admin/commission-rules', {
     preHandler: catalogRead,
     schema: { tags: ['admin'], summary: 'Active commission rules', security: [{ bearerAuth: [] }] },

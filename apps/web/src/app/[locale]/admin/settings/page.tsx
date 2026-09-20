@@ -6,8 +6,10 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import {
   adminApi,
+  type AdminAccount,
   type AdminFeatureFlag,
   type AdminSetting,
+  type VerificationKind,
 } from '@/lib/admin-api';
 import { CategoryIcon } from '@/lib/icons';
 import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
@@ -15,15 +17,19 @@ import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
 /**
  * Admin → Settings.
  *
- * Two jobs, one page:
+ * Three jobs, one page:
  *   1. Feature switches — the `feature_flags` table, one toggle per module.
  *   2. Site settings — the `settings` table grouped by `group_name`.
+ *   3. Accounts — every account with its three verification checks (email,
+ *      WhatsApp, identity) side by side, each one flippable in place.
  *
- * The page is deliberately a thin editor over those two tables rather than a
+ * The page is deliberately a thin editor over those tables rather than a
  * bespoke form per value: the API owns the schema, so a setting added on the
  * server shows up here without a frontend change. Edits are staged locally and
  * only written on Save, so a half-typed number never reaches the database.
  */
+
+type Tab = 'features' | 'settings' | 'accounts';
 
 const GROUP_ORDER = [
   'features',
@@ -69,23 +75,32 @@ function SettingsView() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>('features');
 
   const [flags, setFlags] = useState<AdminFeatureFlag[]>([]);
   const [settings, setSettings] = useState<AdminSetting[]>([]);
+  const [accounts, setAccounts] = useState<AdminAccount[]>([]);
 
   // Staged setting edits, keyed by setting key. Holding the raw string keeps
   // in-progress typing intact; it is parsed back to JSON on save.
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [busyFlag, setBusyFlag] = useState<string | null>(null);
+  const [busyAccount, setBusyAccount] = useState<string | null>(null);
+  const [accountQuery, setAccountQuery] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [f, s] = await Promise.all([adminApi.featureFlags(), adminApi.settings()]);
+      const [f, s, a] = await Promise.all([
+        adminApi.featureFlags(),
+        adminApi.settings(),
+        adminApi.accounts().catch(() => ({ items: [], meta: { total: 0 } })),
+      ]);
       setFlags(f);
       setSettings(s as unknown as AdminSetting[]);
+      setAccounts(a.items);
       setDraft({});
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
@@ -160,11 +175,63 @@ function SettingsView() {
     }
   }
 
+  /** The account field a given check writes to, for the local echo. */
+  const accountFlagKey: Record<VerificationKind, keyof AdminAccount> = {
+    EMAIL: 'email_verified',
+    WHATSAPP: 'whatsapp_verified',
+    IDENTITY: 'identity_verified',
+  };
+
+  async function toggleVerification(account: AdminAccount, kind: VerificationKind, next: boolean) {
+    const key = accountFlagKey[kind];
+    setBusyAccount(`${account.id}:${kind}`);
+    setNotice(null);
+    setError(null);
+    // Optimistic: flipping three checks down a list should feel instant.
+    setAccounts((prev) => prev.map((a) => (a.id === account.id ? { ...a, [key]: next } : a)));
+    try {
+      await adminApi.setVerification(account.id, kind, next);
+      setNotice(`${account.email ?? account.phone ?? account.id} — ${t(
+        next ? `admin.verify_${kind}_on` : `admin.verify_${kind}_off`,
+      )}`);
+    } catch (err) {
+      setAccounts((prev) => prev.map((a) => (a.id === account.id ? { ...a, [key]: !next } : a)));
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusyAccount(null);
+    }
+  }
+
+  const visibleAccounts = useMemo(() => {
+    const q = accountQuery.trim().toLowerCase();
+    if (!q) return accounts;
+    return accounts.filter((a) =>
+      [a.email, a.phone, a.display_name, a.role, a.status]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q)),
+    );
+  }, [accounts, accountQuery]);
+
   return (
     <div className="app-shell container-page py-5">
       <div className="mb-5">
         <h1 className="text-2xl font-extrabold tracking-tight">{t('admin.settings')}</h1>
         <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('admin.settingsSubtitle')}</p>
+      </div>
+
+      <div className="mb-5 flex flex-wrap gap-2">
+        {(['features', 'settings', 'accounts'] as Tab[]).map((x) => (
+          <button
+            key={x}
+            type="button"
+            onClick={() => setTab(x)}
+            className={`chip ${tab === x ? 'chip-brand' : 'chip-neutral'}`}
+          >
+            {t(`admin.tab_${x}` as never)}
+            {x === 'features' ? ` (${flags.filter((f) => f.enabled).length}/${flags.length})` : ''}
+            {x === 'accounts' ? ` (${accounts.length})` : ''}
+          </button>
+        ))}
       </div>
 
       {error && (
@@ -187,43 +254,58 @@ function SettingsView() {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <FeaturesSection
-            flags={flags}
-            busy={busyFlag}
-            onToggle={toggleFlag}
-            labelForKey={humanizeFlag}
-          />
+          {tab === 'features' && (
+            <FeaturesSection
+              flags={flags}
+              busy={busyFlag}
+              onToggle={toggleFlag}
+              labelForKey={humanizeFlag}
+            />
+          )}
 
-          <section>
-            <SectionTitle>
-              <div>
-                <h2 className="text-base font-bold">{t('admin.settingsSection')}</h2>
-                <p className="text-xs text-[rgb(var(--fg-muted))]">{t('admin.settingsHint')}</p>
-              </div>
-            </SectionTitle>
-            <div className="flex flex-col gap-5">
-              {grouped.map(([group, rows]) => (
-                <div key={group} className="card p-4">
-                  <h3 className="mb-3 text-sm font-bold text-[rgb(var(--brand-500))]">
-                    {t(`admin.group_${group}` as never)}
-                  </h3>
-                  <div className="flex flex-col gap-3">
-                    {rows.map((s) => (
-                      <SettingRow
-                        key={s.key}
-                        setting={s}
-                        draft={draft[s.key]}
-                        saving={savingKey === s.key}
-                        dirty={dirtyKeys.includes(s.key)}
-                        onEdit={(v) => setDraft((prev) => ({ ...prev, [s.key]: v }))}
-                        onSave={() => saveSetting(s)}
-                      />
-                    ))}
-                  </div>
+          {tab === 'settings' && (
+            <section>
+              <SectionTitle>
+                <div>
+                  <h2 className="text-base font-bold">{t('admin.settingsSection')}</h2>
+                  <p className="text-xs text-[rgb(var(--fg-muted))]">{t('admin.settingsHint')}</p>
                 </div>
-              ))}
-            </div>
-          </section>
+              </SectionTitle>
+              <div className="flex flex-col gap-5">
+                {grouped.map(([group, rows]) => (
+                  <div key={group} className="card p-4">
+                    <h3 className="mb-3 text-sm font-bold text-[rgb(var(--brand-500))]">
+                      {t(`admin.group_${group}` as never)}
+                    </h3>
+                    <div className="flex flex-col gap-3">
+                      {rows.map((s) => (
+                        <SettingRow
+                          key={s.key}
+                          setting={s}
+                          draft={draft[s.key]}
+                          saving={savingKey === s.key}
+                          dirty={dirtyKeys.includes(s.key)}
+                          onEdit={(v) => setDraft((prev) => ({ ...prev, [s.key]: v }))}
+                          onSave={() => saveSetting(s)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {tab === 'accounts' && (
+            <AccountsSection
+              accounts={visibleAccounts}
+              total={accounts.length}
+              query={accountQuery}
+              onQuery={setAccountQuery}
+              busy={busyAccount}
+              onToggle={toggleVerification}
+            />
+          )}
         </div>
       )}
     </div>
@@ -383,6 +465,110 @@ function SettingRow({
         )}
       </div>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Accounts + verification                                              */
+/* ------------------------------------------------------------------ */
+
+/** The checks shown per account, in the order operators work through them. */
+const VERIFICATION_COLUMNS: { kind: VerificationKind; flag: keyof AdminAccount }[] = [
+  { kind: 'EMAIL', flag: 'email_verified' },
+  { kind: 'WHATSAPP', flag: 'whatsapp_verified' },
+  { kind: 'IDENTITY', flag: 'identity_verified' },
+];
+
+function AccountsSection({
+  accounts, total, query, onQuery, busy, onToggle,
+}: {
+  accounts: AdminAccount[];
+  total: number;
+  query: string;
+  onQuery: (v: string) => void;
+  busy: string | null;
+  onToggle: (a: AdminAccount, kind: VerificationKind, next: boolean) => void;
+}) {
+  const { t } = useI18n();
+
+  return (
+    <section>
+      <SectionTitle>
+        <div>
+          <h2 className="text-base font-bold">{t('admin.accountsSection')}</h2>
+          <p className="text-xs text-[rgb(var(--fg-muted))]">
+            {t('admin.accountsHint')} ({accounts.length}/{total})
+          </p>
+        </div>
+      </SectionTitle>
+
+      <input
+        className="input mb-4"
+        placeholder={t('admin.accountsSearch')}
+        value={query}
+        onChange={(e) => onQuery(e.target.value)}
+      />
+
+      {accounts.length === 0 ? (
+        <div className="card p-4">
+          <EmptyState title={t('admin.accountsEmpty')} />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {accounts.map((a) => (
+            <div key={a.id} className="card p-4">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="truncate text-sm font-bold" dir="ltr">
+                  {a.display_name || a.email || a.phone || a.id}
+                </span>
+                <span className="chip chip-neutral text-[10px]">{a.role}</span>
+                <span
+                  className={`chip text-[10px] ${
+                    a.status === 'ACTIVE' ? 'chip-brand' : 'chip-neutral'
+                  }`}
+                >
+                  {a.status}
+                </span>
+                {a.verification_status ? (
+                  <span className="chip chip-neutral text-[10px]">{a.verification_status}</span>
+                ) : null}
+              </div>
+
+              <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[rgb(var(--fg-muted))]">
+                {a.email ? <span dir="ltr">{a.email}</span> : null}
+                {a.phone ? <span dir="ltr">{a.phone}</span> : null}
+                <span dir="ltr">{new Date(a.created_at).toLocaleDateString()}</span>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3">
+                {VERIFICATION_COLUMNS.map(({ kind, flag }) => {
+                  const on = Boolean(a[flag]);
+                  const key = `${a.id}:${kind}`;
+                  return (
+                    <button
+                      key={kind}
+                      type="button"
+                      role="switch"
+                      aria-checked={on}
+                      disabled={busy === key}
+                      onClick={() => onToggle(a, kind, !on)}
+                      className={`flex items-center justify-between gap-2 rounded-[var(--radius)] border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                        on
+                          ? 'border-[rgb(var(--ok)/0.45)] bg-[rgb(var(--ok)/0.12)] text-[rgb(var(--ok))]'
+                          : 'border-[rgb(var(--line-strong))] text-[rgb(var(--fg-muted))]'
+                      }`}
+                    >
+                      <span>{t(`admin.verify_${kind}` as never)}</span>
+                      <span className="text-sm">{on ? '✓' : '—'}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
