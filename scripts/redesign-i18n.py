@@ -1,1 +1,249 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJSZW5hbWUgQklETFkgLT4gS2hkZW1saSBpbiB0aGUgd2ViIGkxOG4gY2F0YWxvZ3MgYW5kIGFkZCByZWRlc2lnbiBrZXlzLgoKSWRlbXBvdGVudDogc2FmZSB0byByZS1ydW4uIFJld3JpdGVzIHRoZSBKU09OIGZpbGVzIGluIHBsYWNlIHdpdGggYSBzdGFibGUKa2V5IG9yZGVyIChpbnNlcnRpb24gb3JkZXIsIDItc3BhY2UgaW5kZW50LCBBcmFiaWMgbGVmdCB1bmVzY2FwZWQpLgoiIiIKaW1wb3J0IGpzb24KaW1wb3J0IHJlCmltcG9ydCBzeXMKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpST09UID0gUGF0aChfX2ZpbGVfXykucmVzb2x2ZSgpLnBhcmVudHNbMV0KTUVTU0FHRVMgPSBST09UIC8gImFwcHMiIC8gIndlYiIgLyAic3JjIiAvICJtZXNzYWdlcyIKCiMgTmV3IGtleXMgaW50cm9kdWNlZCBieSB0aGUgaW5Ecml2ZS1zdHlsZSByZWRlc2lnbi4gYHtjb3VudH1gIGlzIGludGVycG9sYXRlZAojIGJ5IHRoZSB0cmFuc2xhdG9yLCBzbyB0aGUgcGxhY2Vob2xkZXIgbXVzdCBzdXJ2aXZlIHRyYW5zbGF0aW9uLgpORVcgPSB7CiAgICAiYXIiOiB7CiAgICAgICAgImFwcCI6IHsKICAgICAgICAgICAgIm5hbWUiOiAiS2hkZW1saSIsCiAgICAgICAgICAgICJ0YWdsaW5lIjogItin2LfZhNioINij2Yog2K7Yr9mF2KnYjCDZiNiv2Lkg2KfZhNit2LHZgdmK2YrZhiDZitiq2YbYp9mB2LPZiNmGIiwKICAgICAgICAgICAgImNvcHlyaWdodCI6ICLCqSB7eWVhcn0gS2hkZW1saSDigJQg2KzZhdmK2Lkg2KfZhNit2YLZiNmCINmF2K3ZgdmI2LjYqSIsCiAgICAgICAgfSwKICAgICAgICAibmF2IjogewogICAgICAgICAgICAic2lnbkluIjogItiv2K7ZiNmEIiwKICAgICAgICAgICAgInNpZ25PdXQiOiAi2K7YsdmI2KwiLAogICAgICAgIH0sCiAgICAgICAgImNhdGFsb2ciOiB7CiAgICAgICAgICAgICJjaG9vc2VTZXJ2aWNlIjogIti02YbZiCDZhdit2KrYp9isINin2YTZitmI2YXYnyIsCiAgICAgICAgICAgICJjaG9vc2VTZXJ2aWNlSGludCI6ICLYp9iu2KrYsSDYp9mE2K7Yr9mF2KnYjCDYrdiv2ZHYryDYp9mE2LPYudix2Iwg2YjYp9mE2K3YsdmB2YrZitmGINin2YTZgtix2YrYqNmK2YYg2LrYp9iv2Yog2YrYqtmG2KfZgdiz2YgiLAogICAgICAgICAgICAic2VhcmNoUGxhY2Vob2xkZXIiOiAi2YLZhNmR2Kgg2LnZhNmJINiu2K/Zhdip4oCmIiwKICAgICAgICAgICAgImFsbCI6ICLYp9mE2YPZhCIsCiAgICAgICAgICAgICJhdmFpbGFibGVTZXJ2aWNlcyI6ICLYp9mE2K7Yr9mF2KfYqiDYp9mE2YXYqtmI2YHYsdipIiwKICAgICAgICAgICAgIm5vUmVzdWx0cyI6ICLZhdinINmE2YLZitmG2KfYtCDYtNmKINit2KfYrNipIiwKICAgICAgICAgICAgIm5vUmVzdWx0c0hpbnQiOiAi2KzYsdmR2Kgg2YPZhNmF2Kkg2KPYrtix2Ykg2YjZhNinINin2K7Yqtin2LEg2YHYptipINmF2K7YqtmE2YHYqSIsCiAgICAgICAgICAgICJwcm92aWRlcnNBdmFpbGFibGUiOiAie2NvdW50fSDYrdix2YHZiiDZhdiq2YjZgdixIiwKICAgICAgICAgICAgIm5vUHJvdmlkZXJzWWV0IjogItmE2Kcg2YrZiNis2K8g2K3YsdmB2Yog2YXYqtmI2YHYsSDYrdin2YTZitin2YsiLAogICAgICAgICAgICAidHJ1c3RWZXJpZmllZCI6ICLYrdix2YHZitmK2YYg2YXZiNir2ZHZgtmK2YYiLAogICAgICAgICAgICAidHJ1c3RWZXJpZmllZEhpbnQiOiAi2YfZiNmK2Kkg2YXYqtit2YLZjtmR2YIg2YXZhtmH2KciLAogICAgICAgICAgICAidHJ1c3RQcmljZSI6ICLYp9mE2LPYudixINio2YrYr9mDIiwKICAgICAgICAgICAgInRydXN0UHJpY2VIaW50IjogItio2YTYpyDZiNiz2YrYtyIsCiAgICAgICAgfSwKICAgICAgICAiY29tcG9zZSI6IHsKICAgICAgICAgICAgInRpdGxlIjogItij2YbYtNimINi32YTYqNmDIiwKICAgICAgICAgICAgImRlc3RpbmF0aW9uIjogItin2YTZiNis2YfYqSAvINiq2YHYp9i12YrZhCDYp9mE2K7Yr9mF2KkiLAogICAgICAgICAgICAiZGVzdGluYXRpb25QbGFjZWhvbGRlciI6ICLZhdir2KfZhDog2KXYtdmE2KfYrSDYtdmG2KjZiNixINmB2Yog2KfZhNit2YXYp9mFIiwKICAgICAgICAgICAgInlvdXJQcmljZSI6ICLYp9mE2LPYudixINin2YTZhdmC2KrYsditIiwKICAgICAgICAgICAgInNlbmRSZXF1ZXN0IjogItij2LHYs9mEINin2YTYt9mE2KgiLAogICAgICAgICAgICAic2VuZGluZyI6ICLYrNin2LHZjSDYp9mE2KXYsdiz2KfZhOKApiIsCiAgICAgICAgICAgICJwcmljZUhpbnQiOiAi2LnYr9mR2YQg2KfZhNiz2LnYsSDYqNmAICsg2Ygg4oiSIiwKICAgICAgICAgICAgIm1hcEhpbnQiOiAi2K3Yr9mR2K8g2YXZiNmC2LnZgyDYudmE2Ykg2KfZhNiu2LHZiti32KkiLAogICAgICAgICAgICAicGlja0xvY2F0aW9uIjogItit2K/ZkdivINin2YTZhdmI2YLYuSIsCiAgICAgICAgfSwKICAgICAgICAic2VhcmNoaW5nIjogewogICAgICAgICAgICAibG9va2luZyI6ICLYrNin2LHZjSDYp9mE2KjYrdirINi52YYg2K3YsdmB2YrZitmGINmC2LHZitio2YrZhuKApiIsCiAgICAgICAgICAgICJlbGFwc2VkIjogItmF2LHZkSB7c2Vjb25kc30g2KvYp9mG2YrYqSIsCiAgICAgICAgICAgICJjYW5jZWwiOiAi2KXZhNi62KfYoSIsCiAgICAgICAgICAgICJvZmZlcnNTb0ZhciI6ICJ7Y291bnR9INi52LHYtiDYqtmI2LXZhCIsCiAgICAgICAgICAgICJ2aWV3T2ZmZXJzIjogIti02YjZgSDYp9mE2LnYsdmI2LYiLAogICAgICAgIH0sCiAgICAgICAgIm9mZmVycyI6IHsKICAgICAgICAgICAgInRpdGxlIjogItin2YTYudix2YjYtiIsCiAgICAgICAgICAgICJhY2NlcHQiOiAi2YLYqNmI2YQiLAogICAgICAgICAgICAiZGVjbGluZSI6ICLYqtis2KfZh9mEIiwKICAgICAgICAgICAgInByZW1pdW0iOiAi2LnYttmIIFByZW1pdW0iLAogICAgICAgICAgICAidmVyaWZpZWQiOiAi2YXZiNir2ZHZgiIsCiAgICAgICAgICAgICJuZXdPZmZlcnMiOiAi2LnYsdmI2LYg2KzYr9mK2K/YqSIsCiAgICAgICAgICAgICJlbXB0eSI6ICLZhdinINiq2YjYtdmEINit2KrZiSDYudix2LYg2K/Yp9io2KciLAogICAgICAgICAgICAiZW1wdHlIaW50IjogItmD2YbYqtiz2YbYp9mIINin2YTYrdix2YHZitmK2YYg2YrYsdiv2ZHZiCDYudmE2Ykg2LfZhNio2YMiLAogICAgICAgIH0sCiAgICAgICAgInRyYWNraW5nIjogewogICAgICAgICAgICAidGl0bGUiOiAi2KrYqtio2ZHYuSDYp9mE2K3YsdmB2YoiLAogICAgICAgICAgICAiZXRhIjogItmK2YjYtdmEINmB2YAge21pbnV0ZXN9INiv2YLZitmC2KkiLAogICAgICAgICAgICAiYXJyaXZlZCI6ICLZiNi12YQiLAogICAgICAgICAgICAiY2FsbCI6ICLYp9iq2LXYp9mEIiwKICAgICAgICAgICAgIm1lc3NhZ2UiOiAi2K/Ysdiv2LTYqSIsCiAgICAgICAgICAgICJwcm92aWRlckNvbWluZyI6ICLYp9mE2K3YsdmB2Yog2YHZiiDYp9mE2LfYsdmK2YIg2KXZhNmK2YMiLAogICAgICAgIH0sCiAgICB9LAogICAgImVuIjogewogICAgICAgICJhcHAiOiB7CiAgICAgICAgICAgICJuYW1lIjogIktoZGVtbGkiLAogICAgICAgICAgICAidGFnbGluZSI6ICJSZXF1ZXN0IGFueSBzZXJ2aWNlIGFuZCBsZXQgbG9jYWwgY3JhZnRzbWVuIGNvbXBldGUiLAogICAgICAgICAgICAiY29weXJpZ2h0IjogIsKpIHt5ZWFyfSBLaGRlbWxpIOKAlCBBbGwgcmlnaHRzIHJlc2VydmVkIiwKICAgICAgICB9LAogICAgICAgICJuYXYiOiB7CiAgICAgICAgICAgICJzaWduSW4iOiAiU2lnbiBpbiIsCiAgICAgICAgICAgICJzaWduT3V0IjogIlNpZ24gb3V0IiwKICAgICAgICB9LAogICAgICAgICJjYXRhbG9nIjogewogICAgICAgICAgICAiY2hvb3NlU2VydmljZSI6ICJXaGF0IGRvIHlvdSBuZWVkIHRvZGF5PyIsCiAgICAgICAgICAgICJjaG9vc2VTZXJ2aWNlSGludCI6ICJQaWNrIGEgc2VydmljZSwgc2V0IHlvdXIgcHJpY2UsIGFuZCBuZWFyYnkgY3JhZnRzbWVuIGNvbXBldGUiLAogICAgICAgICAgICAic2VhcmNoUGxhY2Vob2xkZXIiOiAiU2VhcmNoIGEgc2VydmljZeKApiIsCiAgICAgICAgICAgICJhbGwiOiAiQWxsIiwKICAgICAgICAgICAgImF2YWlsYWJsZVNlcnZpY2VzIjogIkF2YWlsYWJsZSBzZXJ2aWNlcyIsCiAgICAgICAgICAgICJub1Jlc3VsdHMiOiAiTm90aGluZyBmb3VuZCIsCiAgICAgICAgICAgICJub1Jlc3VsdHNIaW50IjogIlRyeSBhbm90aGVyIHdvcmQgb3IgYSBkaWZmZXJlbnQgY2F0ZWdvcnkiLAogICAgICAgICAgICAicHJvdmlkZXJzQXZhaWxhYmxlIjogIntjb3VudH0gY3JhZnRzbWVuIGF2YWlsYWJsZSIsCiAgICAgICAgICAgICJub1Byb3ZpZGVyc1lldCI6ICJObyBjcmFmdHNtYW4gYXZhaWxhYmxlIHJpZ2h0IG5vdyIsCiAgICAgICAgICAgICJ0cnVzdFZlcmlmaWVkIjogIlZlcmlmaWVkIGNyYWZ0c21lbiIsCiAgICAgICAgICAgICJ0cnVzdFZlcmlmaWVkSGludCI6ICJJZGVudGl0eSBjaGVja2VkIiwKICAgICAgICAgICAgInRydXN0UHJpY2UiOiAiWW91IHNldCB0aGUgcHJpY2UiLAogICAgICAgICAgICAidHJ1c3RQcmljZUhpbnQiOiAiTm8gbWlkZGxlbWFuIiwKICAgICAgICB9LAogICAgICAgICJjb21wb3NlIjogewogICAgICAgICAgICAidGl0bGUiOiAiQ3JlYXRlIHlvdXIgcmVxdWVzdCIsCiAgICAgICAgICAgICJkZXN0aW5hdGlvbiI6ICJEZXN0aW5hdGlvbiAvIHNlcnZpY2UgZGV0YWlscyIsCiAgICAgICAgICAgICJkZXN0aW5hdGlvblBsYWNlaG9sZGVyIjogImUuZy4gRml4IGEgbGVha2luZyB0YXAgaW4gdGhlIGJhdGhyb29tIiwKICAgICAgICAgICAgInlvdXJQcmljZSI6ICJZb3VyIG9mZmVyIiwKICAgICAgICAgICAgInNlbmRSZXF1ZXN0IjogIlNlbmQgcmVxdWVzdCIsCiAgICAgICAgICAgICJzZW5kaW5nIjogIlNlbmRpbmfigKYiLAogICAgICAgICAgICAicHJpY2VIaW50IjogIkFkanVzdCB3aXRoICsgYW5kIOKIkiIsCiAgICAgICAgICAgICJtYXBIaW50IjogIlNldCB5b3VyIGxvY2F0aW9uIG9uIHRoZSBtYXAiLAogICAgICAgICAgICAicGlja0xvY2F0aW9uIjogIlNldCBsb2NhdGlvbiIsCiAgICAgICAgfSwKICAgICAgICAic2VhcmNoaW5nIjogewogICAgICAgICAgICAibG9va2luZyI6ICJMb29raW5nIGZvciBuZWFyYnkgY3JhZnRzbWVu4oCmIiwKICAgICAgICAgICAgImVsYXBzZWQiOiAie3NlY29uZHN9cyBlbGFwc2VkIiwKICAgICAgICAgICAgImNhbmNlbCI6ICJDYW5jZWwiLAogICAgICAgICAgICAib2ZmZXJzU29GYXIiOiAie2NvdW50fSBvZmZlcnMgcmVjZWl2ZWQiLAogICAgICAgICAgICAidmlld09mZmVycyI6ICJWaWV3IG9mZmVycyIsCiAgICAgICAgfSwKICAgICAgICAib2ZmZXJzIjogewogICAgICAgICAgICAidGl0bGUiOiAiT2ZmZXJzIiwKICAgICAgICAgICAgImFjY2VwdCI6ICJBY2NlcHQiLAogICAgICAgICAgICAiZGVjbGluZSI6ICJEZWNsaW5lIiwKICAgICAgICAgICAgInByZW1pdW0iOiAiUHJlbWl1bSBtZW1iZXIiLAogICAgICAgICAgICAidmVyaWZpZWQiOiAiVmVyaWZpZWQiLAogICAgICAgICAgICAibmV3T2ZmZXJzIjogIk5ldyBvZmZlcnMiLAogICAgICAgICAgICAiZW1wdHkiOiAiTm8gb2ZmZXJzIHlldCIsCiAgICAgICAgICAgICJlbXB0eUhpbnQiOiAiV2FpdGluZyBmb3IgY3JhZnRzbWVuIHRvIGFuc3dlciB5b3VyIHJlcXVlc3QiLAogICAgICAgIH0sCiAgICAgICAgInRyYWNraW5nIjogewogICAgICAgICAgICAidGl0bGUiOiAiVHJhY2sgY3JhZnRzbWFuIiwKICAgICAgICAgICAgImV0YSI6ICJBcnJpdmVzIGluIHttaW51dGVzfSBtaW4iLAogICAgICAgICAgICAiYXJyaXZlZCI6ICJBcnJpdmVkIiwKICAgICAgICAgICAgImNhbGwiOiAiQ2FsbCIsCiAgICAgICAgICAgICJtZXNzYWdlIjogIkNoYXQiLAogICAgICAgICAgICAicHJvdmlkZXJDb21pbmciOiAiWW91ciBjcmFmdHNtYW4gaXMgb24gdGhlIHdheSIsCiAgICAgICAgfSwKICAgIH0sCiAgICAiZnIiOiB7CiAgICAgICAgImFwcCI6IHsKICAgICAgICAgICAgIm5hbWUiOiAiS2hkZW1saSIsCiAgICAgICAgICAgICJ0YWdsaW5lIjogIkRlbWFuZGV6IHVuIHNlcnZpY2UgZXQgbGFpc3NleiBsZXMgYXJ0aXNhbnMgY29uY3VycmVuY2VyIiwKICAgICAgICAgICAgImNvcHlyaWdodCI6ICLCqSB7eWVhcn0gS2hkZW1saSDigJQgVG91cyBkcm9pdHMgcsOpc2VydsOpcyIsCiAgICAgICAgfSwKICAgICAgICAibmF2IjogewogICAgICAgICAgICAic2lnbkluIjogIkNvbm5leGlvbiIsCiAgICAgICAgICAgICJzaWduT3V0IjogIkTDqWNvbm5leGlvbiIsCiAgICAgICAgfSwKICAgICAgICAiY2F0YWxvZyI6IHsKICAgICAgICAgICAgImNob29zZVNlcnZpY2UiOiAiRGUgcXVvaSBhdmV6LXZvdXMgYmVzb2luID8iLAogICAgICAgICAgICAiY2hvb3NlU2VydmljZUhpbnQiOiAiQ2hvaXNpc3NleiB1biBzZXJ2aWNlLCBmaXhleiB2b3RyZSBwcml4LCBsZXMgYXJ0aXNhbnMgcHJvY2hlcyBjb25jdXJyZW5jZW50IiwKICAgICAgICAgICAgInNlYXJjaFBsYWNlaG9sZGVyIjogIlJlY2hlcmNoZXIgdW4gc2VydmljZeKApiIsCiAgICAgICAgICAgICJhbGwiOiAiVG91dCIsCiAgICAgICAgICAgICJhdmFpbGFibGVTZXJ2aWNlcyI6ICJTZXJ2aWNlcyBkaXNwb25pYmxlcyIsCiAgICAgICAgICAgICJub1Jlc3VsdHMiOiAiQXVjdW4gcsOpc3VsdGF0IiwKICAgICAgICAgICAgIm5vUmVzdWx0c0hpbnQiOiAiRXNzYXlleiB1biBhdXRyZSBtb3Qgb3UgdW5lIGF1dHJlIGNhdMOpZ29yaWUiLAogICAgICAgICAgICAicHJvdmlkZXJzQXZhaWxhYmxlIjogIntjb3VudH0gYXJ0aXNhbnMgZGlzcG9uaWJsZXMiLAogICAgICAgICAgICAibm9Qcm92aWRlcnNZZXQiOiAiQXVjdW4gYXJ0aXNhbiBkaXNwb25pYmxlIHBvdXIgbGUgbW9tZW50IiwKICAgICAgICAgICAgInRydXN0VmVyaWZpZWQiOiAiQXJ0aXNhbnMgdsOpcmlmacOpcyIsCiAgICAgICAgICAgICJ0cnVzdFZlcmlmaWVkSGludCI6ICJJZGVudGl0w6kgY29udHLDtGzDqWUiLAogICAgICAgICAgICAidHJ1c3RQcmljZSI6ICJWb3VzIGZpeGV6IGxlIHByaXgiLAogICAgICAgICAgICAidHJ1c3RQcmljZUhpbnQiOiAiU2FucyBpbnRlcm3DqWRpYWlyZSIsCiAgICAgICAgfSwKICAgICAgICAiY29tcG9zZSI6IHsKICAgICAgICAgICAgInRpdGxlIjogIkNyw6llciB2b3RyZSBkZW1hbmRlIiwKICAgICAgICAgICAgImRlc3RpbmF0aW9uIjogIkRlc3RpbmF0aW9uIC8gZMOpdGFpbHMgZHUgc2VydmljZSIsCiAgICAgICAgICAgICJkZXN0aW5hdGlvblBsYWNlaG9sZGVyIjogImV4LiBSw6lwYXJlciB1biByb2JpbmV0IHF1aSBmdWl0IiwKICAgICAgICAgICAgInlvdXJQcmljZSI6ICJWb3RyZSBvZmZyZSIsCiAgICAgICAgICAgICJzZW5kUmVxdWVzdCI6ICJFbnZveWVyIGxhIGRlbWFuZGUiLAogICAgICAgICAgICAic2VuZGluZyI6ICJFbnZvaeKApiIsCiAgICAgICAgICAgICJwcmljZUhpbnQiOiAiQWp1c3RleiBhdmVjICsgZXQg4oiSIiwKICAgICAgICAgICAgIm1hcEhpbnQiOiAiUGxhY2V6IHZvdHJlIHBvc2l0aW9uIHN1ciBsYSBjYXJ0ZSIsCiAgICAgICAgICAgICJwaWNrTG9jYXRpb24iOiAiRMOpZmluaXIgbGEgcG9zaXRpb24iLAogICAgICAgIH0sCiAgICAgICAgInNlYXJjaGluZyI6IHsKICAgICAgICAgICAgImxvb2tpbmciOiAiUmVjaGVyY2hlIGQnYXJ0aXNhbnMgcHJvY2hlc+KApiIsCiAgICAgICAgICAgICJlbGFwc2VkIjogIntzZWNvbmRzfXMgw6ljb3Vsw6llcyIsCiAgICAgICAgICAgICJjYW5jZWwiOiAiQW5udWxlciIsCiAgICAgICAgICAgICJvZmZlcnNTb0ZhciI6ICJ7Y291bnR9IG9mZnJlcyByZcOndWVzIiwKICAgICAgICAgICAgInZpZXdPZmZlcnMiOiAiVm9pciBsZXMgb2ZmcmVzIiwKICAgICAgICB9LAogICAgICAgICJvZmZlcnMiOiB7CiAgICAgICAgICAgICJ0aXRsZSI6ICJPZmZyZXMiLAogICAgICAgICAgICAiYWNjZXB0IjogIkFjY2VwdGVyIiwKICAgICAgICAgICAgImRlY2xpbmUiOiAiUmVmdXNlciIsCiAgICAgICAgICAgICJwcmVtaXVtIjogIk1lbWJyZSBQcmVtaXVtIiwKICAgICAgICAgICAgInZlcmlmaWVkIjogIlbDqXJpZmnDqSIsCiAgICAgICAgICAgICJuZXdPZmZlcnMiOiAiTm91dmVsbGVzIG9mZnJlcyIsCiAgICAgICAgICAgICJlbXB0eSI6ICJBdWN1bmUgb2ZmcmUgcG91ciBsZSBtb21lbnQiLAogICAgICAgICAgICAiZW1wdHlIaW50IjogIkVuIGF0dGVudGUgZGVzIHLDqXBvbnNlcyBkZXMgYXJ0aXNhbnMiLAogICAgICAgIH0sCiAgICAgICAgInRyYWNraW5nIjogewogICAgICAgICAgICAidGl0bGUiOiAiU3VpdnJlIGwnYXJ0aXNhbiIsCiAgICAgICAgICAgICJldGEiOiAiQXJyaXZlIGRhbnMge21pbnV0ZXN9IG1pbiIsCiAgICAgICAgICAgICJhcnJpdmVkIjogIkFycml2w6kiLAogICAgICAgICAgICAiY2FsbCI6ICJBcHBlbGVyIiwKICAgICAgICAgICAgIm1lc3NhZ2UiOiAiTWVzc2FnZSIsCiAgICAgICAgICAgICJwcm92aWRlckNvbWluZyI6ICJWb3RyZSBhcnRpc2FuIGVzdCBlbiByb3V0ZSIsCiAgICAgICAgfSwKICAgIH0sCn0KCiMgT2xkIHN0cmluZ3MgdGhhdCBtdXN0IG5vdCBsaW5nZXIgaW4gdXNlci12aXNpYmxlIGNvcHkuCkJSQU5EX1BBVFRFUk5TID0gWwogICAgKHJlLmNvbXBpbGUociJcYkJJRExZXGIiLCByZS5JR05PUkVDQVNFKSwgIktoZGVtbGkiKSwKXQoKCmRlZiBkZWVwX21lcmdlKGJhc2U6IGRpY3QsIGV4dHJhOiBkaWN0KSAtPiBkaWN0OgogICAgZm9yIGtleSwgdmFsdWUgaW4gZXh0cmEuaXRlbXMoKToKICAgICAgICBpZiBpc2luc3RhbmNlKHZhbHVlLCBkaWN0KSBhbmQgaXNpbnN0YW5jZShiYXNlLmdldChrZXkpLCBkaWN0KToKICAgICAgICAgICAgZGVlcF9tZXJnZShiYXNlW2tleV0sIHZhbHVlKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIGJhc2Vba2V5XSA9IHZhbHVlCiAgICByZXR1cm4gYmFzZQoKCmRlZiByZW5hbWVfYnJhbmQobm9kZSk6CiAgICBpZiBpc2luc3RhbmNlKG5vZGUsIGRpY3QpOgogICAgICAgIHJldHVybiB7azogcmVuYW1lX2JyYW5kKHYpIGZvciBrLCB2IGluIG5vZGUuaXRlbXMoKX0KICAgIGlmIGlzaW5zdGFuY2Uobm9kZSwgbGlzdCk6CiAgICAgICAgcmV0dXJuIFtyZW5hbWVfYnJhbmQodikgZm9yIHYgaW4gbm9kZV0KICAgIGlmIGlzaW5zdGFuY2Uobm9kZSwgc3RyKToKICAgICAgICBmb3IgcGF0dGVybiwgcmVwbGFjZW1lbnQgaW4gQlJBTkRfUEFUVEVSTlM6CiAgICAgICAgICAgIG5vZGUgPSBwYXR0ZXJuLnN1YihyZXBsYWNlbWVudCwgbm9kZSkKICAgICAgICByZXR1cm4gbm9kZQogICAgcmV0dXJuIG5vZGUKCgpkZWYgbWFpbigpIC0+IGludDoKICAgIGZvciBsb2NhbGUgaW4gKCJhciIsICJlbiIsICJmciIpOgogICAgICAgIHBhdGggPSBNRVNTQUdFUyAvIGYie2xvY2FsZX0uanNvbiIKICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSkKICAgICAgICBkYXRhID0gcmVuYW1lX2JyYW5kKGRhdGEpCiAgICAgICAgZGVlcF9tZXJnZShkYXRhLCBORVdbbG9jYWxlXSkKICAgICAgICBkYXRhWyJhcHAiXVsibmFtZSJdID0gIktoZGVtbGkiCiAgICAgICAgcGF0aC53cml0ZV90ZXh0KAogICAgICAgICAgICBqc29uLmR1bXBzKGRhdGEsIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpICsgIlxuIiwKICAgICAgICAgICAgZW5jb2Rpbmc9InV0Zi04IiwKICAgICAgICApCiAgICAgICAgcHJpbnQoZiJ7bG9jYWxlfToge2xlbihkYXRhKX0gdG9wLWxldmVsIGtleXMgLT4ge3BhdGgubmFtZX0iKQogICAgcmV0dXJuIDAKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgc3lzLmV4aXQobWFpbigpKQo=
+#!/usr/bin/env python3
+"""Rename BIDLY -> Khdemli in the web i18n catalogs and add redesign keys.
+
+Idempotent: safe to re-run. Rewrites the JSON files in place with a stable
+key order (insertion order, 2-space indent, Arabic left unescaped).
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+MESSAGES = ROOT / "apps" / "web" / "src" / "messages"
+
+# New keys introduced by the inDrive-style redesign. `{count}` is interpolated
+# by the translator, so the placeholder must survive translation.
+NEW = {
+    "ar": {
+        "app": {
+            "name": "Khdemli",
+            "tagline": "اطلب أي خدمة، ودع الحرفيين يتنافسون",
+            "copyright": "© {year} Khdemli — جميع الحقوق محفوظة",
+        },
+        "nav": {
+            "signIn": "دخول",
+            "signOut": "خروج",
+        },
+        "catalog": {
+            "chooseService": "شنو محتاج اليوم؟",
+            "chooseServiceHint": "اختر الخدمة، حدّد السعر، والحرفيين القريبين غادي يتنافسو",
+            "searchPlaceholder": "قلّب على خدمة…",
+            "all": "الكل",
+            "availableServices": "الخدمات المتوفرة",
+            "noResults": "ما لقيناش شي حاجة",
+            "noResultsHint": "جرّب كلمة أخرى ولا اختار فئة مختلفة",
+            "providersAvailable": "{count} حرفي متوفر",
+            "noProvidersYet": "لا يوجد حرفي متوفر حالياً",
+            "trustVerified": "حرفيين موثّقين",
+            "trustVerifiedHint": "هوية متحقَّق منها",
+            "trustPrice": "السعر بيدك",
+            "trustPriceHint": "بلا وسيط",
+        },
+        "compose": {
+            "title": "أنشئ طلبك",
+            "destination": "الوجهة / تفاصيل الخدمة",
+            "destinationPlaceholder": "مثال: إصلاح صنبور في الحمام",
+            "yourPrice": "السعر المقترح",
+            "sendRequest": "أرسل الطلب",
+            "sending": "جارٍ الإرسال…",
+            "priceHint": "عدّل السعر بـ + و −",
+            "mapHint": "حدّد موقعك على الخريطة",
+            "pickLocation": "حدّد الموقع",
+        },
+        "searching": {
+            "looking": "جارٍ البحث عن حرفيين قريبين…",
+            "elapsed": "مرّ {seconds} ثانية",
+            "cancel": "إلغاء",
+            "offersSoFar": "{count} عرض توصل",
+            "viewOffers": "شوف العروض",
+        },
+        "offers": {
+            "title": "العروض",
+            "accept": "قبول",
+            "decline": "تجاهل",
+            "premium": "عضو Premium",
+            "verified": "موثّق",
+            "newOffers": "عروض جديدة",
+            "empty": "ما توصل حتى عرض دابا",
+            "emptyHint": "كنتسناو الحرفيين يردّو على طلبك",
+        },
+        "tracking": {
+            "title": "تتبّع الحرفي",
+            "eta": "يوصل فـ {minutes} دقيقة",
+            "arrived": "وصل",
+            "call": "اتصال",
+            "message": "دردشة",
+            "providerComing": "الحرفي في الطريق إليك",
+        },
+    },
+    "en": {
+        "app": {
+            "name": "Khdemli",
+            "tagline": "Request any service and let local craftsmen compete",
+            "copyright": "© {year} Khdemli — All rights reserved",
+        },
+        "nav": {
+            "signIn": "Sign in",
+            "signOut": "Sign out",
+        },
+        "catalog": {
+            "chooseService": "What do you need today?",
+            "chooseServiceHint": "Pick a service, set your price, and nearby craftsmen compete",
+            "searchPlaceholder": "Search a service…",
+            "all": "All",
+            "availableServices": "Available services",
+            "noResults": "Nothing found",
+            "noResultsHint": "Try another word or a different category",
+            "providersAvailable": "{count} craftsmen available",
+            "noProvidersYet": "No craftsman available right now",
+            "trustVerified": "Verified craftsmen",
+            "trustVerifiedHint": "Identity checked",
+            "trustPrice": "You set the price",
+            "trustPriceHint": "No middleman",
+        },
+        "compose": {
+            "title": "Create your request",
+            "destination": "Destination / service details",
+            "destinationPlaceholder": "e.g. Fix a leaking tap in the bathroom",
+            "yourPrice": "Your offer",
+            "sendRequest": "Send request",
+            "sending": "Sending…",
+            "priceHint": "Adjust with + and −",
+            "mapHint": "Set your location on the map",
+            "pickLocation": "Set location",
+        },
+        "searching": {
+            "looking": "Looking for nearby craftsmen…",
+            "elapsed": "{seconds}s elapsed",
+            "cancel": "Cancel",
+            "offersSoFar": "{count} offers received",
+            "viewOffers": "View offers",
+        },
+        "offers": {
+            "title": "Offers",
+            "accept": "Accept",
+            "decline": "Decline",
+            "premium": "Premium member",
+            "verified": "Verified",
+            "newOffers": "New offers",
+            "empty": "No offers yet",
+            "emptyHint": "Waiting for craftsmen to answer your request",
+        },
+        "tracking": {
+            "title": "Track craftsman",
+            "eta": "Arrives in {minutes} min",
+            "arrived": "Arrived",
+            "call": "Call",
+            "message": "Chat",
+            "providerComing": "Your craftsman is on the way",
+        },
+    },
+    "fr": {
+        "app": {
+            "name": "Khdemli",
+            "tagline": "Demandez un service et laissez les artisans concurrencer",
+            "copyright": "© {year} Khdemli — Tous droits réservés",
+        },
+        "nav": {
+            "signIn": "Connexion",
+            "signOut": "Déconnexion",
+        },
+        "catalog": {
+            "chooseService": "De quoi avez-vous besoin ?",
+            "chooseServiceHint": "Choisissez un service, fixez votre prix, les artisans proches concurrencent",
+            "searchPlaceholder": "Rechercher un service…",
+            "all": "Tout",
+            "availableServices": "Services disponibles",
+            "noResults": "Aucun résultat",
+            "noResultsHint": "Essayez un autre mot ou une autre catégorie",
+            "providersAvailable": "{count} artisans disponibles",
+            "noProvidersYet": "Aucun artisan disponible pour le moment",
+            "trustVerified": "Artisans vérifiés",
+            "trustVerifiedHint": "Identité contrôlée",
+            "trustPrice": "Vous fixez le prix",
+            "trustPriceHint": "Sans intermédiaire",
+        },
+        "compose": {
+            "title": "Créer votre demande",
+            "destination": "Destination / détails du service",
+            "destinationPlaceholder": "ex. Réparer un robinet qui fuit",
+            "yourPrice": "Votre offre",
+            "sendRequest": "Envoyer la demande",
+            "sending": "Envoi…",
+            "priceHint": "Ajustez avec + et −",
+            "mapHint": "Placez votre position sur la carte",
+            "pickLocation": "Définir la position",
+        },
+        "searching": {
+            "looking": "Recherche d'artisans proches…",
+            "elapsed": "{seconds}s écoulées",
+            "cancel": "Annuler",
+            "offersSoFar": "{count} offres reçues",
+            "viewOffers": "Voir les offres",
+        },
+        "offers": {
+            "title": "Offres",
+            "accept": "Accepter",
+            "decline": "Refuser",
+            "premium": "Membre Premium",
+            "verified": "Vérifié",
+            "newOffers": "Nouvelles offres",
+            "empty": "Aucune offre pour le moment",
+            "emptyHint": "En attente des réponses des artisans",
+        },
+        "tracking": {
+            "title": "Suivre l'artisan",
+            "eta": "Arrive dans {minutes} min",
+            "arrived": "Arrivé",
+            "call": "Appeler",
+            "message": "Message",
+            "providerComing": "Votre artisan est en route",
+        },
+    },
+}
+
+# Old strings that must not linger in user-visible copy.
+BRAND_PATTERNS = [
+    (re.compile(r"\bBIDLY\b", re.IGNORECASE), "Khdemli"),
+]
+
+
+def deep_merge(base: dict, extra: dict) -> dict:
+    for key, value in extra.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            deep_merge(base[key], value)
+        else:
+            base[key] = value
+    return base
+
+
+def rename_brand(node):
+    if isinstance(node, dict):
+        return {k: rename_brand(v) for k, v in node.items()}
+    if isinstance(node, list):
+        return [rename_brand(v) for v in node]
+    if isinstance(node, str):
+        for pattern, replacement in BRAND_PATTERNS:
+            node = pattern.sub(replacement, node)
+        return node
+    return node
+
+
+def main() -> int:
+    for locale in ("ar", "en", "fr"):
+        path = MESSAGES / f"{locale}.json"
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data = rename_brand(data)
+        deep_merge(data, NEW[locale])
+        data["app"]["name"] = "Khdemli"
+        path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(f"{locale}: {len(data)} top-level keys -> {path.name}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
