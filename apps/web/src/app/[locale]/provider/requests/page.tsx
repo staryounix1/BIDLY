@@ -7,14 +7,16 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { providersApi, type FeedRequest, type ProviderProfile } from '@/lib/providers-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { SectionTitle, Spinner } from '@/lib/ui';
 
 /**
- * Provider request feed (build order sprint 4-5).
+ * Provider request feed.
  *
- * Shows published requests that match at least one service the provider has
+ * Shows published requests matching at least one service the provider has
  * activated. Eligibility, expiry and "already offered" filtering all happen
- * server-side; this screen only renders the result. A signed-in provider with
- * no profile yet is guided to create one.
+ * server-side; this screen only renders the result. A provider with no profile
+ * yet is guided to create one.
  */
 export default function ProviderFeedPage() {
   return (
@@ -53,132 +55,131 @@ function FeedView() {
   }, [load]);
 
   if (loading) {
-    return <main className="mx-auto max-w-4xl px-4 py-10 opacity-60">{t('common.loading')}</main>;
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
   }
 
-  const activeProfile = profile;
-  if (!activeProfile) {
+  if (!profile) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold">{t('provider.title')}</h1>
-        <p className="mt-2 text-sm opacity-70">{t('provider.subtitle')}</p>
-        <Link
-          href={`/${locale}/provider/profile`}
-          className="mt-6 inline-block rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
-        >
+      <div className="app-shell container-page py-14 text-center">
+        <span className="icon-tile mx-auto h-16 w-16">
+          <CategoryIcon name="wrench" size={28} />
+        </span>
+        <h1 className="mt-4 text-2xl font-black tracking-tight">{t('provider.title')}</h1>
+        <p className="mt-2 text-sm text-[rgb(var(--fg-muted))]">{t('provider.subtitle')}</p>
+        <Link href={`/${locale}/provider/profile`} className="btn btn-primary mt-6">
           {t('provider.create')}
         </Link>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">{t('feed.title')}</h1>
-          <p className="mt-1 text-sm opacity-70">{t('feed.subtitle')}</p>
+    <div className="app-shell container-page py-5">
+      <header className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-black tracking-tight">{t('feed.title')}</h1>
+          <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('feed.subtitle')}</p>
         </div>
-        <div className="flex items-center gap-2 text-xs">
-          <StatusBadge status={activeProfile.status} />
-          <Link
-            href={`/${locale}/provider/profile`}
-            className="rounded-lg border border-black/15 px-3 py-1.5 font-medium dark:border-white/20"
-          >
-            {t('provider.title')}
-          </Link>
-          <Link
-            href={`/${locale}/provider/offers`}
-            className="rounded-lg border border-black/15 px-3 py-1.5 font-medium dark:border-white/20"
-          >
-            {t('offer.myTitle')}
-          </Link>
-        </div>
+        <StatusBadge status={profile.status} />
       </header>
 
-      {activeProfile.status !== 'ACTIVE' && (
-        <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <p className="font-medium">{t('provider.status')}: {activeProfile.status}</p>
-          <p className="mt-1 flex items-center gap-2 text-xs">
-            {t('provider.verification')}: <StatusBadge status={activeProfile.verification_status} />
+      {profile.status !== 'ACTIVE' && (
+        <div className="card mb-4 border-[rgb(var(--warn)/0.35)] bg-[rgb(var(--warn)/0.08)] p-4">
+          <p className="text-sm font-bold text-[rgb(180_83_9)]">
+            {t('provider.status')}: {profile.status}
+          </p>
+          <p className="mt-1 flex items-center gap-2 text-xs text-[rgb(180_83_9)]">
+            {t('provider.verification')}: <StatusBadge status={profile.verification_status} />
           </p>
         </div>
       )}
 
       {error && (
-        <p className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="card mb-4 border-[rgb(var(--danger)/0.35)] p-3.5 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error}
+        </p>
       )}
 
       {requests.length === 0 ? (
-        <p className="mt-6 rounded-2xl border border-black/10 px-5 py-10 text-center text-sm opacity-60 dark:border-white/15">
-          {t('feed.empty')}
-        </p>
+        <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
+          <span className="icon-tile h-16 w-16">
+            <CategoryIcon name="radar" size={28} />
+          </span>
+          <p className="text-base font-bold">{t('feed.empty')}</p>
+        </div>
       ) : (
-        <ul className="mt-4 space-y-3">
-          {requests.map((r) => (
-            <li
-              key={r.id}
-              className="rounded-2xl border border-black/10 p-5 transition hover:border-slate-400 dark:border-white/15 dark:hover:border-white/40"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <Link
-                    href={`/${locale}/provider/requests/${r.id}`}
-                    className="text-lg font-semibold hover:underline"
-                  >
-                    {r.title || r.service_name}
-                  </Link>
-                  <p className="mt-0.5 text-xs opacity-60">
-                    <span className="mono">{r.code}</span> · {r.service_name} · {r.category_name}
-                  </p>
-                </div>
-                <StatusBadge status={r.status} />
-              </div>
+        <>
+          <SectionTitle
+            action={
+              <span className="chip chip-brand tnum">{requests.length}</span>
+            }
+          >
+            {t('feed.title')}
+          </SectionTitle>
 
-              {r.description && (
-                <p className="mt-2 line-clamp-2 text-sm opacity-80">{r.description}</p>
-              )}
-
-              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs opacity-70">
-                <span>
-                  {t('feed.budget')}:{' '}
-                  {r.budget_min_minor != null || r.budget_max_minor != null ? (
-                    <>
-                      {r.budget_min_minor != null ? (r.budget_min_minor / 100).toFixed(0) : '—'}–
-                      {r.budget_max_minor != null ? (r.budget_max_minor / 100).toFixed(0) : '—'} {r.currency}
-                    </>
-                  ) : (
-                    '—'
-                  )}
-                </span>
-                {r.pickup_city_name && <span>{r.pickup_city_name}</span>}
-                <span>
-                  {t('feed.offersCount')}: {r.offer_count}
-                </span>
-                {r.published_at && (
-                  <span>
-                    {t('feed.posted')}: {new Date(r.published_at).toLocaleDateString(locale)}
-                  </span>
-                )}
-                {r.expires_at && (
-                  <span>
-                    {t('feed.expires')}: {new Date(r.expires_at).toLocaleDateString(locale)}
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-4">
+          <ul className="space-y-2.5">
+            {requests.map((r, index) => (
+              <li key={r.id}>
                 <Link
                   href={`/${locale}/provider/requests/${r.id}`}
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
+                  className="card card-tap slide-in block p-4"
+                  style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
                 >
-                  {t('offer.submit')}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[0.9375rem] font-bold">
+                        {r.title || r.service_name}
+                      </p>
+                      <p className="tnum mt-0.5 truncate text-xs text-[rgb(var(--fg-subtle))]">
+                        {r.code} · {r.service_name}
+                      </p>
+                    </div>
+                    <StatusBadge status={r.status} />
+                  </div>
+
+                  {r.description && (
+                    <p className="mt-2 line-clamp-2 text-sm text-[rgb(var(--fg-muted))]">
+                      {r.description}
+                    </p>
+                  )}
+
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-[rgb(var(--line))] pt-3 text-xs">
+                    <span className="flex items-center gap-1.5 font-bold text-[rgb(var(--fg))]">
+                      <CategoryIcon name="wallet" size={14} className="text-[rgb(var(--brand-700))]" />
+                      {(r.budget_min_minor != null || r.budget_max_minor != null
+                        ? Math.round((r.budget_max_minor ?? r.budget_min_minor ?? 0) / 100).toLocaleString()
+                        : '—')}{' '}
+                      {r.currency}
+                    </span>
+                    {r.pickup_city_name && (
+                      <span className="flex items-center gap-1 text-[rgb(var(--fg-muted))]">
+                        <CategoryIcon name="pin" size={13} />
+                        {r.pickup_city_name}
+                      </span>
+                    )}
+                    <span className="text-[rgb(var(--fg-muted))]">
+                      {t('feed.offersCount')}: {r.offer_count}
+                    </span>
+                    {r.published_at && (
+                      <span className="text-[rgb(var(--fg-subtle))]">
+                        {new Date(r.published_at).toLocaleDateString(locale)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-3.5">
+                    <span className="btn btn-primary w-full">{t('offer.submit')}</span>
+                  </div>
                 </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
-    </main>
+    </div>
   );
 }

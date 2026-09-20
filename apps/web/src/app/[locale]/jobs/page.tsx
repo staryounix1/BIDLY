@@ -9,6 +9,8 @@ import { jobsApi, TRACKABLE_JOB_STATUSES, type JobDetail, type JobSummary } from
 import { paymentsApi } from '@/lib/payments-api';
 import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { EmptyState, Price, Spinner } from '@/lib/ui';
 
 /**
  * Customer jobs list.
@@ -104,63 +106,87 @@ function JobsView() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
+    <div className="app-shell container-page py-5">
       <header>
-        <h1 className="text-2xl font-bold">{t('job.title')}</h1>
-        <p className="mt-1 text-sm opacity-70">{t('job.subtitle')}</p>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('job.title')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('job.subtitle')}</p>
       </header>
 
       {notice && (
-        <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {notice}
-        </p>
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          <span className="flex-1">{notice}</span>
+        </div>
       )}
       {error && (
-        <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}{' '}
-          <button onClick={load} className="underline">
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">
             {t('common.retry')}
           </button>
-        </p>
+        </div>
       )}
 
       {loading ? (
-        <p className="mt-6 opacity-60">{t('common.loading')}</p>
+        <div className="card mt-5 flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
       ) : jobs.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-black/15 p-10 text-center dark:border-white/15">
-          <p className="opacity-70">{t('job.empty')}</p>
-          <Link href={`/${locale}/requests`} className="mt-3 inline-block text-sm font-medium underline">
-            {t('request.myTitle')}
-          </Link>
+        <div className="mt-5">
+          <EmptyState
+            title={t('job.empty')}
+            icon={<CategoryIcon name="truck" size={26} />}
+            action={
+              <Link href={`/${locale}/requests`} className="btn btn-primary">
+                {t('request.myTitle')}
+              </Link>
+            }
+          />
         </div>
       ) : (
-        <ul className="mt-6 space-y-3">
-          {jobs.map((j) => (
-            <li key={j.id} className="rounded-2xl border border-black/10 dark:border-white/15">
+        <ul className="mt-5 space-y-3">
+          {jobs.map((j, i) => (
+            <li
+              key={j.id}
+              className="card card-tap slide-in overflow-hidden"
+              style={{ animationDelay: `${i * 40}ms` }}
+            >
               <button
                 onClick={() => onExpand(j.id)}
                 className="flex w-full items-center justify-between gap-4 p-4 text-start"
               >
-                <div className="min-w-0">
-                  <div className="truncate font-semibold">{j.service_name || j.code}</div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs opacity-60">
-                    <span className="mono">{j.code}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-bold">{j.service_name || j.code}</div>
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[rgb(var(--fg-subtle))]">
+                    <span className="tnum">{j.code}</span>
                     <span>
                       {t('job.provider')}: {j.provider_name}
                     </span>
-                    <span>
+                    <span className="tnum">
                       {t('job.price')}: {(j.final_price_minor / 100).toFixed(2)} {j.currency}
                     </span>
                     <span>{new Date(j.created_at).toLocaleDateString(locale)}</span>
                   </div>
                 </div>
-                <StatusBadge status={j.status} />
+                <span className="flex flex-none items-center gap-2">
+                  <StatusBadge status={j.status} />
+                  <CategoryIcon
+                    name="chevron"
+                    size={16}
+                    className={`text-[rgb(var(--fg-subtle))] transition-transform rtl:rotate-180 ${openId === j.id ? 'rotate-90' : ''}`}
+                  />
+                </span>
               </button>
 
               {openId === j.id && (
-                <div className="border-t border-black/10 p-4 dark:border-white/10">
+                <div className="border-t border-[rgb(var(--line))] p-4">
                   {detailLoading ? (
-                    <p className="text-sm opacity-60">{t('common.loading')}</p>
+                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-[rgb(var(--fg-muted))]">
+                      <Spinner size={16} />
+                      {t('common.loading')}
+                    </div>
                   ) : detail ? (
                     <div className="space-y-5">
                       {(TRACKABLE_JOB_STATUSES as readonly string[]).includes(detail.job.status) &&
@@ -179,13 +205,13 @@ function JobsView() {
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <Info label={t('job.provider')}>{detail.job.provider_name ?? '—'}</Info>
                         <Info label={t('job.price')}>
-                          {(detail.job.final_price_minor / 100).toFixed(2)} {detail.job.currency}
+                          <Price minor={detail.job.final_price_minor} currency={detail.job.currency} size="sm" />
                         </Info>
                         <Info label={t('job.commission')}>
-                          {(detail.job.commission_minor / 100).toFixed(2)} {detail.job.currency}
+                          <Price minor={detail.job.commission_minor} currency={detail.job.currency} size="sm" />
                         </Info>
                         <Info label={t('job.providerNet')}>
-                          {(detail.job.provider_net_minor / 100).toFixed(2)} {detail.job.currency}
+                          <Price minor={detail.job.provider_net_minor} currency={detail.job.currency} size="sm" />
                         </Info>
                         {detail.payment && (
                           <Info label={t('job.paymentStatus')}>
@@ -200,17 +226,17 @@ function JobsView() {
                       </div>
 
                       <div>
-                        <h3 className="text-sm font-semibold opacity-70">{t('job.timeline')}</h3>
+                        <h3 className="mb-2 text-sm font-bold text-[rgb(var(--fg-muted))]">{t('job.timeline')}</h3>
                         {detail.events.length === 0 ? (
-                          <p className="mt-1 text-sm opacity-60">{t('job.noEvents')}</p>
+                          <p className="text-sm text-[rgb(var(--fg-muted))]">{t('job.noEvents')}</p>
                         ) : (
-                          <ol className="mt-2 space-y-2 border-s border-black/10 ps-3 dark:border-white/15">
+                          <ol className="space-y-2 border-s-2 border-[rgb(var(--line-strong))] ps-3">
                             {detail.events.map((e) => (
                               <li key={e.id} className="text-sm">
-                                <div className="font-medium">
+                                <div className="font-semibold">
                                   {e.to_status ?? e.type}
                                 </div>
-                                <div className="text-xs opacity-60">
+                                <div className="tnum text-xs text-[rgb(var(--fg-subtle))]">
                                   {new Date(e.created_at).toLocaleString(locale)}
                                   {e.actor_role ? ` · ${e.actor_role}` : ''}
                                 </div>
@@ -225,15 +251,17 @@ function JobsView() {
                           <button
                             onClick={() => onConfirm(j.id)}
                             disabled={busy}
-                            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                            className="btn btn-primary btn-lg flex-1"
                           >
+                            {busy ? <Spinner size={18} /> : <CategoryIcon name="check" size={18} />}
                             {t('job.confirmCompletion')}
                           </button>
                           <button
                             onClick={() => onPay(j.id)}
                             disabled={busy}
-                            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
+                            className="btn btn-secondary btn-lg flex-1"
                           >
+                            {busy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
                             {busy ? t('payment.paying') : t('payment.payNow')}
                           </button>
                         </div>
@@ -246,15 +274,15 @@ function JobsView() {
           ))}
         </ul>
       )}
-    </main>
+    </div>
   );
 }
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-xs opacity-60">{label}</div>
-      <div className="mt-0.5 font-medium">{children}</div>
+      <div className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">{label}</div>
+      <div className="mt-0.5 font-semibold">{children}</div>
     </div>
   );
 }

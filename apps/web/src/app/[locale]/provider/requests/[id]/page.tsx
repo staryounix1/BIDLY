@@ -8,13 +8,16 @@ import { ApiError } from '@/lib/auth-api';
 import { requestsApi, type RequestDetail } from '@/lib/requests-api';
 import { offersApi, type OfferOnRequest } from '@/lib/offers-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Price, PriceStepper, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
- * Provider view of a single request, with the offer form (sprint 5).
+ * Provider view of a single request, with the counter-offer composer.
  *
- * The provider sees the request once they are eligible (server-checked). If
- * they already have a pending offer it is shown with a withdraw action instead
- * of a second submit box, matching the API's one-active-offer rule.
+ * This is the provider's "set your fare" screen: the customer's budget is
+ * stated up top, and the provider's own number is the loudest control. If a
+ * pending offer already exists it replaces the form with a withdraw action,
+ * matching the API's one-active-offer rule.
  */
 export default function ProviderRequestPage() {
   return (
@@ -37,7 +40,7 @@ function ProviderRequestView() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState(0);
   const [message, setMessage] = useState('');
   const [eta, setEta] = useState('');
 
@@ -47,6 +50,13 @@ function ProviderRequestView() {
     try {
       const detail = await requestsApi.get(id);
       setData(detail);
+      // Seed the stepper from the customer's own budget band so the provider
+      // starts from a real number rather than zero.
+      const seed =
+        detail.request.budget_min_minor ??
+        detail.request.budget_max_minor ??
+        10000;
+      setPrice(Math.max(1, Math.round(seed / 100)));
       const mine = await offersApi.mine({ limit: 100 });
       setMyOffer(mine.items.find((o) => o.request_id === id && o.status === 'PENDING') ?? null);
     } catch (err) {
@@ -63,7 +73,7 @@ function ProviderRequestView() {
   }, [load]);
 
   async function onSubmitOffer() {
-    const priceMinor = Math.round(Number(price) * 100);
+    const priceMinor = Math.round(price * 100);
     if (!Number.isFinite(priceMinor) || priceMinor <= 0) {
       setError(t('offer.invalidPrice'));
       return;
@@ -80,12 +90,11 @@ function ProviderRequestView() {
       });
       setMyOffer({ ...created, request_code: data?.request.code, request_title: data?.request.title });
       setNotice(t('offer.submitted'));
-      setPrice('');
       setMessage('');
       setEta('');
     } catch (err) {
-      // A duplicate submission is rejected by the API with 409; refresh so the
-      // provider sees the offer that already exists instead of a blank form.
+      // A duplicate submission is rejected with 409; refresh so the provider
+      // sees the offer that already exists instead of a blank form.
       if (err instanceof ApiError && err.status === 409) {
         setNotice(t('offer.alreadyOffered'));
         await load();
@@ -113,90 +122,117 @@ function ProviderRequestView() {
   }
 
   if (loading) {
-    return <main className="mx-auto max-w-3xl px-4 py-10 opacity-60">{t('common.loading')}</main>;
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
   }
 
   if (error && !data) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-        <button onClick={() => router.push(`/${locale}/provider/requests`)} className="mt-4 text-sm underline">
-          ← {t('feed.title')}
+      <div className="app-shell container-page py-8">
+        <p className="card border-[rgb(var(--danger)/0.35)] p-4 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error}
+        </p>
+        <button
+          onClick={() => router.push(`/${locale}/provider/requests`)}
+          className="btn btn-secondary mt-4"
+        >
+          <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+          {t('feed.title')}
         </button>
-      </main>
+      </div>
     );
   }
 
   if (!data) return null;
   const { request } = data;
+  const budgetMinor = request.budget_min_minor ?? request.budget_max_minor;
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <div className="app-shell container-page py-4">
       <button
         onClick={() => router.push(`/${locale}/provider/requests`)}
-        className="mb-4 text-sm opacity-60 hover:opacity-100"
+        className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[rgb(var(--fg-muted))]"
       >
-        ← {t('feed.title')}
+        <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+        {t('feed.title')}
       </button>
 
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">{request.title || request.service_name}</h1>
-          <p className="mt-1 text-sm opacity-60">
-            <span className="mono">{request.code}</span> · {request.service_name}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-black tracking-tight">
+            {request.title || request.service_name}
+          </h1>
+          <p className="tnum mt-0.5 text-xs text-[rgb(var(--fg-subtle))]">
+            {request.code} · {request.service_name}
           </p>
         </div>
         <StatusBadge status={request.status} />
       </div>
 
       {notice && (
-        <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="mb-4 rounded-xl border border-[rgb(var(--ok)/0.35)] bg-[rgb(var(--ok)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(5_150_105)]">
           {notice}
         </p>
       )}
       {error && (
-        <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="mb-4 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error}
+        </p>
       )}
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-2xl border border-black/10 p-5 text-sm dark:border-white/15 sm:grid-cols-3">
-        <Info label={t('request.budget')}>
-          {request.budget_min_minor != null || request.budget_max_minor != null
-            ? `${request.budget_min_minor != null ? (request.budget_min_minor / 100).toFixed(0) : '—'} – ${
-                request.budget_max_minor != null ? (request.budget_max_minor / 100).toFixed(0) : '—'
-              } ${request.currency}`
-            : '—'}
-        </Info>
-        <Info label={t('request.urgency')}>{t(`urgency.${request.urgency}`)}</Info>
-        <Info label={t('request.offersCount')}>{request.offer_count}</Info>
-        {request.pickup_line1 && (
-          <Info label={t('request.pickup')}>
-            {[request.pickup_line1, request.pickup_city_name].filter(Boolean).join(', ')}
+      {/* Customer's budget leads — the provider is pricing against it. */}
+      {budgetMinor != null && (
+        <div className="card card-featured mb-4 flex items-center justify-between gap-3 p-4">
+          <span>
+            <span className="block text-xs font-bold text-[rgb(var(--fg-muted))]">
+              {t('request.budget')}
+            </span>
+            <span className="mt-0.5 block text-base font-black">
+              {t('offer.customerOffer')}
+            </span>
+          </span>
+          <Price minor={budgetMinor} currency={request.currency} size="xl" />
+        </div>
+      )}
+
+      {notice == null && (
+        <div className="card mb-4 divide-y divide-[rgb(var(--line))]">
+          <Info label={t('request.urgency')}>
+            <span className="chip chip-neutral">{t(`urgency.${request.urgency}`)}</span>
           </Info>
-        )}
-        {request.destination_line1 && (
-          <Info label={t('providerReq.destination')}>
-            {[request.destination_line1, request.destination_city_name].filter(Boolean).join(', ')}
-          </Info>
-        )}
-        {request.scheduled_at && (
-          <Info label={t('providerReq.scheduled')}>
-            {new Date(request.scheduled_at).toLocaleString(locale)}
-          </Info>
-        )}
-        {request.item_count != null && (
-          <Info label={t('providerReq.itemCount')}>{request.item_count}</Info>
-        )}
-        {request.requires_helper && <Info label={t('providerReq.requiresHelper')}>{t('common.yes')}</Info>}
-      </dl>
+          {request.pickup_line1 && (
+            <Info label={t('request.pickup')}>
+              {[request.pickup_line1, request.pickup_city_name].filter(Boolean).join(', ')}
+            </Info>
+          )}
+          {request.destination_line1 && (
+            <Info label={t('providerReq.destination')}>
+              {[request.destination_line1, request.destination_city_name].filter(Boolean).join(', ')}
+            </Info>
+          )}
+          {request.scheduled_at && (
+            <Info label={t('providerReq.scheduled')}>
+              {new Date(request.scheduled_at).toLocaleString(locale)}
+            </Info>
+          )}
+          {request.item_count != null && (
+            <Info label={t('providerReq.itemCount')}>{String(request.item_count)}</Info>
+          )}
+          <Info label={t('request.offersCount')}>{String(request.offer_count)}</Info>
+        </div>
+      )}
 
       {data.answers.length > 0 && (
-        <section className="mt-5 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-          <h2 className="text-sm font-semibold opacity-70">{t('providerReq.questionAnswers')}</h2>
-          <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="card mb-4 p-4">
+          <h2 className="label">{t('providerReq.questionAnswers')}</h2>
+          <dl className="mt-2 grid gap-3 sm:grid-cols-2">
             {data.answers.map((a) => (
               <div key={a.id}>
-                <dt className="text-xs opacity-60">{a.field_key}</dt>
-                <dd className="mt-0.5 text-sm font-medium">
+                <dt className="text-xs text-[rgb(var(--fg-subtle))]">{a.field_key}</dt>
+                <dd className="mt-0.5 text-sm font-semibold">
                   {a.value_text ??
                     (a.value_number != null ? String(a.value_number) : null) ??
                     (a.value_boolean != null ? (a.value_boolean ? t('common.yes') : t('common.no')) : null) ??
@@ -206,100 +242,101 @@ function ProviderRequestView() {
               </div>
             ))}
           </dl>
-        </section>
+        </div>
       )}
 
       {request.description && (
-        <section className="mt-5">
-          <h2 className="text-sm font-semibold opacity-70">{t('request.description')}</h2>
-          <p className="mt-1 whitespace-pre-wrap text-sm">{request.description}</p>
-        </section>
+        <div className="card mb-4 p-4">
+          <h2 className="label">{t('request.description')}</h2>
+          <p className="whitespace-pre-wrap text-sm">{request.description}</p>
+        </div>
       )}
 
-      <section className="mt-8 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-        <h2 className="font-semibold">{myOffer ? t('offer.details') : t('offer.newOffer')}</h2>
+      {/* Counter-offer composer. */}
+      <SectionTitle>{myOffer ? t('offer.details') : t('offer.newOffer')}</SectionTitle>
 
-        {myOffer ? (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm">
-            <div>
-              <div className="font-bold">
-                {(myOffer.price_minor / 100).toFixed(2)} {myOffer.currency}
-              </div>
-              {myOffer.message && <div className="mt-0.5 opacity-70">{myOffer.message}</div>}
-              {myOffer.eta_minutes != null && (
-                <div className="text-xs opacity-60">
-                  {t('offer.eta')}: {myOffer.eta_minutes} {t('request.minutes')}
-                </div>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <StatusBadge status={myOffer.status} />
-              <button
-                onClick={onWithdraw}
-                disabled={busy}
-                className="rounded-lg border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 disabled:opacity-50 dark:border-rose-800 dark:text-rose-300"
-              >
-                {t('offer.withdraw')}
-              </button>
-            </div>
+      {myOffer ? (
+        <div className="card card-featured p-4">
+          <div className="flex items-center justify-between gap-3">
+            <Price minor={myOffer.price_minor} currency={myOffer.currency} size="xl" />
+            <StatusBadge status={myOffer.status} />
           </div>
-        ) : (
-          <div className="mt-4 space-y-3">
-            <label className="block text-sm">
-              <span className="opacity-70">{t('offer.priceLabel')}</span>
-              <div className="mt-1 flex items-center gap-2">
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-40 rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
-                />
-                <span className="text-sm opacity-60">{request.currency}</span>
-              </div>
-            </label>
+          {myOffer.message && (
+            <p className="mt-3 rounded-xl bg-[rgb(var(--surface-3))] px-3 py-2 text-sm">
+              {myOffer.message}
+            </p>
+          )}
+          {myOffer.eta_minutes != null && (
+            <p className="mt-2 text-xs text-[rgb(var(--fg-muted))]">
+              {t('offer.eta')}: {myOffer.eta_minutes} {t('request.minutes')}
+            </p>
+          )}
+          <button onClick={onWithdraw} disabled={busy} className="btn btn-secondary btn-block mt-3.5 !text-[rgb(var(--danger))]">
+            {t('offer.withdraw')}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="card p-4">
+            <PriceStepper
+              value={price}
+              onChange={setPrice}
+              step={10}
+              min={1}
+              currency={request.currency}
+              label={t('offer.priceLabel')}
+            />
+            <p className="mt-2 text-center text-xs text-[rgb(var(--fg-subtle))]">{t('compose.priceHint')}</p>
+          </div>
 
-            <label className="block text-sm">
-              <span className="opacity-70">{t('offer.etaLabel')}</span>
+          <div className="card p-4">
+            <label className="block">
+              <span className="label">{t('offer.etaLabel')}</span>
               <input
                 type="number"
                 min="0"
+                inputMode="numeric"
                 value={eta}
                 onChange={(e) => setEta(e.target.value)}
-                className="mt-1 w-40 rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
+                className="input"
               />
             </label>
 
-            <label className="block text-sm">
-              <span className="opacity-70">{t('offer.messageLabel')}</span>
+            <label className="mt-3 block">
+              <span className="label">{t('offer.messageLabel')}</span>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
+                className="input min-h-[76px] resize-none"
               />
             </label>
-
-            <button
-              onClick={onSubmitOffer}
-              disabled={busy}
-              className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-            >
-              {busy ? t('offer.submitting') : t('offer.submit')}
-            </button>
           </div>
-        )}
-      </section>
-    </main>
+
+          <button onClick={onSubmitOffer} disabled={busy || price <= 0} className="btn btn-primary btn-block">
+            {busy ? (
+              <>
+                <Spinner size={18} />
+                {t('offer.submitting')}
+              </>
+            ) : (
+              <>
+                <CategoryIcon name="arrow" size={19} className="rtl:rotate-180" />
+                {t('offer.submit')}
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <dt className="text-xs opacity-60">{label}</dt>
-      <dd className="mt-0.5 font-medium">{children}</dd>
+    <div className="flex items-center justify-between gap-3 p-3.5">
+      <span className="text-xs font-semibold text-[rgb(var(--fg-muted))]">{label}</span>
+      <span className="text-end text-sm font-bold">{children}</span>
     </div>
   );
 }

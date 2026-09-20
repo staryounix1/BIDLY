@@ -100,6 +100,30 @@ export const catalogApi = {
     return res.data;
   },
 
+  /**
+   * How many providers are currently reachable per category and per service.
+   *
+   * This is the number the customer sees on the service cards ("٤٢ حرفي"), so
+   * it counts *available supply* — providers that are online/available and have
+   * the service active — not every registered row. Returns an empty map when the
+   * endpoint is not deployed yet, which lets the UI degrade to no count rather
+   * than break.
+   */
+  async providerCounts(): Promise<{
+    byCategory: Record<string, number>;
+    byService: Record<string, number>;
+  }> {
+    try {
+      const res = await api.get<{
+        byCategory?: Record<string, number>;
+        byService?: Record<string, number>;
+      }>('/providers/counts');
+      return { byCategory: res.data.byCategory ?? {}, byService: res.data.byService ?? {} };
+    } catch {
+      return { byCategory: {}, byService: {} };
+    }
+  },
+
   async serviceForm(slug: string): Promise<{ service: Service & { category_slug: string; subcategory_slug: string }; fields: ServiceField[] }> {
     const res = await api.get<{ service: Service & { category_slug: string; subcategory_slug: string }; fields: ServiceField[] }>(
       `/services/${slug}/form`,

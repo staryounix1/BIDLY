@@ -6,11 +6,13 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-provider';
 import { useI18n } from '@/lib/i18n-provider';
 import { ApiError } from '@/lib/auth-api';
+import { CategoryIcon, KhdemliMark } from '@/lib/icons';
+import { Spinner } from '@/lib/ui';
 
 /**
- * Sign-in page. Posts to POST /auth/login through the AuthProvider and, on
- * success, sends the user to the home page in their locale. Errors from the
- * API are shown with their safe, user-facing message.
+ * Sign-in. Posts to POST /auth/login through the AuthProvider and, on success,
+ * sends the user home in their locale. Errors are shown with their safe,
+ * user-facing message.
  */
 export default function LoginPage() {
   const { t, locale } = useI18n();
@@ -38,68 +40,77 @@ export default function LoginPage() {
 
   if (ready && isAuthenticated) {
     return (
-      <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
-        <p className="opacity-70">{t('auth.welcomeBack')}</p>
-        <Link href={`/${locale}`} className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white">
+      <div className="app-shell container-page flex flex-col items-center justify-center gap-4 py-24 text-center">
+        <KhdemliMark size={52} />
+        <p className="font-semibold text-[rgb(var(--fg-muted))]">{t('auth.welcomeBack')}</p>
+        <Link href={`/${locale}`} className="btn btn-primary">
           {t('nav.home')}
         </Link>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
-      <header className="text-center">
-        <h1 className="text-3xl font-bold">{t('auth.signInTitle')}</h1>
-        <p className="mt-1 text-sm opacity-70">{t('auth.signInSubtitle')}</p>
+    <div className="app-shell container-page flex flex-col justify-center py-10">
+      <header className="mb-7 flex flex-col items-center text-center">
+        <KhdemliMark size={58} />
+        <h1 className="mt-4 text-3xl font-black tracking-tight">{t('auth.signInTitle')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('auth.signInSubtitle')}</p>
       </header>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          {t('auth.identifier')}
-          <input
-            type="text"
-            autoComplete="username"
-            required
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-            className="rounded-lg border border-black/15 bg-transparent px-3 py-2 font-normal outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
-          />
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <label className="block">
+          <span className="label">{t('auth.identifier')}</span>
+          <div className="relative">
+            <CategoryIcon
+              name="user"
+              size={19}
+              className="pointer-events-none absolute inset-y-0 start-3.5 my-auto text-[rgb(var(--fg-subtle))]"
+            />
+            <input
+              type="text"
+              autoComplete="username"
+              required
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              className="input ps-11"
+            />
+          </div>
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          {t('auth.password')}
+        <label className="block">
+          <span className="label">{t('auth.password')}</span>
           <input
             type="password"
             autoComplete="current-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded-lg border border-black/15 bg-transparent px-3 py-2 font-normal outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
+            className="input"
           />
         </label>
 
         {error && (
-          <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p
+            role="alert"
+            className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
+          >
             {error}
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-        >
-          {busy ? t('common.loading') : t('common.signIn')}
+        <button type="submit" disabled={busy} className="btn btn-primary btn-block">
+          {busy ? <Spinner size={18} /> : <CategoryIcon name="arrow" size={19} className="rtl:rotate-180" />}
+          {t('common.signIn')}
         </button>
       </form>
 
-      <p className="text-center text-sm opacity-70">
+      <p className="mt-6 text-center text-sm text-[rgb(var(--fg-muted))]">
         {t('auth.noAccount')}{' '}
-        <Link href={`/${locale}/register`} className="font-medium underline">
+        <Link href={`/${locale}/register`} className="font-bold text-[rgb(var(--brand-700))]">
           {t('common.signUp')}
         </Link>
       </p>
-    </main>
+    </div>
   );
 }

@@ -7,6 +7,8 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { offersApi, type OfferOnRequest } from '@/lib/offers-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { EmptyState, Price, Spinner } from '@/lib/ui';
 
 /**
  * A provider's submitted offers and their outcomes (sprint 5).
@@ -49,16 +51,13 @@ function OffersView() {
   const tabs = ['', 'PENDING', 'ACCEPTED', 'REJECTED', 'WITHDRAWN'];
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
+    <div className="app-shell container-page py-5">
       <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{t('offer.myTitle')}</h1>
-          <p className="mt-1 text-sm opacity-70">{t('offer.mySubtitle')}</p>
+          <h1 className="text-2xl font-extrabold tracking-tight">{t('offer.myTitle')}</h1>
+          <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('offer.mySubtitle')}</p>
         </div>
-        <Link
-          href={`/${locale}/provider/requests`}
-          className="rounded-lg border border-black/15 px-3 py-1.5 text-sm font-medium dark:border-white/20"
-        >
+        <Link href={`/${locale}/provider/requests`} className="btn btn-secondary !py-2 !text-sm">
           {t('feed.title')}
         </Link>
       </header>
@@ -68,11 +67,7 @@ function OffersView() {
           <button
             key={tab || 'all'}
             onClick={() => setFilter(tab)}
-            className={
-              filter === tab
-                ? 'rounded-full bg-slate-900 px-3 py-1 font-semibold text-white dark:bg-white dark:text-slate-900'
-                : 'rounded-full border border-black/15 px-3 py-1 opacity-70 hover:opacity-100 dark:border-white/20'
-            }
+            className={filter === tab ? 'chip chip-brand' : 'chip chip-neutral'}
           >
             {tab ? <StatusBadge status={tab} /> : t('nav.offers')}
           </button>
@@ -80,50 +75,58 @@ function OffersView() {
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <div className="card mb-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+        </div>
       )}
 
       {loading ? (
-        <p className="opacity-60">{t('common.loading')}</p>
+        <div className="card flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
       ) : offers.length === 0 ? (
-        <p className="rounded-2xl border border-black/10 px-5 py-10 text-center text-sm opacity-60 dark:border-white/15">
-          {t('offer.empty')}
-        </p>
+        <EmptyState
+          title={t('offer.empty')}
+          icon={<CategoryIcon name="bolt" size={26} />}
+        />
       ) : (
         <ul className="space-y-3">
-          {offers.map((o) => (
+          {offers.map((o, i) => (
             <li
               key={o.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-black/10 p-4 text-sm dark:border-white/15"
+              className="card card-tap slide-in p-4 text-sm"
+              style={{ animationDelay: `${i * 40}ms` }}
             >
-              <div className="min-w-0">
-                <Link
-                  href={`/${locale}/provider/requests/${o.request_id}`}
-                  className="font-semibold hover:underline"
-                >
-                  {o.request_title || o.service_name || o.request_code}
-                </Link>
-                <p className="mt-0.5 text-xs opacity-60">
-                  <span className="mono">{o.request_code}</span> · {o.service_name}
-                </p>
-                {o.message && <p className="mt-1 opacity-70">{o.message}</p>}
-                <p className="mt-1 text-xs opacity-60">
-                  {new Date(o.created_at).toLocaleDateString(locale)}
-                  {o.eta_minutes != null && ` · ${t('offer.eta')}: ${o.eta_minutes} ${t('request.minutes')}`}
-                </p>
-              </div>
-              <div className="text-end">
-                <div className="text-base font-bold">
-                  {(o.price_minor / 100).toFixed(2)} {o.currency}
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/${locale}/provider/requests/${o.request_id}`}
+                    className="font-bold text-[rgb(var(--fg))] hover:underline"
+                  >
+                    {o.request_title || o.service_name || o.request_code}
+                  </Link>
+                  <p className="mt-0.5 text-xs text-[rgb(var(--fg-subtle))]">
+                    <span className="tnum">{o.request_code}</span> · {o.service_name}
+                  </p>
+                  {o.message && <p className="mt-1.5 text-[rgb(var(--fg-muted))]">{o.message}</p>}
+                  <p className="mt-1.5 text-xs text-[rgb(var(--fg-subtle))]">
+                    {new Date(o.created_at).toLocaleDateString(locale)}
+                    {o.eta_minutes != null && ` · ${t('offer.eta')}: ${o.eta_minutes} ${t('request.minutes')}`}
+                  </p>
                 </div>
-                <div className="mt-1">
-                  <StatusBadge status={o.status} />
+                <div className="flex-none text-end">
+                  <Price minor={o.price_minor} currency={o.currency} size="md" />
+                  <div className="mt-1.5">
+                    <StatusBadge status={o.status} />
+                  </div>
                 </div>
               </div>
             </li>
           ))}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

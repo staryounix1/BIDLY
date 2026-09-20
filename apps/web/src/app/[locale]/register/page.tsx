@@ -7,14 +7,15 @@ import { useAuth } from '@/lib/auth-provider';
 import { useI18n } from '@/lib/i18n-provider';
 import { ApiError } from '@/lib/auth-api';
 import { registerSchema } from '@bidly/validation';
+import { CategoryIcon, KhdemliMark } from '@/lib/icons';
+import { Spinner } from '@/lib/ui';
 
 /**
- * Sign-up page.
+ * Sign-up.
  *
  * Validates with the shared @bidly/validation schema (the same rules the API
- * enforces server-side) before submitting. On success the account exists in a
- * pending state and an email verification code has been sent; the API never
- * returns a password or hash.
+ * enforces server-side). On success the account exists pending verification and
+ * a code has been sent; the API never returns a password or hash.
  */
 export default function RegisterPage() {
   const { t, locale } = useI18n();
@@ -60,30 +61,34 @@ export default function RegisterPage() {
 
   if (done) {
     return (
-      <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
-        <h1 className="text-2xl font-bold">{t('auth.verifyNotice')}</h1>
-        <Link href={`/${locale}/login`} className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white">
+      <div className="app-shell container-page flex flex-col items-center justify-center gap-4 py-24 text-center">
+        <span className="icon-tile h-16 w-16">
+          <CategoryIcon name="doc" size={28} />
+        </span>
+        <h1 className="text-xl font-black tracking-tight">{t('auth.verifyNotice')}</h1>
+        <Link href={`/${locale}/login`} className="btn btn-primary">
           {t('common.signIn')}
         </Link>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6 py-10">
-      <header className="text-center">
-        <h1 className="text-3xl font-bold">{t('auth.signUpTitle')}</h1>
-        <p className="mt-1 text-sm opacity-70">{t('auth.signUpSubtitle')}</p>
+    <div className="app-shell container-page flex flex-col justify-center py-10">
+      <header className="mb-6 flex flex-col items-center text-center">
+        <KhdemliMark size={52} />
+        <h1 className="mt-3 text-3xl font-black tracking-tight">{t('auth.signUpTitle')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('auth.signUpSubtitle')}</p>
       </header>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <Field label={t('auth.fullName')}>
           <input
             type="text"
             autoComplete="name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className={inputClass}
+            className="input"
           />
         </Field>
 
@@ -94,7 +99,7 @@ export default function RegisterPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={inputClass}
+            className="input"
           />
         </Field>
 
@@ -104,7 +109,7 @@ export default function RegisterPage() {
             autoComplete="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className={inputClass}
+            className="input"
           />
         </Field>
 
@@ -115,66 +120,76 @@ export default function RegisterPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={inputClass}
+            className="input"
           />
         </Field>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium">{t('auth.accountType')}</legend>
-          <div className="flex gap-3">
-            {(['CUSTOMER', 'PROVIDER'] as const).map((option) => (
-              <label
-                key={option}
-                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2 text-center text-sm ${
-                  role === option ? 'border-slate-900 font-semibold dark:border-white' : 'border-black/15 dark:border-white/20'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="role"
-                  value={option}
-                  checked={role === option}
-                  onChange={() => setRole(option)}
-                  className="sr-only"
-                />
-                {option === 'CUSTOMER' ? t('auth.customer') : t('auth.provider')}
-              </label>
-            ))}
+        {/* Role chooses the whole product, so it gets real tiles, not a select. */}
+        <fieldset>
+          <legend className="label">{t('auth.accountType')}</legend>
+          <div className="grid grid-cols-2 gap-2.5">
+            {(['CUSTOMER', 'PROVIDER'] as const).map((option) => {
+              const on = role === option;
+              return (
+                <label
+                  key={option}
+                  className={`card cursor-pointer p-3.5 text-center transition ${
+                    on ? 'card-featured' : 'card-tap'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value={option}
+                    checked={on}
+                    onChange={() => setRole(option)}
+                    className="sr-only"
+                  />
+                  <span
+                    className={`mx-auto mb-2 grid h-11 w-11 place-items-center rounded-xl ${
+                      on ? 'bg-[rgb(var(--brand-500))] text-[rgb(var(--brand-ink))]' : 'bg-[rgb(var(--surface-3))] text-[rgb(var(--fg-muted))]'
+                    }`}
+                  >
+                    <CategoryIcon name={option === 'CUSTOMER' ? 'user' : 'wrench'} size={22} />
+                  </span>
+                  <span className="block text-sm font-bold">
+                    {option === 'CUSTOMER' ? t('auth.customer') : t('auth.provider')}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </fieldset>
 
         {error && (
-          <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p
+            role="alert"
+            className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
+          >
             {error}
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-        >
-          {busy ? t('common.loading') : t('common.signUp')}
+        <button type="submit" disabled={busy} className="btn btn-primary btn-block">
+          {busy ? <Spinner size={18} /> : <CategoryIcon name="arrow" size={19} className="rtl:rotate-180" />}
+          {t('common.signUp')}
         </button>
       </form>
 
-      <p className="text-center text-sm opacity-70">
+      <p className="mt-6 text-center text-sm text-[rgb(var(--fg-muted))]">
         {t('auth.haveAccount')}{' '}
-        <Link href={`/${locale}/login`} className="font-medium underline">
+        <Link href={`/${locale}/login`} className="font-bold text-[rgb(var(--brand-700))]">
           {t('common.signIn')}
         </Link>
       </p>
-    </main>
+    </div>
   );
 }
 
-const inputClass =
-  'rounded-lg border border-black/15 bg-transparent px-3 py-2 font-normal outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white';
-
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="flex flex-col gap-1 text-sm font-medium">
-      {label}
+    <label className="block">
+      <span className="label">{label}</span>
       {children}
     </label>
   );

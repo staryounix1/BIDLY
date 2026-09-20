@@ -8,6 +8,8 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { jobsApi, providerNextAction, type JobDetail } from '@/lib/jobs-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Price, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
  * Provider active-job screen (task 7 requirements 6 and 7).
@@ -75,17 +77,31 @@ function ProviderJobView() {
   }
 
   if (loading) {
-    return <main className="mx-auto max-w-3xl px-4 py-10 opacity-60">{t('common.loading')}</main>;
+    return (
+      <div className="app-shell container-page py-5">
+        <div className="card flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
+      </div>
+    );
   }
 
   if (error && !data) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-        <button onClick={() => router.push(`/${locale}/provider/jobs`)} className="mt-4 text-sm underline">
-          ← {t('providerJob.title')}
+      <div className="app-shell container-page py-5">
+        <div className="card flex items-start gap-3 border-[rgb(var(--danger)/0.35)] p-4 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={18} />
+          <span className="flex-1">{error}</span>
+        </div>
+        <button
+          onClick={() => router.push(`/${locale}/provider/jobs`)}
+          className="btn btn-secondary btn-block mt-4"
+        >
+          <CategoryIcon name="arrow" size={16} className="rtl:rotate-180" />
+          {t('providerJob.title')}
         </button>
-      </main>
+      </div>
     );
   }
 
@@ -94,20 +110,21 @@ function ProviderJobView() {
   const next = providerNextAction(job.status);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <div className="app-shell container-page py-5">
       <button
         onClick={() => router.push(`/${locale}/provider/jobs`)}
-        className="mb-4 text-sm opacity-60 hover:opacity-100"
+        className="btn btn-ghost mb-3 !px-2"
       >
-        ← {t('providerJob.title')}
+        <CategoryIcon name="arrow" size={16} className="rtl:rotate-180" />
+        {t('providerJob.title')}
       </button>
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-extrabold tracking-tight">
             {job.code} · {job.service_name ?? t('job.title')}
           </h1>
-          <p className="mt-1 text-sm opacity-60">
+          <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">
             {t('providerJob.pickup')}: {[job.pickup_line1, job.pickup_city_name].filter(Boolean).join(', ') || '—'}
           </p>
         </div>
@@ -115,20 +132,24 @@ function ProviderJobView() {
       </div>
 
       {notice && (
-        <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {notice}
-        </p>
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          <span className="flex-1">{notice}</span>
+        </div>
       )}
       {error && (
-        <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+        </div>
       )}
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-2xl border border-black/10 p-5 text-sm dark:border-white/15 sm:grid-cols-3">
+      <div className="card mt-5 grid grid-cols-2 gap-4 p-5 text-sm sm:grid-cols-3">
         <Info label={t('job.price')}>
-          {(job.final_price_minor / 100).toFixed(2)} {job.currency}
+          <Price minor={job.final_price_minor} currency={job.currency} size="sm" />
         </Info>
         <Info label={t('job.providerNet')}>
-          {((job.provider_net_minor ?? 0) / 100).toFixed(2)} {job.currency}
+          <Price minor={job.provider_net_minor ?? 0} currency={job.currency} size="sm" />
         </Info>
         <Info label={t('job.paymentStatus')}>
           <StatusBadge status={job.payment_status} />
@@ -139,18 +160,19 @@ function ProviderJobView() {
         <Info label={t('providerJob.scheduled')}>
           {job.scheduled_at ? new Date(job.scheduled_at).toLocaleString(locale) : '—'}
         </Info>
-      </dl>
+      </div>
 
       {/* Actions — only what the current status allows. */}
-      <section className="mt-6 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-        <h2 className="font-semibold">{t('providerJob.actions')}</h2>
+      <section className="card mt-5 p-5">
+        <SectionTitle>{t('providerJob.actions')}</SectionTitle>
 
         {next === 'enRoute' && (
           <button
             onClick={() => void run(() => jobsApi.enRoute(id), t('providerJob.enRouteDone'))}
             disabled={busy}
-            className="mt-3 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
+            className="btn btn-primary btn-block"
           >
+            {busy ? <Spinner size={18} /> : <CategoryIcon name="nav" size={18} />}
             {busy ? t('common.loading') : t('providerJob.enRoute')}
           </button>
         )}
@@ -159,15 +181,16 @@ function ProviderJobView() {
           <button
             onClick={() => void run(() => jobsApi.arrived(id), t('providerJob.arrivedDone'))}
             disabled={busy}
-            className="mt-3 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
+            className="btn btn-primary btn-block"
           >
+            {busy ? <Spinner size={18} /> : <CategoryIcon name="pin" size={18} />}
             {busy ? t('common.loading') : t('providerJob.arrived')}
           </button>
         )}
 
         {next === 'start' && (
-          <div className="mt-3 space-y-3">
-            <p className="text-sm opacity-70">{t('providerJob.startHint')}</p>
+          <div className="space-y-3">
+            <p className="text-sm text-[rgb(var(--fg-muted))]">{t('providerJob.startHint')}</p>
             <div className="flex flex-wrap items-center gap-2">
               <input
                 type={showOtp ? 'text' : 'password'}
@@ -175,35 +198,36 @@ function ProviderJobView() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 placeholder={t('providerJob.otpPlaceholder')}
-                className="w-40 rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm tracking-widest outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
+                className="input tnum w-40 tracking-widest"
               />
               <button
                 type="button"
                 onClick={() => setShowOtp((v) => !v)}
-                className="text-xs underline opacity-70"
+                className="text-xs font-semibold text-[rgb(var(--fg-muted))] underline"
               >
                 {showOtp ? t('providerJob.hide') : t('providerJob.show')}
               </button>
-              <button
-                onClick={() => void run(() => jobsApi.start(id, otp.trim()), t('providerJob.startedDone'))}
-                disabled={busy || otp.trim().length < 4}
-                className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-              >
-                {busy ? t('common.loading') : t('providerJob.start')}
-              </button>
             </div>
+            <button
+              onClick={() => void run(() => jobsApi.start(id, otp.trim()), t('providerJob.startedDone'))}
+              disabled={busy || otp.trim().length < 4}
+              className="btn btn-primary btn-block"
+            >
+              {busy ? <Spinner size={18} /> : <CategoryIcon name="bolt" size={18} />}
+              {busy ? t('common.loading') : t('providerJob.start')}
+            </button>
           </div>
         )}
 
         {next === 'complete' && (
-          <div className="mt-3 space-y-3">
-            <label className="block text-sm">
-              <span className="opacity-70">{t('providerJob.completionNote')}</span>
+          <div className="space-y-3">
+            <label className="block">
+              <span className="label">{t('providerJob.completionNote')}</span>
               <textarea
                 value={completionNote}
                 onChange={(e) => setCompletionNote(e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white"
+                className="input resize-none"
               />
             </label>
             <button
@@ -214,15 +238,16 @@ function ProviderJobView() {
                 )
               }
               disabled={busy}
-              className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              className="btn btn-primary btn-block"
             >
+              {busy ? <Spinner size={18} /> : <CategoryIcon name="check" size={18} />}
               {busy ? t('common.loading') : t('providerJob.complete')}
             </button>
           </div>
         )}
 
         {!next && (
-          <p className="mt-3 text-sm opacity-60">
+          <p className="text-sm text-[rgb(var(--fg-muted))]">
             {job.status === 'COMPLETED' || job.status === 'PAYMENT_PENDING' || job.status === 'PAID'
               ? t('providerJob.awaitingCustomer')
               : t('providerJob.noAction')}
@@ -231,19 +256,24 @@ function ProviderJobView() {
       </section>
 
       {/* Timeline */}
-      <section className="mt-6 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-        <h2 className="font-semibold">{t('job.timeline')}</h2>
+      <section className="card mt-5 p-5">
+        <SectionTitle>{t('job.timeline')}</SectionTitle>
         {events.length === 0 ? (
-          <p className="mt-2 text-sm opacity-60">{t('job.noEvents')}</p>
+          <p className="text-sm text-[rgb(var(--fg-muted))]">{t('job.noEvents')}</p>
         ) : (
-          <ol className="mt-3 space-y-2 text-sm">
+          <ol className="space-y-2.5 text-sm">
             {events.map((e) => (
-              <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 border-s-2 border-black/10 ps-3 dark:border-white/15">
-                <span>
+              <li
+                key={e.id}
+                className="flex flex-wrap items-center justify-between gap-2 border-s-2 border-[rgb(var(--line-strong))] ps-3"
+              >
+                <span className="flex flex-wrap items-center gap-2">
                   {e.to_status ? <StatusBadge status={e.to_status} /> : e.type}
-                  {e.note && <span className="ms-2 opacity-70">{e.note}</span>}
+                  {e.note && <span className="text-[rgb(var(--fg-muted))]">{e.note}</span>}
                 </span>
-                <span className="text-xs opacity-60">{new Date(e.created_at).toLocaleString(locale)}</span>
+                <span className="tnum text-xs text-[rgb(var(--fg-subtle))]">
+                  {new Date(e.created_at).toLocaleString(locale)}
+                </span>
               </li>
             ))}
           </ol>
@@ -251,38 +281,38 @@ function ProviderJobView() {
       </section>
 
       {payment && (
-        <section className="mt-6 rounded-2xl border border-black/10 p-5 text-sm dark:border-white/15">
-          <h2 className="font-semibold">{t('job.payment')}</h2>
-          <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+        <section className="card mt-5 p-5 text-sm">
+          <SectionTitle>{t('job.payment')}</SectionTitle>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <span>
-              {t('job.price')}: {(payment.amount_minor / 100).toFixed(2)} {payment.currency}
+              {t('job.price')}: <Price minor={payment.amount_minor} currency={payment.currency} size="sm" />
             </span>
             <span>
-              {t('job.commission')}: {(payment.commission_minor / 100).toFixed(2)} {payment.currency}
+              {t('job.commission')}: <Price minor={payment.commission_minor} currency={payment.currency} size="sm" />
             </span>
             <span className="font-semibold">
-              {t('job.providerNet')}: {(payment.provider_net_minor / 100).toFixed(2)} {payment.currency}
+              {t('job.providerNet')}: <Price minor={payment.provider_net_minor} currency={payment.currency} size="sm" />
             </span>
             <StatusBadge status={payment.status} />
           </div>
         </section>
       )}
 
-      <div className="mt-6 flex flex-wrap gap-4 text-sm">
-        <Link href={`/${locale}/provider/dashboard`} className="underline opacity-70">
+      <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
+        <Link href={`/${locale}/provider/dashboard`} className="font-semibold text-[rgb(var(--brand-700))]">
           {t('providerDash.title')}
         </Link>
         <CountdownOrNothing expiresAt={job.start_otp_expires_at} label={t('providerJob.otpValidity')} />
       </div>
-    </main>
+    </div>
   );
 }
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs opacity-60">{label}</dt>
-      <dd className="mt-0.5 font-medium">{children}</dd>
+      <dt className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">{label}</dt>
+      <dd className="mt-0.5 font-semibold">{children}</dd>
     </div>
   );
 }
@@ -293,7 +323,7 @@ function CountdownOrNothing({ expiresAt, label }: { expiresAt: string | null; la
   const ms = new Date(expiresAt).getTime() - Date.now();
   if (ms <= 0) return null;
   return (
-    <span className="text-xs opacity-60">
+    <span className="tnum text-xs text-[rgb(var(--fg-subtle))]">
       {label}: {Math.round(ms / 60000)} {t('request.minutes')}
     </span>
   );

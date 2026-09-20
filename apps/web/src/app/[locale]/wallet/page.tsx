@@ -5,6 +5,8 @@ import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { paymentsApi, formatMinor, type LedgerEntry, type Payout, type Wallet } from '@/lib/payments-api';
+import { CategoryIcon } from '@/lib/icons';
+import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
  * Provider wallet.
@@ -76,76 +78,87 @@ function WalletView() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-black tracking-tight">{t('payment.title')}</h1>
+    <div className="app-shell container-page py-5">
+      <h1 className="mb-5 text-2xl font-extrabold tracking-tight">{t('payment.title')}</h1>
 
-      {error && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/50">{error}</p>}
-      {notice && <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-950/50">{notice}</p>}
+      {error && (
+        <div className="card mb-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+        </div>
+      )}
+      {notice && (
+        <div className="card mb-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          <span className="flex-1">{notice}</span>
+        </div>
+      )}
 
       {loading ? (
-        <p className="opacity-60">…</p>
+        <div className="card flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
       ) : (
         <>
-          <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <section className="mb-6 grid grid-cols-2 gap-3">
             <Stat label={t('payment.availableBalance')} value={formatMinor(wallet?.available_minor ?? 0, wallet?.currency, locale)} accent />
             <Stat label={t('payment.reservedBalance')} value={formatMinor(wallet?.reserved_minor ?? 0, wallet?.currency, locale)} />
             <Stat label={t('payment.lifetimeIn')} value={formatMinor(wallet?.lifetime_in_minor ?? 0, wallet?.currency, locale)} />
             <Stat label={t('payment.lifetimeOut')} value={formatMinor(wallet?.lifetime_out_minor ?? 0, wallet?.currency, locale)} />
           </section>
 
-          <section className="mb-8 rounded-2xl border border-black/10 p-5 dark:border-white/10">
-            <h2 className="mb-4 text-lg font-bold">{t('payment.requestPayout')}</h2>
+          <section className="card mb-6 p-5">
+            <SectionTitle>{t('payment.requestPayout')}</SectionTitle>
             <form onSubmit={onRequestPayout} className="flex flex-wrap items-end gap-3">
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="opacity-70">{t('payment.payoutAmount')}</span>
+              <label className="block">
+                <span className="label">{t('payment.payoutAmount')}</span>
                 <input
                   type="number" min="1" step="0.01" required value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-40 rounded-lg border border-black/15 bg-transparent px-3 py-2 dark:border-white/20"
+                  className="input tnum w-40"
                 />
               </label>
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="opacity-70">{t('payment.payoutMethod')}</span>
+              <label className="block">
+                <span className="label">{t('payment.payoutMethod')}</span>
                 <select
                   value={method} onChange={(e) => setMethod(e.target.value)}
-                  className="rounded-lg border border-black/15 bg-transparent px-3 py-2 dark:border-white/20"
+                  className="input w-auto"
                 >
                   <option value="BANK_TRANSFER">BANK_TRANSFER</option>
                   <option value="CASH">CASH</option>
                   <option value="WALLET">WALLET</option>
                 </select>
               </label>
-              <button
-                type="submit" disabled={busy}
-                className="rounded-lg bg-slate-900 px-4 py-2 font-medium text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-              >
+              <button type="submit" disabled={busy} className="btn btn-primary">
+                {busy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
                 {busy ? t('payment.paying') : t('payment.requestPayout')}
               </button>
             </form>
           </section>
 
-          <section className="mb-8">
-            <h2 className="mb-3 text-lg font-bold">{t('payment.ledger')}</h2>
+          <section className="mb-6">
+            <SectionTitle>{t('payment.ledger')}</SectionTitle>
             {ledger.length === 0 ? (
-              <p className="opacity-60">{t('payment.noLedger')}</p>
+              <EmptyState title={t('payment.noLedger')} icon={<CategoryIcon name="wallet" size={26} />} />
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10">
+              <div className="card overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-black/5 text-left dark:bg-white/5">
+                  <thead className="bg-[rgb(var(--surface-3))] text-start">
                     <tr>
-                      <th className="px-4 py-2">{t('payment.method')}</th>
-                      <th className="px-4 py-2">{t('payment.amount')}</th>
-                      <th className="px-4 py-2">{t('payment.availableBalance')}</th>
+                      <th className="px-4 py-2.5 text-start font-semibold text-[rgb(var(--fg-muted))]">{t('payment.method')}</th>
+                      <th className="px-4 py-2.5 text-start font-semibold text-[rgb(var(--fg-muted))]">{t('payment.amount')}</th>
+                      <th className="px-4 py-2.5 text-start font-semibold text-[rgb(var(--fg-muted))]">{t('payment.availableBalance')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {ledger.map((e) => (
-                      <tr key={e.id} className="border-t border-black/5 dark:border-white/5">
-                        <td className="px-4 py-2">{e.description ?? e.type}</td>
-                        <td className={`px-4 py-2 font-medium ${e.direction === 'CREDIT' ? 'text-emerald-600' : 'text-red-600'}`}>
+                      <tr key={e.id} className="border-t border-[rgb(var(--line))]">
+                        <td className="px-4 py-2.5">{e.description ?? e.type}</td>
+                        <td className={`tnum px-4 py-2.5 font-bold ${e.direction === 'CREDIT' ? 'text-[rgb(var(--ok))]' : 'text-[rgb(var(--danger))]'}`}>
                           {e.direction === 'CREDIT' ? '+' : '−'}{formatMinor(e.amount_minor, e.currency, locale)}
                         </td>
-                        <td className="px-4 py-2 opacity-70">{formatMinor(e.balance_after_minor, e.currency, locale)}</td>
+                        <td className="tnum px-4 py-2.5 text-[rgb(var(--fg-muted))]">{formatMinor(e.balance_after_minor, e.currency, locale)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -155,16 +168,16 @@ function WalletView() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-bold">{t('payment.payouts')}</h2>
+            <SectionTitle>{t('payment.payouts')}</SectionTitle>
             {payouts.length === 0 ? (
-              <p className="opacity-60">{t('payment.noPayouts')}</p>
+              <EmptyState title={t('payment.noPayouts')} icon={<CategoryIcon name="wallet" size={26} />} />
             ) : (
               <ul className="space-y-2">
                 {payouts.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between rounded-xl border border-black/10 px-4 py-3 text-sm dark:border-white/10">
-                    <span className="font-medium">{formatMinor(p.amount_minor, p.currency, locale)}</span>
-                    <span className="opacity-70">{p.method}</span>
-                    <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">{p.status}</span>
+                  <li key={p.id} className="card flex items-center justify-between gap-3 p-4 text-sm">
+                    <span className="tnum font-bold">{formatMinor(p.amount_minor, p.currency, locale)}</span>
+                    <span className="text-[rgb(var(--fg-muted))]">{p.method}</span>
+                    <span className="chip chip-neutral">{p.status}</span>
                   </li>
                 ))}
               </ul>
@@ -172,15 +185,15 @@ function WalletView() {
           </section>
         </>
       )}
-    </main>
+    </div>
   );
 }
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-4 ${accent ? 'border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/20' : 'border-black/10 dark:border-white/10'}`}>
-      <p className="text-xs uppercase tracking-wide opacity-60">{label}</p>
-      <p className="mt-1 text-xl font-black">{value}</p>
+    <div className={`card p-4 ${accent ? 'card-featured' : ''}`}>
+      <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">{label}</p>
+      <p className="tnum mt-1 text-lg font-black">{value}</p>
     </div>
   );
 }

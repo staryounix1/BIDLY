@@ -9,14 +9,22 @@ import { ApiError } from '@/lib/auth-api';
 import { requestsApi, type RequestDetail } from '@/lib/requests-api';
 import { offersApi } from '@/lib/offers-api';
 import { SearchRadar } from '@/lib/map/search-radar';
+import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Avatar, Price, SectionTitle, Spinner, Stars } from '@/lib/ui';
 
 /**
  * Request detail for the owning customer.
  *
+ * Once the request is live this is the offers screen: one card per craftsman,
+ * entering as offers arrive, with the price large enough to compare without
+ * reading, and accept/decline where the thumb already is. The live radar stays
+ * on top while the search is open, and becomes the tracking map once a
+ * craftsman is chosen.
+ *
  * Ownership is enforced by the API: a non-owner gets 403 and this screen shows
- * a neutral "no access" message instead of any data. A draft request can be
- * published here (which is what starts matching) or cancelled.
+ * a neutral message instead of any data.
  */
 export default function RequestDetailPage() {
   return (
@@ -26,7 +34,15 @@ export default function RequestDetailPage() {
   );
 }
 
-const CANCELABLE = ['DRAFT', 'PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED', 'CONFIRMED', 'IN_PROGRESS'];
+const CANCELABLE = [
+  'DRAFT',
+  'PUBLISHED',
+  'MATCHING',
+  'RECEIVING_OFFERS',
+  'PROVIDER_SELECTED',
+  'CONFIRMED',
+  'IN_PROGRESS',
+];
 
 function RequestDetailView() {
   const { t, locale } = useI18n();
@@ -40,11 +56,11 @@ function RequestDetailView() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(
-    // Arriving from the create form: confirm the request was saved.
     search.get('created') === '1' ? t('request.created') : null,
   );
   const [showCancel, setShowCancel] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const [showDetails, setShowDetails] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -127,293 +143,383 @@ function RequestDetailView() {
     }
   }
 
-  if (loading) return <main className="mx-auto max-w-3xl px-4 py-10 opacity-60">{t('common.loading')}</main>;
+  if (loading) {
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
+  }
 
   if (error || !data) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <div className="app-shell container-page py-8">
+        <p className="card border-[rgb(var(--danger)/0.35)] p-4 text-sm font-semibold text-[rgb(var(--danger))]">
           {error ?? t('request.notFound')}
         </p>
-        <button onClick={() => router.push(`/${locale}/requests`)} className="mt-4 text-sm underline">
-          ← {t('request.myTitle')}
+        <button onClick={() => router.push(`/${locale}/requests`)} className="btn btn-secondary mt-4">
+          <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+          {t('request.myTitle')}
         </button>
-      </main>
+      </div>
     );
   }
 
   const { request, offers, media, answers } = data;
   const canCancel = CANCELABLE.includes(request.status);
-  const canSelectOffer = ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED'].includes(request.status);
-  const selectedOffer = offers.find((o) => o.id === request.selected_offer_id || o.status === 'ACCEPTED') ?? null;
+  const canSelectOffer = [
+    'PUBLISHED',
+    'MATCHING',
+    'RECEIVING_OFFERS',
+    'PROVIDER_SELECTED',
+  ].includes(request.status);
+  const selectedOffer =
+    offers.find((o) => o.id === request.selected_offer_id || o.status === 'ACCEPTED') ?? null;
 
-  // The radar replaces the top of the page while the search is live: matching
-  // is a server-side process the customer would otherwise see nothing of.
   const searching =
     !selectedOffer &&
     !request.cancelled_at &&
     ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS'].includes(request.status);
+
   const requestPoint =
     request.pickup_lat != null && request.pickup_lng != null
       ? { lat: Number(request.pickup_lat), lng: Number(request.pickup_lng) }
       : null;
 
+  const pending = offers.filter((o) => o.status === 'PENDING');
+  const cheapestId = pending.length > 1 ? pending.reduce((a, b) => (a.price_minor <= b.price_minor ? a : b)).id : null;
+
+  const sortedOffers = [...offers].sort((a, b) => {
+    const rank = (s: string) => (s === 'PENDING' ? 0 : s === 'ACCEPTED' ? 1 : 2);
+    if (rank(a.status) !== rank(b.status)) return rank(a.status) - rank(b.status);
+    return a.price_minor - b.price_minor;
+  });
+
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <button onClick={() => router.push(`/${locale}/requests`)} className="mb-4 text-sm opacity-60 hover:opacity-100">
-        ← {t('request.myTitle')}
+    <div className="app-shell container-page py-4">
+      {/* Compact header: what, where, status. */}
+      <button
+        onClick={() => router.push(`/${locale}/requests`)}
+        className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[rgb(var(--fg-muted))]"
+      >
+        <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+        {t('request.myTitle')}
       </button>
 
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">{request.title || request.service_name}</h1>
-          <p className="mt-1 text-sm opacity-60">
-            <span className="mono">{request.code}</span> · {request.service_name}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-black tracking-tight">
+            {request.title || request.service_name}
+          </h1>
+          <p className="tnum mt-0.5 text-xs text-[rgb(var(--fg-subtle))]">
+            {request.code} · {request.service_name}
           </p>
         </div>
         <StatusBadge status={request.status} />
       </div>
 
+      {/* Live search radar. */}
       {searching && (
-        <div className="mt-5">
-          <SearchRadar
-            requestId={request.id}
-            offers={offers}
-            point={requestPoint}
-            expiresAt={request.expires_at}
-            candidateCount={offers.length}
-            onViewOffers={() => {
-              document.getElementById('bidly-offers')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            onStop={canCancel ? () => setShowCancel(true) : undefined}
-          />
+        <SearchRadar
+          requestId={request.id}
+          offers={offers}
+          point={requestPoint}
+          expiresAt={request.expires_at}
+          candidateCount={offers.length}
+          onViewOffers={() => {
+            document.getElementById('khdemli-offers')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          onStop={canCancel ? () => setShowCancel(true) : undefined}
+        />
+      )}
+
+      {/* Chosen craftsman: tracking map. */}
+      {selectedOffer && request.job_id && (
+        <div className="mb-4 space-y-3">
+          {selectedOffer.provider_id && (
+            <TrackProvider
+              providerId={selectedOffer.provider_id}
+              destination={requestPoint}
+              providerName={selectedOffer.provider_name}
+              height={220}
+            />
+          )}
+
+          <div className="card card-featured p-4">
+            <div className="flex items-center gap-3">
+              <Avatar name={selectedOffer.provider_name} src={selectedOffer.provider_avatar} size={52} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-base font-bold">{selectedOffer.provider_name}</p>
+                <Stars value={selectedOffer.rating_avg} count={selectedOffer.completed_jobs} />
+              </div>
+              <Price minor={selectedOffer.price_minor} currency={selectedOffer.currency} size="md" />
+            </div>
+
+            {selectedOffer.message && (
+              <p className="mt-3 rounded-xl bg-[rgb(var(--surface-3))] px-3 py-2 text-sm">
+                {selectedOffer.message}
+              </p>
+            )}
+
+            <div className="mt-3 flex gap-2">
+              <Link href={`/${locale}/messages`} className="btn btn-primary flex-1">
+                <CategoryIcon name="chat" size={18} />
+                {t('tracking.message')}
+              </Link>
+              <Link href={`/${locale}/jobs`} className="btn btn-secondary flex-1">
+                {t('job.details')}
+              </Link>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Assigned provider — shown once an offer has been accepted. */}
-      {selectedOffer && request.job_id && (
-        <section className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5">
-          <h2 className="text-sm font-semibold opacity-70">{t('job.provider')}</h2>
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-lg font-semibold">{selectedOffer.provider_name}</div>
-              <div className="mt-0.5 text-xs opacity-70">
-                {t('job.price')}: {(selectedOffer.price_minor / 100).toFixed(2)} {selectedOffer.currency}
-                {selectedOffer.rating_avg != null && (
-                  <> · {t('provider.rating')}: {Number(selectedOffer.rating_avg).toFixed(1)}</>
-                )}
-              </div>
-              {selectedOffer.message && <div className="mt-1 text-sm opacity-80">{selectedOffer.message}</div>}
-            </div>
-            <Link
-              href={`/${locale}/jobs`}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
-            >
-              {t('job.details')}
-            </Link>
-          </div>
-        </section>
-      )}
-
       {notice && (
-        <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{notice}</p>
+        <p className="mb-4 rounded-xl border border-[rgb(var(--ok)/0.35)] bg-[rgb(var(--ok)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(5_150_105)]">
+          {notice}
+        </p>
+      )}
+      {error && (
+        <p className="mb-4 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error}
+        </p>
       )}
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-2xl border border-black/10 p-5 text-sm dark:border-white/15">
-        <Info label={t('request.currentStatus')}>
-          <StatusBadge status={request.status} />
-        </Info>
-        <Info label={t('request.createdAt')}>{new Date(request.created_at).toLocaleString(locale)}</Info>
-        <Info label={t('request.urgency')}>{t(`urgency.${request.urgency}`)}</Info>
-        <Info label={t('request.offersCount')}>{request.offer_count}</Info>
-        {(request.budget_min_minor != null || request.budget_max_minor != null) && (
-          <Info label={t('request.budget')}>
-            {request.budget_min_minor != null ? (request.budget_min_minor / 100).toFixed(0) : '—'} –{' '}
-            {request.budget_max_minor != null ? (request.budget_max_minor / 100).toFixed(0) : '—'} {request.currency}
-          </Info>
-        )}
-        {request.pickup_line1 && (
-          <Info label={t('request.pickup')}>
-            {[request.pickup_line1, request.pickup_district, request.pickup_city_name].filter(Boolean).join(', ')}
-          </Info>
-        )}
-        {request.destination_line1 && (
-          <Info label={t('request.destination')}>
-            {[request.destination_line1, request.destination_city_name].filter(Boolean).join(', ')}
-          </Info>
-        )}
-      </dl>
+      {/* Offers: the main event. */}
+      <section id="khdemli-offers" className="mt-2">
+        <SectionTitle
+          action={
+            pending.length > 0 ? (
+              <span className="chip chip-brand">{t('offers.newOffers')} {pending.length}</span>
+            ) : undefined
+          }
+        >
+          {t('offers.title')}
+        </SectionTitle>
 
-      {request.description && (
-        <section className="mt-5">
-          <h2 className="text-sm font-semibold opacity-70">{t('request.description')}</h2>
-          <p className="mt-1 whitespace-pre-wrap text-sm">{request.description}</p>
-        </section>
-      )}
-
-      {answers.length > 0 && (
-        <section className="mt-5 space-y-2">
-          {answers.map((a) => (
-            <div key={a.id} className="rounded-lg border border-black/10 px-3 py-2 text-sm dark:border-white/15">
-              <div className="text-xs opacity-60">{a.field_key}</div>
-              <div>{formatAnswer(a)}</div>
-            </div>
-          ))}
-        </section>
-      )}
-
-      {media.length > 0 && (
-        <section className="mt-5">
-          <h2 className="text-sm font-semibold opacity-70">{t('request.detailsTitle')}</h2>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {media.map((m) => (
-              <a key={m.id} href={m.url} target="_blank" rel="noreferrer" className="text-xs underline">
-                {m.kind}
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section id="bidly-offers" className="mt-8">
-        <h2 className="font-semibold">{t('request.offers')}</h2>
         {offers.length === 0 ? (
-          <p className="mt-2 text-sm opacity-60">{t('request.noOffers')}</p>
+          <div className="card flex flex-col items-center gap-2 px-6 py-12 text-center">
+            <span className="icon-tile h-14 w-14">
+              <CategoryIcon name="radar" size={26} />
+            </span>
+            <p className="text-base font-bold">{t('offers.empty')}</p>
+            <p className="text-sm text-[rgb(var(--fg-muted))]">{t('offers.emptyHint')}</p>
+          </div>
         ) : (
-          <ul className="mt-3 space-y-2">
-            {[...offers]
-              .sort((a, b) => {
-                // Pending offers first, cheapest first — the natural comparison order.
-                const rank = (s: string) => (s === 'PENDING' ? 0 : s === 'ACCEPTED' ? 1 : 2);
-                if (rank(a.status) !== rank(b.status)) return rank(a.status) - rank(b.status);
-                return a.price_minor - b.price_minor;
-              })
-              .map((o, idx, arr) => {
-                const pending = arr.filter((x) => x.status === 'PENDING');
-                const isBest = pending.length > 1 && pending[0]?.id === o.id;
-                return (
-                  <li
-                    key={o.id}
-                    className={
-                      'rounded-xl border p-4 text-sm ' +
-                      (o.status === 'ACCEPTED'
-                        ? 'border-emerald-500/40 bg-emerald-500/5 dark:border-emerald-500/40'
-                        : 'border-black/10 dark:border-white/15')
-                    }
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold">{o.provider_name}</span>
-                          {isBest && (
-                            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
-                              {t('offer.bestPrice')} ★
-                            </span>
-                          )}
-                        </div>
-                        {o.rating_avg != null && (
-                          <div className="text-xs opacity-60">
-                            ★ {Number(o.rating_avg).toFixed(1)}
-                            {o.completed_jobs != null ? ` · ${t('provider.completedJobs')}: ${o.completed_jobs}` : ''}
-                          </div>
+          <ul className="space-y-2.5">
+            {sortedOffers.map((o, index) => {
+              const accepted = o.status === 'ACCEPTED';
+              const isBest = o.id === cheapestId;
+              return (
+                <li
+                  key={o.id}
+                  className={`card slide-in p-4 ${accepted || isBest ? 'card-featured' : ''}`}
+                  style={{ animationDelay: `${Math.min(index, 10) * 55}ms` }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar name={o.provider_name} src={o.provider_avatar} size={48} />
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="truncate text-[0.9375rem] font-bold">{o.provider_name}</span>
+                        {isBest && (
+                          <span className="chip chip-brand !px-2 !py-0.5 !text-[0.6875rem]">
+                            {t('offer.bestPrice')}
+                          </span>
                         )}
-                        {o.message && <div className="mt-1 opacity-70">{o.message}</div>}
+                        {accepted && (
+                          <span className="chip chip-ok !px-2 !py-0.5 !text-[0.6875rem]">
+                            <CategoryIcon name="check" size={12} />
+                            {t('offer.accepted')}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-1 flex items-center gap-2">
+                        <Stars value={o.rating_avg} count={o.completed_jobs} />
                         {o.eta_minutes != null && (
-                          <div className="mt-0.5 text-xs opacity-60">
-                            {t('request.eta')}: {o.eta_minutes} {t('request.minutes')}
-                          </div>
+                          <span className="text-xs text-[rgb(var(--fg-muted))]">
+                            · {o.eta_minutes} {t('request.minutes')}
+                          </span>
                         )}
                       </div>
-                      <div className="text-end">
-                        <div className="text-base font-bold">
-                          {(o.price_minor / 100).toFixed(2)} {o.currency}
-                        </div>
-                        <div className="mt-1">
-                          <StatusBadge status={o.status} />
-                        </div>
-                      </div>
+
+                      {o.message && (
+                        <p className="mt-2 line-clamp-2 text-sm text-[rgb(var(--fg-muted))]">
+                          {o.message}
+                        </p>
+                      )}
                     </div>
 
-                    {o.status === 'PENDING' && canSelectOffer && (
-                      <div className="mt-3 flex flex-wrap gap-2 border-t border-black/10 pt-3 dark:border-white/10">
-                        <button
-                          onClick={() => onAcceptOffer(o.id)}
-                          disabled={busy}
-                          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-                        >
-                          {t('offer.accept')}
-                        </button>
-                        <button
-                          onClick={() => onRejectOffer(o.id)}
-                          disabled={busy}
-                          className="rounded-lg border border-black/15 px-4 py-2 text-sm font-medium disabled:opacity-50 dark:border-white/20"
-                        >
-                          {t('offer.reject')}
-                        </button>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
+                    <div className="flex-none text-end">
+                      <Price minor={o.price_minor} currency={o.currency} size="lg" />
+                    </div>
+                  </div>
+
+                  {o.status === 'PENDING' && canSelectOffer && (
+                    <div className="mt-3.5 flex gap-2">
+                      <button
+                        onClick={() => onAcceptOffer(o.id)}
+                        disabled={busy}
+                        className="btn btn-primary flex-1"
+                      >
+                        <CategoryIcon name="check" size={18} />
+                        {t('offers.accept')}
+                      </button>
+                      <button
+                        onClick={() => onRejectOffer(o.id)}
+                        disabled={busy}
+                        className="btn btn-secondary flex-1"
+                      >
+                        {t('offers.decline')}
+                      </button>
+                    </div>
+                  )}
+
+                  {o.status !== 'PENDING' && (
+                    <div className="mt-3">
+                      <StatusBadge status={o.status} />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
 
-      <div className="mt-8 flex flex-wrap gap-3">
+      {/* Request facts, collapsed by default so the offers own the screen. */}
+      <button
+        type="button"
+        onClick={() => setShowDetails((v) => !v)}
+        className="card mt-5 flex w-full items-center justify-between p-4 text-start"
+      >
+        <span className="text-sm font-bold">{t('request.detailsTitle')}</span>
+        <CategoryIcon
+          name="chevron"
+          size={20}
+          className={`text-[rgb(var(--fg-subtle))] transition-transform rtl:rotate-180 ${showDetails ? 'rotate-90 rtl:-rotate-90' : ''}`}
+        />
+      </button>
+
+      {showDetails && (
+        <div className="fade-rise mt-2 space-y-3">
+          <dl className="card grid grid-cols-2 gap-4 p-4 text-sm">
+            <Info label={t('request.currentStatus')}>
+              <StatusBadge status={request.status} />
+            </Info>
+            <Info label={t('request.createdAt')}>
+              {new Date(request.created_at).toLocaleString(locale)}
+            </Info>
+            <Info label={t('request.urgency')}>{t(`urgency.${request.urgency}`)}</Info>
+            <Info label={t('request.offersCount')}>{request.offer_count}</Info>
+            {(request.budget_min_minor != null || request.budget_max_minor != null) && (
+              <Info label={t('request.budget')}>
+                <Price
+                  minor={request.budget_min_minor ?? request.budget_max_minor}
+                  currency={request.currency}
+                  size="sm"
+                />
+              </Info>
+            )}
+            {request.pickup_line1 && (
+              <Info label={t('request.pickup')}>
+                {[request.pickup_line1, request.pickup_district, request.pickup_city_name]
+                  .filter(Boolean)
+                  .join(', ')}
+              </Info>
+            )}
+            {request.destination_line1 && (
+              <Info label={t('request.destination')}>
+                {[request.destination_line1, request.destination_city_name].filter(Boolean).join(', ')}
+              </Info>
+            )}
+          </dl>
+
+          {request.description && (
+            <div className="card p-4">
+              <h2 className="label">{t('request.description')}</h2>
+              <p className="whitespace-pre-wrap text-sm">{request.description}</p>
+            </div>
+          )}
+
+          {answers.length > 0 && (
+            <div className="card space-y-2 p-4">
+              {answers.map((a) => (
+                <div key={a.id} className="rounded-xl bg-[rgb(var(--surface-3))] px-3 py-2 text-sm">
+                  <div className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">{a.field_key}</div>
+                  <div>{formatAnswer(a)}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {media.length > 0 && (
+            <div className="card p-4">
+              <h2 className="label">{t('request.detailsTitle')}</h2>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {media.map((m) => (
+                  <a
+                    key={m.id}
+                    href={m.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="chip chip-neutral"
+                  >
+                    {m.kind}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Actions. */}
+      <div className="mt-5 space-y-2.5">
         {request.status === 'DRAFT' && (
-          <button
-            onClick={onPublish}
-            disabled={busy}
-            className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-          >
+          <button onClick={onPublish} disabled={busy} className="btn btn-primary btn-block">
             {t('request.publish')}
           </button>
         )}
         {canCancel && (
-          <button
-            onClick={() => setShowCancel(true)}
-            disabled={busy}
-            className="rounded-lg border border-rose-300 px-5 py-2.5 text-sm font-medium text-rose-700 disabled:opacity-50 dark:border-rose-800 dark:text-rose-300"
-          >
+          <button onClick={() => setShowCancel(true)} disabled={busy} className="btn btn-secondary btn-block !text-[rgb(var(--danger))]">
             {t('request.cancel')}
           </button>
         )}
       </div>
 
       {showCancel && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-5 dark:bg-slate-900">
-            <h3 className="font-semibold">{t('request.cancelConfirm')}</h3>
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
+          <div className="sheet sheet-up w-full max-w-sm p-5 sm:rounded-2xl">
+            <div className="sheet-handle sm:hidden" />
+            <h3 className="mt-3 font-bold sm:mt-0">{t('request.cancelConfirm')}</h3>
             <input
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder={t('request.cancelReason')}
-              className="mt-3 w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm outline-none dark:border-white/20"
+              className="input mt-3"
             />
-            <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setShowCancel(false)} className="rounded-lg px-4 py-2 text-sm">
+            <div className="mt-4 flex gap-2">
+              <button onClick={() => setShowCancel(false)} className="btn btn-secondary flex-1">
                 {t('common.close')}
               </button>
-              <button
-                onClick={onCancel}
-                disabled={busy}
-                className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-              >
+              <button onClick={onCancel} disabled={busy} className="btn btn-danger flex-1">
                 {t('request.cancel')}
               </button>
             </div>
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs opacity-60">{label}</dt>
-      <dd className="mt-0.5 font-medium">{children}</dd>
+      <dt className="text-xs text-[rgb(var(--fg-subtle))]">{label}</dt>
+      <dd className="mt-0.5 font-semibold">{children}</dd>
     </div>
   );
 }

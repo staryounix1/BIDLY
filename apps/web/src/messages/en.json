@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "BIDLY",
-    "tagline": "Request any service and let local providers compete for your job"
+    "name": "Khdemli",
+    "tagline": "Request any service and let local craftsmen compete",
+    "copyright": "© {year} Khdemli — All rights reserved"
   },
   "nav": {
     "home": "Home",
@@ -20,7 +21,9 @@
     "notifications": "Notifications",
     "wallet": "Wallet",
     "admin": "Admin",
-    "adminDashboard": "Dashboard"
+    "adminDashboard": "Dashboard",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
   },
   "common": {
     "signIn": "Sign in",
@@ -103,7 +106,7 @@
     "subtitle": "Pick the service you need to create a request",
     "searchServices": "Search services…",
     "noServices": "No matching services.",
-    "chooseService": "Choose service",
+    "chooseService": "What do you need today?",
     "from": "from",
     "minPrice": "Min price",
     "maxPrice": "Max price",
@@ -130,7 +133,20 @@
       "HOURLY": "Hourly",
       "QUOTE": "Request a quote",
       "INSPECTION": "Inspection first"
-    }
+    },
+    "chooseServiceHint": "Pick a service, set your price, and nearby craftsmen compete",
+    "searchPlaceholder": "Search a service…",
+    "all": "All",
+    "availableServices": "Available services",
+    "noResults": "Nothing found",
+    "noResultsHint": "Try another word or a different category",
+    "providersAvailable": "{count} craftsmen available",
+    "noProvidersYet": "No craftsman available right now",
+    "trustVerified": "Verified craftsmen",
+    "trustVerifiedHint": "Identity checked",
+    "trustPrice": "You set the price",
+    "trustPriceHint": "No middleman",
+    "popular": "Most requested"
   },
   "request": {
     "newTitle": "Request a service",
@@ -240,7 +256,9 @@
     "round": "Round",
     "invalidPrice": "Enter a valid price.",
     "alreadyOffered": "You already have an active offer on this request.",
-    "bestPrice": "Best price"
+    "bestPrice": "Best price",
+    "customerOffer": "Customer's offer",
+    "counterWith": "Counter with your price"
   },
   "provider": {
     "title": "Provider profile",
@@ -589,5 +607,62 @@
     "unsupported": "Your browser does not support push notifications.",
     "notConfigured": "Notifications are not configured on this server yet.",
     "failed": "Could not enable notifications. Try again."
+  },
+  "compose": {
+    "title": "Create your request",
+    "destination": "Destination / service details",
+    "destinationPlaceholder": "e.g. Fix a leaking tap in the bathroom",
+    "yourPrice": "Your offer",
+    "sendRequest": "Send request",
+    "sending": "Sending…",
+    "priceHint": "Adjust with + and −",
+    "mapHint": "Set your location on the map",
+    "pickLocation": "Set location"
+  },
+  "searching": {
+    "looking": "Looking for nearby craftsmen…",
+    "elapsed": "{seconds}s elapsed",
+    "cancel": "Cancel",
+    "offersSoFar": "{count} offers received",
+    "viewOffers": "View offers"
+  },
+  "offers": {
+    "title": "Offers",
+    "accept": "Accept",
+    "decline": "Decline",
+    "premium": "Premium member",
+    "verified": "Verified",
+    "newOffers": "New offers",
+    "empty": "No offers yet",
+    "emptyHint": "Waiting for craftsmen to answer your request"
+  },
+  "tracking": {
+    "title": "Track craftsman",
+    "eta": "Arrives in {minutes} min",
+    "arrived": "Arrived",
+    "call": "Call",
+    "message": "Chat",
+    "providerComing": "Your craftsman is on the way",
+    "status": "Request status"
+  },
+  "home": {
+    "greeting": "Hi {name}",
+    "howItWorks": "How it works",
+    "step1": "Post your request",
+    "step1Hint": "Say what you need and set your price",
+    "step2": "Craftsmen compete",
+    "step2Hint": "Offers arrive from providers near you",
+    "step3": "Pick and confirm",
+    "step3Hint": "Track the craftsman until arrival"
+  },
+  "providerHome": {
+    "online": "Available",
+    "offline": "Unavailable",
+    "availableNow": "You are available for requests",
+    "unavailableNow": "You are unavailable — no requests will arrive",
+    "nearbyRequests": "Requests near you",
+    "activeJob": "Active job",
+    "todayEarnings": "Today's earnings",
+    "toggleHint": "Toggle your status to receive requests"
   }
 }

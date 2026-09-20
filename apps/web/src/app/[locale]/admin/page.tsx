@@ -17,6 +17,8 @@ import {
 } from '@/lib/admin-api';
 import { formatMinor } from '@/lib/payments-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
  * Admin console.
@@ -94,37 +96,50 @@ function AdminView() {
   const tabs: Tab[] = ['overview', 'payments', 'transactions', 'wallets', 'payouts', 'providers', 'requests', 'audit'];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-black tracking-tight">{t('admin.title')}</h1>
+    <div className="app-shell container-page py-5">
+      <h1 className="mb-5 text-2xl font-extrabold tracking-tight">{t('admin.title')}</h1>
 
-      <nav className="mb-6 flex flex-wrap gap-2 text-sm">
+      <nav className="mb-5 flex flex-wrap gap-2 text-sm">
         {tabs.map((x) => (
           <button
             key={x} onClick={() => setTab(x)}
-            className={`rounded-full px-3 py-1.5 ${tab === x ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'border border-black/15 dark:border-white/20'}`}
+            className={`chip ${tab === x ? 'chip-brand' : 'chip-neutral'}`}
           >
             {t(`admin.${x}`)}
           </button>
         ))}
       </nav>
 
-      {error && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/50">{error}</p>}
-      {notice && <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-950/50">{notice}</p>}
+      {error && (
+        <div className="card mb-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+        </div>
+      )}
+      {notice && (
+        <div className="card mb-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          <span className="flex-1">{notice}</span>
+        </div>
+      )}
 
       {loading ? (
-        <p className="opacity-60">…</p>
+        <div className="card flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
       ) : (
         <>
           {tab === 'overview' && stats && (
-            <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Card label={t('admin.activeUsers')} value={String(stats.active_users)} />
-              <Card label={t('admin.activeProviders')} value={String(stats.active_providers)} />
-              <Card label={t('admin.requests7d')} value={String(stats.requests_7d)} />
-              <Card label={t('admin.jobs7d')} value={String(stats.jobs_7d)} />
-              <Card label={t('admin.openDisputes')} value={String(stats.open_disputes)} />
-              <Card label={t('admin.pendingPayouts')} value={String(stats.pending_payouts)} />
-              <Card label={t('admin.gmv30d')} value={formatMinor(Number(stats.gmv_30d_minor), 'MAD', locale)} />
-              <Card label={t('admin.revenue30d')} value={formatMinor(Number(stats.revenue_30d_minor), 'MAD', locale)} accent />
+            <section className="grid grid-cols-2 gap-3">
+              <Card label={t('admin.activeUsers')} value={String(stats.active_users)} icon="user" />
+              <Card label={t('admin.activeProviders')} value={String(stats.active_providers)} icon="badge" />
+              <Card label={t('admin.requests7d')} value={String(stats.requests_7d)} icon="checklist" />
+              <Card label={t('admin.jobs7d')} value={String(stats.jobs_7d)} icon="wrench" />
+              <Card label={t('admin.openDisputes')} value={String(stats.open_disputes)} icon="shield" />
+              <Card label={t('admin.pendingPayouts')} value={String(stats.pending_payouts)} icon="wallet" />
+              <Card label={t('admin.gmv30d')} value={formatMinor(Number(stats.gmv_30d_minor), 'MAD', locale)} icon="radar" />
+              <Card label={t('admin.revenue30d')} value={formatMinor(Number(stats.revenue_30d_minor), 'MAD', locale)} icon="crown" accent />
             </section>
           )}
 
@@ -148,96 +163,143 @@ function AdminView() {
           )}
 
           {tab === 'wallets' && (
-            <div className="overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10">
-              <table className="w-full text-sm">
-                <thead className="bg-black/5 text-left dark:bg-white/5">
-                  <tr>
-                    <th className="px-4 py-2">Owner</th>
-                    <th className="px-4 py-2">{t('payment.availableBalance')}</th>
-                    <th className="px-4 py-2">{t('payment.reservedBalance')}</th>
-                    <th className="px-4 py-2">{t('admin.adjust')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {wallets.map((w) => (
-                    <tr key={w.id} className="border-t border-black/5 dark:border-white/5">
-                      <td className="px-4 py-2">{w.owner_name ?? w.owner_email ?? w.owner_id.slice(0, 8)}<span className="ml-2 text-xs opacity-50">{w.owner_type}</span></td>
-                      <td className="px-4 py-2 font-medium">{formatMinor(w.available_minor, w.currency, locale)}</td>
-                      <td className="px-4 py-2 opacity-70">{formatMinor(w.reserved_minor, w.currency, locale)}</td>
-                      <td className="px-4 py-2">
-                        <button
-                          className="rounded-lg border border-black/15 px-2 py-1 text-xs dark:border-white/20"
-                          onClick={() => {
-                            const input = window.prompt(t('payment.amount') + ' (MAD)');
-                            if (!input) return;
-                            const amountMinor = Math.round(Number(input) * 100);
-                            if (!Number.isFinite(amountMinor) || amountMinor <= 0) return;
-                            const reason = window.prompt(t('admin.reason')) ?? 'Manual adjustment';
-                            void act(() => adminApi.adjustWallet(w.id, { direction: 'CREDIT', amountMinor, reason }), t('admin.adjust'));
-                          }}
-                        >
-                          + {t('admin.credit')}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            wallets.length === 0 ? (
+              <EmptyState title={t('admin.empty')} icon={<CategoryIcon name="wallet" size={26} />} />
+            ) : (
+              <ul className="space-y-2">
+                {wallets.map((w, index) => (
+                  <li
+                    key={w.id}
+                    className="card card-tap slide-in p-4 text-sm"
+                    style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="icon-tile icon-tile-neutral h-10 w-10">
+                        <CategoryIcon name="wallet" size={20} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-bold">
+                          {w.owner_name ?? w.owner_email ?? w.owner_id.slice(0, 8)}
+                        </p>
+                        <p className="text-xs text-[rgb(var(--fg-subtle))]">{w.owner_type}</p>
+                      </div>
+                      <span className="chip chip-neutral">{t('admin.adjust')}</span>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                          {t('payment.availableBalance')}
+                        </p>
+                        <p className="tnum mt-0.5 font-bold">{formatMinor(w.available_minor, w.currency, locale)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                          {t('payment.reservedBalance')}
+                        </p>
+                        <p className="tnum mt-0.5 text-[rgb(var(--fg-muted))]">{formatMinor(w.reserved_minor, w.currency, locale)}</p>
+                      </div>
+                    </div>
+
+                    <button
+                      className="btn btn-secondary mt-3 w-full"
+                      onClick={() => {
+                        const input = window.prompt(t('payment.amount') + ' (MAD)');
+                        if (!input) return;
+                        const amountMinor = Math.round(Number(input) * 100);
+                        if (!Number.isFinite(amountMinor) || amountMinor <= 0) return;
+                        const reason = window.prompt(t('admin.reason')) ?? 'Manual adjustment';
+                        void act(() => adminApi.adjustWallet(w.id, { direction: 'CREDIT', amountMinor, reason }), t('admin.adjust'));
+                      }}
+                    >
+                      <CategoryIcon name="plus" size={16} />
+                      {t('admin.credit')}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )
           )}
 
           {tab === 'payouts' && (
-            <div className="space-y-2">
-              {payouts.length === 0 && <p className="opacity-60">{t('admin.empty')}</p>}
-              {payouts.map((p) => (
-                <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/10 px-4 py-3 text-sm dark:border-white/10">
-                  <span className="font-medium">{formatMinor(p.amount_minor, p.currency, locale)}</span>
-                  <span className="opacity-70">{p.provider_name ?? p.provider_email}</span>
-                  <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">{p.status}</span>
-                  {p.status === 'REQUESTED' && (
-                    <span className="flex gap-2">
-                      <button className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-medium text-white"
-                        onClick={() => act(() => adminApi.processPayout(p.id, 'APPROVE'), t('admin.process'))}>
-                        {t('admin.approve')}
-                      </button>
-                      <button className="rounded-lg border border-red-400 px-3 py-1 text-xs font-medium text-red-600"
-                        onClick={() => {
-                          const reason = window.prompt(t('admin.reason')) ?? 'Rejected';
-                          void act(() => adminApi.processPayout(p.id, 'REJECT', reason), t('admin.process'));
-                        }}>
-                        {t('admin.reject')}
-                      </button>
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+            payouts.length === 0 ? (
+              <EmptyState title={t('admin.empty')} icon={<CategoryIcon name="wallet" size={26} />} />
+            ) : (
+              <ul className="space-y-2">
+                {payouts.map((p, index) => (
+                  <li
+                    key={p.id}
+                    className="card card-tap slide-in p-4 text-sm"
+                    style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="tnum text-lg font-black">{formatMinor(p.amount_minor, p.currency, locale)}</span>
+                      <span className="chip chip-neutral">{p.status}</span>
+                    </div>
+                    <p className="mt-1 truncate text-[rgb(var(--fg-muted))]">{p.provider_name ?? p.provider_email}</p>
+                    {p.status === 'REQUESTED' && (
+                      <div className="mt-3 flex gap-2">
+                        <button className="btn btn-primary flex-1"
+                          onClick={() => act(() => adminApi.processPayout(p.id, 'APPROVE'), t('admin.process'))}>
+                          <CategoryIcon name="check" size={16} />
+                          {t('admin.approve')}
+                        </button>
+                        <button className="btn btn-danger flex-1"
+                          onClick={() => {
+                            const reason = window.prompt(t('admin.reason')) ?? 'Rejected';
+                            void act(() => adminApi.processPayout(p.id, 'REJECT', reason), t('admin.process'));
+                          }}>
+                          <CategoryIcon name="x" size={16} />
+                          {t('admin.reject')}
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )
           )}
 
           {tab === 'providers' && (
-            <div className="space-y-2">
-              {providers.length === 0 && <p className="opacity-60">{t('admin.empty')}</p>}
-              {providers.map((p) => (
-                <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/10 px-4 py-3 text-sm dark:border-white/10">
-                  <span className="font-medium">{p.display_name ?? p.owner_name ?? p.owner_email}</span>
-                  <span className="opacity-70">{p.owner_email ?? p.owner_phone}</span>
-                  <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">{p.verification_status}</span>
-                  <span className="flex gap-2">
-                    <button className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-medium text-white"
-                      onClick={() => act(() => adminApi.verifyProvider(p.id, 'APPROVE'), t('admin.approve'))}>
-                      {t('admin.approve')}
-                    </button>
-                    <button className="rounded-lg border border-red-400 px-3 py-1 text-xs font-medium text-red-600"
-                      onClick={() => {
-                        const reason = window.prompt(t('admin.reason')) ?? 'Rejected';
-                        void act(() => adminApi.verifyProvider(p.id, 'REJECT', reason), t('admin.reject'));
-                      }}>
-                      {t('admin.reject')}
-                    </button>
-                  </span>
-                </div>
-              ))}
-            </div>
+            providers.length === 0 ? (
+              <EmptyState title={t('admin.empty')} icon={<CategoryIcon name="badge" size={26} />} />
+            ) : (
+              <ul className="space-y-2">
+                {providers.map((p, index) => (
+                  <li
+                    key={p.id}
+                    className="card card-tap slide-in p-4 text-sm"
+                    style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="icon-tile h-10 w-10">
+                        <CategoryIcon name="badge" size={20} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-bold">{p.display_name ?? p.owner_name ?? p.owner_email}</p>
+                        <p className="truncate text-xs text-[rgb(var(--fg-muted))]">{p.owner_email ?? p.owner_phone}</p>
+                      </div>
+                      <span className="chip chip-warn">{p.verification_status}</span>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <button className="btn btn-primary flex-1"
+                        onClick={() => act(() => adminApi.verifyProvider(p.id, 'APPROVE'), t('admin.approve'))}>
+                        <CategoryIcon name="check" size={16} />
+                        {t('admin.approve')}
+                      </button>
+                      <button className="btn btn-danger flex-1"
+                        onClick={() => {
+                          const reason = window.prompt(t('admin.reason')) ?? 'Rejected';
+                          void act(() => adminApi.verifyProvider(p.id, 'REJECT', reason), t('admin.reject'));
+                        }}>
+                        <CategoryIcon name="x" size={16} />
+                        {t('admin.reject')}
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )
           )}
 
           {tab === 'requests' && (
@@ -260,31 +322,40 @@ function AdminView() {
           )}
         </>
       )}
-    </main>
+    </div>
   );
 }
 
-function Card({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Card({ label, value, icon, accent }: { label: string; value: string; icon: Parameters<typeof CategoryIcon>[0]['name']; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-4 ${accent ? 'border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/20' : 'border-black/10 dark:border-white/10'}`}>
-      <p className="text-xs uppercase tracking-wide opacity-60">{label}</p>
-      <p className="mt-1 text-xl font-black">{value}</p>
+    <div className={`card p-4 ${accent ? 'card-featured' : ''}`}>
+      <span className={`icon-tile h-9 w-9 ${accent ? '' : 'icon-tile-neutral'}`}>
+        <CategoryIcon name={icon} size={18} />
+      </span>
+      <p className="mt-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">{label}</p>
+      <p className="tnum mt-0.5 text-lg font-black">{value}</p>
     </div>
   );
 }
 
 function Table({ head, rows, empty }: { head: string[]; rows: React.ReactNode[][]; empty: string }) {
-  if (rows.length === 0) return <p className="opacity-60">{empty}</p>;
+  if (rows.length === 0) {
+    return <EmptyState title={empty} icon={<CategoryIcon name="doc" size={26} />} />;
+  }
   return (
-    <div className="overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10">
+    <div className="card overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-black/5 text-left dark:bg-white/5">
-          <tr>{head.map((h) => <th key={h} className="px-4 py-2">{h}</th>)}</tr>
+        <thead className="bg-[rgb(var(--surface-3))]">
+          <tr>
+            {head.map((h) => (
+              <th key={h} className="px-4 py-2.5 text-start font-semibold text-[rgb(var(--fg-muted))]">{h}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-t border-black/5 dark:border-white/5">
-              {r.map((c, j) => <td key={j} className="px-4 py-2">{c}</td>)}
+            <tr key={i} className="border-t border-[rgb(var(--line))]">
+              {r.map((c, j) => <td key={j} className="px-4 py-2.5">{c}</td>)}
             </tr>
           ))}
         </tbody>

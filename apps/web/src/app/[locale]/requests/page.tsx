@@ -7,10 +7,14 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { requestsApi, type RequestSummary } from '@/lib/requests-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Price, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
- * The customer's own requests. The API scopes the query by the authenticated
- * user, so this list can never contain another customer's request.
+ * The customer's own requests, as cards.
+ *
+ * The API scopes the query by the authenticated user, so this list can never
+ * contain another customer's request.
  */
 export default function MyRequestsPage() {
   return (
@@ -44,51 +48,66 @@ function MyRequestsView() {
     void load();
   }, [load]);
 
-  const OPEN = ['DRAFT', 'PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED', 'CONFIRMED', 'IN_PROGRESS'];
+  const OPEN = [
+    'DRAFT',
+    'PUBLISHED',
+    'MATCHING',
+    'RECEIVING_OFFERS',
+    'PROVIDER_SELECTED',
+    'CONFIRMED',
+    'IN_PROGRESS',
+  ];
   const DONE = ['COMPLETED', 'CANCELLED', 'EXPIRED', 'REFUNDED', 'FAILED', 'DISPUTED'];
   const filtered =
-    tab === 'open' ? items.filter((r) => OPEN.includes(r.status))
-    : tab === 'done' ? items.filter((r) => DONE.includes(r.status))
-    : items;
+    tab === 'open'
+      ? items.filter((r) => OPEN.includes(r.status))
+      : tab === 'done'
+        ? items.filter((r) => DONE.includes(r.status))
+        : items;
+
+  const tabs = [
+    ['all', t('dashboard.overview')],
+    ['open', t('dashboard.openRequests')],
+    ['done', t('status.COMPLETED')],
+  ] as const;
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <div className="flex items-center justify-between gap-4">
+    <div className="app-shell container-page py-5">
+      <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{t('request.myTitle')}</h1>
-          <p className="mt-1 text-sm opacity-70">{t('request.mySubtitle')}</p>
+          <h1 className="text-2xl font-black tracking-tight">{t('request.myTitle')}</h1>
+          <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('request.mySubtitle')}</p>
         </div>
         <Link
           href={`/${locale}/requests/new`}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-slate-900"
+          className="btn btn-primary h-11 w-11 flex-none !p-0"
+          aria-label={t('nav.newRequest')}
         >
-          {t('nav.newRequest')}
+          <CategoryIcon name="plus" size={22} />
         </Link>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2 text-sm">
-        {([
-          ['all', t('dashboard.overview')],
-          ['open', t('dashboard.openRequests')],
-          ['done', t('status.COMPLETED')],
-        ] as const).map(([key, label]) => (
+      {/* Filter rail */}
+      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4">
+        {tabs.map(([key, label]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={
-              tab === key
-                ? 'rounded-full bg-slate-900 px-3 py-1 font-semibold text-white dark:bg-white dark:text-slate-900'
-                : 'rounded-full border border-black/15 px-3 py-1 opacity-70 hover:opacity-100 dark:border-white/20'
-            }
+            className={tab === key ? 'chip chip-brand h-9 px-4 text-sm' : 'chip chip-neutral h-9 px-4 text-sm'}
           >
             {label}
           </button>
         ))}
       </div>
 
-      {loading && <p className="mt-6 opacity-60">{t('common.loading')}</p>}
+      {loading && (
+        <div className="flex justify-center py-16">
+          <Spinner size={26} />
+        </div>
+      )}
+
       {error && (
-        <p className="mt-6 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="card border-[rgb(var(--danger)/0.35)] p-4 text-sm font-semibold text-[rgb(var(--danger))]">
           {error}{' '}
           <button onClick={load} className="underline">
             {t('common.retry')}
@@ -97,42 +116,68 @@ function MyRequestsView() {
       )}
 
       {!loading && !error && filtered.length === 0 && (
-        <div className="mt-10 rounded-2xl border border-dashed border-black/15 p-10 text-center dark:border-white/15">
-          <p className="opacity-70">{t('request.empty')}</p>
-          <Link href={`/${locale}/requests/new`} className="mt-3 inline-block text-sm font-medium underline">
+        <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
+          <span className="icon-tile h-16 w-16">
+            <CategoryIcon name="checklist" size={28} />
+          </span>
+          <p className="text-base font-bold">{t('request.empty')}</p>
+          <Link href={`/${locale}/requests/new`} className="btn btn-primary">
+            <CategoryIcon name="plus" size={18} />
             {t('request.createFirst')}
           </Link>
         </div>
       )}
 
-      <ul className="mt-6 space-y-3">
-        {filtered.map((r) => (
-          <li key={r.id}>
-            <Link
-              href={`/${locale}/requests/${r.id}`}
-              className="flex items-center justify-between gap-4 rounded-xl border border-black/10 p-4 transition hover:border-slate-900 dark:border-white/15 dark:hover:border-white"
-            >
-              <div className="min-w-0">
-                <div className="truncate font-semibold">{r.title || r.service_name}</div>
-                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs opacity-60">
-                  <span className="mono">{r.code}</span>
-                  <span>{r.service_name}</span>
-                  {r.pickup_city_name && <span>{r.pickup_city_name}</span>}
-                  <span>
-                    {t('request.createdAt')}: {new Date(r.created_at).toLocaleDateString(locale)}
-                  </span>
-                  {r.offer_count > 0 && (
-                    <span>
+      {!loading && filtered.length > 0 && (
+        <>
+          <SectionTitle>{t('request.myTitle')}</SectionTitle>
+          <ul className="space-y-2.5">
+            {filtered.map((r, index) => (
+              <li key={r.id}>
+                <Link
+                  href={`/${locale}/requests/${r.id}`}
+                  className="card card-tap slide-in block p-4"
+                  style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
+                      <span className="icon-tile h-11 w-11">
+                        <CategoryIcon name="checklist" size={21} />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[0.9375rem] font-bold">
+                          {r.title || r.service_name}
+                        </p>
+                        <p className="tnum mt-0.5 truncate text-xs text-[rgb(var(--fg-subtle))]">
+                          {r.code}
+                          {r.pickup_city_name ? ` · ${r.pickup_city_name}` : ''}
+                          {' · '}
+                          {new Date(r.created_at).toLocaleDateString(locale)}
+                        </p>
+                      </div>
+                    </div>
+                    <StatusBadge status={r.status} />
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between border-t border-[rgb(var(--line))] pt-3">
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-[rgb(var(--brand-700))]">
+                      <CategoryIcon name="chat" size={14} />
                       {r.offer_count} {t('request.offer')}
                     </span>
-                  )}
-                </div>
-              </div>
-              <StatusBadge status={r.status} />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </main>
+                    {(r.budget_min_minor != null || r.budget_max_minor != null) && (
+                      <Price
+                        minor={r.budget_min_minor ?? r.budget_max_minor}
+                        currency={r.currency}
+                        size="sm"
+                      />
+                    )}
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
   );
 }

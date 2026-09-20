@@ -41,3 +41,4 @@ temp/
 uploads/
 *.sqlite
 *.sqlite3
+.bcode/bin/

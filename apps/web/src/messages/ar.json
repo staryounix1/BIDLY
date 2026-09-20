@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "BIDLY",
-    "tagline": "اطلب أي خدمة، ودع المزوّدين يتنافسون"
+    "name": "Khdemli",
+    "tagline": "اطلب أي خدمة، ودع الحرفيين يتنافسون",
+    "copyright": "© {year} Khdemli — جميع الحقوق محفوظة"
   },
   "nav": {
     "home": "الرئيسية",
@@ -20,7 +21,9 @@
     "notifications": "الإشعارات",
     "wallet": "المحفظة",
     "admin": "الإدارة",
-    "adminDashboard": "لوحة التحكم"
+    "adminDashboard": "لوحة التحكم",
+    "signIn": "دخول",
+    "signOut": "خروج"
   },
   "common": {
     "signIn": "تسجيل الدخول",
@@ -103,7 +106,7 @@
     "subtitle": "اختر الخدمة التي تحتاجها لإنشاء طلب",
     "searchServices": "ابحث عن خدمة…",
     "noServices": "لا توجد خدمات مطابقة.",
-    "chooseService": "اختر الخدمة",
+    "chooseService": "شنو محتاج اليوم؟",
     "from": "من",
     "minPrice": "أقل سعر",
     "maxPrice": "أعلى سعر",
@@ -130,7 +133,20 @@
       "HOURLY": "بالساعة",
       "QUOTE": "طلب تسعيرة",
       "INSPECTION": "معاينة أولاً"
-    }
+    },
+    "chooseServiceHint": "اختر الخدمة، حدّد السعر، والحرفيين القريبين غادي يتنافسو",
+    "searchPlaceholder": "قلّب على خدمة…",
+    "all": "الكل",
+    "availableServices": "الخدمات المتوفرة",
+    "noResults": "ما لقيناش شي حاجة",
+    "noResultsHint": "جرّب كلمة أخرى ولا اختار فئة مختلفة",
+    "providersAvailable": "{count} حرفي متوفر",
+    "noProvidersYet": "لا يوجد حرفي متوفر حالياً",
+    "trustVerified": "حرفيين موثّقين",
+    "trustVerifiedHint": "هوية متحقَّق منها",
+    "trustPrice": "السعر بيدك",
+    "trustPriceHint": "بلا وسيط",
+    "popular": "الأكثر طلباً"
   },
   "request": {
     "newTitle": "طلب خدمة",
@@ -240,7 +256,9 @@
     "round": "الجولة",
     "invalidPrice": "أدخل سعراً صحيحاً.",
     "alreadyOffered": "لديك عرض فعّال على هذا الطلب بالفعل.",
-    "bestPrice": "أفضل سعر"
+    "bestPrice": "أفضل سعر",
+    "customerOffer": "السعر المقترح من الزبون",
+    "counterWith": "اقترح سعرك"
   },
   "provider": {
     "title": "ملف المزوّد",
@@ -589,5 +607,62 @@
     "unsupported": "متصفحك لا يدعم الإشعارات الفورية.",
     "notConfigured": "الإشعارات غير مهيّأة على هذا الخادم بعد.",
     "failed": "تعذّر تفعيل الإشعارات. حاول مرة أخرى."
+  },
+  "compose": {
+    "title": "أنشئ طلبك",
+    "destination": "الوجهة / تفاصيل الخدمة",
+    "destinationPlaceholder": "مثال: إصلاح صنبور في الحمام",
+    "yourPrice": "السعر المقترح",
+    "sendRequest": "أرسل الطلب",
+    "sending": "جارٍ الإرسال…",
+    "priceHint": "عدّل السعر بـ + و −",
+    "mapHint": "حدّد موقعك على الخريطة",
+    "pickLocation": "حدّد الموقع"
+  },
+  "searching": {
+    "looking": "جارٍ البحث عن حرفيين قريبين…",
+    "elapsed": "مرّ {seconds} ثانية",
+    "cancel": "إلغاء",
+    "offersSoFar": "{count} عرض توصل",
+    "viewOffers": "شوف العروض"
+  },
+  "offers": {
+    "title": "العروض",
+    "accept": "قبول",
+    "decline": "تجاهل",
+    "premium": "عضو Premium",
+    "verified": "موثّق",
+    "newOffers": "عروض جديدة",
+    "empty": "ما توصل حتى عرض دابا",
+    "emptyHint": "كنتسناو الحرفيين يردّو على طلبك"
+  },
+  "tracking": {
+    "title": "تتبّع الحرفي",
+    "eta": "يوصل فـ {minutes} دقيقة",
+    "arrived": "وصل",
+    "call": "اتصال",
+    "message": "دردشة",
+    "providerComing": "الحرفي في الطريق إليك",
+    "status": "حالة الطلب"
+  },
+  "home": {
+    "greeting": "أهلاً {name}",
+    "howItWorks": "كيفاش خدام؟",
+    "step1": "انشر طلبك",
+    "step1Hint": "قول شنو محتاج وحدّد السعر",
+    "step2": "الحرفيين يتنافسو",
+    "step2Hint": "توصلك عروض من القريبين منك",
+    "step3": "اختر وأكّد",
+    "step3Hint": "تتبّع الحرفي حتى يوصل"
+  },
+  "providerHome": {
+    "online": "متاح",
+    "offline": "غير متاح",
+    "availableNow": "أنت متاح لاستقبال الطلبات",
+    "unavailableNow": "أنت غير متاح — لن تصلك طلبات",
+    "nearbyRequests": "طلبات قريبة منك",
+    "activeJob": "مهمة جارية",
+    "todayEarnings": "مداخيل اليوم",
+    "toggleHint": "بدّل حالتك باش تستقبل الطلبات"
   }
 }

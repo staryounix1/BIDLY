@@ -1,117 +1,148 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from './auth-provider';
 import { useI18n } from './i18n-provider';
 import { NotificationBell } from './notification-bell';
+import { CategoryIcon, KhdemliLogo } from './icons';
 
 /**
- * Top navigation shared by the customer-facing pages.
+ * App chrome — header and thumb-reach bottom nav.
  *
- * Links are locale-prefixed and the active route is highlighted. Signed-in
- * users get an account menu; visitors get sign-in / sign-up. This is purely
- * presentational — route access is still enforced by RequireAuth and, above
- * all, by the API.
+ * The product is used one-handed next to a job site, so the primary
+ * destinations live at the bottom of the screen and the header only carries
+ * identity: where you are, and whether you have notifications.
  */
+
+interface Tab {
+  href: string;
+  key: string;
+  icon: string;
+}
+
 export function AppHeader() {
   const { t, locale } = useI18n();
-  const { user, ready, signOut } = useAuth();
+  const { user, ready } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
 
-  const links: Array<{ href: string; key: string }> = [
-    { href: `/${locale}`, key: 'home' },
-    { href: `/${locale}/services`, key: 'services' },
-  ];
+  const homeHref = `/${locale}`;
+  const isHome = pathname === homeHref;
 
-  if (user?.role === 'CUSTOMER') {
-    links.push({ href: `/${locale}/dashboard`, key: 'dashboard' });
-    links.push({ href: `/${locale}/requests`, key: 'requests' });
-    links.push({ href: `/${locale}/jobs`, key: 'jobs' });
-    links.push({ href: `/${locale}/messages`, key: 'messages' });
-  }
+  return (
+    <header className="surface-blur sticky top-0 z-20 border-b border-[rgb(var(--line))]">
+      <div className="container-page">
+        <div className="flex items-center justify-between gap-3 py-3">
+          <Link href={homeHref} aria-label={t('app.name')}>
+            <KhdemliLogo size={30} />
+          </Link>
 
-  if (user?.role === 'PROVIDER' || user?.role === 'ADMIN') {
-    links.push({ href: `/${locale}/provider/dashboard`, key: 'providerDash' });
-    links.push({ href: `/${locale}/provider/requests`, key: 'feed' });
-    links.push({ href: `/${locale}/provider/jobs`, key: 'providerJobs' });
-    links.push({ href: `/${locale}/provider/offers`, key: 'offers' });
-    links.push({ href: `/${locale}/provider/history`, key: 'providerHistory' });
-    links.push({ href: `/${locale}/wallet`, key: 'wallet' });
-    links.push({ href: `/${locale}/messages`, key: 'messages' });
-  }
+          <div className="flex items-center gap-2 text-sm">
+            {ready && user ? (
+              <>
+                <NotificationBell />
+                <Link
+                  href={user.role === 'PROVIDER' ? `/${locale}/provider/profile` : `/${locale}/profile`}
+                  className="btn btn-secondary h-10 w-10 !p-0"
+                  aria-label={t('nav.profile')}
+                >
+                  <CategoryIcon name="user" size={18} />
+                </Link>
+              </>
+            ) : ready ? (
+              <Link href={`/${locale}/login`} className="btn btn-secondary">
+                {t('common.signIn')}
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
-  if (user?.role === 'ADMIN') {
-    links.push({ href: `/${locale}/admin`, key: 'admin' });
+      {/* A thin aqua progress hairline keeps the bar from feeling dead. */}
+      {!isHome && <div className="h-0.5 w-full bg-[rgb(var(--brand-500)/0.35)]" />}
+    </header>
+  );
+}
+
+/**
+ * Bottom navigation. Rendered per role so a provider never sees customer tabs
+ * (and vice versa); visitors get browse + sign-in prompts instead.
+ */
+export function BottomNav() {
+  const { t, locale } = useI18n();
+  const { user } = useAuth();
+  const pathname = usePathname();
+
+  let tabs: Tab[];
+
+  if (!user) {
+    tabs = [
+      { href: `/${locale}`, key: 'home', icon: 'home' },
+      { href: `/${locale}/services`, key: 'services', icon: 'layers' },
+      { href: `/${locale}/requests/new`, key: 'newRequest', icon: 'plus' },
+      { href: `/${locale}/login`, key: 'signIn', icon: 'user' },
+    ];
+  } else if (user.role === 'PROVIDER' || user.role === 'ADMIN') {
+    tabs = [
+      { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
+      { href: `/${locale}/provider/requests`, key: 'feed', icon: 'radar' },
+      { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
+      { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
+      { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+    ];
+  } else {
+    tabs = [
+      { href: `/${locale}`, key: 'home', icon: 'home' },
+      { href: `/${locale}/services`, key: 'services', icon: 'layers' },
+      { href: `/${locale}/requests`, key: 'requests', icon: 'checklist' },
+      { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+      { href: `/${locale}/profile`, key: 'profile', icon: 'user' },
+    ];
   }
 
   const isActive = (href: string) =>
     href === `/${locale}` ? pathname === href : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-black/10 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-slate-950/80">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <div className="flex items-center gap-5">
-          <Link href={`/${locale}`} className="text-lg font-black tracking-tight">
-            {t('app.name')}
-          </Link>
-          <nav className="hidden gap-4 text-sm sm:flex">
-            {links.map((l) => (
-              <Link
-                key={l.key}
-                href={l.href}
-                className={isActive(l.href) ? 'font-semibold underline' : 'opacity-70 hover:opacity-100'}
-              >
-                {t(`nav.${l.key}`)}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-3 text-sm">
-          {ready && user ? (
-            <>
-              <NotificationBell />
-              {user.role === 'CUSTOMER' && (
-                <Link
-                  href={`/${locale}/requests/new`}
-                  className="rounded-lg bg-slate-900 px-3 py-1.5 font-medium text-white dark:bg-white dark:text-slate-900"
-                >
-                  {t('nav.newRequest')}
-                </Link>
+    <nav
+      className="surface-blur fixed inset-x-0 bottom-0 z-20 border-t border-[rgb(var(--line))]"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      <div className="app-shell flex items-stretch justify-around px-1">
+        {tabs.map((tab) => {
+          const active = isActive(tab.href);
+          return (
+            <Link
+              key={tab.key}
+              href={tab.href}
+              className="relative flex flex-1 flex-col items-center gap-1 py-2.5"
+              style={{
+                color: active ? 'rgb(var(--brand-700))' : 'rgb(var(--fg-muted))',
+              }}
+            >
+              {active && (
+                <span className="absolute top-0 h-1 w-8 rounded-full bg-[rgb(var(--brand-500))]" />
               )}
-              <Link
-                href={user.role === 'PROVIDER' ? `/${locale}/provider/profile` : `/${locale}/profile`}
-                className="opacity-70 hover:opacity-100"
-              >
-                {t('nav.profile')}
-              </Link>
-              <button
-                onClick={async () => {
-                  await signOut();
-                  router.push(`/${locale}`);
-                }}
-                className="opacity-70 hover:opacity-100"
-              >
-                {t('common.signOut')}
-              </button>
-            </>
-          ) : ready ? (
-            <>
-              <Link href={`/${locale}/login`} className="opacity-70 hover:opacity-100">
-                {t('common.signIn')}
-              </Link>
-              <Link
-                href={`/${locale}/register`}
-                className="rounded-lg border border-black/15 px-3 py-1.5 font-medium dark:border-white/20"
-              >
-                {t('common.signUp')}
-              </Link>
-            </>
-          ) : null}
-        </div>
+              <CategoryIcon name={tab.icon} size={22} />
+              <span className="text-[0.6875rem] font-bold">{t(`nav.${tab.key}`)}</span>
+            </Link>
+          );
+        })}
       </div>
-    </header>
+    </nav>
+  );
+}
+
+/**
+ * Site footer with the copyright line. Kept out of the fixed chrome so it only
+ * appears where there is real page content to close.
+ */
+export function AppFooter() {
+  return (
+    <footer className="border-t border-[rgb(var(--line))] px-4 py-8 text-center">
+      <p className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">
+        © {new Date().getFullYear()} Khdemli — جميع الحقوق محفوظة
+      </p>
+    </footer>
   );
 }

@@ -11,6 +11,8 @@ import {
   type AppNotification,
 } from '@/lib/notifications-api';
 import { useRealtime } from '@/lib/realtime-client';
+import { CategoryIcon } from '@/lib/icons';
+import { EmptyState, Spinner } from '@/lib/ui';
 
 /**
  * Notification centre.
@@ -91,24 +93,23 @@ function Centre() {
   const unread = items.filter((n) => !n.is_read).length;
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <div className="app-shell container-page py-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{t('notifications.title')}</h1>
-          <p className="mt-1 text-sm opacity-70">{t('notifications.subtitle')}</p>
+          <h1 className="text-2xl font-extrabold tracking-tight">{t('notifications.title')}</h1>
+          <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('notifications.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/${locale}/notifications/preferences`}
-            className="rounded-lg border border-black/15 px-3 py-1.5 text-sm dark:border-white/20"
-          >
+          <Link href={`/${locale}/notifications/preferences`} className="btn btn-secondary !py-2 !text-sm">
+            <CategoryIcon name="bell" size={15} />
             {t('notifications.preferences')}
           </Link>
           <button
             onClick={onMarkAll}
             disabled={busy || unread === 0}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40 dark:bg-white dark:text-slate-900"
+            className="btn btn-secondary !py-2 !text-sm"
           >
+            <CategoryIcon name="check" size={15} />
             {t('notifications.markAllRead')}
           </button>
         </div>
@@ -119,11 +120,7 @@ function Centre() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={
-              filter === f
-                ? 'rounded-full bg-slate-900 px-3 py-1 font-medium text-white dark:bg-white dark:text-slate-900'
-                : 'rounded-full border border-black/15 px-3 py-1 dark:border-white/20'
-            }
+            className={filter === f ? 'chip chip-brand' : 'chip chip-neutral'}
           >
             {f === 'all' ? t('notifications.all') : `${t('notifications.unreadOnly')}${unread ? ` (${unread})` : ''}`}
           </button>
@@ -131,44 +128,52 @@ function Centre() {
       </div>
 
       {error && (
-        <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}{' '}
-          <button onClick={load} className="underline">{t('common.retry')}</button>
-        </p>
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">{t('common.retry')}</button>
+        </div>
       )}
 
       {loading ? (
-        <p className="mt-6 opacity-60">{t('common.loading')}</p>
+        <div className="card mt-5 flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
       ) : items.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-black/15 p-10 text-center dark:border-white/15">
-          <p className="opacity-70">{t('notifications.empty')}</p>
-          <p className="mt-1 text-sm opacity-60">{t('notifications.emptyHint')}</p>
+        <div className="mt-5">
+          <EmptyState
+            title={t('notifications.empty')}
+            hint={t('notifications.emptyHint')}
+            icon={<CategoryIcon name="bell" size={26} />}
+          />
         </div>
       ) : (
-        <ul className="mt-6 space-y-2">
-          {items.map((n) => {
+        <ul className="mt-5 space-y-2">
+          {items.map((n, i) => {
             const { title, body } = notificationText(n, locale);
             return (
-              <li key={n.id}>
+              <li key={n.id} className="slide-in" style={{ animationDelay: `${i * 35}ms` }}>
                 <button
                   onClick={() => void onOpen(n)}
                   className={
-                    'w-full rounded-xl border p-4 text-start transition-colors ' +
+                    'card card-tap w-full p-4 text-start ' +
                     (n.is_read
-                      ? 'border-black/10 opacity-70 dark:border-white/10'
-                      : 'border-slate-400/60 bg-slate-50 dark:border-slate-500/50 dark:bg-slate-800/40')
+                      ? 'opacity-70'
+                      : 'border-[rgb(var(--brand-500)/0.45)] bg-[rgb(var(--brand-500)/0.07)]')
                   }
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="font-medium">{title}</span>
+                    <span className="font-bold">{title}</span>
                     {!n.is_read && (
-                      <span className="shrink-0 rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                      <span className="chip chip-brand shrink-0">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--brand-600))]" />
                         {t('notifications.new')}
                       </span>
                     )}
                   </div>
-                  {body && <p className="mt-1 text-sm opacity-70">{body}</p>}
-                  <p className="mt-1 text-xs opacity-50">
+                  {body && <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{body}</p>}
+                  <p className="tnum mt-1 text-xs text-[rgb(var(--fg-subtle))]">
                     {new Date(n.created_at).toLocaleString(locale)}
                   </p>
                 </button>
@@ -177,6 +182,6 @@ function Centre() {
           })}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

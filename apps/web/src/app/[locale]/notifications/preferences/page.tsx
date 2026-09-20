@@ -9,6 +9,8 @@ import {
   getPreferences, savePreferences, type NotificationPreferences,
 } from '@/lib/notifications-api';
 import { usePushNotifications } from '@/lib/push-notifications';
+import { CategoryIcon } from '@/lib/icons';
+import { SectionTitle, Spinner } from '@/lib/ui';
 
 /**
  * Notification preferences.
@@ -72,39 +74,48 @@ function Preferences() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <div className="app-shell container-page py-5">
       <header>
-        <Link href={`/${locale}/notifications`} className="text-sm opacity-60 hover:opacity-100">
-          ← {t('notifications.title')}
+        <Link
+          href={`/${locale}/notifications`}
+          className="btn btn-ghost mb-2 -ms-2 !px-2"
+        >
+          <CategoryIcon name="arrow" size={16} className="rtl:rotate-180" />
+          {t('notifications.title')}
         </Link>
-        <h1 className="mt-1 text-2xl font-bold">{t('notifications.preferences')}</h1>
-        <p className="mt-1 text-sm opacity-70">{t('notifications.preferencesHint')}</p>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('notifications.preferences')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('notifications.preferencesHint')}</p>
       </header>
 
       {error && (
-        <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}{' '}
-          <button onClick={load} className="underline">{t('common.retry')}</button>
-        </p>
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">{t('common.retry')}</button>
+        </div>
       )}
       {saved && (
-        <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {t('common.save')} ✓
-        </p>
+        <div className="card mt-4 flex items-center gap-2 border-[rgb(var(--ok)/0.35)] p-3 text-sm text-[rgb(var(--ok))]">
+          <CategoryIcon name="check" size={16} />
+          {t('common.save')}
+        </div>
       )}
 
       <PushToggle />
 
       {loading ? (
-        <p className="mt-6 opacity-60">{t('common.loading')}</p>
+        <div className="card mt-5 flex items-center justify-center gap-2 px-5 py-10 text-sm text-[rgb(var(--fg-muted))]">
+          <Spinner size={18} />
+          {t('common.loading')}
+        </div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
+        <div className="card mt-5 overflow-x-auto p-4">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-black/10 text-start dark:border-white/10">
-                <th className="py-2 text-start font-medium opacity-70">{t('notifications.title')}</th>
+              <tr className="border-b border-[rgb(var(--line))]">
+                <th className="py-2.5 text-start font-semibold text-[rgb(var(--fg-muted))]">{t('notifications.title')}</th>
                 {CHANNELS.map((c) => (
-                  <th key={c} className="px-2 py-2 text-center font-medium opacity-70">
+                  <th key={c} className="px-2 py-2.5 text-center font-semibold text-[rgb(var(--fg-muted))]">
                     {t(`notifications.${c === 'in_app' ? 'inApp' : c}`)}
                   </th>
                 ))}
@@ -112,7 +123,7 @@ function Preferences() {
             </thead>
             <tbody>
               {prefs.map((p) => (
-                <tr key={p.event_type} className="border-b border-black/5 dark:border-white/5">
+                <tr key={p.event_type} className="border-b border-[rgb(var(--line))]">
                   <td className="py-2.5 pe-2">
                     {t(`notifications.eventTypes.${p.event_type}`) !== `notifications.eventTypes.${p.event_type}`
                       ? t(`notifications.eventTypes.${p.event_type}`)
@@ -124,7 +135,7 @@ function Preferences() {
                         type="checkbox"
                         checked={Boolean(p[c])}
                         onChange={() => toggle(p.event_type, c)}
-                        className="h-4 w-4 align-middle"
+                        className="h-4 w-4 align-middle accent-[rgb(var(--brand-500))]"
                       />
                     </td>
                   ))}
@@ -135,13 +146,14 @@ function Preferences() {
           <button
             onClick={onSave}
             disabled={saving}
-            className="mt-5 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
+            className="btn btn-primary btn-block mt-5"
           >
+            {saving ? <Spinner size={18} /> : <CategoryIcon name="check" size={18} />}
             {t('common.save')}
           </button>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 
@@ -159,9 +171,9 @@ function PushToggle() {
 
   if (!supported || state === 'disabled') {
     return (
-      <div className="mt-5 rounded-2xl border border-black/10 p-4 text-sm dark:border-white/15">
-        <p className="font-medium">{t('push.deviceTitle')}</p>
-        <p className="mt-1 text-xs opacity-60">
+      <div className="card mt-5 p-4 text-sm">
+        <p className="font-bold">{t('push.deviceTitle')}</p>
+        <p className="mt-1 text-xs text-[rgb(var(--fg-subtle))]">
           {state === 'disabled' ? t('push.notConfigured') : t('push.unsupported')}
         </p>
       </div>
@@ -170,24 +182,21 @@ function PushToggle() {
 
   const on = state === 'granted';
   return (
-    <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/10 p-4 dark:border-white/15">
+    <div className="card mt-5 flex flex-wrap items-center justify-between gap-3 p-4">
       <div>
-        <p className="text-sm font-medium">{t('push.deviceTitle')}</p>
-        <p className="mt-0.5 text-xs opacity-60">
+        <p className="text-sm font-bold">{t('push.deviceTitle')}</p>
+        <p className="mt-0.5 text-xs text-[rgb(var(--fg-subtle))]">
           {state === 'denied' ? t('push.denied') : t('push.deviceHint')}
         </p>
-        {error && <p className="mt-1 text-xs text-amber-600">{t('push.failed')}</p>}
+        {error && <p className="mt-1 text-xs text-[rgb(var(--warn))]">{t('push.failed')}</p>}
       </div>
       <button
         type="button"
         onClick={() => void (on ? unsubscribe() : subscribe())}
         disabled={busy || state === 'denied'}
-        className={`rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50 ${
-          on
-            ? 'border border-black/15 dark:border-white/20'
-            : 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-        }`}
+        className={`btn ${on ? 'btn-secondary' : 'btn-primary'}`}
       >
+        {busy ? <Spinner size={18} /> : <CategoryIcon name="bell" size={18} />}
         {busy ? t('common.loading') : on ? t('push.turnOff') : t('push.turnOn')}
       </button>
     </div>

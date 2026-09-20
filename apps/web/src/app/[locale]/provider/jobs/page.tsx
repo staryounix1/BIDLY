@@ -7,17 +7,26 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { jobsApi, providerNextAction, type JobSummary } from '@/lib/jobs-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Price, Spinner } from '@/lib/ui';
 
 /**
- * Provider jobs (task 7 requirements 6 and 8).
+ * Provider jobs.
  *
  * Split into active work and history. "Active" is every status where the
- * provider still has an action to take; everything else is past work. History
- * is scoped by the API to jobs whose provider is the signed-in user, so a
- * provider can never see another provider's jobs.
+ * provider still has an action; everything else is past work. History is scoped
+ * by the API to the signed-in provider, so one provider can never see another's
+ * jobs.
  */
 
-const ACTIVE_STATUSES = ['CREATED', 'CONFIRMED', 'PROVIDER_EN_ROUTE', 'PROVIDER_ARRIVED', 'IN_PROGRESS', 'STARTED'];
+const ACTIVE_STATUSES = [
+  'CREATED',
+  'CONFIRMED',
+  'PROVIDER_EN_ROUTE',
+  'PROVIDER_ARRIVED',
+  'IN_PROGRESS',
+  'STARTED',
+];
 
 export default function ProviderJobsPage() {
   return (
@@ -56,97 +65,104 @@ function ProviderJobsView() {
   const shown = tab === 'active' ? active : history;
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">{t('providerJob.title')}</h1>
-          <p className="mt-1 text-sm opacity-70">{t('providerJob.subtitle')}</p>
-        </div>
-        <Link
-          href={`/${locale}/provider/dashboard`}
-          className="rounded-lg border border-black/15 px-3 py-1.5 text-sm font-medium dark:border-white/20"
-        >
-          {t('providerDash.title')}
-        </Link>
+    <div className="app-shell container-page py-5">
+      <header className="mb-4">
+        <h1 className="text-2xl font-black tracking-tight">{t('providerJob.title')}</h1>
+        <p className="mt-1 text-sm text-[rgb(var(--fg-muted))]">{t('providerJob.subtitle')}</p>
       </header>
 
-      <div className="mb-5 flex flex-wrap gap-2 text-sm">
-        {(['active', 'history'] as const).map((key) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={
-              tab === key
-                ? 'rounded-full bg-slate-900 px-3 py-1 font-semibold text-white dark:bg-white dark:text-slate-900'
-                : 'rounded-full border border-black/15 px-3 py-1 opacity-70 hover:opacity-100 dark:border-white/20'
-            }
-          >
-            {t(`providerJob.tab.${key}`)} ({key === 'active' ? active.length : history.length})
-          </button>
-        ))}
+      <div className="mb-4 flex gap-2">
+        {(['active', 'history'] as const).map((key) => {
+          const count = key === 'active' ? active.length : history.length;
+          return (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={
+                tab === key ? 'chip chip-brand h-9 flex-1 px-4 text-sm' : 'chip chip-neutral h-9 flex-1 px-4 text-sm'
+              }
+            >
+              {t(`providerJob.tab.${key}`)}
+              <span className="tnum">({count})</span>
+            </button>
+          );
+        })}
       </div>
 
       {error && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          <span>{error}</span>
-          <button onClick={() => void load()} className="underline">
+        <div className="card mb-4 flex items-center justify-between gap-3 border-[rgb(var(--danger)/0.35)] p-3.5">
+          <span className="text-sm font-semibold text-[rgb(var(--danger))]">{error}</span>
+          <button onClick={() => void load()} className="text-sm font-bold underline">
             {t('common.retry')}
           </button>
         </div>
       )}
 
       {loading ? (
-        <p className="opacity-60">{t('common.loading')}</p>
+        <div className="flex justify-center py-16">
+          <Spinner size={26} />
+        </div>
       ) : shown.length === 0 ? (
-        <p className="rounded-2xl border border-black/10 px-5 py-10 text-center text-sm opacity-60 dark:border-white/15">
-          {tab === 'active' ? t('providerJob.noActive') : t('providerJob.noHistory')}
-        </p>
+        <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
+          <span className="icon-tile h-16 w-16">
+            <CategoryIcon name="route" size={28} />
+          </span>
+          <p className="text-base font-bold">
+            {tab === 'active' ? t('providerJob.noActive') : t('providerJob.noHistory')}
+          </p>
+        </div>
       ) : (
-        <ul className="space-y-3 sm:grid sm:grid-cols-1 sm:gap-3 sm:space-y-0 lg:grid-cols-2">
-          {shown.map((j) => {
+        <ul className="space-y-2.5">
+          {shown.map((j, index) => {
             const next = providerNextAction(j.status);
+            const isActive = ACTIVE_STATUSES.includes(j.status);
             return (
-              <li key={j.id} className="rounded-2xl border border-black/10 p-4 dark:border-white/15">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <Link
-                      href={`/${locale}/provider/jobs/${j.id}`}
-                      className="text-lg font-semibold hover:underline"
-                    >
-                      {j.code} · {j.service_name ?? t('job.title')}
-                    </Link>
-                    <p className="mt-0.5 text-xs opacity-60">
-                      {j.pickup_city_name ?? '—'}
-                      {j.scheduled_at && ` · ${new Date(j.scheduled_at).toLocaleDateString(locale)}`}
-                    </p>
+              <li
+                key={j.id}
+                className={`card slide-in p-4 ${isActive ? 'card-featured' : ''}`}
+                style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-start gap-3">
+                    <span className="icon-tile h-11 w-11">
+                      <CategoryIcon name={isActive ? 'route' : 'check'} size={21} />
+                    </span>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/${locale}/provider/jobs/${j.id}`}
+                        className="block truncate text-[0.9375rem] font-bold"
+                      >
+                        {j.code} · {j.service_name ?? t('job.title')}
+                      </Link>
+                      <p className="mt-0.5 truncate text-xs text-[rgb(var(--fg-muted))]">
+                        {j.pickup_city_name ?? '—'}
+                        {j.scheduled_at
+                          ? ` · ${new Date(j.scheduled_at).toLocaleDateString(locale)}`
+                          : ''}
+                      </p>
+                    </div>
                   </div>
                   <StatusBadge status={j.status} />
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm">
-                  <span className="opacity-70">
-                    {t('job.providerNet')}:{' '}
-                    <span className="font-semibold opacity-100">
-                      {((j.provider_net_minor ?? 0) / 100).toFixed(2)} {j.currency}
-                    </span>
+
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-[rgb(var(--line))] pt-3">
+                  <span className="text-xs font-semibold text-[rgb(var(--fg-muted))]">
+                    {t('job.providerNet')}
                   </span>
-                  {next ? (
-                    <Link
-                      href={`/${locale}/provider/jobs/${j.id}`}
-                      className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white dark:bg-white dark:text-slate-900"
-                    >
-                      {t(`providerJob.next.${next}`)}
-                    </Link>
-                  ) : (
-                    <Link href={`/${locale}/provider/jobs/${j.id}`} className="text-xs underline opacity-70">
-                      {t('job.details')}
-                    </Link>
-                  )}
+                  <Price minor={j.provider_net_minor} currency={j.currency} size="md" />
                 </div>
+
+                {next && (
+                  <Link href={`/${locale}/provider/jobs/${j.id}`} className="btn btn-primary btn-block mt-3">
+                    <CategoryIcon name="arrow" size={18} className="rtl:rotate-180" />
+                    {t(`providerJob.next.${next}`)}
+                  </Link>
+                )}
               </li>
             );
           })}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "BIDLY",
-    "tagline": "Demandez n'importe quel service, laissez les prestataires concurrencer"
+    "name": "Khdemli",
+    "tagline": "Demandez un service et laissez les artisans concurrencer",
+    "copyright": "© {year} Khdemli — Tous droits réservés"
   },
   "nav": {
     "home": "Accueil",
@@ -20,7 +21,9 @@
     "notifications": "Notifications",
     "wallet": "Portefeuille",
     "admin": "Admin",
-    "adminDashboard": "Tableau de bord"
+    "adminDashboard": "Tableau de bord",
+    "signIn": "Connexion",
+    "signOut": "Déconnexion"
   },
   "common": {
     "signIn": "Se connecter",
@@ -103,7 +106,7 @@
     "subtitle": "Choisissez le service dont vous avez besoin pour créer une demande",
     "searchServices": "Rechercher un service…",
     "noServices": "Aucun service correspondant.",
-    "chooseService": "Choisir le service",
+    "chooseService": "De quoi avez-vous besoin ?",
     "from": "à partir de",
     "minPrice": "Prix min",
     "maxPrice": "Prix max",
@@ -130,7 +133,20 @@
       "HOURLY": "Par heure",
       "QUOTE": "Demander un devis",
       "INSPECTION": "Visite d'abord"
-    }
+    },
+    "chooseServiceHint": "Choisissez un service, fixez votre prix, les artisans proches concurrencent",
+    "searchPlaceholder": "Rechercher un service…",
+    "all": "Tout",
+    "availableServices": "Services disponibles",
+    "noResults": "Aucun résultat",
+    "noResultsHint": "Essayez un autre mot ou une autre catégorie",
+    "providersAvailable": "{count} artisans disponibles",
+    "noProvidersYet": "Aucun artisan disponible pour le moment",
+    "trustVerified": "Artisans vérifiés",
+    "trustVerifiedHint": "Identité contrôlée",
+    "trustPrice": "Vous fixez le prix",
+    "trustPriceHint": "Sans intermédiaire",
+    "popular": "Les plus demandés"
   },
   "request": {
     "newTitle": "Demander un service",
@@ -240,7 +256,9 @@
     "round": "Tour",
     "invalidPrice": "Saisissez un prix valide.",
     "alreadyOffered": "Vous avez déjà une offre active sur cette demande.",
-    "bestPrice": "Meilleur prix"
+    "bestPrice": "Meilleur prix",
+    "customerOffer": "Offre du client",
+    "counterWith": "Proposez votre prix"
   },
   "provider": {
     "title": "Profil prestataire",
@@ -589,5 +607,62 @@
     "unsupported": "Votre navigateur ne prend pas en charge les notifications.",
     "notConfigured": "Les notifications ne sont pas encore configurées sur ce serveur.",
     "failed": "Impossible d'activer les notifications. Réessayez."
+  },
+  "compose": {
+    "title": "Créer votre demande",
+    "destination": "Destination / détails du service",
+    "destinationPlaceholder": "ex. Réparer un robinet qui fuit",
+    "yourPrice": "Votre offre",
+    "sendRequest": "Envoyer la demande",
+    "sending": "Envoi…",
+    "priceHint": "Ajustez avec + et −",
+    "mapHint": "Placez votre position sur la carte",
+    "pickLocation": "Définir la position"
+  },
+  "searching": {
+    "looking": "Recherche d'artisans proches…",
+    "elapsed": "{seconds}s écoulées",
+    "cancel": "Annuler",
+    "offersSoFar": "{count} offres reçues",
+    "viewOffers": "Voir les offres"
+  },
+  "offers": {
+    "title": "Offres",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "premium": "Membre Premium",
+    "verified": "Vérifié",
+    "newOffers": "Nouvelles offres",
+    "empty": "Aucune offre pour le moment",
+    "emptyHint": "En attente des réponses des artisans"
+  },
+  "tracking": {
+    "title": "Suivre l'artisan",
+    "eta": "Arrive dans {minutes} min",
+    "arrived": "Arrivé",
+    "call": "Appeler",
+    "message": "Message",
+    "providerComing": "Votre artisan est en route",
+    "status": "Statut de la demande"
+  },
+  "home": {
+    "greeting": "Bonjour {name}",
+    "howItWorks": "Comment ça marche",
+    "step1": "Publiez votre demande",
+    "step1Hint": "Dites ce dont vous avez besoin et fixez votre prix",
+    "step2": "Les artisans concurrencent",
+    "step2Hint": "Les offres arrivent des prestataires proches",
+    "step3": "Choisissez et confirmez",
+    "step3Hint": "Suivez l'artisan jusqu'à l'arrivée"
+  },
+  "providerHome": {
+    "online": "Disponible",
+    "offline": "Indisponible",
+    "availableNow": "Vous êtes disponible pour des demandes",
+    "unavailableNow": "Vous êtes indisponible — aucune demande n'arrivera",
+    "nearbyRequests": "Demandes proches de vous",
+    "activeJob": "Mission en cours",
+    "todayEarnings": "Gains du jour",
+    "toggleHint": "Changez votre statut pour recevoir des demandes"
   }
 }

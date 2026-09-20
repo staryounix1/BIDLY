@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/lib/auth-provider';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
@@ -20,14 +20,17 @@ import {
 import { requestsApi } from '@/lib/requests-api';
 import { MapPicker } from '@/lib/map/map-picker';
 import { createRequestSchema, validateServiceAnswers } from '@bidly/validation';
+import { CategoryIcon, iconForSlug } from '@/lib/icons';
+import { PriceStepper, Spinner } from '@/lib/ui';
 
 /**
- * Dynamic request-creation form.
+ * Compose a request — map first, then one number, then one button.
  *
- * The flow: pick a service (from the URL or the catalogue), the service's
- * `service_fields` are rendered as inputs, plus the pickup/destination blocks
- * the service declares it needs. On submit the request is created as a DRAFT;
- * a successful create offers to publish it, which is what starts matching.
+ * This is the inDrive shape: the map owns the top of the screen, the service
+ * detail sits under it, and the customer's own price is the loudest element
+ * because setting it is the point of the product. Everything the service
+ * declares it needs (dynamic fields, pickup, destination) still renders below —
+ * the flow is unchanged, only the presentation is.
  */
 export default function NewRequestPage() {
   return (
@@ -43,7 +46,9 @@ function NewRequestView() {
   const params = useSearchParams();
   const serviceSlug = params.get('service');
 
-  const [service, setService] = useState<(Service & { category_slug: string; subcategory_slug: string }) | null>(null);
+  const [service, setService] = useState<
+    (Service & { category_slug: string; subcategory_slug: string }) | null
+  >(null);
   const [fields, setFields] = useState<ServiceField[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,8 +59,7 @@ function NewRequestView() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [urgency, setUrgency] = useState('NORMAL');
-  const [budgetMin, setBudgetMin] = useState('');
-  const [budgetMax, setBudgetMax] = useState('');
+  const [price, setPrice] = useState(0);
   const [scheduledAt, setScheduledAt] = useState('');
   const [itemCount, setItemCount] = useState('');
   const [requiresHelper, setRequiresHelper] = useState(false);
@@ -69,8 +73,8 @@ function NewRequestView() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Guards against a second submit firing before React re-renders the disabled
-  // button — a slow tap on mobile can otherwise create the request twice.
+  // Guards a second submit before React re-renders the disabled button — a slow
+  // tap on mobile can otherwise create the request twice.
   const inFlight = useRef(false);
 
   useEffect(() => {
@@ -89,6 +93,9 @@ function NewRequestView() {
               if (f.default_value != null) defaults[f.key] = f.default_value;
             }
             setAnswers(defaults);
+            // Seed the stepper from the service's own floor so the first number
+            // the customer sees is a sane one, not zero.
+            setPrice(Math.round((form.service.min_price_minor ?? 10000) / 100));
           }
         }
       } catch (err) {
@@ -116,20 +123,23 @@ function NewRequestView() {
     [fields, answers],
   );
 
+  const currency = service?.default_currency ?? 'MAD';
+  const needsLocation = Boolean(service?.requires_location);
+  const needsDestination = Boolean(service?.requires_destination);
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (!service) return;
     if (inFlight.current) return;
     setSubmitError(null);
 
-    // Client-side required checks. The API re-validates everything; this only
-    // turns obvious mistakes into inline errors before a round-trip.
+    // Client-side required checks; the API re-validates everything.
     const nextErrors: Record<string, string> = {};
     if (service.requires_location && !pickup.line1.trim()) nextErrors.pickup = t('request.answerRequired');
-    if (service.requires_destination && !destination.line1.trim()) nextErrors.destination = t('request.answerRequired');
-    if (budgetMin && budgetMax && Number(budgetMax) < Number(budgetMin)) {
-      nextErrors.budget = t('request.budgetMax');
+    if (service.requires_destination && !destination.line1.trim()) {
+      nextErrors.destination = t('request.answerRequired');
     }
+    if (price <= 0) nextErrors.price = t('request.answerRequired');
     if (Object.keys(nextErrors).length > 0) {
       setFormErrors(nextErrors);
       setSubmitError(t('request.answerRequired'));
@@ -145,13 +155,14 @@ function NewRequestView() {
     }
     setAnswerErrors({});
 
+    const priceMinor = Math.round(price * 100);
     const payload = {
       serviceId: service.id,
       ...(title ? { title } : {}),
       ...(description ? { description } : {}),
       answers,
-      ...(budgetMin ? { budgetMinMinor: Math.round(Number(budgetMin) * 100) } : {}),
-      ...(budgetMax ? { budgetMaxMinor: Math.round(Number(budgetMax) * 100) } : {}),
+      budgetMinMinor: priceMinor,
+      budgetMaxMinor: priceMinor,
       currency: service.default_currency,
       urgency,
       ...(scheduledAt ? { scheduledAt: new Date(scheduledAt).toISOString() } : {}),
@@ -199,76 +210,169 @@ function NewRequestView() {
     }
   }
 
-  if (loading) return <main className="mx-auto max-w-3xl px-4 py-10 opacity-60">{t('common.loading')}</main>;
+  if (loading) {
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
+  }
 
   if (!serviceSlug || !service) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <h1 className="text-2xl font-bold">{t('request.newTitle')}</h1>
-        <p className="mt-2 opacity-70">{t('catalog.chooseService')}</p>
-        {loadError && <p className="mt-4 text-sm text-red-600">{loadError}</p>}
-        <ServicePicker cities={cities} />
-      </main>
+      <div className="app-shell container-page py-6">
+        <h1 className="text-2xl font-black tracking-tight">{t('compose.title')}</h1>
+        {loadError && <p className="mt-3 text-sm text-[rgb(var(--danger))]">{loadError}</p>}
+        <ServicePicker />
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <button onClick={() => router.back()} className="mb-4 text-sm opacity-60 hover:opacity-100">
-        ← {t('common.back')}
-      </button>
-      <h1 className="text-2xl font-bold">{localized(service, locale)}</h1>
-      <p className="mt-1 text-sm opacity-70">{t('request.newTitle')}</p>
+    <div className="app-shell container-page py-4">
+      <Link
+        href={`/${locale}/services`}
+        className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[rgb(var(--fg-muted))]"
+      >
+        <CategoryIcon name="chevron" size={16} className="rotate-180 rtl:rotate-0" />
+        {t('common.back')}
+      </Link>
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-6" noValidate>
-        <section className="space-y-4 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-          <h2 className="font-semibold">{t('request.detailsTitle')}</h2>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        {/* The map owns the top of the screen, like a ride request. */}
+        <div className="card overflow-hidden">
+          <div className="flex items-center gap-3 border-b border-[rgb(var(--line))] p-3.5">
+            <span className="icon-tile h-11 w-11">
+              <CategoryIcon name={iconForSlug(service.slug)} size={22} />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-base font-bold">{localized(service, locale)}</span>
+              <span className="block text-xs text-[rgb(var(--fg-muted))]">{t('compose.mapHint')}</span>
+            </span>
+          </div>
 
-          <Field label={t('request.title')}>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={140} className={inputClass} />
-          </Field>
+          {needsLocation || needsDestination ? (
+            <MapPicker
+              value={pickupPoint}
+              onChange={(p: { lat: number; lng: number } | null) => {
+                setPickupPoint(p);
+                setFormErrors((prev) => ({ ...prev, pickup: '' }));
+              }}
+              address={pickup.line1}
+              onAddressChange={(line1: string) => setPickup((prev) => ({ ...prev, line1 }))}
+              height={260}
+            />
+          ) : (
+            <div className="map-canvas grid h-[160px] place-items-center">
+              <span className="text-sm text-[rgb(var(--fg-muted))]">{t('compose.pickLocation')}</span>
+            </div>
+          )}
+        </div>
 
-          <Field label={t('request.description')}>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} maxLength={2000} className={inputClass} />
-          </Field>
+        {/* Destination / service details — the one text field on the screen. */}
+        <div className="card p-4">
+          <label className="block">
+            <span className="label">{t('compose.destination')}</span>
+            <div className="relative">
+              <CategoryIcon
+                name="pin"
+                size={19}
+                className="pointer-events-none absolute inset-y-0 start-3.5 my-auto text-[rgb(var(--brand-700))]"
+              />
+              <input
+                className="input ps-11"
+                placeholder={t('compose.destinationPlaceholder')}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={140}
+              />
+            </div>
+          </label>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t('request.urgency')}>
-              <select value={urgency} onChange={(e) => setUrgency(e.target.value)} className={inputClass}>
+          <label className="mt-3 block">
+            <span className="label">{t('request.description')}</span>
+            <textarea
+              className="input min-h-[76px] resize-none"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              maxLength={2000}
+            />
+          </label>
+        </div>
+
+        {/* Your price — the loudest control, easy to nudge with a thumb. */}
+        <div className="card p-4">
+          <PriceStepper
+            value={price}
+            onChange={setPrice}
+            step={10}
+            min={0}
+            currency={currency}
+            label={t('compose.yourPrice')}
+          />
+          <p className="mt-2 text-center text-xs text-[rgb(var(--fg-subtle))]">{t('compose.priceHint')}</p>
+          {formErrors.price && (
+            <p className="mt-1 text-center text-xs font-semibold text-[rgb(var(--danger))]">
+              {formErrors.price}
+            </p>
+          )}
+        </div>
+
+        {/* Urgency / schedule — advanced, collapsed into one compact row. */}
+        <div className="card p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="label">{t('request.urgency')}</span>
+              <select
+                value={urgency}
+                onChange={(e) => setUrgency(e.target.value)}
+                className="input"
+              >
                 {(['LOW', 'NORMAL', 'HIGH', 'URGENT'] as const).map((u) => (
                   <option key={u} value={u}>
                     {t(`urgency.${u}`)}
                   </option>
                 ))}
               </select>
-            </Field>
-            <Field label={t('request.scheduledAt')}>
-              <input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} className={inputClass} />
-            </Field>
+            </label>
+            <label className="block">
+              <span className="label">{t('request.scheduledAt')}</span>
+              <input
+                type="datetime-local"
+                value={scheduledAt}
+                onChange={(e) => setScheduledAt(e.target.value)}
+                className="input"
+              />
+            </label>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={`${t('request.budgetMin')} (${service.default_currency})`}>
-              <input type="number" min="0" step="1" value={budgetMin} onChange={(e) => setBudgetMin(e.target.value)} className={inputClass} />
-            </Field>
-            <Field label={`${t('request.budgetMax')} (${service.default_currency})`} error={formErrors.budget}>
-              <input type="number" min="0" step="1" value={budgetMax} onChange={(e) => setBudgetMax(e.target.value)} className={inputClass} />
-            </Field>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t('request.itemCount')}>
-              <input type="number" min="0" value={itemCount} onChange={(e) => setItemCount(e.target.value)} className={inputClass} />
-            </Field>
-            <label className="flex items-center gap-2 self-end text-sm">
-              <input type="checkbox" checked={requiresHelper} onChange={(e) => setRequiresHelper(e.target.checked)} />
+          <div className="mt-3 grid grid-cols-2 items-end gap-3">
+            <label className="block">
+              <span className="label">{t('request.itemCount')}</span>
+              <input
+                type="number"
+                min="0"
+                value={itemCount}
+                onChange={(e) => setItemCount(e.target.value)}
+                className="input"
+              />
+            </label>
+            <label className="flex items-center gap-2 pb-3 text-sm font-semibold">
+              <input
+                type="checkbox"
+                checked={requiresHelper}
+                onChange={(e) => setRequiresHelper(e.target.checked)}
+                className="h-5 w-5 accent-[rgb(var(--brand-500))]"
+              />
               {t('request.requiresHelper')}
             </label>
           </div>
-        </section>
+        </div>
 
+        {/* Service-specific questions, still data-driven. */}
         {visibleFields.length > 0 && (
-          <section className="space-y-4 rounded-2xl border border-black/10 p-5 dark:border-white/15">
+          <div className="card space-y-4 p-4">
             {visibleFields.map((field) => (
               <ServiceFieldInput
                 key={field.id}
@@ -279,106 +383,160 @@ function NewRequestView() {
                 onChange={(v) => setAnswer(field.key, v)}
               />
             ))}
-          </section>
+          </div>
         )}
 
-        {service.requires_location && (
-          <section className="space-y-4 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-            <h2 className="font-semibold">{t('request.pickup')}</h2>
-            <MapPicker
-              value={pickupPoint}
-              onChange={(p) => {
-                setPickupPoint(p);
-                setFormErrors((prev) => ({ ...prev, pickup: '' }));
-              }}
-              address={pickup.line1}
-              onAddressChange={(line1) => setPickup((prev) => ({ ...prev, line1 }))}
-            />
+        {/* Pickup / destination detail blocks, shown only when the service asks. */}
+        {needsLocation && (
+          <div className="card space-y-3 p-4">
+            <h2 className="flex items-center gap-2 text-base font-bold">
+              <CategoryIcon name="pin" size={18} className="text-[rgb(var(--brand-700))]" />
+              {t('request.pickup')}
+            </h2>
             <Field label={t('request.line1')} required error={formErrors.pickup}>
-              <input value={pickup.line1} onChange={(e) => setPickup({ ...pickup, line1: e.target.value })} className={inputClass} />
+              <input
+                className="input"
+                value={pickup.line1}
+                onChange={(e) => setPickup({ ...pickup, line1: e.target.value })}
+              />
             </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3">
               <Field label={t('request.district')}>
-                <input value={pickup.district} onChange={(e) => setPickup({ ...pickup, district: e.target.value })} className={inputClass} />
+                <input
+                  className="input"
+                  value={pickup.district}
+                  onChange={(e) => setPickup({ ...pickup, district: e.target.value })}
+                />
               </Field>
               <Field label={t('request.city')}>
-                <CitySelect cities={cities} locale={locale} value={pickup.cityId} onChange={(v) => setPickup({ ...pickup, cityId: v })} />
+                <CitySelect
+                  cities={cities}
+                  locale={locale}
+                  value={pickup.cityId}
+                  onChange={(v) => setPickup({ ...pickup, cityId: v })}
+                />
               </Field>
             </div>
             <Field label={t('request.notes')}>
-              <input value={pickup.notes} onChange={(e) => setPickup({ ...pickup, notes: e.target.value })} className={inputClass} />
+              <input
+                className="input"
+                value={pickup.notes}
+                onChange={(e) => setPickup({ ...pickup, notes: e.target.value })}
+              />
             </Field>
-          </section>
+          </div>
         )}
 
-        {service.requires_destination && (
-          <section className="space-y-4 rounded-2xl border border-black/10 p-5 dark:border-white/15">
-            <h2 className="font-semibold">{t('request.destination')}</h2>
+        {needsDestination && (
+          <div className="card space-y-3 p-4">
+            <h2 className="flex items-center gap-2 text-base font-bold">
+              <CategoryIcon name="route" size={18} className="text-[rgb(var(--brand-700))]" />
+              {t('request.destination')}
+            </h2>
             <MapPicker
               value={destinationPoint}
               onChange={setDestinationPoint}
               address={destination.line1}
-              onAddressChange={(line1) => setDestination((prev) => ({ ...prev, line1 }))}
-              height={220}
+              onAddressChange={(line1: string) => setDestination((prev) => ({ ...prev, line1 }))}
+              height={200}
             />
             <Field label={t('request.line1')} required error={formErrors.destination}>
-              <input value={destination.line1} onChange={(e) => setDestination({ ...destination, line1: e.target.value })} className={inputClass} />
+              <input
+                className="input"
+                value={destination.line1}
+                onChange={(e) => setDestination({ ...destination, line1: e.target.value })}
+              />
             </Field>
             <Field label={t('request.city')}>
-              <CitySelect cities={cities} locale={locale} value={destination.cityId} onChange={(v) => setDestination({ ...destination, cityId: v })} />
+              <CitySelect
+                cities={cities}
+                locale={locale}
+                value={destination.cityId}
+                onChange={(v) => setDestination({ ...destination, cityId: v })}
+              />
             </Field>
             <Field label={t('request.notes')}>
-              <input value={destination.notes} onChange={(e) => setDestination({ ...destination, notes: e.target.value })} className={inputClass} />
+              <input
+                className="input"
+                value={destination.notes}
+                onChange={(e) => setDestination({ ...destination, notes: e.target.value })}
+              />
             </Field>
-          </section>
+          </div>
         )}
 
         {submitError && (
-          <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p
+            role="alert"
+            className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
+          >
             {submitError}
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-slate-900"
-        >
-          {submitting ? t('request.submitting') : t('request.submit')}
+        {/* One loud button, pinned in reach. */}
+        <button type="submit" disabled={submitting || price <= 0} className="btn btn-primary btn-block">
+          {submitting ? (
+            <>
+              <Spinner size={18} />
+              {t('compose.sending')}
+            </>
+          ) : (
+            <>
+              <CategoryIcon name="arrow" size={20} className="rtl:rotate-180" />
+              {t('compose.sendRequest')}
+            </>
+          )}
         </button>
       </form>
-    </main>
+    </div>
   );
 }
 
-function ServicePicker({ cities }: { cities: City[] }) {
+function ServicePicker() {
   const { t, locale } = useI18n();
-  const [categories, setCategories] = useState<Awaited<ReturnType<typeof catalogApi.tree>>['categories']>([]);
-  void cities;
+  const [categories, setCategories] = useState<
+    Awaited<ReturnType<typeof catalogApi.tree>>['categories']
+  >([]);
 
   useEffect(() => {
-    catalogApi.tree().then((d) => setCategories(d.categories)).catch(() => setCategories([]));
+    catalogApi
+      .tree()
+      .then((d) => setCategories(d.categories))
+      .catch(() => setCategories([]));
   }, []);
 
+  const services = useMemo(
+    () => categories.flatMap((c) => c.subcategories.flatMap((s) => s.services)),
+    [categories],
+  );
+
+  if (services.length === 0) {
+    return <p className="mt-6 text-sm text-[rgb(var(--fg-muted))]">{t('common.loading')}</p>;
+  }
+
   return (
-    <div className="mt-6 space-y-6">
-      {categories.map((cat) => (
-        <section key={cat.id}>
-          <h2 className="font-semibold">{localized(cat, locale)}</h2>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
-            {cat.subcategories.flatMap((sub) => sub.services).map((s) => (
-              <a
-                key={s.id}
-                href={`/${locale}/requests/new?service=${s.slug}`}
-                className="rounded-lg border border-black/10 px-3 py-2 text-sm hover:border-slate-900 dark:border-white/15 dark:hover:border-white"
-              >
-                {localized(s, locale)}
-              </a>
-            ))}
-          </div>
-        </section>
+    <div className="mt-5 grid gap-2.5">
+      {services.map((s, i) => (
+        <Link
+          key={s.id}
+          href={`/${locale}/requests/new?service=${s.slug}`}
+          className="card card-tap slide-in flex items-center gap-3.5 p-3.5"
+          style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}
+        >
+          <span className="icon-tile h-12 w-12">
+            <CategoryIcon name={iconForSlug(s.slug)} size={23} />
+          </span>
+          <span className="min-w-0 flex-1 truncate text-[0.9375rem] font-bold">
+            {localized(s, locale)}
+          </span>
+          <CategoryIcon
+            name="chevron"
+            size={20}
+            className="flex-none text-[rgb(var(--fg-subtle))] rtl:rotate-180"
+          />
+        </Link>
       ))}
-      {categories.length === 0 && <p className="text-sm opacity-60">{t('common.loading')}</p>}
     </div>
   );
 }
@@ -396,11 +554,14 @@ function CitySelect({
 }) {
   const { t } = useI18n();
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value)} className={inputClass}>
+    <select value={value} onChange={(e) => onChange(e.target.value)} className="input">
       <option value="">{t('common.none')}</option>
       {cities.map((c) => (
         <option key={c.id} value={c.id}>
-          {localized(c as unknown as { name_en: string; name_fr: string | null; name_ar: string | null }, locale)}
+          {localized(
+            c as unknown as { name_en: string; name_fr: string | null; name_ar: string | null },
+            locale,
+          )}
         </option>
       ))}
     </select>
@@ -426,8 +587,13 @@ function ServiceFieldInput({
 
   if (field.type === 'BOOLEAN') {
     return (
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={Boolean(value)} onChange={(e) => onChange(e.target.checked)} />
+      <label className="flex items-center gap-2.5 text-sm font-semibold">
+        <input
+          type="checkbox"
+          checked={Boolean(value)}
+          onChange={(e) => onChange(e.target.checked)}
+          className="h-5 w-5 accent-[rgb(var(--brand-500))]"
+        />
         {label}
       </label>
     );
@@ -436,7 +602,11 @@ function ServiceFieldInput({
   if (field.type === 'SELECT') {
     return (
       <Field label={label} required={field.is_required} help={help} error={error}>
-        <select value={String(value ?? '')} onChange={(e) => onChange(e.target.value)} className={inputClass}>
+        <select
+          value={String(value ?? '')}
+          onChange={(e) => onChange(e.target.value)}
+          className="input"
+        >
           <option value="">{placeholder ?? '—'}</option>
           {field.options.map((o) => (
             <option key={o.id} value={o.value}>
@@ -459,10 +629,10 @@ function ServiceFieldInput({
               <button
                 type="button"
                 key={o.id}
-                onClick={() => onChange(on ? selected.filter((v) => v !== o.value) : [...selected, o.value])}
-                className={`rounded-full border px-3 py-1 text-xs ${
-                  on ? 'border-slate-900 font-semibold dark:border-white' : 'border-black/15 dark:border-white/20'
-                }`}
+                onClick={() =>
+                  onChange(on ? selected.filter((v) => v !== o.value) : [...selected, o.value])
+                }
+                className={on ? 'chip chip-brand h-9 px-4' : 'chip chip-neutral h-9 px-4'}
               >
                 {optionLabel(o, locale)}
               </button>
@@ -474,7 +644,15 @@ function ServiceFieldInput({
   }
 
   const inputType =
-    field.type === 'NUMBER' ? 'number' : field.type === 'DATE' ? 'date' : field.type === 'DATETIME' ? 'datetime-local' : field.type === 'PHONE' ? 'tel' : 'text';
+    field.type === 'NUMBER'
+      ? 'number'
+      : field.type === 'DATE'
+        ? 'date'
+        : field.type === 'DATETIME'
+          ? 'datetime-local'
+          : field.type === 'PHONE'
+            ? 'tel'
+            : 'text';
 
   if (field.type === 'TEXTAREA' || field.type === 'ADDRESS') {
     return (
@@ -485,7 +663,7 @@ function ServiceFieldInput({
           maxLength={field.max_length ?? undefined}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className={inputClass}
+          className="input resize-none"
         />
       </Field>
     );
@@ -501,14 +679,11 @@ function ServiceFieldInput({
         min={field.min_value ?? undefined}
         max={field.max_value ?? undefined}
         onChange={(e) => onChange(field.type === 'NUMBER' ? Number(e.target.value) : e.target.value)}
-        className={inputClass}
+        className="input"
       />
     </Field>
   );
 }
-
-const inputClass =
-  'w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm font-normal outline-none focus:border-slate-900 dark:border-white/20 dark:focus:border-white';
 
 function Field({
   label,
@@ -524,14 +699,16 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-sm font-medium">
-      <span>
+    <label className="block">
+      <span className="label">
         {label}
-        {required && <span className="text-red-500"> *</span>}
+        {required && <span className="text-[rgb(var(--danger))]"> *</span>}
       </span>
       {children}
-      {help && <span className="text-xs font-normal opacity-60">{help}</span>}
-      {error && <span className="text-xs font-normal text-red-600">{error}</span>}
+      {help && <span className="mt-1 block text-xs text-[rgb(var(--fg-subtle))]">{help}</span>}
+      {error && (
+        <span className="mt-1 block text-xs font-semibold text-[rgb(var(--danger))]">{error}</span>
+      )}
     </label>
   );
 }

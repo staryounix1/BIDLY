@@ -9,18 +9,29 @@ import { providersApi, type ProviderProfile, type FeedRequest } from '@/lib/prov
 import { offersApi, type OfferOnRequest } from '@/lib/offers-api';
 import { jobsApi, providerNextAction, type JobSummary } from '@/lib/jobs-api';
 import { StatusBadge } from '@/lib/status-badge';
+import { CategoryIcon } from '@/lib/icons';
+import { Price, SectionTitle, Spinner } from '@/lib/ui';
 
 /**
- * Provider dashboard (spec §40, task 7 requirement 1).
+ * Provider dashboard.
  *
  * One screen that answers the provider's four questions in order: am I
  * available, what can I earn right now, what am I working on, and how am I
- * doing. Availability is written straight through to the API — never kept in
- * component state alone — so the matching engine sees the same truth the
- * provider does.
+ * doing. Availability is written straight to the API — never held in component
+ * state alone — so matching sees the same truth the provider does.
+ *
+ * Availability is a full-width action here because it is the one thing a
+ * craftsman flips between jobs, one-handed, often in a stairwell.
  */
 
-const ACTIVE_JOB_STATUSES = ['CREATED', 'CONFIRMED', 'PROVIDER_EN_ROUTE', 'PROVIDER_ARRIVED', 'IN_PROGRESS', 'STARTED'];
+const ACTIVE_JOB_STATUSES = [
+  'CREATED',
+  'CONFIRMED',
+  'PROVIDER_EN_ROUTE',
+  'PROVIDER_ARRIVED',
+  'IN_PROGRESS',
+  'STARTED',
+];
 
 export default function ProviderDashboardPage() {
   return (
@@ -84,230 +95,305 @@ function ProviderDashboardView() {
   }
 
   if (loading) {
-    return <main className="mx-auto max-w-5xl px-4 py-10 text-center opacity-60">{t('common.loading')}</main>;
+    return (
+      <div className="app-shell container-page flex items-center justify-center py-24">
+        <Spinner size={28} />
+      </div>
+    );
   }
 
   if (!profile) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold">{t('provider.title')}</h1>
-        <p className="mt-2 text-sm opacity-70">{t('provider.subtitle')}</p>
-        <Link
-          href={`/${locale}/provider/profile`}
-          className="mt-6 inline-block rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
-        >
+      <div className="app-shell container-page py-14 text-center">
+        <span className="icon-tile mx-auto h-16 w-16">
+          <CategoryIcon name="wrench" size={28} />
+        </span>
+        <h1 className="mt-4 text-2xl font-black tracking-tight">{t('provider.title')}</h1>
+        <p className="mt-2 text-sm text-[rgb(var(--fg-muted))]">{t('provider.subtitle')}</p>
+        <Link href={`/${locale}/provider/profile`} className="btn btn-primary mt-6">
           {t('provider.create')}
         </Link>
-      </main>
+      </div>
     );
   }
 
   const isOnline = Boolean(profile.is_online);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div className="app-shell container-page py-5">
+      <header className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold">{t('providerDash.title')}</h1>
-          <p className="mt-1 text-sm opacity-70">
-            {t('providerDash.welcome')}, {profile.display_name}
-          </p>
+          <h1 className="text-2xl font-black tracking-tight">{t('providerDash.title')}</h1>
+          <p className="mt-1 truncate text-sm text-[rgb(var(--fg-muted))]">{profile.display_name}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs">
+        <div className="flex flex-col items-end gap-1.5">
           <StatusBadge status={profile.status} />
           <StatusBadge status={profile.verification_status} />
         </div>
       </header>
 
       {error && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          <span>{error}</span>
-          <button onClick={() => void load()} className="underline">
+        <div className="card mb-4 flex items-center justify-between gap-3 border-[rgb(var(--danger)/0.35)] p-3.5">
+          <span className="text-sm font-semibold text-[rgb(var(--danger))]">{error}</span>
+          <button onClick={() => void load()} className="text-sm font-bold underline">
             {t('common.retry')}
           </button>
         </div>
       )}
 
       {profile.status !== 'ACTIVE' && (
-        <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <p className="font-medium">{t('providerDash.notActive')}</p>
-          <p className="mt-1 text-xs">{t('providerDash.notActiveHint')}</p>
+        <div className="card mb-4 border-[rgb(var(--warn)/0.35)] bg-[rgb(var(--warn)/0.08)] p-4">
+          <p className="text-sm font-bold text-[rgb(180_83_9)]">{t('providerDash.notActive')}</p>
+          <p className="mt-1 text-xs text-[rgb(180_83_9)]">{t('providerDash.notActiveHint')}</p>
         </div>
       )}
 
-      {/* Availability — the single most important control on the screen. */}
-      <section className="rounded-2xl border border-black/10 p-5 dark:border-white/15">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="min-w-0">
-            <h2 className="font-semibold">{t('providerDash.availability')}</h2>
-            <p className="mt-1 text-xs opacity-70">
-              {isOnline ? t('providerDash.onlineHint') : t('providerDash.offlineHint')}
-            </p>
-          </div>
-          <button
-            onClick={() => void setOnline(!isOnline)}
-            disabled={togglingAvailability}
-            aria-pressed={isOnline}
-            className={
-              'relative inline-flex h-9 min-w-[7rem] items-center justify-center rounded-full px-4 text-sm font-semibold transition disabled:opacity-50 ' +
-              (isOnline
-                ? 'bg-emerald-600 text-white'
-                : 'border border-black/20 opacity-80 dark:border-white/25')
-            }
-          >
-            <span
-              className={
-                'me-2 inline-block h-2 w-2 rounded-full ' + (isOnline ? 'bg-white' : 'bg-slate-400')
+      {/* Availability — the loudest control on the screen. */}
+      <button
+        type="button"
+        onClick={() => void setOnline(!isOnline)}
+        disabled={togglingAvailability}
+        aria-pressed={isOnline}
+        className="card card-tap flex w-full items-center gap-4 p-4 text-start disabled:opacity-60"
+        style={
+          isOnline
+            ? {
+                background: 'rgb(50 244 186 / 0.14)',
+                borderColor: 'rgb(50 244 186 / 0.5)',
               }
-            />
-            {isOnline ? t('providerDash.online') : t('providerDash.offline')}
-          </button>
-        </div>
-      </section>
+            : undefined
+        }
+      >
+        <span
+          className="grid h-14 w-14 flex-none place-items-center rounded-2xl transition-colors"
+          style={{
+            background: isOnline ? 'rgb(50 244 186)' : 'rgb(var(--surface-3))',
+            color: isOnline ? 'rgb(var(--brand-ink))' : 'rgb(var(--fg-muted))',
+          }}
+        >
+          {togglingAvailability ? (
+            <Spinner size={22} />
+          ) : (
+            <CategoryIcon name="bolt" size={26} />
+          )}
+        </span>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label={t('providerDash.rating')} value={profile.rating_avg ? Number(profile.rating_avg).toFixed(1) : '—'} />
-        <Stat label={t('providerDash.completedJobs')} value={String(profile.completed_jobs ?? 0)} />
-        <Stat label={t('providerDash.activeJobs')} value={String(activeJobs.length)} />
-        <Stat label={t('providerDash.pendingOffers')} value={String(pendingOffers.length)} />
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-2">
+            <span className="text-base font-black tracking-tight">
+              {isOnline ? t('providerHome.availableNow') : t('providerHome.unavailableNow')}
+            </span>
+          </span>
+          <span className="mt-0.5 block text-xs text-[rgb(var(--fg-muted))]">
+            {t('providerHome.toggleHint')}
+          </span>
+        </span>
+
+        {/* Switch */}
+        <span
+          className="relative inline-flex h-7 w-12 flex-none items-center rounded-full transition-colors"
+          style={{ background: isOnline ? 'rgb(50 244 186)' : 'rgb(var(--line-strong))' }}
+        >
+          <span
+            className="absolute h-5 w-5 rounded-full bg-white shadow-sm transition-all"
+            style={{ insetInlineStart: isOnline ? '1.625rem' : '0.25rem' }}
+          />
+        </span>
+      </button>
+
+      {/* Stats */}
+      <div className="mt-4 grid grid-cols-2 gap-2.5">
+        <Stat icon="star" label={t('providerDash.rating')} value={profile.rating_avg ? Number(profile.rating_avg).toFixed(1) : '—'} />
+        <Stat icon="check" label={t('providerDash.completedJobs')} value={String(profile.completed_jobs ?? 0)} />
+        <Stat icon="route" label={t('providerDash.activeJobs')} value={String(activeJobs.length)} />
+        <Stat icon="chat" label={t('providerDash.pendingOffers')} value={String(pendingOffers.length)} />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        {/* Active job */}
-        <section className="rounded-2xl border border-black/10 p-5 dark:border-white/15">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-semibold">{t('providerDash.activeJob')}</h2>
-            <Link href={`/${locale}/provider/jobs`} className="text-xs underline opacity-70">
+      {/* Active job */}
+      <section className="mt-6">
+        <SectionTitle
+          action={
+            <Link href={`/${locale}/provider/jobs`} className="text-sm font-bold text-[rgb(var(--brand-700))]">
               {t('providerDash.viewAll')}
             </Link>
+          }
+        >
+          {t('providerDash.activeJob')}
+        </SectionTitle>
+
+        {activeJobs.length === 0 ? (
+          <div className="card p-5 text-center text-sm text-[rgb(var(--fg-muted))]">
+            {t('providerDash.noActiveJob')}
           </div>
-          {activeJobs.length === 0 ? (
-            <p className="mt-3 text-sm opacity-60">{t('providerDash.noActiveJob')}</p>
-          ) : (
-            <ul className="mt-3 space-y-3">
-              {activeJobs.slice(0, 3).map((j) => {
-                const next = providerNextAction(j.status);
-                return (
-                  <li key={j.id} className="rounded-xl border border-black/10 p-3 dark:border-white/15">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <Link href={`/${locale}/provider/jobs/${j.id}`} className="font-medium hover:underline">
-                        {j.code} · {j.service_name ?? t('job.title')}
-                      </Link>
-                      <StatusBadge status={j.status} />
-                    </div>
-                    <p className="mt-1 text-xs opacity-70">
-                      {j.pickup_city_name ?? '—'} ·{' '}
-                      {((j.provider_net_minor ?? 0) / 100).toFixed(2)} {j.currency}
-                    </p>
+        ) : (
+          <ul className="space-y-2.5">
+            {activeJobs.slice(0, 3).map((j) => {
+              const next = providerNextAction(j.status);
+              return (
+                <li key={j.id} className="card card-featured slide-in p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <Link
+                      href={`/${locale}/provider/jobs/${j.id}`}
+                      className="truncate text-[0.9375rem] font-bold"
+                    >
+                      {j.code} · {j.service_name ?? t('job.title')}
+                    </Link>
+                    <StatusBadge status={j.status} />
+                  </div>
+                  <p className="mt-1 text-xs text-[rgb(var(--fg-muted))]">
+                    {j.pickup_city_name ?? '—'}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <Price minor={j.provider_net_minor} currency={j.currency} size="md" />
                     {next && (
-                      <Link
-                        href={`/${locale}/provider/jobs/${j.id}`}
-                        className="mt-2 inline-block rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900"
-                      >
+                      <Link href={`/${locale}/provider/jobs/${j.id}`} className="btn btn-primary">
                         {t(`providerJob.next.${next}`)}
                       </Link>
                     )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
-        {/* Nearby requests */}
-        <section className="rounded-2xl border border-black/10 p-5 dark:border-white/15">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-semibold">{t('providerDash.nearbyRequests')}</h2>
-            <Link href={`/${locale}/provider/requests`} className="text-xs underline opacity-70">
+      {/* Nearby requests */}
+      <section className="mt-6">
+        <SectionTitle
+          action={
+            <Link href={`/${locale}/provider/requests`} className="text-sm font-bold text-[rgb(var(--brand-700))]">
               {t('providerDash.viewAll')}
             </Link>
+          }
+        >
+          {t('providerHome.nearbyRequests')}
+        </SectionTitle>
+
+        {feed.length === 0 ? (
+          <div className="card p-5 text-center text-sm text-[rgb(var(--fg-muted))]">
+            {isOnline ? t('feed.empty') : t('providerDash.goOnlineHint')}
           </div>
-          {feed.length === 0 ? (
-            <p className="mt-3 text-sm opacity-60">
-              {isOnline ? t('feed.empty') : t('providerDash.goOnlineHint')}
-            </p>
-          ) : (
-            <ul className="mt-3 space-y-2">
-              {feed.map((r) => (
-                <li key={r.id}>
-                  <Link
-                    href={`/${locale}/provider/requests/${r.id}`}
-                    className="block rounded-xl border border-black/10 p-3 hover:border-slate-400 dark:border-white/15 dark:hover:border-white/40"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-medium">{r.title || r.service_name}</span>
-                      <StatusBadge status={r.status} />
+        ) : (
+          <ul className="space-y-2.5">
+            {feed.map((r, i) => (
+              <li key={r.id}>
+                <Link
+                  href={`/${locale}/provider/requests/${r.id}`}
+                  className="card card-tap slide-in block p-4"
+                  style={{ animationDelay: `${i * 45}ms` }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="icon-tile h-11 w-11">
+                      <CategoryIcon name="radar" size={21} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate text-[0.9375rem] font-bold">
+                          {r.title || r.service_name}
+                        </span>
+                        <Price minor={r.budget_max_minor} currency={r.currency} size="md" />
+                      </div>
+                      <p className="mt-1 text-xs text-[rgb(var(--fg-muted))]">
+                        {r.pickup_city_name ?? '—'}
+                        {r.offer_count > 0 ? ` · ${r.offer_count} ${t('request.offer')}` : ''}
+                      </p>
                     </div>
-                    <p className="mt-1 text-xs opacity-70">
-                      {r.pickup_city_name ?? '—'} ·{' '}
-                      {r.budget_max_minor != null ? (r.budget_max_minor / 100).toFixed(0) : '—'} {r.currency}
-                    </p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-        {/* Pending offers */}
-        <section className="rounded-2xl border border-black/10 p-5 dark:border-white/15">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-semibold">{t('providerDash.pendingOffers')}</h2>
-            <Link href={`/${locale}/provider/offers`} className="text-xs underline opacity-70">
+      {/* Pending offers + history */}
+      <section className="mt-6">
+        <SectionTitle
+          action={
+            <Link href={`/${locale}/provider/offers`} className="text-sm font-bold text-[rgb(var(--brand-700))]">
               {t('providerDash.viewAll')}
             </Link>
-          </div>
-          {pendingOffers.length === 0 ? (
-            <p className="mt-3 text-sm opacity-60">{t('offer.empty')}</p>
-          ) : (
-            <ul className="mt-3 space-y-2">
-              {pendingOffers.map((o) => (
-                <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                  <span>
-                    <span className="mono text-xs opacity-60">{o.request_code}</span> {o.request_title || ''}
-                  </span>
-                  <span className="font-semibold">
-                    {(o.price_minor / 100).toFixed(2)} {o.currency}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+          }
+        >
+          {t('providerDash.pendingOffers')}
+        </SectionTitle>
 
-        {/* History */}
-        <section className="rounded-2xl border border-black/10 p-5 dark:border-white/15">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-semibold">{t('providerDash.history')}</h2>
-            <Link href={`/${locale}/provider/history`} className="text-xs underline opacity-70">
+        {pendingOffers.length === 0 ? (
+          <div className="card p-5 text-center text-sm text-[rgb(var(--fg-muted))]">
+            {t('offer.empty')}
+          </div>
+        ) : (
+          <ul className="card divide-y divide-[rgb(var(--line))]">
+            {pendingOffers.map((o) => (
+              <li key={o.id} className="flex items-center justify-between gap-3 p-3.5">
+                <span className="min-w-0">
+                  <span className="tnum block text-xs text-[rgb(var(--fg-subtle))]">
+                    {o.request_code}
+                  </span>
+                  <span className="block truncate text-sm font-semibold">
+                    {o.request_title || '—'}
+                  </span>
+                </span>
+                <Price minor={o.price_minor} currency={o.currency} size="md" />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="mt-6">
+        <SectionTitle
+          action={
+            <Link href={`/${locale}/provider/history`} className="text-sm font-bold text-[rgb(var(--brand-700))]">
               {t('providerDash.viewAll')}
             </Link>
+          }
+        >
+          {t('providerDash.history')}
+        </SectionTitle>
+
+        {recentJobs.length === 0 ? (
+          <div className="card p-5 text-center text-sm text-[rgb(var(--fg-muted))]">
+            {t('job.empty')}
           </div>
-          {recentJobs.length === 0 ? (
-            <p className="mt-3 text-sm opacity-60">{t('job.empty')}</p>
-          ) : (
-            <ul className="mt-3 space-y-2 text-sm">
-              {recentJobs.map((j) => (
-                <li key={j.id} className="flex flex-wrap items-center justify-between gap-2">
-                  <Link href={`/${locale}/provider/jobs/${j.id}`} className="hover:underline">
-                    <span className="mono text-xs opacity-60">{j.code}</span> {j.service_name ?? ''}
-                  </Link>
-                  <StatusBadge status={j.status} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-    </main>
+        ) : (
+          <ul className="card divide-y divide-[rgb(var(--line))]">
+            {recentJobs.map((j) => (
+              <li key={j.id} className="flex items-center justify-between gap-3 p-3.5">
+                <Link
+                  href={`/${locale}/provider/jobs/${j.id}`}
+                  className="min-w-0 text-sm font-semibold"
+                >
+                  <span className="tnum block text-xs text-[rgb(var(--fg-subtle))]">{j.code}</span>
+                  <span className="block truncate">{j.service_name ?? t('job.title')}</span>
+                </Link>
+                <StatusBadge status={j.status} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+}) {
   return (
-    <div className="rounded-2xl border border-black/10 p-4 dark:border-white/15">
-      <div className="text-2xl font-bold">{value}</div>
-      <div className="mt-1 text-xs opacity-60">{label}</div>
+    <div className="card p-3.5">
+      <span className="icon-tile mb-2 h-9 w-9">
+        <CategoryIcon name={icon} size={18} />
+      </span>
+      <div className="tnum text-xl font-black tracking-tight">{value}</div>
+      <div className="mt-0.5 text-xs text-[rgb(var(--fg-muted))]">{label}</div>
     </div>
   );
 }

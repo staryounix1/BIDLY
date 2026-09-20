@@ -11,6 +11,8 @@ import {
   type ChatMessage, type Conversation,
 } from '@/lib/chat-api';
 import { useRealtime } from '@/lib/realtime-client';
+import { CategoryIcon } from '@/lib/icons';
+import { Avatar, Spinner } from '@/lib/ui';
 
 /**
  * Conversation thread.
@@ -113,36 +115,47 @@ function Thread() {
   const grouped = useMemo(() => messages, [messages]);
 
   return (
-    <main className="mx-auto flex h-[calc(100dvh-57px)] max-w-3xl flex-col px-4">
-      <header className="flex items-center justify-between gap-3 border-b border-black/10 py-3 dark:border-white/10">
-        <div className="min-w-0">
-          <button onClick={() => router.push(`/${locale}/messages`)} className="text-sm opacity-60 hover:opacity-100">
-            ← {t('chat.conversations')}
+    <div className="app-shell flex h-[calc(100dvh-57px)] flex-col px-4">
+      <header className="flex items-center justify-between gap-3 border-b border-[rgb(var(--line))] py-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <button
+            onClick={() => router.push(`/${locale}/messages`)}
+            aria-label={t('chat.conversations')}
+            className="btn btn-ghost !p-2"
+          >
+            <CategoryIcon name="arrow" size={18} className="rtl:rotate-180" />
           </button>
-          <h1 className="truncate font-semibold">
-            {conversation?.counterpart_name ?? t('chat.conversation')}
-          </h1>
+          <Avatar name={conversation?.counterpart_name} size={36} />
+          <div className="min-w-0">
+            <h1 className="truncate font-bold">
+              {conversation?.counterpart_name ?? t('chat.conversation')}
+            </h1>
+            <span className="flex items-center gap-1 text-xs text-[rgb(var(--fg-subtle))]">
+              <span className={connected ? 'text-[rgb(var(--ok))]' : 'text-[rgb(var(--warn))]'}>●</span>
+              {connected ? t('chat.connected') : t('chat.reconnecting')}
+            </span>
+          </div>
         </div>
-        <span className="shrink-0 text-xs opacity-60">
-          <span className={connected ? 'text-emerald-600' : 'text-amber-600'}>●</span>{' '}
-          {connected ? t('chat.connected') : t('chat.reconnecting')}
-        </span>
       </header>
 
       {error && (
-        <p className="my-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}{' '}
-          <button onClick={load} className="underline">{t('common.retry')}</button>
-        </p>
+        <div className="card my-2 flex items-center gap-2 border-[rgb(var(--danger)/0.35)] p-3 text-sm text-[rgb(var(--danger))]">
+          <CategoryIcon name="shield" size={16} />
+          <span className="flex-1">{error}</span>
+          <button onClick={load} className="font-semibold underline">{t('common.retry')}</button>
+        </div>
       )}
 
       <div className="flex-1 overflow-y-auto py-4">
         {loading ? (
-          <p className="text-center opacity-60">{t('common.loading')}</p>
+          <div className="flex items-center justify-center gap-2 py-8 text-sm text-[rgb(var(--fg-muted))]">
+            <Spinner size={18} />
+            {t('common.loading')}
+          </div>
         ) : grouped.length === 0 && pending.length === 0 ? (
-          <div className="mt-10 text-center opacity-70">
-            <p>{t('chat.noMessages')}</p>
-            <p className="mt-1 text-sm opacity-60">{t('chat.noMessagesHint')}</p>
+          <div className="mt-10 text-center text-[rgb(var(--fg-muted))]">
+            <p className="font-bold">{t('chat.noMessages')}</p>
+            <p className="mt-1 text-sm text-[rgb(var(--fg-subtle))]">{t('chat.noMessagesHint')}</p>
           </div>
         ) : (
           <ul className="space-y-1.5">
@@ -151,7 +164,7 @@ function Thread() {
             ))}
             {pending.map((p) => (
               <li key={p.clientId} className="flex justify-end">
-                <span className="max-w-[75%] rounded-2xl rounded-br-sm bg-slate-900/70 px-3.5 py-2 text-sm text-white">
+                <span className="max-w-[75%] rounded-2xl rounded-ee-sm bg-[rgb(var(--brand-500))] px-3.5 py-2 text-sm text-[rgb(var(--brand-ink))] opacity-70">
                   {p.body}
                   <span className="ms-2 text-[10px] opacity-70">{t('chat.sending')}</span>
                 </span>
@@ -162,7 +175,7 @@ function Thread() {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={onSend} className="flex items-end gap-2 border-t border-black/10 py-3 dark:border-white/10">
+      <form onSubmit={onSend} className="flex items-end gap-2 border-t border-[rgb(var(--line))] py-3">
         <textarea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -174,17 +187,18 @@ function Thread() {
           }}
           rows={1}
           placeholder={t('chat.placeholder')}
-          className="max-h-32 flex-1 resize-none rounded-xl border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-slate-500 dark:border-white/20"
+          className="input max-h-32 flex-1 resize-none"
         />
         <button
           type="submit"
           disabled={sending || draft.trim().length === 0}
-          className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-slate-900"
+          aria-label={t('chat.send')}
+          className="btn btn-primary !p-3.5"
         >
-          {t('chat.send')}
+          {sending ? <Spinner size={18} /> : <CategoryIcon name="arrow" size={18} className="rtl:rotate-180" />}
         </button>
       </form>
-    </main>
+    </div>
   );
 }
 
@@ -201,12 +215,12 @@ function Bubble({
       <span
         className={
           mine
-            ? 'max-w-[75%] rounded-2xl rounded-br-sm bg-slate-900 px-3.5 py-2 text-sm text-white'
-            : 'max-w-[75%] rounded-2xl rounded-bl-sm bg-black/[0.06] px-3.5 py-2 text-sm dark:bg-white/10'
+            ? 'max-w-[75%] rounded-2xl rounded-ee-sm bg-[rgb(var(--brand-500))] px-3.5 py-2 text-sm font-medium text-[rgb(var(--brand-ink))]'
+            : 'max-w-[75%] rounded-2xl rounded-es-sm bg-[rgb(var(--surface-3))] px-3.5 py-2 text-sm'
         }
       >
           {message.body ?? `[${message.kind}]`}
-        <span className={`ms-2 text-[10px] ${mine ? 'opacity-60' : 'opacity-50'}`}>
+        <span className={`ms-2 text-[10px] ${mine ? 'opacity-70' : 'text-[rgb(var(--fg-subtle))]'}`}>
           {new Date(message.created_at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
           {mine ? ` · ${message.read_at ? t('chat.read') : t('chat.delivered')}` : ''}
         </span>

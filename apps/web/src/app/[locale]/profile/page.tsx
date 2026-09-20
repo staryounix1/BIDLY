@@ -7,6 +7,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError, authApi } from '@/lib/auth-api';
 import { CategoryIcon, type IconName } from '@/lib/icons';
+import { SectionTitle, Spinner } from '@/lib/ui';
 
 /**
  * Profile page (protected).
@@ -124,67 +125,63 @@ function ProfileView() {
   }
 
   return (
-    <main className="min-h-screen">
-      {/* Identity banner */}
-      <section className="mesh border-b border-[rgb(var(--line))]">
-        <div className="container-page py-8">
-          <div className="flex items-center gap-4">
-            <span
-              className={`grid h-20 w-20 flex-none place-items-center overflow-hidden rounded-2xl bg-gradient-to-br ${roleTint} text-2xl font-black text-white shadow-lg`}
-            >
-              {avatarUrl && !avatarBroken ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={avatarUrl}
-                  alt={name}
-                  className="h-full w-full object-cover"
-                  onError={() => setAvatarBroken(true)}
-                />
-              ) : (
-                initialsOf(name)
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate text-2xl font-black tracking-tight sm:text-3xl">{name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="chip chip-brand">
-                  <CategoryIcon name="shield" size={12} />
-                  {t(`profile.roleName.${user?.role ?? 'CUSTOMER'}`)}
-                </span>
-                <StatusChip status={user?.status ?? ''} />
-                {user?.emailVerified && (
-                  <span className="chip chip-ok">
-                    <CategoryIcon name="checklist" size={12} />
-                    {t('auth.email')}
-                  </span>
-                )}
-                {user?.phoneVerified && (
-                  <span className="chip chip-ok">
-                    <CategoryIcon name="checklist" size={12} />
-                    {t('auth.phone')}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Completeness meter */}
-          <div className="mt-5 max-w-md">
-            <div className="flex items-center justify-between text-xs text-[rgb(var(--fg-muted))]">
-              <span>{t('profile.completeness')}</span>
-              <span className="tnum font-bold">{completeness}%</span>
-            </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[rgb(var(--surface-3))]">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-[rgb(var(--brand-600))] to-[rgb(var(--accent-600))] transition-all duration-500"
-                style={{ width: `${completeness}%` }}
+    <div className="app-shell container-page py-5">
+      {/* Identity card */}
+      <div className="card fade-rise p-5">
+        <div className="flex items-center gap-4">
+          <span className="icon-tile h-16 w-16 overflow-hidden text-2xl font-black">
+            {avatarUrl && !avatarBroken ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt={name}
+                className="h-full w-full object-cover"
+                onError={() => setAvatarBroken(true)}
               />
+            ) : (
+              initialsOf(name)
+            )}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-2xl font-extrabold tracking-tight">{name}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className="chip chip-brand">
+                <CategoryIcon name="shield" size={12} />
+                {t(`profile.roleName.${user?.role ?? 'CUSTOMER'}`)}
+              </span>
+              <StatusChip status={user?.status ?? ''} />
+              {user?.emailVerified && (
+                <span className="chip chip-ok">
+                  <CategoryIcon name="check" size={12} />
+                  {t('auth.email')}
+                </span>
+              )}
+              {user?.phoneVerified && (
+                <span className="chip chip-ok">
+                  <CategoryIcon name="check" size={12} />
+                  {t('auth.phone')}
+                </span>
+              )}
             </div>
           </div>
         </div>
-      </section>
 
-      <div className="container-page grid gap-6 py-8 lg:grid-cols-[340px_1fr] lg:items-start">
+        {/* Completeness meter */}
+        <div className="mt-5">
+          <div className="flex items-center justify-between text-xs font-semibold text-[rgb(var(--fg-muted))]">
+            <span>{t('profile.completeness')}</span>
+            <span className="tnum">{completeness}%</span>
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[rgb(var(--surface-3))]">
+            <div
+              className="h-full rounded-full bg-[rgb(var(--brand-500))] transition-all duration-500"
+              style={{ width: `${completeness}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-[320px_1fr] lg:items-start">
         {/* Account facts */}
         <aside className="card overflow-hidden lg:sticky lg:top-24">
           <div className="border-b border-[rgb(var(--line))] px-5 py-4">
@@ -210,7 +207,7 @@ function ProfileView() {
         {/* Editable form */}
         <form onSubmit={onSubmit} className="card p-5 sm:p-6" noValidate>
           <div className="mb-5">
-            <h2 className="text-lg font-bold">{t('profile.title')}</h2>
+            <h2 className="text-lg font-extrabold tracking-tight">{t('profile.title')}</h2>
             <p className="text-sm text-[rgb(var(--fg-muted))]">{t('profile.subtitle')}</p>
           </div>
 
@@ -267,7 +264,7 @@ function ProfileView() {
           </div>
 
           <div className="mt-6">
-            <div className="mb-2 text-sm font-semibold">{t('profile.preferredLocale')}</div>
+            <span className="label">{t('profile.preferredLocale')}</span>
             <div className="flex flex-wrap gap-2">
               {LOCALES.map((l) => (
                 <button
@@ -275,11 +272,7 @@ function ProfileView() {
                   type="button"
                   onClick={() => setPreferredLocale(l.value)}
                   aria-pressed={preferredLocale === l.value}
-                  className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition ${
-                    preferredLocale === l.value
-                      ? 'border-transparent bg-[rgb(var(--fg))] text-[rgb(var(--surface))] shadow-sm'
-                      : 'border-[rgb(var(--line-strong))] text-[rgb(var(--fg-muted))] hover:text-[rgb(var(--fg))]'
-                  }`}
+                  className={`chip ${preferredLocale === l.value ? 'chip-brand' : 'chip-neutral'}`}
                 >
                   <span aria-hidden>{l.flag}</span>
                   {l.label}
@@ -289,7 +282,7 @@ function ProfileView() {
           </div>
 
           <div className="mt-6">
-            <div className="mb-2 text-sm font-semibold">{t('profile.preferredCurrency')}</div>
+            <span className="label">{t('profile.preferredCurrency')}</span>
             <div className="flex flex-wrap gap-2">
               {CURRENCIES.map((c) => (
                 <button
@@ -297,11 +290,7 @@ function ProfileView() {
                   type="button"
                   onClick={() => setPreferredCurrency(c)}
                   aria-pressed={preferredCurrency === c}
-                  className={`tnum rounded-xl border px-3.5 py-2 text-sm font-bold transition ${
-                    preferredCurrency === c
-                      ? 'border-transparent bg-[rgb(var(--fg))] text-[rgb(var(--surface))] shadow-sm'
-                      : 'border-[rgb(var(--line-strong))] text-[rgb(var(--fg-muted))] hover:text-[rgb(var(--fg))]'
-                  }`}
+                  className={`chip tnum ${preferredCurrency === c ? 'chip-brand' : 'chip-neutral'}`}
                 >
                   {c}
                 </button>
@@ -310,30 +299,22 @@ function ProfileView() {
           </div>
 
           {message && (
-            <p className="mt-6 flex items-center gap-2 rounded-xl border border-emerald-300/60 bg-emerald-50/70 px-3.5 py-2.5 text-sm font-medium text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
-              <CategoryIcon name="checklist" size={16} />
+            <p className="mt-6 flex items-center gap-2 rounded-xl border border-[rgb(var(--ok)/0.35)] px-3.5 py-2.5 text-sm font-semibold text-[rgb(var(--ok))]">
+              <CategoryIcon name="check" size={16} />
               {message}
             </p>
           )}
           {error && (
-            <p role="alert" className="mt-6 rounded-xl border border-red-300/60 bg-red-50/70 px-3.5 py-2.5 text-sm font-medium text-red-700 dark:bg-red-950/30 dark:text-red-300">
+            <p role="alert" className="mt-6 flex items-center gap-2 rounded-xl border border-[rgb(var(--danger)/0.35)] px-3.5 py-2.5 text-sm font-semibold text-[rgb(var(--danger))]">
+              <CategoryIcon name="shield" size={16} />
               {error}
             </p>
           )}
 
           <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-[rgb(var(--line))] pt-5">
             <button type="submit" disabled={busy} className="btn btn-primary btn-lg">
-              {busy ? (
-                <>
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                  {t('common.loading')}
-                </>
-              ) : (
-                <>
-                  <CategoryIcon name="checklist" size={16} />
-                  {t('common.save')}
-                </>
-              )}
+              {busy ? <Spinner size={18} /> : <CategoryIcon name="check" size={16} />}
+              {busy ? t('common.loading') : t('common.save')}
             </button>
             <Link href={`/${locale}/dashboard`} className="btn btn-secondary btn-lg">
               {t('nav.dashboard')}
@@ -342,7 +323,7 @@ function ProfileView() {
           </div>
         </form>
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -359,7 +340,7 @@ function Fact({
 }) {
   return (
     <div className="flex items-start gap-3 px-5 py-3.5">
-      <span className="icon-tile mt-0.5 h-8 w-8 bg-[rgb(var(--surface-3))] text-[rgb(var(--fg-muted))]">
+      <span className="icon-tile icon-tile-neutral mt-0.5 h-8 w-8">
         <CategoryIcon name={icon as IconName} size={15} />
       </span>
       <div className="min-w-0 flex-1">
@@ -379,7 +360,7 @@ function StatusChip({ status }: { status: string }) {
   const active = status === 'ACTIVE';
   return (
     <span className={`chip ${active ? 'chip-ok' : 'chip-warn'}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-[rgb(var(--ok))]' : 'bg-[rgb(var(--warn))]'}`} />
       {t(`status.${status}`) ?? status}
     </span>
   );
@@ -389,7 +370,7 @@ function AvatarPreview({ url, name }: { url: string; name: string }) {
   const [broken, setBroken] = useState(false);
   useEffect(() => setBroken(false), [url]);
   return (
-    <span className="grid h-12 w-12 flex-none place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-black text-white shadow-sm">
+    <span className="icon-tile h-12 w-12 overflow-hidden text-sm font-black">
       {url && !broken ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={url} alt={name} className="h-full w-full object-cover" onError={() => setBroken(true)} />
@@ -410,7 +391,7 @@ function ChangePassword({ onDone }: { onDone: () => void }) {
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="btn btn-secondary w-full">
+      <button type="button" onClick={() => setOpen(true)} className="btn btn-secondary btn-block">
         <CategoryIcon name="shield" size={15} />
         {t('profile.changePassword')}
       </button>
@@ -455,7 +436,7 @@ function ChangePassword({ onDone }: { onDone: () => void }) {
         autoComplete="new-password"
         className="input"
       />
-      {error && <p className="text-xs font-medium text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs font-semibold text-[rgb(var(--danger))]">{error}</p>}
       <div className="flex gap-2">
         <button type="button" onClick={submit} disabled={busy} className="btn btn-primary flex-1">
           {busy ? t('common.loading') : t('common.confirm')}
