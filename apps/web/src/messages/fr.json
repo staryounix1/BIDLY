@@ -40,7 +40,8 @@
     "none": "Aucun",
     "yes": "Oui",
     "no": "Non",
-    "required": "Requis"
+    "required": "Requis",
+    "km": "km"
   },
   "auth": {
     "email": "Adresse e-mail",
@@ -483,5 +484,47 @@
     "debit": "Débiter",
     "noPermission": "Vous n'avez pas accès à cette section.",
     "empty": "Rien à afficher."
+  },
+  "map": {
+    "title": "Choisissez l'emplacement sur la carte",
+    "tapHint": "Touchez la carte pour définir votre position, ou utilisez le bouton de localisation.",
+    "myLocation": "Ma position",
+    "locating": "Localisation…",
+    "denied": "Impossible d'accéder à votre position. Autorisez la géolocalisation dans le navigateur.",
+    "unsupported": "Votre navigateur ne prend pas en charge la géolocalisation.",
+    "fillAddress": "Remplir l'adresse depuis la carte",
+    "looking": "Recherche…",
+    "pickupPoint": "Point de prise en charge",
+    "destinationPoint": "Point de destination",
+    "providersNearby": "Prestataires à proximité",
+    "noProviders": "Aucun prestataire visible dans votre zone pour le moment.",
+    "providerCount": "{count} prestataire(s) proche(s)",
+    "trackTitle": "Suivi de l'arrivée",
+    "offline": "Dernière position connue"
+  },
+  "search": {
+    "title": "Recherche de prestataires…",
+    "subtitle": "Nous informons les meilleurs prestataires proches de votre demande.",
+    "scanning": "Recherche dans un rayon de {km} km",
+    "found": "{count} prestataire(s) trouvé(s)",
+    "offersIn": "{count} offre(s) reçue(s)",
+    "waiting": "En attente des offres…",
+    "noOneYet": "Aucune offre pour l'instant. La recherche continue jusqu'à {expires}.",
+    "expiresIn": "Fin de la recherche dans",
+    "stop": "Arrêter la recherche",
+    "viewOffers": "Voir les offres",
+    "expired": "La recherche est terminée sans offres.",
+    "rematch": "Relancer la recherche",
+    "firstOffer": "Première offre reçue !"
+  },
+  "push": {
+    "deviceTitle": "Notifications de cet appareil",
+    "deviceHint": "Activez-les pour recevoir les demandes, offres et messages sur votre téléphone.",
+    "turnOn": "Activer les notifications",
+    "turnOff": "Désactiver",
+    "denied": "Le navigateur bloque les notifications. Autorisez-les dans les réglages du site.",
+    "unsupported": "Votre navigateur ne prend pas en charge les notifications.",
+    "notConfigured": "Les notifications ne sont pas encore configurées sur ce serveur.",
+    "failed": "Impossible d'activer les notifications. Réessayez."
   }
 }

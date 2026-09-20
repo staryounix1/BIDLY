@@ -8,6 +8,7 @@ import { ApiError } from '@/lib/auth-api';
 import {
   getPreferences, savePreferences, type NotificationPreferences,
 } from '@/lib/notifications-api';
+import { usePushNotifications } from '@/lib/push-notifications';
 
 /**
  * Notification preferences.
@@ -92,6 +93,8 @@ function Preferences() {
         </p>
       )}
 
+      <PushToggle />
+
       {loading ? (
         <p className="mt-6 opacity-60">{t('common.loading')}</p>
       ) : (
@@ -139,5 +142,54 @@ function Preferences() {
         </div>
       )}
     </main>
+  );
+}
+
+/**
+ * The browser-level push switch.
+ *
+ * Separate from the preference table on purpose: the table says *which events*
+ * may notify, this says whether this device can receive notifications at all.
+ * Both must be on for a phone to buzz, and conflating them is how users end up
+ * with a "Push: on" row that never fires.
+ */
+function PushToggle() {
+  const { t } = useI18n();
+  const { state, busy, error, supported, subscribe, unsubscribe } = usePushNotifications();
+
+  if (!supported || state === 'disabled') {
+    return (
+      <div className="mt-5 rounded-2xl border border-black/10 p-4 text-sm dark:border-white/15">
+        <p className="font-medium">{t('push.deviceTitle')}</p>
+        <p className="mt-1 text-xs opacity-60">
+          {state === 'disabled' ? t('push.notConfigured') : t('push.unsupported')}
+        </p>
+      </div>
+    );
+  }
+
+  const on = state === 'granted';
+  return (
+    <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/10 p-4 dark:border-white/15">
+      <div>
+        <p className="text-sm font-medium">{t('push.deviceTitle')}</p>
+        <p className="mt-0.5 text-xs opacity-60">
+          {state === 'denied' ? t('push.denied') : t('push.deviceHint')}
+        </p>
+        {error && <p className="mt-1 text-xs text-amber-600">{t('push.failed')}</p>}
+      </div>
+      <button
+        type="button"
+        onClick={() => void (on ? unsubscribe() : subscribe())}
+        disabled={busy || state === 'denied'}
+        className={`rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50 ${
+          on
+            ? 'border border-black/15 dark:border-white/20'
+            : 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+        }`}
+      >
+        {busy ? t('common.loading') : on ? t('push.turnOff') : t('push.turnOn')}
+      </button>
+    </div>
   );
 }

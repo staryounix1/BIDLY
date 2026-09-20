@@ -40,7 +40,8 @@
     "none": "None",
     "yes": "Yes",
     "no": "No",
-    "required": "Required"
+    "required": "Required",
+    "km": "km"
   },
   "auth": {
     "email": "Email",
@@ -483,5 +484,47 @@
     "debit": "Debit",
     "noPermission": "You do not have access to this section.",
     "empty": "Nothing to show here."
+  },
+  "map": {
+    "title": "Pick the location on the map",
+    "tapHint": "Tap the map to set your position, or use the location button.",
+    "myLocation": "My location",
+    "locating": "Locating…",
+    "denied": "Could not read your position. Allow location access in the browser.",
+    "unsupported": "Your browser does not support geolocation.",
+    "fillAddress": "Fill address from map",
+    "looking": "Looking up…",
+    "pickupPoint": "Pickup point",
+    "destinationPoint": "Destination point",
+    "providersNearby": "Providers nearby",
+    "noProviders": "No providers visible in your area right now.",
+    "providerCount": "{count} provider(s) nearby",
+    "trackTitle": "Track the provider's arrival",
+    "offline": "Last known position"
+  },
+  "search": {
+    "title": "Finding providers…",
+    "subtitle": "We are telling the best nearby providers about your request now.",
+    "scanning": "Scanning within {km} km",
+    "found": "{count} provider(s) found",
+    "offersIn": "{count} offer(s) received",
+    "waiting": "Waiting for offers…",
+    "noOneYet": "No offers yet. The search keeps running until {expires}.",
+    "expiresIn": "Search ends in",
+    "stop": "Stop searching",
+    "viewOffers": "View offers",
+    "expired": "The search ended without offers.",
+    "rematch": "Search again",
+    "firstOffer": "First offer received!"
+  },
+  "push": {
+    "deviceTitle": "Notifications on this device",
+    "deviceHint": "Turn these on to get requests, offers and messages on your phone.",
+    "turnOn": "Enable notifications",
+    "turnOff": "Turn off",
+    "denied": "The browser is blocking notifications. Allow them in the site settings.",
+    "unsupported": "Your browser does not support push notifications.",
+    "notConfigured": "Notifications are not configured on this server yet.",
+    "failed": "Could not enable notifications. Try again."
   }
 }

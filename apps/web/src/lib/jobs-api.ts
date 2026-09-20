@@ -52,8 +52,13 @@ export interface JobPayment {
 
 export interface JobDetail {
   job: JobSummary & {
+    provider_id: string;
     pickup_line1: string | null;
+    pickup_lat: number | null;
+    pickup_lng: number | null;
     destination_line1: string | null;
+    destination_lat: number | null;
+    destination_lng: number | null;
     start_otp_expires_at: string | null;
     cancellation_reason?: string | null;
     cancellation_fee_minor?: number | null;
@@ -62,6 +67,14 @@ export interface JobDetail {
   events: JobEvent[];
   payment: JobPayment | null;
 }
+
+/** Statuses where the customer is waiting on a provider who is on the move. */
+export const TRACKABLE_JOB_STATUSES = [
+  'CONFIRMED',
+  'PROVIDER_EN_ROUTE',
+  'PROVIDER_ARRIVED',
+  'IN_PROGRESS',
+] as const;
 
 /**
  * Provider-side job actions.

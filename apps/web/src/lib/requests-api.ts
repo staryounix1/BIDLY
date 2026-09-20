@@ -59,8 +59,12 @@ export interface RequestDetail {
     pickup_line2: string | null;
     pickup_district: string | null;
     pickup_notes: string | null;
+    pickup_lat: number | null;
+    pickup_lng: number | null;
     destination_line1: string | null;
     destination_notes: string | null;
+    destination_lat: number | null;
+    destination_lng: number | null;
     subcategory_name: string | null;
     item_count: number | null;
     requires_helper: boolean;
