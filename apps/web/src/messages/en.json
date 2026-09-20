@@ -538,10 +538,6 @@
     "balance": "Balance"
   },
   "admin": {
-    "accountsEmpty": "No matching account",
-    "accountsHint": "Enable or clear each account check",
-    "accountsSearch": "Search by email, phone or name…",
-    "accountsSection": "Accounts & verification",
     "activeProviders": "Active providers",
     "activeUsers": "Active users",
     "adjust": "Adjust balance",
@@ -594,20 +590,10 @@
     "settingsHint": "Edit the values and save. Every change is recorded in the audit log.",
     "settingsSection": "Site settings",
     "settingsSubtitle": "Features, site settings and accounts in one place",
-    "tab_accounts": "Accounts",
-    "tab_features": "Features",
-    "tab_settings": "Site settings",
     "title": "Admin console",
     "transactions": "Transactions",
-    "verify_EMAIL": "Email check",
-    "verify_EMAIL_off": "Email check cleared",
-    "verify_EMAIL_on": "Email check enabled",
-    "verify_IDENTITY": "Identity check",
-    "verify_IDENTITY_off": "Identity check cleared",
-    "verify_IDENTITY_on": "Identity check enabled",
-    "verify_WHATSAPP": "WhatsApp check",
-    "verify_WHATSAPP_off": "WhatsApp check cleared",
-    "verify_WHATSAPP_on": "WhatsApp check enabled",
+    "verificationHint": "Enable or disable each check for the whole site",
+    "verificationSection": "Account verification",
     "wallets": "Wallets"
   },
   "map": {
