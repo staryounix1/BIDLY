@@ -43,8 +43,8 @@ export interface ConversationPage {
 }
 
 export async function listConversations(): Promise<Conversation[]> {
-  const res = await api.get<Conversation[]>('/conversations?limit=100');
-  return res.data;
+  const res = await api.get<ConversationPage>('/conversations?limit=100');
+  return res.data.items ?? [];
 }
 
 export async function openConversation(counterpartId: string): Promise<Conversation> {
