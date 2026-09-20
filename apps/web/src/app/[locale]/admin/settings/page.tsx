@@ -204,7 +204,7 @@ function SettingsView() {
             <div className="flex flex-col gap-5">
               {grouped.map(([group, rows]) => (
                 <div key={group} className="card p-4">
-                  <h3 className="mb-3 text-sm font-bold text-[rgb(var(--brand))]">
+                  <h3 className="mb-3 text-sm font-bold text-[rgb(var(--brand-500))]">
                     {t(`admin.group_${group}` as never)}
                   </h3>
                   <div className="flex flex-col gap-3">
@@ -279,7 +279,7 @@ function FeaturesSection({
                 disabled={busy === f.key}
                 onClick={() => onToggle(f)}
                 className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
-                  f.enabled ? 'bg-[rgb(var(--brand))]' : 'bg-[rgb(var(--border-strong))]'
+                  f.enabled ? 'bg-[rgb(var(--brand-500))]' : 'bg-[rgb(var(--line-strong))]'
                 }`}
               >
                 <span
@@ -319,7 +319,7 @@ function SettingRow({
     <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
       <label className="min-w-0 flex-1">
         <span className="block text-xs font-semibold">{humanize(setting.key)}</span>
-        <span className="block truncate text-[10px] text-[rgb(var(--fg-dim))]" dir="ltr">
+        <span className="block truncate text-[10px] text-[rgb(var(--fg-subtle))]" dir="ltr">
           {setting.key}
         </span>
         {setting.description ? (
@@ -370,7 +370,7 @@ function SettingRow({
 
       <div className="flex shrink-0 items-center gap-2">
         {readOnly ? (
-          <span className="text-xs text-[rgb(var(--fg-dim))]">{t('admin.readOnlyValue')}</span>
+          <span className="text-xs text-[rgb(var(--fg-subtle))]">{t('admin.readOnlyValue')}</span>
         ) : (
           <button
             type="button"
