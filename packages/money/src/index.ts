@@ -247,6 +247,146 @@ export function computeCommission(price: Money, rule: CommissionRule): Commissio
 }
 
 // ---------------------------------------------------------------------
+// Khdemli tiered commission
+// ---------------------------------------------------------------------
+
+/**
+ * One band of the tiered commission schedule.
+ *
+ * `upToMinor` is the inclusive upper bound of the band (null = open-ended top
+ * band). `bps` is the rate applied to a job whose agreed price falls in the
+ * band. Bands are declared in ascending order and must not overlap.
+ */
+export interface CommissionTier {
+  /** Inclusive upper bound in minor units; `null` means "and above". */
+  upToMinor: number | null;
+  /** Rate in basis points (1500 = 15%). */
+  bps: number;
+}
+
+/** Full tiered schedule plus the modifiers an admin can tune. */
+export interface CommissionSchedule {
+  tiers: CommissionTier[];
+  /** Extra rate added for urgent (SOS) jobs, in basis points. */
+  sosExtraBps?: number;
+  /** Rate substituted for Premium subscribers, in basis points. */
+  premiumBps?: number | null;
+  /** When true, a provider's first completed job is commission-free. */
+  firstJobFree?: boolean;
+}
+
+/**
+ * The schedule the product launched with, in MAD.
+ *
+ *   0 – 450 MAD   -> 15%
+ *   500 – 1000 MAD -> 20%
+ *
+ * The two bands are written down explicitly rather than as a single "under
+ * 500" rule because the rates are a business decision, not an accident of
+ * arithmetic: re-pricing must be a one-line edit here (or a row in
+ * `settings['commission.tiers']`, which is what production reads).
+ */
+export const DEFAULT_COMMISSION_SCHEDULE: CommissionSchedule = {
+  tiers: [
+    { upToMinor: 45000, bps: 1500 },
+    { upToMinor: null, bps: 2000 },
+  ],
+  sosExtraBps: 500,
+  premiumBps: 1000,
+  firstJobFree: true,
+};
+
+export interface TieredCommissionInput {
+  /** Agreed price of the job. */
+  price: Money;
+  schedule?: CommissionSchedule;
+  /** Urgent (SOS) request: adds `sosExtraBps`. */
+  isSos?: boolean;
+  /** Premium subscriber: replaces the band rate with `premiumBps`. */
+  isPremium?: boolean;
+  /** Provider has never completed a job and the schedule waives the first. */
+  isFirstJob?: boolean;
+}
+
+export interface TieredCommissionResult {
+  commission: Money;
+  providerNet: Money;
+  /** The rate actually applied, after every modifier. */
+  effectiveBps: number;
+  /** Which band matched, for the snapshot stored on the job. */
+  tierIndex: number;
+  /** True when the first-job waiver zeroed the fee. */
+  waived: boolean;
+  /** Why the fee is what it is, in a shape safe to persist as JSON. */
+  breakdown: Record<string, unknown>;
+}
+
+/** Pick the band a price falls into. Bands are ascending, first match wins. */
+export function tierForPrice(priceMinor: number, tiers: CommissionTier[]): number {
+  for (let i = 0; i < tiers.length; i += 1) {
+    const bound = tiers[i].upToMinor;
+    if (bound == null || priceMinor <= bound) return i;
+  }
+  return Math.max(tiers.length - 1, 0);
+}
+
+/**
+ * The platform's commission for one job, under the tiered schedule.
+ *
+ * Pure and deterministic so it can be unit-tested and snapshotted onto the job
+ * at negotiation time; the same function backs the admin preview so what an
+ * operator sees is exactly what a provider is charged.
+ *
+ * Order of application:
+ *   1. the first-job waiver zeroes the fee outright;
+ *   2. otherwise the Premium rate, when present, replaces the band rate;
+ *   3. the SOS surcharge is then added on top of whichever rate applies.
+ */
+export function computeTieredCommission(input: TieredCommissionInput): TieredCommissionResult {
+  const schedule = input.schedule ?? DEFAULT_COMMISSION_SCHEDULE;
+  const price = input.price;
+  const tiers = schedule.tiers.length > 0 ? schedule.tiers : DEFAULT_COMMISSION_SCHEDULE.tiers;
+  const tierIndex = tierForPrice(price.amountMinor, tiers);
+  const bandBps = tiers[tierIndex]?.bps ?? 0;
+  const premiumBps = input.isPremium ? schedule.premiumBps ?? null : null;
+  const baseBps = premiumBps != null ? premiumBps : bandBps;
+  const sosBps = input.isSos ? schedule.sosExtraBps ?? 0 : 0;
+  const waived = Boolean(input.isFirstJob && schedule.firstJobFree);
+
+  let effectiveBps = baseBps + sosBps;
+  let feeMinor = applyBps(price, effectiveBps).amountMinor;
+  if (waived) {
+    effectiveBps = 0;
+    feeMinor = 0;
+  }
+
+  // A fee can never exceed the price nor go negative, whatever an admin types.
+  if (feeMinor > price.amountMinor) feeMinor = price.amountMinor;
+  if (feeMinor < 0) feeMinor = 0;
+
+  const commission = money(feeMinor, price.currency);
+  const providerNet = subtract(price, commission);
+
+  return {
+    commission,
+    providerNet,
+    effectiveBps,
+    tierIndex,
+    waived,
+    breakdown: {
+      priceMinor: price.amountMinor,
+      currency: price.currency,
+      tierIndex,
+      bandBps,
+      premiumBps,
+      sosBps,
+      effectiveBps,
+      waived,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------
 // Formatting
 // ---------------------------------------------------------------------
 
