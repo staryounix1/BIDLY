@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { notFound } from '../../core/errors.js';
 import { queryMany, queryOne } from '../../db/pool.js';
+import { env } from '@bidly/config';
 
 /**
  * /categories, /services — the config-driven catalog.
@@ -224,5 +225,19 @@ export async function registerCatalogRoutes(app: FastifyInstance): Promise<void>
     const map: Record<string, unknown> = {};
     for (const row of rows) map[row.key as string] = row.value;
     return reply.send({ success: true, data: map });
+  });
+
+  // -------- web push public key (public) ------------------------------
+  // The browser needs the VAPID public key (and nothing else) to subscribe.
+  // `enabled` lets the client hide the notification prompt when push is not
+  // configured on this deployment, rather than failing at subscribe time.
+  app.get('/push/public-key', {
+    schema: { tags: ['catalog'], summary: 'VAPID public key for Web Push' },
+  }, async (_request, reply) => {
+    const publicKey = env.VAPID_PUBLIC_KEY ?? null;
+    return reply.send({
+      success: true,
+      data: { publicKey, enabled: env.PUSH_PROVIDER === 'webpush' && !!publicKey },
+    });
   });
 }

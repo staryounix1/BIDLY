@@ -1,9 +1,15 @@
 import type { PoolClient } from 'pg';
 import { clientQuery, queryMany, queryOne, transaction } from '../db/pool.js';
 import { createChildLogger } from './logger.js';
+import { createNotificationAdapters } from './providers.js';
 import { publishToUser, publish, requestRoom, jobRoom, conversationRoom, type RealtimeEvent } from './realtime.js';
 
 const log = createChildLogger({ component: 'outbox' });
+
+// One adapter set per process. `createPushProvider()` throws when
+// PUSH_PROVIDER=webpush without VAPID keys, which is the failure a
+// misconfigured deployment should see immediately at boot, not at send time.
+const adapters = createNotificationAdapters();
 
 /**
  * Transactional outbox (doc 13 §13.3).
@@ -294,6 +300,9 @@ export async function drainOutbox(batchSize = 25, workerId = 'worker-1'): Promis
         if (!inserted) continue; // deduped: already delivered
         created++;
         pushed += publishToUser(draft.userId, 'notification:new', { id: inserted.id, ...draft.data });
+        // Web Push is best-effort and must never fail the event: a phone that
+        // is offline or has revoked permission is the normal case, not an error.
+        await deliverPush(draft, loc).catch(() => undefined);
       }
 
       for (const { room, event: rtEvent } of realtimeFor(event, event.payload)) {
@@ -330,6 +339,49 @@ function publishToUserRoom(room: string, event: RealtimeEvent, data: unknown): n
   // set of users allowed to see the related entity — the SSE route only lets a
   // user join a room after verifying membership in the database.
   return publish(room, event, data);
+}
+
+/**
+ * Send a Web Push to every active device the recipient has registered.
+ *
+ * A 404/410 from the push service means the browser dropped the subscription,
+ * so that device row is deactivated rather than retried forever — otherwise a
+ * stale token would be attempted on every future notification.
+ */
+async function deliverPush(
+  draft: NotificationDraft,
+  loc: { title_en: string; title_fr: string; title_ar: string; body_en: string; body_fr: string; body_ar: string },
+): Promise<void> {
+  const devices = await queryMany<{ id: string; push_token: string; locale: string | null }>(
+    `select id, push_token, locale from devices
+     where user_id = $1 and is_active and push_token is not null`,
+    [draft.userId],
+  );
+  if (devices.length === 0) return;
+
+  const forLocale = (locale: string | null) => {
+    const subject = locale === 'ar' ? loc.title_ar : locale === 'fr' ? loc.title_fr : loc.title_en;
+    const message = locale === 'ar' ? loc.body_ar : locale === 'fr' ? loc.body_fr : loc.body_en;
+    return { subject, message };
+  };
+
+  for (const device of devices) {
+    const { subject, message } = forLocale(device.locale);
+    try {
+      await adapters.push.send(device.push_token, subject, message, {
+        ...(draft.data ?? {}),
+        url: typeof draft.data?.url === 'string' ? draft.data.url : '/',
+      });
+    } catch (err) {
+      const text = err instanceof Error ? err.message : String(err);
+      if (/\b(404|410)\b/.test(text)) {
+        await queryOne('update devices set is_active = false, updated_at = now() where id = $1', [device.id]);
+        log.info({ deviceId: device.id }, 'push.subscription_expired');
+      } else {
+        log.warn({ deviceId: device.id, err: text.slice(0, 200) }, 'push.send_failed');
+      }
+    }
+  }
 }
 
 /** Count of events still waiting — surfaced for tests and ops. */

@@ -104,6 +104,12 @@ export const envSchema = z.object({
   TWILIO_AUTH_TOKEN: optionalString,
   TWILIO_FROM_NUMBER: optionalString,
   PUSH_PROVIDER: z.string().default('log'),
+  // Web Push (VAPID). Generate once with `npx web-push generate-vapid-keys`
+  // and keep the private key server-side only; the public key is shipped to
+  // the browser so it can subscribe.
+  VAPID_PUBLIC_KEY: optionalString,
+  VAPID_PRIVATE_KEY: optionalString,
+  VAPID_SUBJECT: z.string().default('mailto:support@bidly.app'),
   FCM_PROJECT_ID: optionalString,
   FCM_CLIENT_EMAIL: optionalString,
   FCM_PRIVATE_KEY: optionalString,

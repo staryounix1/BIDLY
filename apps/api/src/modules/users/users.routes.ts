@@ -215,7 +215,7 @@ export async function registerUserRoutes(app: FastifyInstance): Promise<void> {
         required: ['pushToken'],
         additionalProperties: false,
         properties: {
-          pushToken: { type: 'string', maxLength: 500 },
+          pushToken: { type: 'string', maxLength: 2048 },
           platform: { type: 'string', enum: ['IOS', 'ANDROID', 'WEB'] },
           deviceId: { type: 'string', maxLength: 128 },
           appVersion: { type: 'string', maxLength: 40 },
@@ -235,6 +235,30 @@ export async function registerUserRoutes(app: FastifyInstance): Promise<void> {
       ),
     );
     return reply.status(201).send({ success: true, data: row });
+  });
+
+  // -------- remove a device (unsubscribe) -----------------------------
+  // Deactivates rather than deletes: the row is the audit trail of which
+  // browser was registered, and a re-subscribe flips it back on.
+  app.post('/users/me/devices/remove', {
+    preHandler: [app.authenticate],
+    schema: {
+      tags: ['users'], summary: 'Unregister a push device', security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object', required: ['pushToken'], additionalProperties: false,
+        properties: { pushToken: { type: 'string', maxLength: 2048 } },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const b = request.body as { pushToken: string };
+    await transaction(async (client) =>
+      clientQuery(client).query(
+        'update devices set is_active = false, updated_at = now() where user_id = $1 and push_token = $2',
+        [auth.userId, b.pushToken],
+      ),
+    );
+    return reply.send({ success: true, data: { removed: true } });
   });
 
   // -------- public profile --------------------------------------------

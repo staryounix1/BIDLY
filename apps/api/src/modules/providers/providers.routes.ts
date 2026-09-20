@@ -77,6 +77,141 @@ export async function registerProviderRoutes(app: FastifyInstance): Promise<void
     return reply.send({ success: true, data: buildPage(rows, Number(totalRow?.count ?? 0), page) });
   });
 
+  // -------- providers within a radius (public, map) -------------------
+  // Powers the "providers nearby" pins on the request map. Distance is
+  // computed in SQL with the haversine formula so the database does the
+  // filtering; the bounding-box pre-filter keeps it on an index-friendly
+  // range before the trigonometry runs.
+  app.get('/providers/nearby', {
+    schema: {
+      tags: ['providers'],
+      summary: 'Active providers within a radius of a point',
+      querystring: {
+        type: 'object',
+        required: ['lat', 'lng'],
+        additionalProperties: false,
+        properties: {
+          lat: { type: 'number', minimum: -90, maximum: 90 },
+          lng: { type: 'number', minimum: -180, maximum: 180 },
+          radiusKm: { type: 'number', minimum: 0.5, maximum: 200, default: 25 },
+          limit: { type: 'integer', minimum: 1, maximum: 100, default: 50 },
+          serviceId: { type: 'string', format: 'uuid' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const q = request.query as { lat: number; lng: number; radiusKm: number; limit: number; serviceId?: string };
+    const radiusKm = q.radiusKm ?? 25;
+
+    // Rough degree deltas for the bounding box (1 deg lat ~= 111 km).
+    const dLat = radiusKm / 111;
+    const dLng = radiusKm / (111 * Math.max(Math.cos((q.lat * Math.PI) / 180), 0.01));
+
+    const params: unknown[] = [q.lat, q.lng, dLat, dLng];
+    const where: string[] = [
+      'p.status = \'ACTIVE\'',
+      'p.deleted_at is null',
+      'pl.is_current',
+      'pl.lat between $1 - $3 and $1 + $3',
+      'pl.lng between $2 - $4 and $2 + $4',
+    ];
+
+    if (q.serviceId) {
+      params.push(q.serviceId);
+      where.push(`exists (select 1 from provider_services ps where ps.provider_id = p.id and ps.service_id = $${params.length} and ps.is_active)`);
+    }
+
+    const distanceSql = `(6371 * acos(
+        least(1, greatest(-1,
+          sin(radians($1)) * sin(radians(pl.lat)) +
+          cos(radians($1)) * cos(radians(pl.lat)) * cos(radians(pl.lng) - radians($2))
+        ))
+      ))`;
+
+    params.push(radiusKm, q.limit ?? 50);
+
+    const rows = await queryMany(
+      `select p.id, p.display_name, p.avatar_url, p.rating_avg, p.rating_count,
+              p.completed_jobs, p.verification_status, p.is_online, p.currency,
+              pl.lat, pl.lng, pl.recorded_at,
+              ${distanceSql} as distance_km
+       from providers p
+       join provider_locations pl on pl.provider_id = p.id and pl.is_current
+       where ${where.join(' and ')}
+         and ${distanceSql} <= $${params.length - 1}
+       order by distance_km asc
+       limit $${params.length}`,
+      params,
+    );
+
+    return reply.send({ success: true, data: { providers: rows, radiusKm } });
+  });
+
+
+  // -------- publish my current position (provider) --------------------
+  // Every ping closes the previous row and inserts a new current one, so
+  // `provider_locations` keeps a trail while `is_current` stays a single row
+  // per provider. The job tracking screen reads this back to draw the pin.
+  app.post('/providers/me/location', {
+    preHandler: [app.authenticate],
+    schema: {
+      tags: ['providers'],
+      summary: 'Publish my current location',
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        required: ['lat', 'lng'],
+        additionalProperties: false,
+        properties: {
+          lat: { type: 'number', minimum: -90, maximum: 90 },
+          lng: { type: 'number', minimum: -180, maximum: 180 },
+          accuracyM: { type: 'number', minimum: 0 },
+          heading: { type: 'number', minimum: 0, maximum: 360 },
+          speedKmh: { type: 'number', minimum: 0 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const b = request.body as { lat: number; lng: number; accuracyM?: number; heading?: number; speedKmh?: number };
+
+    const provider = await queryOne<{ id: string }>('select id from providers where user_id = $1 and deleted_at is null', [auth.userId]);
+    if (!provider) throw notFound('Provider profile');
+
+    const row = await transaction(async (client) => {
+      const c = clientQuery(client);
+      await c.query('update provider_locations set is_current = false where provider_id = $1 and is_current', [provider.id]);
+      return c.one(
+        `insert into provider_locations (provider_id, lat, lng, accuracy_m, heading, speed_kmh, is_current)
+         values ($1,$2,$3,$4,$5,$6,true) returning id, lat, lng, recorded_at`,
+        [provider.id, b.lat, b.lng, b.accuracyM ?? null, b.heading ?? null, b.speedKmh ?? null],
+      );
+    });
+
+    return reply.status(201).send({ success: true, data: row });
+  });
+
+  // -------- read a provider's current position (public) ---------------
+  // Used by the customer's arrival-tracking map. Only active providers expose
+  // a position, so a suspended account stops leaking its location.
+  app.get('/providers/:id/location', {
+    schema: {
+      tags: ['providers'],
+      summary: 'A provider\'s current location',
+      params: { type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } },
+    },
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const row = await queryOne(
+      `select pl.lat, pl.lng, pl.heading, pl.speed_kmh, pl.accuracy_m, pl.recorded_at
+       from provider_locations pl
+       join providers p on p.id = pl.provider_id
+       where pl.provider_id = $1 and pl.is_current and p.status = 'ACTIVE' and p.deleted_at is null`,
+      [id],
+    );
+    return reply.send({ success: true, data: row });
+  });
+
   app.get('/providers/:id', {
     schema: {
       tags: ['providers'], summary: 'Provider public profile',
@@ -467,4 +602,5 @@ export async function registerProviderRoutes(app: FastifyInstance): Promise<void
     });
     return reply.status(201).send({ success: true, data: row });
   });
+
 }
