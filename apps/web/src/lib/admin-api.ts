@@ -187,35 +187,7 @@ export const adminApi = {
   async updateSetting(key: string, value: unknown) {
     return (await api.put(`/admin/settings/${encodeURIComponent(key)}`, { value })).data;
   },
-  async accounts(params: { page?: number; q?: string; role?: string } = {}): Promise<{ items: AdminAccount[]; meta: { total: number } }> {
-    return (await api.get<{ items: AdminAccount[]; meta: { total: number } }>(`/admin/accounts${qs({ ...params, limit: 50 })}`)).data;
-  },
-  async setVerification(id: string, kind: VerificationKind, enabled: boolean, reason?: string) {
-    return (await api.put(`/admin/accounts/${encodeURIComponent(id)}/verify/${kind}`, { enabled, reason })).data;
-  },
 };
-
-/** The three checks an operator can flip from the accounts view. */
-export type VerificationKind = 'EMAIL' | 'WHATSAPP' | 'IDENTITY';
-
-/** A platform account as returned by `GET /admin/accounts`. */
-export interface AdminAccount {
-  id: string;
-  email: string | null;
-  phone: string | null;
-  role: string;
-  status: string;
-  locale: string;
-  created_at: string;
-  last_login_at: string | null;
-  display_name: string | null;
-  provider_id: string | null;
-  verification_status: string | null;
-  email_verified: boolean;
-  phone_verified: boolean;
-  identity_verified: boolean;
-  whatsapp_verified: boolean;
-}
 
 /**
  * A platform setting as returned by `GET /admin/settings`.
