@@ -658,7 +658,8 @@
     "sending": "Envoi…",
     "priceHint": "Ajustez avec + et −",
     "mapHint": "Placez votre position sur la carte",
-    "pickLocation": "Définir la position"
+    "pickLocation": "Définir la position",
+    "dragHint": "Glissez vers le haut pour les détails"
   },
   "searching": {
     "looking": "Recherche d'artisans proches…",
