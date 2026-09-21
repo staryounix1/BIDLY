@@ -332,13 +332,13 @@ function DocumentField({
  * Whether the account has cleared every check the platform requires.
  *
  * Judged from the API's `activation` object, so there is one rule in one place.
- * Falls back to email/phone flags only if the server did not send it.
+ * The server is the only authority: it sends `activation` on every auth
+ * response. Email/phone verification is a different concern (it gates sign-in,
+ * not usage) and must never stand in for it — treating `emailVerified` as
+ * "activated" is what let freshly registered accounts slip past this gate.
  */
-function isActivated(user: {
-  activation?: { complete: boolean };
-  emailVerified: boolean;
-  phoneVerified: boolean;
-}): boolean {
-  if (user.activation) return user.activation.complete;
-  return user.emailVerified || user.phoneVerified;
+function isActivated(user: { activation?: { complete: boolean } }): boolean {
+  // No `activation` means the server did not report it (older API): fail closed
+  // and let the gate open, then `reload()` will replace it with the real state.
+  return user.activation?.complete === true;
 }

@@ -98,6 +98,10 @@ export interface UserRow {
   locked_until: Date | null;
   locale: string;
   deleted_at: Date | null;
+  /** Activation columns. Optional so selects that do not need them stay cheap. */
+  whatsapp_verified_at?: Date | null;
+  identity_review_status?: string | null;
+  activation_blocked_until?: Date | null;
 }
 
 export interface RegisterEmailInput {
@@ -124,6 +128,30 @@ function toAuthenticatedUser(row: UserRow, providerId?: string | null): Authenti
     emailVerified: row.email_verified_at != null,
     phoneVerified: row.phone_verified_at != null,
     providerId: providerId ?? null,
+    activation: deriveActivation(row),
+  };
+}
+
+/**
+ * Derive the activation state from a user row.
+ *
+ * WhatsApp must be confirmed and identity must be approved. Returns undefined
+ * when the row was not selected with the activation columns (a two-factor-free
+ * caller), so callers never see a false "not activated" for a user whose state
+ * simply was not loaded.
+ */
+export function deriveActivation(row: UserRow): AuthenticatedUser['activation'] {
+  if (row.whatsapp_verified_at === undefined && row.identity_review_status === undefined) {
+    return undefined;
+  }
+  return {
+    whatsapp: row.whatsapp_verified_at != null,
+    identity: row.identity_review_status === 'VERIFIED',
+    identityPending: row.identity_review_status === 'PENDING',
+    blockedUntil: row.activation_blocked_until
+      ? new Date(row.activation_blocked_until).toISOString()
+      : null,
+    complete: row.whatsapp_verified_at != null && row.identity_review_status === 'VERIFIED',
   };
 }
 
@@ -199,7 +227,8 @@ export class AuthService {
          values ($1, $2, $3, $4, $5, $6, $7)
          returning id, email, phone, password_hash, role, status,
                    email_verified_at, phone_verified_at, failed_login_count,
-                   locked_until, locale, deleted_at`,
+                   locked_until, locale, deleted_at,
+                   whatsapp_verified_at, identity_review_status, activation_blocked_until`,
         [
           email, input.phone ?? null, passwordHash, input.role ?? 'CUSTOMER',
           initialStatus, input.locale ?? env.DEFAULT_LOCALE,
@@ -297,7 +326,8 @@ export class AuthService {
     const identifier = emailOrPhone.trim().toLowerCase();
     const row = await queryOne<UserRow>(
       `select id, email, phone, password_hash, role, status, email_verified_at,
-              phone_verified_at, failed_login_count, locked_until, locale, deleted_at
+              phone_verified_at, failed_login_count, locked_until, locale, deleted_at,
+              whatsapp_verified_at, identity_review_status, activation_blocked_until
        from users
        where deleted_at is null and (lower(email) = $1 or phone = $2)
        limit 1`,
@@ -494,7 +524,8 @@ export class AuthService {
 
       const user = await c.one<UserRow>(
         `select id, email, phone, password_hash, role, status, email_verified_at,
-                phone_verified_at, failed_login_count, locked_until, locale, deleted_at
+                phone_verified_at, failed_login_count, locked_until, locale, deleted_at,
+                whatsapp_verified_at, identity_review_status, activation_blocked_until
          from users where id = $1 and deleted_at is null`,
         [session.user_id],
       );
@@ -814,7 +845,8 @@ export class AuthService {
 
     const user = await queryOne<UserRow>(
       `select id, email, phone, password_hash, role, status, email_verified_at,
-              phone_verified_at, failed_login_count, locked_until, locale, deleted_at
+              phone_verified_at, failed_login_count, locked_until, locale, deleted_at,
+              whatsapp_verified_at, identity_review_status, activation_blocked_until
        from users where id = $1 and deleted_at is null`,
       [session.user_id],
     );

@@ -188,6 +188,21 @@ export interface PaginationQuery {
   sortDir?: 'asc' | 'desc';
 }
 
+/**
+ * Account activation state, derived server-side so every client agrees on what
+ * "activated" means instead of re-implementing the rule. It travels on every
+ * auth response (register, login, refresh, verify) and on `GET /me`, because a
+ * client that only learns it from `/me` will happily render an ungated product
+ * right after sign-up.
+ */
+export interface ActivationState {
+  whatsapp: boolean;
+  identity: boolean;
+  identityPending: boolean;
+  blockedUntil: string | null;
+  complete: boolean;
+}
+
 export interface AuthenticatedUser {
   id: UUID;
   email?: string | null;
@@ -198,6 +213,7 @@ export interface AuthenticatedUser {
   phoneVerified: boolean;
   providerId?: UUID | null;
   adminRole?: AdminRole | null;
+  activation?: ActivationState;
 }
 
 export interface AuthTokens {
