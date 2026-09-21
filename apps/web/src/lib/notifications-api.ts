@@ -163,26 +163,29 @@ export function notificationHref(n: AppNotification, locale: string): string | n
   const kind = n.type || n.reference_type;
   const aggregateId = n.data?.aggregateId as string | undefined;
   const jobId = (n.data?.jobId as string | undefined) || null;
+  const requestId = (n.data?.requestId as string | undefined) || null;
   const id = (n.reference_id as string) || aggregateId || null;
   switch (kind) {
     case 'REQUEST':
     case 'REQUEST_PUBLISHED':
     case 'REQUEST_STATUS_CHANGED':
     case 'REQUEST_CANCELLED':
+      return id ? `/${locale}/requests/${id}` : null;
+    // Offer events carry the *offer* id, so they must resolve to the request the
+    // offer belongs to. Without `requestId` in the payload the id was used
+    // verbatim and the customer landed on /requests/<offer-id> — a 404.
     case 'OFFER_RECEIVED':
     case 'OFFER_WITHDRAWN':
-      return id ? `/${locale}/requests/${id}` : null;
+      return requestId ? `/${locale}/requests/${requestId}` : null;
     // Accepting an offer confirms a job. `reference_id` here is the *offer*, so
     // prefer the job id from the payload; fall back to the request.
     case 'OFFER_ACCEPTED':
       if (jobId) return `/${locale}/jobs/${jobId}`;
-      return id ? `/${locale}/requests/${id}` : null;
+      return requestId ? `/${locale}/requests/${requestId}` : id ? `/${locale}/requests/${id}` : null;
     // A declined offer leaves the request searching — there is no job yet, and
     // the customer belongs back on the request to watch for other offers.
-    case 'OFFER_REJECTED': {
-      const requestId = (n.data?.requestId as string | undefined) || null;
+    case 'OFFER_REJECTED':
       return requestId ? `/${locale}/requests/${requestId}` : null;
-    }
     case 'JOB':
     case 'JOB_STATUS_CHANGED':
       return id ? `/${locale}/jobs/${id}` : null;

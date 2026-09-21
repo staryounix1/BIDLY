@@ -65,10 +65,25 @@ describe('notificationHref', () => {
     expect(notificationHref(n, 'ar')).toBe('/ar/requests/r1');
   });
 
-  it('routes on the event type, not the aggregate type', () => {
-    // `reference_type` is the aggregate; the real rows look like this.
-    const n = note({ type: 'OFFER_RECEIVED', reference_type: 'OFFER', reference_id: 'req-3', data: {} });
+  it('routes an offer event to the request it belongs to, not the offer id', () => {
+    // Real rows: reference_type=OFFER and reference_id is the *offer*.
+    const n = note({
+      type: 'OFFER_RECEIVED',
+      reference_type: 'OFFER',
+      reference_id: 'offer-3',
+      data: { requestId: 'req-3', offerId: 'offer-3' },
+    });
     expect(notificationHref(n, 'en')).toBe('/en/requests/req-3');
+  });
+
+  it('routes on the event type, not the aggregate type', () => {
+    const n = note({ type: 'OFFER_WITHDRAWN', reference_type: 'OFFER', reference_id: 'offer-4', data: { requestId: 'req-4' } });
+    expect(notificationHref(n, 'ar')).toBe('/ar/requests/req-4');
+  });
+
+  it('returns null for an offer event with no request in the payload', () => {
+    const n = note({ type: 'OFFER_RECEIVED', reference_type: 'OFFER', reference_id: 'offer-5', data: {} });
+    expect(notificationHref(n, 'en')).toBeNull();
   });
 
   it('routes job status changes to the job detail', () => {
