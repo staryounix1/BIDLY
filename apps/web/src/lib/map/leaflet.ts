@@ -235,6 +235,7 @@ export function useMap(
     let cleanup: void | (() => void);
     let map: LeafletMap | null = null;
     let alive = true;
+    let observer: ResizeObserver | null = null;
 
     loadLeaflet().then((L) => {
       if (!alive || !containerRef.current) return;
@@ -245,13 +246,28 @@ export function useMap(
       map.zoomControl?.setPosition('bottomright');
       const result = setupRef.current(L, map);
       cleanup = result ?? undefined;
-      // Tiles and the container settle a tick after mount; nudge Leaflet so
-      // the first paint is not a grey half-drawn canvas.
-      setTimeout(() => map?.invalidateSize(), 120);
+
+      // Leaflet caches the container size at construction. On these screens the
+      // container's height can still be 0 at that instant (a fixed layer sized
+      // by CSS, or a flex parent not yet laid out), and a cached 0×0 viewport
+      // makes every tile land off-canvas — the map looks blank while the <img>
+      // elements report as loaded. Watch the element and re-measure whenever it
+      // gets a real box, so the first frame is drawn correctly rather than
+      // staying empty until something else happens to resize the window.
+      const refresh = () => map?.invalidateSize();
+      setTimeout(refresh, 0);
+      setTimeout(refresh, 120);
+      if (typeof ResizeObserver !== 'undefined') {
+        observer = new ResizeObserver(() => {
+          if (containerRef.current?.offsetHeight) refresh();
+        });
+        observer.observe(containerRef.current);
+      }
     });
 
     return () => {
       alive = false;
+      observer?.disconnect();
       cleanup?.();
       map?.remove();
     };

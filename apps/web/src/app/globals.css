@@ -448,18 +448,30 @@
 
   /* The map owns the viewport below the header, edge to edge, on every side.
      `inset-block-start` is set inline from the measured header height because
-     the header is global chrome that this screen must not swallow. */
+     the header is global chrome that this screen must not swallow.
+
+     Both block edges are pinned (`inset-block-start` inline, `bottom` here)
+     and the height is derived, so the fixed box always has a real height.
+     Relying on `height: 100%` here collapsed the layer to 0px — a fixed
+     element with no in-flow parent height has nothing to take 100% of, which
+     left Leaflet measuring a 0×0 viewport and painting nothing. */
   .compose-map {
     position: fixed;
+    inset-block-start: 0; /* overridden inline with the measured header height */
     inset-inline: 0;
     bottom: 0;
+    height: auto;
     z-index: 0;
   }
 
-  /* The map canvas fills its layer; Leaflet draws its own controls on top. */
+  /* The map canvas fills its layer; Leaflet draws its own controls on top.
+     `absolute` + `inset: 0` reads the layer's resolved box, so it tracks the
+     inline header offset without another measurement. */
   .compose-map .map-canvas {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
   }
 
   /* Thin translucent title bar floating over the map — not a solid block, so
