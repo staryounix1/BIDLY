@@ -7,6 +7,19 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { requestsApi, type RequestDetail } from '@/lib/requests-api';
 import { offersApi, type OfferOnRequest } from '@/lib/offers-api';
+
+/**
+ * The API refuses an offer from a provider whose `status` is not ACTIVE with a
+ * prose message in English. Surface it in the reader's language instead of
+ * echoing the server string into an otherwise translated page.
+ */
+function offerErrorMessage(err: unknown, t: (key: string) => string): string {
+  if (err instanceof ApiError) {
+    if (err.code === 'BUSINESS_RULE_VIOLATION') return t('offer.notActive');
+    return err.message;
+  }
+  return t('common.error');
+}
 import { StatusBadge } from '@/lib/status-badge';
 import { CategoryIcon } from '@/lib/icons';
 import { Price, PriceStepper, SectionTitle, Spinner } from '@/lib/ui';
@@ -99,7 +112,7 @@ function ProviderRequestView() {
         setNotice(t('offer.alreadyOffered'));
         await load();
       } else {
-        setError(err instanceof ApiError ? err.message : t('common.error'));
+        setError(offerErrorMessage(err, t));
       }
     } finally {
       setBusy(false);
