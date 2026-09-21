@@ -66,4 +66,16 @@ describe('deriveActivation', () => {
   it('returns undefined when the row was not selected with activation columns', () => {
     expect(deriveActivation(base)).toBeUndefined();
   });
+
+  it('exempts staff, whose review queue would otherwise be unreachable', () => {
+    const a = deriveActivation({
+      ...base,
+      role: 'ADMIN',
+      whatsapp_verified_at: null,
+      identity_review_status: 'UNVERIFIED',
+      activation_blocked_until: null,
+    });
+    expect(a?.complete).toBe(true);
+    expect(a?.identityPending).toBe(false);
+  });
 });

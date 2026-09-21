@@ -412,6 +412,10 @@ export async function registerAuthRoutes(app: FastifyInstance, opts: AuthRoutesO
       [request.auth.userId],
     );
     if (!user) throw unauthorized();
+    // Staff are exempt from activation: an admin runs the platform rather than
+    // using the marketplace, and gating the reviewer behind the review would
+    // make the queue unreachable. Decided here so no client can disagree.
+    const isStaff = user.role === 'ADMIN' || request.auth.adminRole != null;
     return reply.send({
       success: true,
       data: {
@@ -419,12 +423,13 @@ export async function registerAuthRoutes(app: FastifyInstance, opts: AuthRoutesO
         // Derived so every client agrees on what "activated" means without
         // re-implementing the rule: WhatsApp confirmed AND identity approved.
         activation: {
-          whatsapp: user.whatsapp_verified_at != null,
-          identity: user.identity_review_status === 'VERIFIED',
-          identityPending: user.identity_review_status === 'PENDING',
+          whatsapp: isStaff || user.whatsapp_verified_at != null,
+          identity: isStaff || user.identity_review_status === 'VERIFIED',
+          identityPending: !isStaff && user.identity_review_status === 'PENDING',
           blockedUntil: user.activation_blocked_until ?? null,
           complete:
-            user.whatsapp_verified_at != null && user.identity_review_status === 'VERIFIED',
+            isStaff ||
+            (user.whatsapp_verified_at != null && user.identity_review_status === 'VERIFIED'),
         },
         admin_role: request.auth.adminRole ?? null,
       },

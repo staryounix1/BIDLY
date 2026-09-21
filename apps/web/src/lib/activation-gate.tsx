@@ -436,8 +436,17 @@ function DocumentField({
  * response. Email/phone verification is a different concern (it gates sign-in,
  * not usage) and must never stand in for it — treating `emailVerified` as
  * "activated" is what let freshly registered accounts slip past this gate.
+ *
+ * Staff are exempt. An admin runs the platform rather than using the
+ * marketplace, and locking the reviewer behind the very review they are meant
+ * to perform would make the queue unreachable.
  */
-function isActivated(user: { activation?: { complete: boolean } }): boolean {
+function isActivated(user: {
+  activation?: { complete: boolean };
+  role?: string | null;
+  adminRole?: string | null;
+}): boolean {
+  if (user.role === 'ADMIN' || user.adminRole) return true;
   // No `activation` means the server did not report it (older API): fail closed
   // and let the gate open, then `reload()` will replace it with the real state.
   return user.activation?.complete === true;

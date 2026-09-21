@@ -135,14 +135,24 @@ function toAuthenticatedUser(row: UserRow, providerId?: string | null): Authenti
 /**
  * Derive the activation state from a user row.
  *
- * WhatsApp must be confirmed and identity must be approved. Returns undefined
- * when the row was not selected with the activation columns (a two-factor-free
- * caller), so callers never see a false "not activated" for a user whose state
- * simply was not loaded.
+ * WhatsApp must be confirmed and identity must be approved. Staff are exempt:
+ * an admin runs the platform, and gating the reviewer behind the review would
+ * make the queue unreachable. Returns undefined when the row was not selected
+ * with the activation columns (a two-factor-free caller), so callers never see a
+ * false "not activated" for a user whose state simply was not loaded.
  */
 export function deriveActivation(row: UserRow): AuthenticatedUser['activation'] {
   if (row.whatsapp_verified_at === undefined && row.identity_review_status === undefined) {
     return undefined;
+  }
+  if (row.role === 'ADMIN') {
+    return {
+      whatsapp: true,
+      identity: true,
+      identityPending: false,
+      blockedUntil: null,
+      complete: true,
+    };
   }
   return {
     whatsapp: row.whatsapp_verified_at != null,
