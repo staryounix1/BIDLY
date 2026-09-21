@@ -194,6 +194,11 @@ export function SearchRadar({
             ? t('searching.partnersOne')
             : t('searching.partners', { count: liveOffers.length })}
         </p>
+        {candidateCount > 0 && (
+          <span className="live-partners-count tnum">
+            {t('search.found', { count: candidateCount })}
+          </span>
+        )}
       </div>
 
       {/* The dark sheet. */}
@@ -218,10 +223,22 @@ export function SearchRadar({
           <span className="live-progress-fill" style={{ width: `${progress * 100}%` }} />
         </div>
 
-        <p className="live-hint">
-          {expired
-            ? t('search.expired')
-            : [t('searching.expanding'), deadlineHint].filter(Boolean).join(' · ')}
+        {/* The status line carries the widening hint, the deadline and the
+            connection dot together: three separate lines spent 60px of a sheet
+            that has to keep the map on screen. */}
+        <p className="live-scanning">
+          {expired ? (
+            t('search.expired')
+          ) : (
+            <>
+              {t('searching.expanding')}
+              {' · '}
+              {t('search.scanning', { km: radiusKm })}
+              {deadlineHint && <> · {deadlineHint}</>}
+            </>
+          )}
+          {' · '}
+          <span className={connected ? 'live-dot is-on' : 'live-dot'} aria-hidden />
         </p>
 
         {/* Price with steppers — the inDrive bargaining affordance. */}
@@ -302,13 +319,6 @@ export function SearchRadar({
             </div>
           )}
         </div>
-
-        <p className="live-scanning">
-          {t('search.scanning', { km: radiusKm })}
-          {candidateCount > 0 && <> · {t('search.found', { count: candidateCount })}</>}
-          {' · '}
-          <span className={connected ? 'live-dot is-on' : 'live-dot'} aria-hidden />
-        </p>
 
         {onStop && !expired && (
           <button type="button" onClick={onStop} className="live-cancel">
