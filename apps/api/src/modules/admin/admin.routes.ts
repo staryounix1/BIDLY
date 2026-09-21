@@ -652,6 +652,91 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     return reply.send({ success: true, data: result });
   });
 
+  // ---- Identity review queue -----------------------------------------
+  // The activation gate sends identity documents here. Identity is a users-level
+  // check (customers submit too), so this is not the provider verification
+  // queue: it lists every account whose review is PENDING and lets an admin
+  // approve or reject, audited in the same transaction.
+
+  app.get('/admin/identity-reviews', {
+    preHandler: usersRead,
+    schema: { tags: ['admin'], summary: 'Identity submissions awaiting review', security: [{ bearerAuth: [] }] },
+  }, async (request, reply) => {
+    const status = ((request.query as Record<string, unknown>).status as string) ?? 'PENDING';
+    const rows = await queryMany(
+      `select u.id, u.email, u.phone, u.role, u.status, u.locale,
+              u.whatsapp_number, u.whatsapp_verified_at,
+              u.identity_review_status, u.identity_recto_url, u.identity_verso_url, u.identity_selfie_url,
+              u.identity_submitted_at, u.identity_review_notes,
+              up.full_name, up.display_name
+         from users u
+         left join user_profiles up on up.user_id = u.id
+        where u.deleted_at is null and u.identity_review_status = $1::bidly_verification_status
+        order by u.identity_submitted_at desc nulls last
+        limit 100`,
+      [status],
+    );
+    return reply.send({ success: true, data: rows });
+  });
+
+  app.post('/admin/identity-reviews/:id', {
+    preHandler: usersWrite,
+    schema: {
+      tags: ['admin'], summary: 'Approve or reject an identity submission', security: [{ bearerAuth: [] }],
+      params: { type: 'object', required: ['id'], properties: { id: { type: 'string' } } },
+      body: {
+        type: 'object', required: ['decision'], additionalProperties: false,
+        properties: {
+          decision: { type: 'string', enum: ['APPROVE', 'REJECT'] },
+          reason: { type: 'string', maxLength: 500 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const { id } = request.params as { id: string };
+    const { decision, reason } = request.body as { decision: 'APPROVE' | 'REJECT'; reason?: string };
+
+    const result = await transaction(async (client) => {
+      const c = clientQuery(client);
+      const before = await c.one<{ identity_review_status: string }>(
+        `select identity_review_status from users where id = $1 and deleted_at is null for update`,
+        [id],
+      );
+      if (!before) throw notFound('Account');
+
+      const next = decision === 'APPROVE' ? 'VERIFIED' : 'REJECTED';
+      await c.query(
+        `update users
+            set identity_review_status = $2::bidly_verification_status,
+                identity_reviewed_at = now(),
+                identity_review_notes = $3,
+                -- Approval clears any leftover activation block.
+                activation_blocked_until = case when $2 = 'VERIFIED' then null else activation_blocked_until end,
+                activation_attempts = case when $2 = 'VERIFIED' then 0 else activation_attempts end,
+                updated_at = now()
+          where id = $1`,
+        [id, next, reason ?? null],
+      );
+
+      // Keep the verification ledger in step with the users-level flag.
+      await c.query(
+        `update verification_records
+            set status = $2::bidly_verification_status, reviewed_at = now(),
+                reviewed_by = $3, notes = $4, updated_at = now()
+          where user_id = $1 and type = 'IDENTITY' and status = 'PENDING'`,
+        [id, next, auth.userId, reason ?? null],
+      );
+
+      await recordAction(client, auth.userId, `IDENTITY_${decision}`, 'user', id,
+        before, { identity_review_status: next }, reason);
+      return { id, identity_review_status: next };
+    });
+
+    logEvent(LOG_EVENTS.ADMIN_ACTION, { adminId: auth.userId, action: `IDENTITY_${decision}`, entityId: id });
+    return reply.send({ success: true, data: result });
+  });
+
   app.get('/admin/commission-rules', {
     preHandler: catalogRead,
     schema: { tags: ['admin'], summary: 'Active commission rules', security: [{ bearerAuth: [] }] },

@@ -401,6 +401,10 @@ export async function registerAuthRoutes(app: FastifyInstance, opts: AuthRoutesO
     const user = await queryOne<Record<string, unknown>>(
       `select u.id, u.email, u.phone, u.role, u.status, u.locale, u.country_code,
               u.email_verified_at, u.phone_verified_at, u.created_at,
+              u.whatsapp_number, u.whatsapp_verified_at,
+              u.identity_review_status, u.identity_recto_url, u.identity_verso_url, u.identity_selfie_url,
+              u.identity_submitted_at, u.identity_review_notes,
+              u.activation_blocked_until,
               p.full_name, p.display_name, p.avatar_url, p.preferred_currency,
               (select id from providers where user_id = u.id) as provider_id
        from users u left join user_profiles p on p.user_id = u.id
@@ -412,6 +416,16 @@ export async function registerAuthRoutes(app: FastifyInstance, opts: AuthRoutesO
       success: true,
       data: {
         ...user,
+        // Derived so every client agrees on what "activated" means without
+        // re-implementing the rule: WhatsApp confirmed AND identity approved.
+        activation: {
+          whatsapp: user.whatsapp_verified_at != null,
+          identity: user.identity_review_status === 'VERIFIED',
+          identityPending: user.identity_review_status === 'PENDING',
+          blockedUntil: user.activation_blocked_until ?? null,
+          complete:
+            user.whatsapp_verified_at != null && user.identity_review_status === 'VERIFIED',
+        },
         admin_role: request.auth.adminRole ?? null,
       },
     });

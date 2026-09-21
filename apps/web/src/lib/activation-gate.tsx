@@ -91,6 +91,7 @@ function ActivationCard({ onDone, onSignOut }: { onDone: () => void; onSignOut: 
   // Step 2 — Identity.
   const [recto, setRecto] = useState('');
   const [verso, setVerso] = useState('');
+  const [selfie, setSelfie] = useState('');
   const [pendingApproval, setPendingApproval] = useState(false);
 
   const whatsappDone = user?.activation?.whatsapp ?? false;
@@ -129,7 +130,11 @@ function ActivationCard({ onDone, onSignOut }: { onDone: () => void; onSignOut: 
     setBusy(true);
     setError(null);
     try {
-      await authApi.submitIdentity({ rectoUrl: recto.trim(), versoUrl: verso.trim() });
+      await authApi.submitIdentity({
+        rectoUrl: recto.trim(),
+        versoUrl: verso.trim(),
+        selfieUrl: selfie.trim(),
+      });
       setPendingApproval(true);
       setStep('review');
       onDone();
@@ -233,10 +238,17 @@ function ActivationCard({ onDone, onSignOut }: { onDone: () => void; onSignOut: 
               onChange={setVerso}
               errorText={t('activation.uploadFailed')}
             />
+            <DocumentField
+              label={t('activation.selfie')}
+              hint={t('activation.selfieHint')}
+              value={selfie}
+              onChange={setSelfie}
+              errorText={t('activation.uploadFailed')}
+            />
 
             <button
               type="button"
-              disabled={busy || !recto.trim() || !verso.trim()}
+              disabled={busy || !recto.trim() || !verso.trim() || !selfie.trim()}
               onClick={() => void submitIdentity()}
               className="btn btn-primary btn-block"
             >

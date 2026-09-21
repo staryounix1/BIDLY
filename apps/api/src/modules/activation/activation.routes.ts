@@ -40,6 +40,9 @@ const whatsappSchema = z.object({
 const identitySchema = z.object({
   rectoUrl: z.string().trim().min(1).max(4_000_000),
   versoUrl: z.string().trim().min(1).max(4_000_000),
+  // A photo of the account holder, so the reviewer can match a face to the
+  // document. Required: the document alone does not prove who is holding it.
+  selfieUrl: z.string().trim().min(1).max(4_000_000),
   documentNumber: z.string().trim().max(80).optional(),
 });
 
@@ -124,13 +127,14 @@ export async function registerActivationRoutes(app: FastifyInstance): Promise<vo
     schema: {
       tags: ['activation'], summary: 'Submit identity documents for review', security: [{ bearerAuth: [] }],
       body: {
-        type: 'object', required: ['rectoUrl', 'versoUrl'], additionalProperties: false,
+        type: 'object', required: ['rectoUrl', 'versoUrl', 'selfieUrl'], additionalProperties: false,
         properties: {
           // A data URL of a client-compressed photo, or an ordinary link. Sized
           // for an image the browser has already downscaled, not a raw camera
           // file: the client compresses before sending (see `DocumentField`).
           rectoUrl: { type: 'string', minLength: 1, maxLength: 4_000_000 },
           versoUrl: { type: 'string', minLength: 1, maxLength: 4_000_000 },
+          selfieUrl: { type: 'string', minLength: 1, maxLength: 4_000_000 },
           documentNumber: { type: 'string', maxLength: 80 },
         },
       },
@@ -154,13 +158,14 @@ export async function registerActivationRoutes(app: FastifyInstance): Promise<vo
             set identity_review_status = 'PENDING',
                 identity_recto_url = $2,
                 identity_verso_url = $3,
+                identity_selfie_url = $4,
                 identity_submitted_at = now(),
                 identity_reviewed_at = null,
                 identity_review_notes = null,
                 updated_at = now()
           where id = $1
           returning identity_review_status, identity_submitted_at`,
-        [userId, input.rectoUrl, input.versoUrl],
+        [userId, input.rectoUrl, input.versoUrl, input.selfieUrl],
       );
 
       // Retire any earlier live identity record before opening a new one, so the
@@ -177,7 +182,7 @@ export async function registerActivationRoutes(app: FastifyInstance): Promise<vo
          values ($1, $2, 'IDENTITY', 'PENDING', $3, 'DOCUMENT_UPLOAD', $4::jsonb)`,
         [
           user.provider_id, userId, input.documentNumber ?? null,
-          JSON.stringify({ channel: 'IDENTITY', recto: input.rectoUrl, verso: input.versoUrl }),
+          JSON.stringify({ channel: 'IDENTITY', recto: input.rectoUrl, verso: input.versoUrl, selfie: input.selfieUrl }),
         ],
       );
 

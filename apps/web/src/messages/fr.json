@@ -725,6 +725,8 @@
     "reviewSubtitle": "Nous avons vos documents. Ils seront examinés bientôt, et vous pouvez naviguer dès maintenant.",
     "continueBrowsing": "Compris, continuer",
     "locked": "La plateforme reste bloquée jusqu’à la fin de l’activation. La déconnexion reste disponible.",
-    "uploadFailed": "Impossible de lire cette image. Essayez-en une autre."
+    "uploadFailed": "Impossible de lire cette image. Essayez-en une autre.",
+    "selfie": "Une photo de vous (selfie)",
+    "selfieHint": "Prenez une photo de votre visage pour la comparer à la carte."
   }
 }

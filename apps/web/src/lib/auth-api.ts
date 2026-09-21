@@ -219,7 +219,12 @@ export const authApi = {
   },
 
   /** Submit identity documents (front and back) for admin review. */
-  async submitIdentity(input: { rectoUrl: string; versoUrl: string; documentNumber?: string }): Promise<void> {
+  async submitIdentity(input: {
+    rectoUrl: string;
+    versoUrl: string;
+    selfieUrl: string;
+    documentNumber?: string;
+  }): Promise<void> {
     await api.post('/me/identity', input);
   },
 

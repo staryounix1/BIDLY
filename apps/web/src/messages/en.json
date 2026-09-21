@@ -725,6 +725,8 @@
     "reviewSubtitle": "We have your documents. They will be reviewed shortly, and you can browse now.",
     "continueBrowsing": "Got it, continue",
     "locked": "The platform stays locked until activation is complete. Sign-out is always available.",
-    "uploadFailed": "We couldn't read that image. Try another one."
+    "uploadFailed": "We couldn't read that image. Try another one.",
+    "selfie": "A photo of you (selfie)",
+    "selfieHint": "Take a photo of your face now so we can match it to the ID."
   }
 }
