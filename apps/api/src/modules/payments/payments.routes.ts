@@ -269,9 +269,13 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
    * account has no wallet yet — so the caller decides how to present that.
    */
   async function walletForUser(userId: string) {
+    // Provider wallets are keyed by the *user* id (`owner_id = users.id`), which
+    // is what the commission charge, the boost purchase and the top-up all
+    // write to. Resolving through `providers.id` here would miss every wallet
+    // the rest of the money paths create.
     return queryOne(
       `select w.* from wallets w
-       where (w.owner_type = 'PROVIDER' and w.owner_id = (select id from providers where user_id = $1))
+       where (w.owner_type = 'PROVIDER' and w.owner_id = $1)
           or (w.owner_type = 'USER' and w.owner_id = $1)
        order by (w.owner_type = 'PROVIDER') desc
        limit 1`,
@@ -286,7 +290,7 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
   ) {
     return c.one<{ id: string; currency: string; available_minor: string }>(
       `select w.id, w.currency, w.available_minor from wallets w
-       where (w.owner_type = 'PROVIDER' and w.owner_id = (select id from providers where user_id = $1))
+       where (w.owner_type = 'PROVIDER' and w.owner_id = $1)
           or (w.owner_type = 'USER' and w.owner_id = $1)
        order by (w.owner_type = 'PROVIDER') desc
        limit 1`,
