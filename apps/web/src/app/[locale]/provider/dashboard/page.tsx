@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n-provider';
+import { BoostPanel } from '@/lib/extras-panels';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { useAutoRefresh } from '@/lib/hooks';
@@ -166,6 +167,11 @@ function ProviderDashboardView() {
           <p className="mt-1 text-xs text-[rgb(180_83_9)]">{t('providerDash.notActiveHint')}</p>
         </div>
       )}
+
+      {/* Optional paid module; renders nothing when the operator has it off. */}
+      <div className="mb-4">
+        <BoostPanel />
+      </div>
 
       {/* Once identity clears, the account is approved but the profile behind it
           is still bare. This is the one moment to say so, before they go looking

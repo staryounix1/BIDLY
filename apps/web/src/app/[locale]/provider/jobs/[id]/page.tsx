@@ -7,6 +7,9 @@ import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { jobsApi, providerNextAction, type JobDetail } from '@/lib/jobs-api';
+import { reviewsApi, type RatingStatus } from '@/lib/reviews-api';
+import { RatingPanel } from '@/lib/rating-panel';
+import { JobPhotos } from '@/lib/job-photos';
 import { StatusBadge } from '@/lib/status-badge';
 import { CategoryIcon } from '@/lib/icons';
 import { Price, SectionTitle, Spinner } from '@/lib/ui';
@@ -42,12 +45,20 @@ function ProviderJobView() {
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
   const [completionNote, setCompletionNote] = useState('');
+  const [afterPhotos, setAfterPhotos] = useState<string[]>([]);
+  const [rating, setRating] = useState<RatingStatus | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      setData(await jobsApi.get(id));
+      const d = await jobsApi.get(id);
+      setData(d);
+      if (['COMPLETED', 'PAID', 'DELIVERED'].includes(d.job.status)) {
+        setRating(await reviewsApi.status(id).catch(() => null));
+      } else {
+        setRating(null);
+      }
     } catch (err) {
       if (err instanceof ApiError && err.status === 403) setError(t('job.forbidden'));
       else if (err instanceof ApiError && err.status === 404) setError(t('job.notFound'));
@@ -219,8 +230,28 @@ function ProviderJobView() {
           </div>
         )}
 
+        {/* Rating closes the job; photos are the evidence trail. */}
+        {data.job.completion_photos && data.job.completion_photos.length > 0 && (
+          <div className="card p-4">
+            <h3 className="mb-2 text-sm font-bold" style={{ color: 'rgb(var(--fg-muted))' }}>
+              {t('photos.title')}
+            </h3>
+            <JobPhotos photos={data.job.completion_photos} readOnly />
+          </div>
+        )}
+
+        {rating && (
+          <RatingPanel jobId={id} status={rating} onRated={load} opponentName={t('job.customer')} />
+        )}
+
         {next === 'complete' && (
           <div className="space-y-3">
+            <JobPhotos
+              photos={afterPhotos}
+              onChange={setAfterPhotos}
+              label={t('photos.after')}
+              hint={t('photos.afterHint')}
+            />
             <label className="block">
               <span className="label">{t('providerJob.completionNote')}</span>
               <textarea
@@ -233,7 +264,10 @@ function ProviderJobView() {
             <button
               onClick={() =>
                 void run(
-                  () => jobsApi.complete(id, completionNote.trim() ? { note: completionNote.trim() } : {}),
+                  () => jobsApi.complete(id, {
+                    ...(completionNote.trim() ? { note: completionNote.trim() } : {}),
+                    ...(afterPhotos.length ? { photoUrls: afterPhotos } : {}),
+                  }),
                   t('providerJob.completedDone'),
                 )
               }

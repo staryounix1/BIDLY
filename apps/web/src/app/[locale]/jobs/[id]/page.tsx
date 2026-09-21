@@ -8,6 +8,9 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import { jobsApi, TRACKABLE_JOB_STATUSES, type JobDetail } from '@/lib/jobs-api';
 import { paymentsApi } from '@/lib/payments-api';
+import { reviewsApi, type RatingStatus } from '@/lib/reviews-api';
+import { RatingPanel } from '@/lib/rating-panel';
+import { ComplaintPanel, TrackingSharePanel } from '@/lib/extras-panels';
 import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
 import { CategoryIcon } from '@/lib/icons';
@@ -37,13 +40,21 @@ function JobDetailView() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [rating, setRating] = useState<RatingStatus | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     setError(null);
     try {
-      setDetail(await jobsApi.get(id));
+      const d = await jobsApi.get(id);
+      setDetail(d);
+      // Only a finished job can be rated; asking earlier is a 400.
+      if (['COMPLETED', 'PAID', 'DELIVERED'].includes(d.job.status)) {
+        setRating(await reviewsApi.status(id).catch(() => null));
+      } else {
+        setRating(null);
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
@@ -180,6 +191,19 @@ function JobDetailView() {
             </ol>
           )}
         </div>
+
+        <TrackingSharePanel jobId={id} />
+        <ComplaintPanel jobId={id} />
+
+        {/* Rating is what closes the job; it never blocks the other side. */}
+        {rating && (
+          <RatingPanel
+            jobId={id}
+            status={rating}
+            opponentName={job.provider_name}
+            onRated={load}
+          />
+        )}
 
         {job.status === 'COMPLETED' && detail.payment?.status !== 'CAPTURED' && (
           <div className="flex flex-wrap gap-3">

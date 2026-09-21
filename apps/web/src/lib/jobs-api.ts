@@ -63,6 +63,7 @@ export interface JobDetail {
     cancellation_reason?: string | null;
     cancellation_fee_minor?: number | null;
     completion_note?: string | null;
+    completion_photos?: string[] | null;
   };
   events: JobEvent[];
   payment: JobPayment | null;
