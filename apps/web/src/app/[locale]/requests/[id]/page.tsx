@@ -10,6 +10,8 @@ import { useAutoRefresh } from '@/lib/hooks';
 import { useRealtime } from '@/lib/realtime-client';
 import { requestsApi, type RequestDetail } from '@/lib/requests-api';
 import { offersApi } from '@/lib/offers-api';
+import { openConversation } from '@/lib/chat-api';
+import { ProviderOfferCard } from '@/lib/provider-offer-card';
 import { SearchRadar } from '@/lib/map/search-radar';
 import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
@@ -81,6 +83,12 @@ function RequestDetailView() {
   const [showCancel, setShowCancel] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [showDetails, setShowDetails] = useState(false);
+  /** The offer whose decision card is open, if any. */
+  const [reviewing, setReviewing] = useState<RequestDetail['offers'][number] | null>(null);
+  /** Set once the agreed job's commission has been charged, for the receipt. */
+  const [deal, setDeal] = useState<{
+    jobCode: string; commissionMinor: number; currency: string; providerUserId?: string;
+  } | null>(null);
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -157,15 +165,43 @@ function RequestDetailView() {
     }
   }
 
-  async function onAcceptOffer(offerId: string) {
+  /**
+   * Accepting picks this craftsman and opens the two-way chat immediately, so
+   * the customer lands in the conversation instead of hunting for it.
+   */
+  async function onAcceptOffer(offer: RequestDetail['offers'][number]) {
     if (!data) return;
     setBusy(true);
     setError(null);
     setNotice(null);
     try {
-      const result = await offersApi.accept(offerId);
-      setNotice(`${t('offer.accepted')} (${result.jobCode})`);
-      await load();
+      const result = await offersApi.accept(offer.id);
+      setReviewing(null);
+
+      const counterpartId = (result.providerUserId ?? offer.provider_user_id) || null;
+      let conversationId: string | null = null;
+      if (counterpartId) {
+        // A chat is a convenience here, never a reason to lose the acceptance.
+        try {
+          conversationId = (await openConversation(counterpartId)).id;
+        } catch {
+          conversationId = null;
+        }
+      }
+
+      setDeal({
+        jobCode: result.jobCode,
+        commissionMinor: result.commissionMinor,
+        currency: result.currency,
+        providerUserId: counterpartId ?? undefined,
+      });
+      await load(true);
+
+      if (conversationId) {
+        router.push(`/${locale}/messages/${conversationId}`);
+      } else {
+        setNotice(`${t('offer.accepted')} (${result.jobCode})`);
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
@@ -173,15 +209,47 @@ function RequestDetailView() {
     }
   }
 
-  async function onRejectOffer(offerId: string) {
+  /**
+   * Declining is not a cancellation: the other offers are untouched and the
+   * request keeps searching, which is what the customer expects after saying no
+   * to one price.
+   */
+  async function onRejectOffer(offer: RequestDetail['offers'][number]) {
     if (!data) return;
     setBusy(true);
     setError(null);
     setNotice(null);
     try {
-      await offersApi.reject(offerId);
-      setNotice(t('offer.rejected'));
-      await load();
+      await offersApi.reject(offer.id);
+      setReviewing(null);
+      setNotice(t('offerCard.searching', { name: offer.provider_name }));
+      await load(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /**
+   * The two sides shake hands on the chosen craftsman. This is the moment the
+   * platform is owed its commission, so the server debits the provider wallet
+   * in the same transaction that records the agreement.
+   */
+  async function onAgree(offerId: string) {
+    if (!data) return;
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await offersApi.agree(offerId);
+      setReviewing(null);
+      setDeal({
+        jobCode: result.jobCode,
+        commissionMinor: result.commissionMinor,
+        currency: result.currency,
+      });
+      await load(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
@@ -380,6 +448,33 @@ function RequestDetailView() {
                 {t('job.details')}
               </Link>
             </div>
+
+            {/* The handshake. Agreeing is what charges the provider the platform
+                commission, so it is a deliberate second step after accepting. */}
+            {!deal && (
+              <div className="offer-agree">
+                <p className="offer-agree-hint">{t('offerCard.agreedHint')}</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-primary flex-1"
+                    disabled={busy}
+                    onClick={() => onAgree(selectedOffer.id)}
+                  >
+                    <CategoryIcon name="check" size={18} />
+                    {t('offerCard.agreed')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary flex-1"
+                    disabled={busy}
+                    onClick={() => onRejectOffer(selectedOffer)}
+                  >
+                    {t('offerCard.notAgreed')}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -467,21 +562,14 @@ function RequestDetailView() {
                   </div>
 
                   {o.status === 'PENDING' && canSelectOffer && (
-                    <div className="mt-3.5 flex gap-2">
+                    <div className="mt-3.5">
                       <button
-                        onClick={() => onAcceptOffer(o.id)}
+                        onClick={() => setReviewing(o)}
                         disabled={busy}
-                        className="btn btn-primary flex-1"
+                        className="btn btn-primary btn-block"
                       >
-                        <CategoryIcon name="check" size={18} />
-                        {t('offers.accept')}
-                      </button>
-                      <button
-                        onClick={() => onRejectOffer(o.id)}
-                        disabled={busy}
-                        className="btn btn-secondary flex-1"
-                      >
-                        {t('offers.decline')}
+                        <CategoryIcon name="user" size={18} />
+                        {t('offers.review')}
                       </button>
                     </div>
                   )}
@@ -497,6 +585,37 @@ function RequestDetailView() {
           </ul>
         )}
       </section>
+
+      {/* The agreement receipt: what the customer and craftsman settled on, and
+          the commission the platform took from the provider's wallet. */}
+      {deal && (
+        <div className="offer-deal fade-rise">
+          <span className="offer-deal-icon">
+            <CategoryIcon name="check" size={20} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="offer-deal-title">{t('offerCard.dealTitle')}</p>
+            <p className="offer-deal-body">
+              {t('offerCard.dealBody', {
+                amount: `${(deal.commissionMinor / 100).toFixed(0)} ${deal.currency}`,
+              })}
+            </p>
+            <p className="offer-deal-code">{deal.jobCode}</p>
+          </div>
+        </div>
+      )}
+
+      {reviewing && (
+        <ProviderOfferCard
+          offer={reviewing}
+          locale={locale}
+          requestCode={request.code}
+          busy={busy}
+          onAccept={() => onAcceptOffer(reviewing)}
+          onReject={() => onRejectOffer(reviewing)}
+          onClose={() => setReviewing(null)}
+        />
+      )}
 
       {/* Request facts, collapsed by default so the offers own the screen. */}
       <button

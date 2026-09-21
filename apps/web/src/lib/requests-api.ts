@@ -76,6 +76,8 @@ export interface RequestDetail {
   offers: Array<{
     id: string;
     provider_id: string;
+    /** The provider's user id, needed to open a chat with them. */
+    provider_user_id?: string | null;
     price_minor: number;
     currency: string;
     message: string | null;
@@ -84,7 +86,17 @@ export interface RequestDetail {
     provider_name: string;
     provider_avatar: string | null;
     rating_avg: number | null;
+    rating_count?: number | null;
     completed_jobs: number | null;
+    bio?: string | null;
+    /** Localised provider city and craft, plus years of experience. */
+    city_name_ar?: string | null;
+    city_name_en?: string | null;
+    city_name_fr?: string | null;
+    craft_name_ar?: string | null;
+    craft_name_en?: string | null;
+    craft_name_fr?: string | null;
+    experience_years?: number | null;
     created_at: string;
   }>;
 }

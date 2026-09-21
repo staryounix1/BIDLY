@@ -75,6 +75,8 @@ export const offersApi = {
     currency: string;
     commissionMinor: number;
     providerNetMinor: number;
+    /** Present on this API version; used to open the chat after accepting. */
+    providerUserId?: string | null;
   }> {
     const res = await api.post<{
       jobId: string;
@@ -83,7 +85,36 @@ export const offersApi = {
       currency: string;
       commissionMinor: number;
       providerNetMinor: number;
+      providerUserId?: string | null;
     }>('/offers/' + id + '/accept', {});
+    return res.data;
+  },
+
+  /**
+   * Both sides confirm the negotiated deal. Charging the platform commission
+   * happens server-side in the same transaction, so a failure here means no
+   * money moved.
+   */
+  async agree(offerId: string): Promise<{
+    jobId: string;
+    jobCode: string;
+    alreadyCharged: boolean;
+    commissionMinor: number;
+    providerNetMinor: number;
+    finalPriceMinor: number;
+    currency: string;
+    walletBalanceMinor: number | null;
+  }> {
+    const res = await api.post<{
+      jobId: string;
+      jobCode: string;
+      alreadyCharged: boolean;
+      commissionMinor: number;
+      providerNetMinor: number;
+      finalPriceMinor: number;
+      currency: string;
+      walletBalanceMinor: number | null;
+    }>(`/offers/${offerId}/agree`, {});
     return res.data;
   },
 
