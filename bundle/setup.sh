@@ -5,29 +5,41 @@
 #  the server connected to your Supabase database.
 #
 #  One-time setup. After this, start the API with:  bash ~/bidly-api/run.sh
+#
+#  To pick up new API features later:
+#      bash setup.sh --update
+#  --update re-downloads the current bundle (never a cached copy) and
+#  keeps your .env, so you don't re-enter the database password.
 # =====================================================================
 set -e
 
 REPO="staryounix1/BIDLY"
 REF="main"
 PARTS=62
+# Bump this whenever a new bundle is published. It is appended to every part
+# URL as a cache-buster so neither GitHub's raw CDN nor any intermediate cache
+# can hand back a stale part under the same filename.
+BUNDLE_VERSION="2026-09-21-1"
 DIR="$HOME/bidly-api"
 PARTS_DIR="$DIR/parts"
 
 echo ""
 echo "======================================================"
-echo "  BIDLY API setup for Termux"
+echo "  BIDLY API setup for Termux  (bundle $BUNDLE_VERSION)"
 echo "======================================================"
 
-# `--update` re-downloads the bundle over an existing install but keeps .env,
-# so the phone can pick up new API features without re-entering the database
-# password.
+UPDATE=0
 if [ "$1" = "--update" ]; then
+  UPDATE=1
   echo "Updating an existing install (your .env is preserved)."
   if [ -d "$DIR" ]; then
     mv "$DIR/.env" "$DIR/.env.keep" 2>/dev/null || true
-    rm -rf "$DIR/node_modules" "$DIR/dist"
   fi
+  # Always drop the old build AND the part cache. The cache is the reason a
+  # previous --update could appear to succeed while running the old API: the
+  # download loop skips any part file that already exists, so leave them in
+  # place and you unpack the previous bundle over and over.
+  rm -rf "$DIR/dist" "$DIR/node_modules" "$PARTS_DIR"
 fi
 
 if ! command -v node >/dev/null 2>&1; then
@@ -39,18 +51,40 @@ if ! command -v node >/dev/null 2>&1; then
 fi
 echo "Node: $(node --version)"
 
+# curl and tar ship with the base Termux image, but a trimmed install (or a
+# Termux that was just cleared) may lack them, and the failure would otherwise
+# surface later as a confusing "command not found" mid-download.
+missing=""
+command -v curl >/dev/null 2>&1 || missing="$missing curl"
+command -v tar  >/dev/null 2>&1 || missing="$missing tar"
+command -v base64 >/dev/null 2>&1 || missing="$missing base64"
+if [ -n "$missing" ]; then
+  echo ""
+  echo "Missing required tools:$missing"
+  echo "Install them first:  pkg install -y$missing"
+  exit 1
+fi
+
+# A directory left behind without a dist/ (an interrupted earlier run) would
+# make --update skip the download yet still have nothing to start, so treat it
+# as a fresh install and fetch the bundle.
+if [ "$UPDATE" = "1" ] && [ -d "$DIR" ] && [ ! -f "$DIR/dist/server.js" ]; then
+  echo "Found an incomplete install; downloading the full bundle."
+fi
+
 mkdir -p "$PARTS_DIR"
 cd "$DIR"
 
 echo ""
-echo "==> Downloading API bundle (~3.5 MB)"
+echo "==> Downloading API bundle"
 i=0
 while [ "$i" -lt "$PARTS" ]; do
   num=$(printf "%03d" "$i")
   out="$PARTS_DIR/c$num.bin"
   if [ ! -s "$out" ]; then
-    url="https://raw.githubusercontent.com/${REPO}/${REF}/bundle2/c${num}.bin"
-    curl -fsSL -o "$out" "$url" || { echo "Failed to download part $num"; exit 1; }
+    url="https://raw.githubusercontent.com/${REPO}/${REF}/bundle2/c${num}.bin?v=${BUNDLE_VERSION}"
+    curl -fsSL --retry 3 --retry-delay 2 -o "$out" "$url" \
+      || { echo ""; echo "Failed to download part $num. Check your connection and run this again."; exit 1; }
   fi
   printf "\r  part %s/%s" "$((i+1))" "$PARTS"
   i=$((i+1))
@@ -59,14 +93,22 @@ echo ""
 echo "==> Downloaded"
 
 echo "==> Unpacking"
-cat "$PARTS_DIR"/c*.bin > bundle.tar.gz
+# The parts are base64 text; decode before extracting. Joining them in shell
+# order (c000, c001, ...) reconstructs the original archive byte for byte.
+cat "$PARTS_DIR"/c*.bin > bundle.b64
+base64 -d bundle.b64 > bundle.tar.gz
+rm -rf "$PARTS_DIR" bundle.b64
 # The archive contains no hard links (they are unsupported on Android storage),
 # so a plain extraction works. --no-same-owner avoids chown failures.
 tar xzf bundle.tar.gz --no-same-owner --no-same-permissions 2>/dev/null \
   || tar xzf bundle.tar.gz --no-same-owner
-rm -rf "$PARTS_DIR" bundle.tar.gz
+rm -f bundle.tar.gz
 if [ ! -f "$DIR/dist/server.js" ]; then
   echo "!! Extraction failed: dist/server.js is missing."
+  exit 1
+fi
+if [ ! -d "$DIR/node_modules/fastify" ]; then
+  echo "!! Extraction incomplete: node_modules/fastify is missing."
   exit 1
 fi
 echo "==> Installed to $DIR"
@@ -135,5 +177,6 @@ ENVEOF
   echo "======================================================"
 else
   echo ""
+  echo "Updated to bundle $BUNDLE_VERSION."
   echo "Start the API with:  bash ~/bidly-api/run.sh"
 fi
