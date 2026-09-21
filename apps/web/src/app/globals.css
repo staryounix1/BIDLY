@@ -1078,7 +1078,12 @@
      */
     --live-nav-h: calc(4.5rem + env(safe-area-inset-bottom));
     --live-header-h: 4.25rem;
-    --live-sheet-h: clamp(19rem, 52dvh, 28rem);
+    /*
+     * The sheet is deliberately shorter than the room it has, so the map keeps
+     * the majority of the screen and still reads as the place the search is
+     * happening. The sheet scrolls for the rest rather than growing to fit it.
+     */
+    --live-sheet-h: clamp(17rem, 46dvh, 24rem);
     height: calc(100dvh - var(--live-header-h) - var(--live-nav-h));
     overflow: hidden;
     background: #0a0e10;
@@ -1226,6 +1231,17 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.9rem;
+    /*
+     * The reference screen keeps the big clock on the left and the status on
+     * the right in Arabic too — the clock is a gauge, and gauges read
+     * left-anchored. `row-reverse` under RTL puts the clock first in visual
+     * order without changing the DOM order for screen readers.
+     */
+    direction: ltr;
+  }
+
+  .live-row-head > * {
+    direction: rtl;
   }
 
   .live-clock {
@@ -1411,16 +1427,16 @@
   .live-facts {
     flex: none;
     display: grid;
-    gap: 0.5rem;
-    margin-top: 0.35rem;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
   }
 
   .live-fact {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
-    padding: 0.8rem 0.9rem;
-    border-radius: 1rem;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.875rem;
     background: #171f23;
   }
 
@@ -1428,9 +1444,9 @@
     flex: none;
     display: grid;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.65rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.55rem;
     background: #232d32;
     color: #cfe0e4;
   }
@@ -1444,13 +1460,18 @@
   .live-fact-text {
     flex: 1;
     min-width: 0;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 700;
     text-align: start;
   }
 
+  /* The address is the one value that can run long, so it truncates rather
+     than wrapping the row to three lines. */
   .live-fact--wide .live-fact-text--strong {
     font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .live-scanning {

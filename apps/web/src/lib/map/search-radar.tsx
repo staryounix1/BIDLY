@@ -200,6 +200,8 @@ export function SearchRadar({
       <div className="live-sheet">
         <div className="live-grip" aria-hidden />
 
+        {/* The row is LTR so the clock lands on the left, matching the
+            reference; the children keep RTL text direction. */}
         <div className="live-row-head">
           <span className="live-clock tnum">{expired ? '0:00' : timeLabel}</span>
           <div className="live-status">
