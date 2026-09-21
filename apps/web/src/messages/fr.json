@@ -660,7 +660,9 @@
     "priceHint": "Ajustez avec + et −",
     "mapHint": "Placez votre position sur la carte",
     "pickLocation": "Définir la position",
-    "dragHint": "Glissez vers le haut pour les détails"
+    "dragHint": "Glissez vers le haut pour les détails",
+    "needPickup": "Touchez la carte pour indiquer votre position",
+    "needDestination": "Touchez la carte pour indiquer la destination"
   },
   "searching": {
     "looking": "Recherche d'artisans proches…",

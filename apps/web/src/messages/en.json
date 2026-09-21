@@ -660,7 +660,9 @@
     "priceHint": "Adjust with + and −",
     "mapHint": "Set your location on the map",
     "pickLocation": "Set location",
-    "dragHint": "Swipe up for details"
+    "dragHint": "Swipe up for details",
+    "needPickup": "Tap the map to set your location first",
+    "needDestination": "Tap the map to set the destination first"
   },
   "searching": {
     "looking": "Looking for nearby craftsmen…",
