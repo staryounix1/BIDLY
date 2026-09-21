@@ -684,7 +684,11 @@
     "pickup": "Prise en charge",
     "cancelRequest": "Annuler la demande",
     "hoursLeft": "{hours} h restantes",
-    "minutesLeft": "{minutes} min restantes"
+    "minutesLeft": "{minutes} min restantes",
+    "draftReady": "Votre demande est prête — publiez-la pour commencer",
+    "draftTitle": "Cette demande est un brouillon",
+    "draftSub": "Publiez-la pour lancer la recherche",
+    "publishNow": "Publier et lancer la recherche"
   },
   "offers": {
     "title": "Offres",

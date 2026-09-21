@@ -684,7 +684,11 @@
     "pickup": "Pickup",
     "cancelRequest": "Cancel request",
     "hoursLeft": "{hours}h left",
-    "minutesLeft": "{minutes}m left"
+    "minutesLeft": "{minutes}m left",
+    "draftReady": "Your request is ready — publish it to start",
+    "draftTitle": "This request is a draft",
+    "draftSub": "Publish it to start the search",
+    "publishNow": "Publish and start the search"
   },
   "offers": {
     "title": "Offers",

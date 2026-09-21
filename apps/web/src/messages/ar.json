@@ -745,7 +745,11 @@
     "pickup": "موقع الطلب",
     "cancelRequest": "إلغاء الطلب",
     "hoursLeft": "باقي {hours} ساعة",
-    "minutesLeft": "باقي {minutes} دقيقة"
+    "minutesLeft": "باقي {minutes} دقيقة",
+    "draftReady": "طلبك جاهز — باقي غير تنشرو",
+    "draftTitle": "الطلب مازال مسودة",
+    "draftSub": "نشرو باش يبدا البحث",
+    "publishNow": "نشر الطلب وبدء البحث"
   },
   "offers": {
     "title": "العروض",
