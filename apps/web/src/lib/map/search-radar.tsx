@@ -108,14 +108,19 @@ export function SearchRadar({
   const expired = remainingMs !== null && remainingMs === 0;
 
   /**
-   * The search window is 72 hours, so a mm:ss clock would read "4319:53". Show
-   * hours once the window is longer than an hour, and the elapsed clock only
-   * while the search is genuinely in its first minutes.
+   * The clock is the *elapsed search time*, which is what makes the screen feel
+   * alive — a countdown to a 72-hour deadline would read "2d 23h" and look
+   * static. The deadline drives the progress bar and the "hours left" hint
+   * instead, at the scale it actually has.
    */
-  const timeLabel = useMemo(() => {
-    if (remainingMs !== null) return formatRemaining(Math.ceil(remainingMs / 1000));
-    return formatClock(elapsedSeconds);
-  }, [remainingMs, elapsedSeconds]);
+  const timeLabel = useMemo(() => formatClock(elapsedSeconds), [elapsedSeconds]);
+
+  const deadlineHint = useMemo(() => {
+    if (remainingMs === null) return null;
+    const secs = Math.ceil(remainingMs / 1000);
+    if (secs < 3600) return t('searching.minutesLeft', { minutes: Math.ceil(secs / 60) });
+    return t('searching.hoursLeft', { hours: Math.floor(secs / 3600) });
+  }, [remainingMs, t]);
 
   /**
    * The bar is the search's own progress, not a countdown to the deadline:
@@ -212,7 +217,9 @@ export function SearchRadar({
         </div>
 
         <p className="live-hint">
-          {expired ? t('search.expired') : t('searching.expanding')}
+          {expired
+            ? t('search.expired')
+            : [t('searching.expanding'), deadlineHint].filter(Boolean).join(' · ')}
         </p>
 
         {/* Price with steppers — the inDrive bargaining affordance. */}
@@ -341,19 +348,6 @@ function formatClock(totalSeconds: number): string {
   const m = Math.floor(totalSeconds / 60);
   const s = totalSeconds % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-/**
- * A remaining window, at the scale it deserves: the deadline is 72 hours out, so
- * mm:ss is meaningless. Under an hour stays a clock; above that reads in hours.
- */
-export function formatRemaining(totalSeconds: number): string {
-  const safe = Math.max(0, totalSeconds);
-  if (safe < 3600) return formatClock(safe);
-  const hours = Math.floor(safe / 3600);
-  if (hours < 24) return `${hours}:${String(Math.floor((safe % 3600) / 60)).padStart(2, '0')}`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ${hours % 24}h`;
 }
 
 /** Minor units to a short localized label, e.g. "52 د.م.". */

@@ -230,9 +230,7 @@ function RequestDetailView() {
           candidateCount={offers.length}
           priceMinor={request.budget_max_minor ?? request.budget_min_minor ?? null}
           currency={request.currency}
-          pickupLabel={
-            request.pickup_line1 || [request.pickup_district, request.pickup_city_name].filter(Boolean).join(', ') || null
-          }
+          pickupLabel={shortPlace(request)}
           onViewOffers={() => router.push(`/${locale}/requests`)}
           onStop={canCancel ? () => setShowCancel(true) : undefined}
           onPriceChange={onChangePrice}
@@ -567,6 +565,37 @@ function RequestDetailView() {
       )}
     </div>
   );
+}
+
+/**
+ * A short, human label for the request point.
+ *
+ * `pickup_line1` holds whatever Nominatim returned, which is often a full
+ * postal string ("Zankat Sidi Soussane, Sidi Youb, المدينة, مقاطعة مراكش …").
+ * That fills the sheet and tells the customer nothing new, so keep the street
+ * and the district only and let the map carry the rest.
+ */
+function shortPlace(request: RequestDetail['request']): string | null {
+  const parts = [request.pickup_line1, request.pickup_district, request.pickup_city_name]
+    .filter((p): p is string => Boolean(p && p.trim()))
+    .map((p) => p.trim());
+
+  if (parts.length === 0) {
+    // No reverse-geocoded text: the coordinates are still a usable label.
+    if (request.pickup_lat != null && request.pickup_lng != null) {
+      return `${Number(request.pickup_lat).toFixed(4)}, ${Number(request.pickup_lng).toFixed(4)}`;
+    }
+    return null;
+  }
+
+  // A geocode line is a comma-separated chain; the first two links are the
+  // street and the neighbourhood, which is what a person recognises.
+  const street = parts[0] ?? '';
+  const firstSegment = street.split(',').map((s) => s.trim()).filter(Boolean);
+  const head = firstSegment[0] ?? street;
+  const next = firstSegment[1] ?? parts[1];
+  if (!head) return null;
+  return next && next !== head ? `${head}، ${next}` : head;
 }
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {

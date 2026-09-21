@@ -1070,11 +1070,16 @@
    */
   .live-stage {
     position: relative;
-    /* Fill what is left after the sticky header, and give back the padding the
-       layout reserves for the bottom nav so the sheet reaches the real bottom
-       edge instead of stopping short of it. */
-    height: calc(100dvh - 3.75rem);
-    margin-bottom: calc(-1 * (4.5rem + env(safe-area-inset-bottom)));
+    /*
+     * The stage fills the space between the sticky header and the bottom nav,
+     * and the sheet is measured from the top of that space so the two never
+     * fight. `--live-nav-h` is what the locale layout reserves for the nav
+     * (4.5rem plus the safe area).
+     */
+    --live-nav-h: calc(4.5rem + env(safe-area-inset-bottom));
+    --live-header-h: 4.25rem;
+    --live-sheet-h: clamp(19rem, 52dvh, 28rem);
+    height: calc(100dvh - var(--live-header-h) - var(--live-nav-h));
     overflow: hidden;
     background: #0a0e10;
     color: #f2f7f8;
