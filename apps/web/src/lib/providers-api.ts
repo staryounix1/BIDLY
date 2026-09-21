@@ -161,7 +161,10 @@ export const providersApi = {
     experienceYears?: number;
     isActive?: boolean;
   }): Promise<ProviderService> {
-    const res = await api.post<ProviderService>('/providers/me/services', input);
+    // PUT, not POST: the route is an upsert ("Add or update an offered
+    // service"), so posting to it 404s with "The requested endpoint was not
+    // found" when a provider adds a service on the profile screen.
+    const res = await api.put<ProviderService>('/providers/me/services', input);
     return res.data;
   },
 
@@ -218,7 +221,10 @@ export const providersApi = {
     endTime: string;
     period?: 'DAY' | 'NIGHT' | 'ANY';
   }): Promise<AvailabilitySlot> {
-    const res = await api.post<AvailabilitySlot>('/providers/me/availability', input);
+    // The route is declared as PUT on the API (`app.put('/providers/me/availability')`).
+    // Posting to it 404s with "The requested endpoint was not found", which the
+    // profile screen surfaced after saving the slot.
+    const res = await api.put<AvailabilitySlot>('/providers/me/availability', input);
     return res.data;
   },
 
