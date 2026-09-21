@@ -701,7 +701,8 @@
     "verified": "Verified",
     "newOffers": "New offers",
     "empty": "No offers yet",
-    "emptyHint": "Waiting for craftsmen to answer your request"
+    "emptyHint": "Waiting for craftsmen to answer your request",
+    "review": "Review offer"
   },
   "tracking": {
     "title": "Track craftsman",
@@ -760,5 +761,19 @@
     "selfie": "A photo of you (selfie)",
     "selfieHint": "Take a photo of your face now so we can match it to the ID.",
     "reviewBanner": "Your identity review is with admin — tap to continue"
+  },
+  "offerCard": {
+    "experience": "{years} years of experience",
+    "eta": "Arrives in {minutes} min",
+    "asked": "Asking price",
+    "accept": "Accept",
+    "reject": "Decline",
+    "agreed": "We agreed",
+    "notAgreed": "We did not agree",
+    "dealTitle": "Agreement reached",
+    "dealBody": "A platform commission of {amount} was taken from the craftsman's wallet.",
+    "chatOpen": "Open the chat",
+    "searching": "You declined {name} — your request is still searching for a craftsman.",
+    "agreedHint": "Did you settle on the price?"
   }
 }
