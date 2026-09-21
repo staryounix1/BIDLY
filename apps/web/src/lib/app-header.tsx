@@ -133,14 +133,19 @@ export function BottomNav() {
           { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
           { href: `/${locale}/provider/requests`, key: 'feed', icon: 'radar' },
           { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
-          { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
           { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
+          // The wallet sits between messages and the history on purpose: it is
+          // where a craftsman funds the commission before a deal, so it has to
+          // be reachable in one tap rather than buried behind history.
+          { href: `/${locale}/wallet`, key: 'wallet', icon: 'wallet' },
+          { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'checklist' },
         ]
       : [
           { href: `/${locale}/provider/dashboard`, key: 'providerDash', icon: 'home' },
           { href: `/${locale}/provider/jobs`, key: 'providerJobs', icon: 'route' },
           { href: `/${locale}/messages`, key: 'messages', icon: 'chat' },
-          { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'wallet' },
+          { href: `/${locale}/wallet`, key: 'wallet', icon: 'wallet' },
+          { href: `/${locale}/provider/history`, key: 'providerHistory', icon: 'checklist' },
         ];
   } else if (user.role === 'ADMIN') {
     // Staff run the platform, not the marketplace: the admin console replaces
@@ -184,10 +189,14 @@ export function BottomNav() {
               }}
             >
               {active && (
-                <span className="absolute top-0 h-1 w-8 rounded-full bg-[rgb(var(--brand-500))]" />
+                <span className="absolute top-0 h-1 w-6 rounded-full bg-[rgb(var(--brand-500))]" />
               )}
-              <CategoryIcon name={tab.icon} size={22} />
-              <span className="text-[0.6875rem] font-bold">{t(`nav.${tab.key}`)}</span>
+              <CategoryIcon name={tab.icon} size={21} />
+              {/* Six provider tabs share one row on a narrow phone, so the
+                  label is a touch smaller and clipped rather than wrapped. */}
+              <span className="w-full truncate px-0.5 text-center text-[0.625rem] font-bold leading-tight">
+                {t(`nav.${tab.key}`)}
+              </span>
             </Link>
           );
         })}
