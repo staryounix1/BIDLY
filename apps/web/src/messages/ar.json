@@ -483,7 +483,8 @@
     "withProvider": "مع مزوّد الخدمة",
     "withCustomer": "مع الزبون",
     "connected": "مباشر",
-    "reconnecting": "جارٍ إعادة الاتصال…"
+    "reconnecting": "جارٍ إعادة الاتصال…",
+    "openFailed": "ما قدرناش نفتحو المحادثة. عاود حاول."
   },
   "notifications": {
     "title": "الإشعارات",
@@ -774,7 +775,8 @@
     "copy": "انسخ",
     "copied": "تنسخ",
     "revoke": "وقّف",
-    "views": "{count} مشاهدات"
+    "views": "{count} مشاهدات",
+    "message": "راسل الحرفي"
   },
   "home": {
     "greeting": "أهلاً {name}",
