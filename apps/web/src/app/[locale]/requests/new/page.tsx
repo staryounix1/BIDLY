@@ -518,7 +518,7 @@ function NewRequestView() {
           {submitError && (
             <p
               role="alert"
-              className="fixed inset-x-4 bottom-[5.5rem] z-50 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger))] px-4 py-3 text-sm font-bold text-white shadow-lg"
+              className="rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
             >
               {submitError}
             </p>
@@ -545,6 +545,21 @@ function NewRequestView() {
 
         </form>
       </BottomSheet>
+
+      {/* Outside the sheet on purpose: react-modal-sheet transforms its panel,
+          which makes any `fixed` child position against the sheet instead of
+          the viewport, so an in-sheet alert lands off the bottom of the screen
+          on a phone. Page level is the only place it stays visible. */}
+      {submitError && (
+        <div
+          role="alert"
+          className="pointer-events-none fixed inset-x-0 bottom-24 z-[1200] px-4"
+        >
+          <p className="mx-auto max-w-md rounded-xl bg-[rgb(var(--danger))] px-4 py-3 text-center text-sm font-bold text-white shadow-xl">
+            {submitError}
+          </p>
+        </div>
+      )}
     </>
   );
 }
