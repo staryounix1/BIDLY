@@ -188,13 +188,17 @@ function localise(draft: NotificationDraft, payload: Record<string, unknown>) {
   const title = String(payload.title ?? payload.requestTitle ?? payload.jobCode ?? '');
   const body = String(payload.body ?? payload.preview ?? payload.message ?? '');
   const status = payload.status ? String(payload.status) : '';
+  // The UI owns the wording: it has `notif.*` translations and knows the locale.
+  // Never persist a translation key as if it were prose — store the event type
+  // plus its status and let the notification centre render the sentence.
+  const fallbackBody = status ? `${draft.type} (${status})` : draft.type;
   return {
     title_en: title || draft.titleKey,
     title_fr: title || draft.titleKey,
     title_ar: title || draft.titleKey,
-    body_en: body || (status ? `${draft.bodyKey} (${status})` : draft.bodyKey),
-    body_fr: body || (status ? `${draft.bodyKey} (${status})` : draft.bodyKey),
-    body_ar: body || (status ? `${draft.bodyKey} (${status})` : draft.bodyKey),
+    body_en: body || fallbackBody,
+    body_fr: body || fallbackBody,
+    body_ar: body || fallbackBody,
   };
 }
 

@@ -12,6 +12,7 @@ import {
   type AppNotification,
 } from '@/lib/notifications-api';
 import { useRealtime } from '@/lib/realtime-client';
+import { useAuth } from '@/lib/auth-provider';
 import { CategoryIcon } from '@/lib/icons';
 import { EmptyState, Spinner } from '@/lib/ui';
 
@@ -32,6 +33,7 @@ export default function NotificationsPage() {
 
 function Centre() {
   const { t, locale } = useI18n();
+  const { hasRole } = useAuth();
   const router = useRouter();
   const [items, setItems] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,8 +79,14 @@ function Centre() {
     }
     const href = notificationHref(n, locale);
     if (href) {
-      if (n.reference_type === 'JOB_STATUS_CHANGED' && n.reference_id) {
-        router.push(`/${locale}/provider/jobs/${n.reference_id}`);
+      // Jobs exist on both sides. Providers get the richer provider job screen;
+      // everyone else (customers) must use the shared /jobs/:id page, otherwise
+      // the tap lands on /provider/jobs/:id and 404s for a customer.
+      const kind = n.reference_type || n.type;
+      const isJob = kind === 'JOB' || kind === 'JOB_STATUS_CHANGED';
+      const jobId = n.reference_id || (n.data?.aggregateId as string | undefined);
+      if (isJob && jobId && hasRole('PROVIDER')) {
+        router.push(`/${locale}/provider/jobs/${jobId}`);
       } else {
         router.push(href);
       }
@@ -158,7 +166,7 @@ function Centre() {
       ) : (
         <ul className="mt-5 space-y-2">
           {items.map((n, i) => {
-            const { title, body } = notificationText(n, locale);
+            const { title, body } = notificationText(n, locale, t);
             return (
               <li key={n.id} className="slide-in" style={{ animationDelay: `${i * 35}ms` }}>
                 <button

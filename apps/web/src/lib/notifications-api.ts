@@ -83,26 +83,106 @@ export const CHANNELS: Array<[string, keyof NotificationPreferences]> = [
   ['PUSH', 'push'],
 ];
 
-export function notificationText(n: AppNotification, locale: string): { title: string; body: string } {
+/** Translation key for a notification body, e.g. `notif.jobStatus.body`. */
+const BODY_KEY: Record<string, string> = {
+  REQUEST_PUBLISHED: 'notif.requestPublished.body',
+  REQUEST_STATUS_CHANGED: 'notif.requestStatus.body',
+  OFFER_RECEIVED: 'notif.offerReceived.body',
+  OFFER_ACCEPTED: 'notif.offerAccepted.body',
+  OFFER_REJECTED: 'notif.offerRejected.body',
+  OFFER_WITHDRAWN: 'notif.offerWithdrawn.body',
+  JOB_STATUS_CHANGED: 'notif.jobStatus.body',
+  MESSAGE_NEW: 'notif.messageNew.body',
+};
+
+const TITLE_KEY: Record<string, string> = {
+  REQUEST_PUBLISHED: 'notif.requestPublished.title',
+  REQUEST_STATUS_CHANGED: 'notif.requestStatus.title',
+  OFFER_RECEIVED: 'notif.offerReceived.title',
+  OFFER_ACCEPTED: 'notif.offerAccepted.title',
+  OFFER_REJECTED: 'notif.offerRejected.title',
+  OFFER_WITHDRAWN: 'notif.offerWithdrawn.title',
+  JOB_STATUS_CHANGED: 'notif.jobStatus.title',
+  MESSAGE_NEW: 'notif.messageNew.title',
+};
+
+/** `JOB_STATUS_CHANGED (CONFIRMED)` and similar legacy rows. */
+const LEGACY_KEY = /^(notif\.[a-zA-Z.]+)\s*(?:\(([A-Z_]+)\))?$/;
+
+/**
+ * `t` is passed in rather than imported so this stays a pure helper the tests
+ * can drive; the notification centre already holds an i18n handle.
+ */
+export function notificationText(
+  n: AppNotification,
+  locale: string,
+  t?: (key: string, vars?: Record<string, string | number>) => string,
+): { title: string; body: string } {
   const key = locale === 'ar' ? 'ar' : locale === 'fr' ? 'fr' : 'en';
-  const title = (n[`title_${key}`] as string) || n.title_en || n.type;
-  const body = (n[`body_${key}`] as string) || n.body_en || '';
+  const rawTitle = (n[`title_${key}`] as string) || n.title_en || '';
+  const rawBody = (n[`body_${key}`] as string) || n.body_en || '';
+
+  const status =
+    (typeof n.data?.status === 'string' ? n.data.status : '') ||
+    (rawBody.match(LEGACY_KEY)?.[2] ?? '');
+
+  // Titles are usually a real value (job code, "Offer 220.00 MAD"); only fall
+  // back to a translation when the backend stored a key.
+  let title = rawTitle;
+  const titleLegacy = rawTitle.match(LEGACY_KEY);
+  if (t) {
+    if (titleLegacy || !rawTitle) title = t(TITLE_KEY[n.type] ?? 'notifications.title', { status });
+    else if (status) title = `${rawTitle} · ${t(`status.${status}`)}`;
+  } else if (!rawTitle) {
+    title = n.type;
+  }
+
+  let body = rawBody;
+  if (t) {
+    // A stored key (new or legacy) is not prose: rebuild the sentence locally.
+    const isKey = LEGACY_KEY.test(rawBody);
+    if (isKey || !rawBody) {
+      const bodyKey = BODY_KEY[n.type];
+      // Only primitives can be interpolated; drop ids/objects.
+      const vars: Record<string, string | number> = { status, jobCode: rawTitle };
+      for (const [k, v] of Object.entries(n.data ?? {})) {
+        if (typeof v === 'string' || typeof v === 'number') vars[k] = v;
+      }
+      body = bodyKey ? t(bodyKey, vars) : '';
+    }
+  }
   return { title, body };
 }
 
 /** Where a notification should take the user when clicked. */
 export function notificationHref(n: AppNotification, locale: string): string | null {
-  const id = (n.reference_id as string) || (n.data?.aggregateId as string) || null;
-  const kind = n.reference_type || n.type;
+  // `reference_type` is the *aggregate* (OFFER / JOB / REQUEST / USER) while
+  // `type` is the specific event. Route on the event: an `OFFER_ACCEPTED`
+  // notification has `reference_type: 'OFFER'` and its `reference_id` is the
+  // offer, so keying off the aggregate sent the customer to a 404.
+  const kind = n.type || n.reference_type;
+  const aggregateId = n.data?.aggregateId as string | undefined;
+  const jobId = (n.data?.jobId as string | undefined) || null;
+  const id = (n.reference_id as string) || aggregateId || null;
   switch (kind) {
     case 'REQUEST':
     case 'REQUEST_PUBLISHED':
     case 'REQUEST_STATUS_CHANGED':
+    case 'REQUEST_CANCELLED':
     case 'OFFER_RECEIVED':
-    case 'OFFER_ACCEPTED':
-    case 'OFFER_REJECTED':
     case 'OFFER_WITHDRAWN':
       return id ? `/${locale}/requests/${id}` : null;
+    // Accepting an offer confirms a job. `reference_id` here is the *offer*, so
+    // prefer the job id from the payload; fall back to the request.
+    case 'OFFER_ACCEPTED':
+      if (jobId) return `/${locale}/jobs/${jobId}`;
+      return id ? `/${locale}/requests/${id}` : null;
+    // A declined offer leaves the request searching — there is no job yet, and
+    // the customer belongs back on the request to watch for other offers.
+    case 'OFFER_REJECTED': {
+      const requestId = (n.data?.requestId as string | undefined) || null;
+      return requestId ? `/${locale}/requests/${requestId}` : null;
+    }
     case 'JOB':
     case 'JOB_STATUS_CHANGED':
       return id ? `/${locale}/jobs/${id}` : null;
