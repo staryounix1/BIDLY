@@ -1645,3 +1645,203 @@
     transform: scale(1);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Provider offer decision card (the customer taps one offer).
+   One panel, one craftsman, two choices — so the accept/decline decision is not
+   a hunt through a list. Rendered above the bottom nav (z-70).
+   --------------------------------------------------------------------------- */
+.offer-modal {
+  animation: khdemli-fade 0.18s ease-out;
+}
+
+.offer-modal-panel {
+  max-height: 92dvh;
+  overflow-y: auto;
+  padding: 1.25rem 1.15rem calc(1.15rem + env(safe-area-inset-bottom));
+  background: rgb(var(--surface));
+  border-radius: 1.25rem 1.25rem 0 0;
+  animation: khdemli-sheet-up 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 640px) {
+  .offer-modal-panel {
+    border-radius: 1.25rem;
+  }
+}
+
+.offer-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.offer-modal-id {
+  min-width: 0;
+  flex: 1;
+}
+
+.offer-modal-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: rgb(var(--fg));
+  overflow-wrap: anywhere;
+}
+
+.offer-modal-meta {
+  margin-top: 0.3rem;
+}
+
+.offer-modal-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.offer-modal-facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgb(var(--fg-muted));
+}
+
+.offer-modal-bio {
+  margin: 0.9rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: rgb(var(--fg-muted));
+}
+
+.offer-modal-quote {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.75rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.85rem;
+  background: rgb(var(--surface-3));
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgb(var(--fg));
+}
+
+.offer-modal-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: rgb(var(--surface-3));
+}
+
+.offer-modal-price-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: rgb(var(--fg-muted));
+}
+
+.offer-modal-code {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: rgb(var(--fg-muted));
+  direction: ltr;
+}
+
+.offer-modal-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.offer-modal-cancel {
+  display: block;
+  width: 100%;
+  margin-top: 0.7rem;
+  padding: 0.5rem;
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgb(var(--fg-muted));
+  cursor: pointer;
+}
+
+@keyframes khdemli-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes khdemli-sheet-up {
+  from { transform: translateY(1.5rem); opacity: 0.6; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* The agreement receipt shown after the commission is charged. */
+.offer-deal {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgb(var(--ok) / 0.35);
+  border-radius: 1rem;
+  background: rgb(var(--ok) / 0.08);
+}
+
+.offer-deal-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: rgb(var(--ok));
+  color: #fff;
+}
+
+.offer-deal-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: rgb(5 150 105);
+}
+
+.offer-deal-body {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgb(var(--fg-muted));
+}
+
+.offer-deal-code {
+  margin: 0.3rem 0 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: rgb(var(--fg-subtle));
+  direction: ltr;
+}
+
+/* The agree / did-not-agree handshake on the chosen craftsman. */
+.offer-agree {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgb(var(--border));
+}
+
+.offer-agree-hint {
+  margin: 0 0 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: rgb(var(--fg-muted));
+  text-align: center;
+}

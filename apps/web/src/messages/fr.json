@@ -701,7 +701,8 @@
     "verified": "Vérifié",
     "newOffers": "Nouvelles offres",
     "empty": "Aucune offre pour le moment",
-    "emptyHint": "En attente des réponses des artisans"
+    "emptyHint": "En attente des réponses des artisans",
+    "review": "Voir l’offre"
   },
   "tracking": {
     "title": "Suivre l'artisan",
@@ -760,5 +761,19 @@
     "selfie": "Une photo de vous (selfie)",
     "selfieHint": "Prenez une photo de votre visage pour la comparer à la carte.",
     "reviewBanner": "Votre vérification d'identité est en cours — appuyez pour continuer"
+  },
+  "offerCard": {
+    "experience": "{years} ans d’expérience",
+    "eta": "Arrive en {minutes} min",
+    "asked": "Prix demandé",
+    "accept": "Accepter",
+    "reject": "Refuser",
+    "agreed": "Nous avons convenu",
+    "notAgreed": "Nous n’avons pas convenu",
+    "dealTitle": "Accord conclu",
+    "dealBody": "Une commission de {amount} a été prélevée du portefeuille de l’artisan.",
+    "chatOpen": "Ouvrir la discussion",
+    "searching": "Vous avez refusé {name} — votre demande cherche toujours un artisan.",
+    "agreedHint": "Vous êtes-vous mis d’accord sur le prix ?"
   }
 }
