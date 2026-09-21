@@ -707,13 +707,13 @@
     "review": "Review offer"
   },
   "tracking": {
-    "title": "Track craftsman",
-    "eta": "Arrives in {minutes} min",
-    "arrived": "Arrived",
-    "call": "Call",
-    "message": "Chat",
-    "providerComing": "Your craftsman is on the way",
-    "status": "Request status"
+    "title": "Share my live location",
+    "hint": "Create a temporary link so someone you trust can follow the trip. It stops working when it expires or you revoke it.",
+    "create": "Create a link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "revoke": "Stop",
+    "views": "{count} views"
   },
   "home": {
     "greeting": "Hi {name}",
@@ -841,5 +841,46 @@
     "none": "No photos on this job.",
     "remove": "Remove",
     "afterHint": "Photos are saved with the job as proof of the work done."
+  },
+  "boost": {
+    "title": "Boost your visibility",
+    "hint": "Boosted craftsmen appear first in search results.",
+    "forHours": "{hours}h",
+    "bought": "Boost activated. You are now shown first."
+  },
+  "complaint": {
+    "title": "Service guarantee",
+    "window": "You can open a complaint for {days} days after the job is completed.",
+    "open": "Open a complaint",
+    "subject": "What went wrong?",
+    "body": "Describe the problem in detail",
+    "submit": "Send complaint",
+    "tooShort": "Add a subject and at least a short description.",
+    "opened": "Complaint {code} opened. Support will follow up.",
+    "alreadyOpen": "You already have an open complaint for this job."
+  },
+  "referral": {
+    "title": "Invite friends",
+    "subtitle": "Share your code — you both get wallet credit once they finish their first job.",
+    "myCode": "Your invite code",
+    "copy": "Copy",
+    "copied": "Copied",
+    "rule": "Rewards are paid when the person you invited completes their first job.",
+    "youGet": "You receive",
+    "theyGet": "They receive",
+    "haveCode": "Have an invite code?",
+    "apply": "Apply",
+    "claimRule": "You can use a code only before your first completed job.",
+    "invited": "People you invited",
+    "empty": "No invites yet.",
+    "claimed": "Invite code applied.",
+    "disabled": "Invites are not available right now.",
+    "rewardedCount": "{count} rewarded",
+    "status": {
+      "PENDING": "Waiting",
+      "REWARDED": "Rewarded",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    }
   }
 }
