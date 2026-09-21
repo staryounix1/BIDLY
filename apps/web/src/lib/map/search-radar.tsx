@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { useRealtime } from '@/lib/realtime-client';
-import { useMap, addTileLayer } from '@/lib/map/leaflet';
+import { useMap, addTileLayer, DEFAULT_MAP_STYLE } from '@/lib/map/leaflet';
+import { createMeMarker, createMarker } from '@/lib/map/markers';
 import { CategoryIcon } from '@/lib/icons';
 
 /**
@@ -255,28 +256,20 @@ function MiniMap({
   useMap(
     ref,
     (L, map) => {
-      addTileLayer(L, map);
-      map.setView([point.lat, point.lng], 12);
+      addTileLayer(L, map, DEFAULT_MAP_STYLE);
+      map.setView([point.lat, point.lng], 13, { animate: false });
 
-      L.circle([point.lat, point.lng], {
-        radius: 700,
-        color: '#10cd99',
-        fillColor: '#32f4ba',
-        fillOpacity: 0.3,
-      }).addTo(map);
-      L.marker([point.lat, point.lng]).addTo(map);
+      // The request point reads as "you", and each engaged provider as a disc
+      // fanned around it, so the map says "N providers are looking at this".
+      createMeMarker(L, [point.lat, point.lng]).addTo(map);
 
       for (const p of ring) {
-        L.circle([p.lat, p.lng], {
-          radius: 350,
-          color: '#10cd99',
-          fillColor: '#32f4ba',
-          fillOpacity: 0.55,
-        }).addTo(map);
+        createMarker(L, [p.lat, p.lng], 'provider', { dim: true }).addTo(map);
       }
       return undefined;
     },
     [point.lat, point.lng, ringKey],
+    { style: DEFAULT_MAP_STYLE },
   );
 
   return (

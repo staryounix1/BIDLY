@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
-import { useMap, addTileLayer } from './leaflet';
+import { useMap, addTileLayer, DEFAULT_MAP_STYLE } from './leaflet';
+import { createMeMarker, createMarker } from './markers';
 import { useNearbyProviders, type NearbyProvider } from './provider-location';
 
 /**
@@ -57,15 +58,17 @@ export function NearbyProvidersMap({
     (L, map) => {
       if (!point) return undefined;
       const map2 = map;
-      map2.setView([point.lat, point.lng], 12);
-      addTileLayer(L, map2);
-      L.marker([point.lat, point.lng]).addTo(map2);
+      addTileLayer(L, map2, DEFAULT_MAP_STYLE);
+      map2.setView([point.lat, point.lng], 13, { animate: false });
+
+      // "You are here" is a distinct marker from the providers, so the customer
+      // can always tell their own position from supply.
+      createMeMarker(L, [point.lat, point.lng], { label: t('map.myLocation') }).addTo(map2);
+
       for (const p of providers) {
-        L.circle([Number(p.lat), Number(p.lng)], {
-          radius: 300,
-          color: '#10b981',
-          fillColor: '#10b981',
-          fillOpacity: 0.55,
+        createMarker(L, [Number(p.lat), Number(p.lng)], 'provider', {
+          dim: !p.is_online,
+          ...(p.display_name ? { label: p.display_name } : {}),
         })
           .addTo(map2)
           .bindPopup(p.display_name ?? '');
@@ -73,6 +76,7 @@ export function NearbyProvidersMap({
       return undefined;
     },
     [point?.lat, point?.lng, providers.map((p) => p.id).join('|')],
+    { style: DEFAULT_MAP_STYLE },
   );
 
   if (geoState === 'denied') {

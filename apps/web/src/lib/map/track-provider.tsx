@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { api } from '@/lib/auth-api';
-import { useMap, addTileLayer } from './leaflet';
+import { CategoryIcon } from '@/lib/icons';
+import { useMap, addTileLayer, DEFAULT_MAP_STYLE, type LeafletMap } from './leaflet';
+import { createMarker } from './markers';
+import { useFollow } from './use-follow';
 
 /**
  * Live arrival tracking.
@@ -89,31 +92,43 @@ export function TrackProvider({
     markerRef.current?.setLatLng([location.lat, location.lng]);
   }, [location?.lat, location?.lng]);
 
+  // The incoming provider is the subject of this screen, so the map follows
+  // them: smoothly while they move, and only until the customer pans away.
+  const follow = useFollow({ point: location, zoom: 14, enabled: true });
+
   useMap(
     containerRef,
-    (L, map) => {
-      addTileLayer(L, map);
+    (L, map: LeafletMap) => {
+      addTileLayer(L, map, DEFAULT_MAP_STYLE);
+      follow.onMapReady(map);
       const centre = location ?? destination;
-      map.setView(centre ? [centre.lat, centre.lng] : [33.5731, -7.5898], 13);
+      map.setView(centre ? [centre.lat, centre.lng] : [33.5731, -7.5898], 14, { animate: false });
 
       if (destination) {
-        L.circle([destination.lat, destination.lng], {
-          radius: 500,
-          color: '#0ea5e9',
-          fillColor: '#0ea5e9',
-          fillOpacity: 0.3,
+        createMarker(L, [destination.lat, destination.lng], 'pin', {
+          label: t('map.destinationPoint'),
         }).addTo(map);
       }
-      const marker = L.marker(
-        location ? [location.lat, location.lng] : destination ? [destination.lat, destination.lng] : [33.5731, -7.5898],
-        { opacity: location ? 1 : 0 },
+      const marker = createMarker(
+        L,
+        location
+          ? [location.lat, location.lng]
+          : destination
+            ? [destination.lat, destination.lng]
+            : [33.5731, -7.5898],
+        'provider',
+        {
+          ...(providerName ? { label: providerName } : {}),
+          opacity: location ? 1 : 0,
+        },
       ).addTo(map);
       markerRef.current = marker;
       return () => {
         markerRef.current = null;
       };
     },
-    [],
+    [follow.onMapReady, t, providerName],
+    { style: DEFAULT_MAP_STYLE },
   );
 
   return (
@@ -129,12 +144,27 @@ export function TrackProvider({
           <span className="opacity-50">{t('map.offline')}</span>
         )}
       </div>
-      <div
-        ref={containerRef}
-        style={{ height }}
-        className="w-full overflow-hidden rounded-2xl border border-black/10 dark:border-white/15"
-        dir="ltr"
-      />
+      <div className="relative overflow-hidden rounded-2xl border border-[rgb(var(--line))]">
+        <div
+          ref={containerRef}
+          style={{ height }}
+          className="map-canvas w-full"
+          dir="ltr"
+        />
+        {/* Reappears only after the customer has panned away from the provider,
+            so following is one tap to restore but never automatic again. */}
+        {follow.userMoved && !follow.following && location && (
+          <button
+            type="button"
+            onClick={follow.recenter}
+            className="map-recenter"
+            style={{ insetInlineEnd: '0.75rem', bottom: '0.75rem' }}
+          >
+            <CategoryIcon name="nav" size={16} strokeWidth={2.3} />
+            {t('map.recenter')}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

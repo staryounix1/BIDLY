@@ -11,6 +11,8 @@ import {
   type LeafletMarker,
   type MapStyle,
 } from './leaflet';
+import { createPinMarker, createMeMarker } from './markers';
+import { useMyLocation, NEIGHBOURHOOD_ZOOM, type LatLng } from './use-my-location';
 
 /** A pin with no chosen point yet stays invisible instead of sitting at the default centre. */
 function hideMarker(marker: LeafletMarker) {
@@ -27,6 +29,10 @@ function showMarker(marker: LeafletMarker) {
  * Tap anywhere on the map (or drag the pin) to set coordinates. The address
  * line is filled in by reverse geocoding only when the user asks, because
  * Nominatim rate-limits and a wrong guess is worse than an empty field.
+ *
+ * The map opens already centred on the user at neighbourhood zoom (see
+ * `useMyLocation`), so the first frame is the final frame — there is no
+ * zoom-in animation and no world view to correct.
  */
 
 export interface PickedPoint {
@@ -43,7 +49,7 @@ export interface MapPickerProps {
   height?: number;
   /** Fallback centre when nothing is picked yet. */
   defaultCenter?: [number, number];
-  /** Basemap style; defaults to Voyager. */
+  /** Basemap style; defaults to the app default (Dark Matter). */
   mapStyle?: MapStyle;
   /**
    * `boxed` (default) is the bordered, fixed-height card used inside forms.
@@ -53,6 +59,12 @@ export interface MapPickerProps {
   variant?: 'boxed' | 'full';
   /** Extra class on the outer wrapper (e.g. to raise the FAB over a sheet). */
   className?: string;
+  /** Render the floating "my location" button. Default true. */
+  showLocateButton?: boolean;
+  /** Keep the map following the user as they move. Default false. */
+  follow?: boolean;
+  /** Called once the starting view is committed, so a parent can hide a loader. */
+  onReady?: () => void;
 }
 
 export function MapPicker({
@@ -61,18 +73,31 @@ export function MapPicker({
   address,
   onAddressChange,
   height = 260,
-  defaultCenter = [33.5731, -7.5898],
+  defaultCenter,
   mapStyle = DEFAULT_MAP_STYLE,
   variant = 'boxed',
   className,
+  showLocateButton = true,
+  follow = false,
+  onReady,
 }: MapPickerProps) {
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<LeafletMarker | null>(null);
-  const [locating, setLocating] = useState(false);
+  const meRef = useRef<LeafletMarker | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
   const [reverseBusy, setReverseBusy] = useState(false);
+
+  const fallback = defaultCenter
+    ? { lat: defaultCenter[0], lng: defaultCenter[1] }
+    : undefined;
+  const geo = useMyLocation({ live: follow, zoom: NEIGHBOURHOOD_ZOOM });
+
+  // The centre the map is committed to at mount: an explicit default wins,
+  // otherwise the remembered/device position resolved synchronously.
+  const startRef = useRef<LatLng>(fallback ?? geo.initialCenter);
+  const startZoom = useRef<number>(value ? NEIGHBOURHOOD_ZOOM : NEIGHBOURHOOD_ZOOM);
 
   // The change handler is called from Leaflet's own event loop, outside React's
   // render, so keep the latest callback in a ref instead of re-creating the map.
@@ -86,11 +111,15 @@ export function MapPicker({
       mapRef.current = map;
       addTileLayer(L, map, mapStyle);
 
-      const start = initialValueRef.current ?? { lat: defaultCenter[0], lng: defaultCenter[1] };
-      map.setView([start.lat, start.lng], initialValueRef.current ? 15 : 12);
+      const start = initialValueRef.current ?? startRef.current;
 
-      // One draggable pin, created up front and hidden until a point is chosen.
-      const marker = L.marker([start.lat, start.lng], { draggable: true })
+      // Open at the final position and zoom, in one call. No `flyTo`, no
+      // intermediate country view: this is the first and only view the user sees.
+      map.setView([start.lat, start.lng], startZoom.current, { animate: false });
+      onReady?.();
+
+      // The draggable pin, created up front and hidden until a point is chosen.
+      const marker = createPinMarker(L, [start.lat, start.lng], { draggable: true })
         .addTo(map)
         .on('dragend', () => {
           const ll = marker.getLatLng();
@@ -98,6 +127,11 @@ export function MapPicker({
         });
       markerRef.current = marker;
       if (!initialValueRef.current) hideMarker(marker);
+
+      // "You are here" — a pulsing dot separate from the chosen pin, so the
+      // user can see both their own position and the point they picked.
+      const me = createMeMarker(L, [geo.initialCenter.lat, geo.initialCenter.lng]).addTo(map);
+      meRef.current = me;
 
       map.on('click', (e) => {
         const point = { lat: e.latlng.lat, lng: e.latlng.lng };
@@ -108,10 +142,12 @@ export function MapPicker({
 
       return () => {
         markerRef.current = null;
+        meRef.current = null;
         mapRef.current = null;
       };
     },
     [mapStyle],
+    { style: mapStyle },
   );
 
   // Keep the pin in sync when the parent sets a point (e.g. after geolocation).
@@ -119,29 +155,28 @@ export function MapPicker({
     if (!value) return;
     markerRef.current?.setLatLng([value.lat, value.lng]);
     if (markerRef.current) showMarker(markerRef.current);
-    mapRef.current?.setView([value.lat, value.lng], 15);
+    mapRef.current?.setView([value.lat, value.lng], NEIGHBOURHOOD_ZOOM, { animate: true });
   }, [value?.lat, value?.lng]);
 
+  // Move the "you are here" dot as the fix refreshes or the user moves.
+  useEffect(() => {
+    const p = geo.position;
+    if (!p || !meRef.current) return;
+    meRef.current.setLatLng([p.lat, p.lng]);
+  }, [geo.position?.lat, geo.position?.lng]);
+
   const locate = useCallback(() => {
-    if (!navigator.geolocation) {
-      setGeoError(t('map.unsupported'));
-      return;
-    }
-    setLocating(true);
     setGeoError(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const point = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        onChangeRef.current(point);
-        setLocating(false);
-      },
-      () => {
-        setGeoError(t('map.denied'));
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 30_000 },
-    );
-  }, [t]);
+    geo.refresh();
+  }, [geo]);
+
+  // Surface a refusal only when there is nothing to fall back on; otherwise the
+  // remembered city is a perfectly good answer and an error would be noise.
+  useEffect(() => {
+    if (geo.status === 'denied') setGeoError(t('map.denied'));
+    else if (geo.status === 'unsupported') setGeoError(t('map.unsupported'));
+    else setGeoError(null);
+  }, [geo.status, t]);
 
   const reverse = useCallback(async () => {
     if (!value || !onAddressChange) return;
@@ -166,7 +201,7 @@ export function MapPicker({
         className={
           isFull
             ? 'relative h-full w-full overflow-hidden'
-            : 'relative overflow-hidden rounded-xl border border-black/10 dark:border-white/15'
+            : 'relative overflow-hidden rounded-xl border border-[rgb(var(--line))]'
         }
       >
         {/* Edge-to-edge canvas: Leaflet's own chrome (zoom, attribution) floats
@@ -178,30 +213,39 @@ export function MapPicker({
           dir="ltr"
         />
 
-        {/* Floating "my location" button, like every modern maps app. In full
-            mode the parent positions it clear of the sheet. */}
-        <button
-          type="button"
-          onClick={locate}
-          disabled={locating}
-          aria-label={t('map.myLocation')}
-          title={t('map.myLocation')}
-          className={
-            isFull
-              ? 'map-fab map-fab-brand'
-              : 'map-fab map-fab-brand absolute end-3 bottom-3'
-          }
-          style={isFull ? { position: 'absolute', insetInlineEnd: '0.75rem', bottom: '0.75rem' } : undefined}
-        >
-          {locating ? (
-            <span
-              className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent"
-              aria-hidden
-            />
-          ) : (
-            <CategoryIcon name="nav" size={21} strokeWidth={2.1} />
-          )}
-        </button>
+        {/* While the first fix is pending, a small pill explains the wait rather
+            than leaving a blank or grey map. It fades the moment we have a
+            centre, which for a returning user is immediate. */}
+        {geo.locating && (
+          <div className="map-status" role="status" aria-live="polite">
+            <span className="map-status-spinner" aria-hidden />
+            {t('map.locating')}
+          </div>
+        )}
+
+        {showLocateButton && (
+          <button
+            type="button"
+            onClick={locate}
+            disabled={geo.locating}
+            aria-label={t('map.myLocation')}
+            title={t('map.myLocation')}
+            className={['map-fab map-fab-brand', isFull ? '' : 'absolute end-3 bottom-3']
+              .filter(Boolean)
+              .join(' ')}
+            style={
+              isFull
+                ? { position: 'absolute', insetInlineEnd: '0.75rem', bottom: '0.75rem' }
+                : undefined
+            }
+          >
+            {geo.locating ? (
+              <span className="map-fab-spinner" aria-hidden />
+            ) : (
+              <CategoryIcon name="nav" size={21} strokeWidth={2.1} />
+            )}
+          </button>
+        )}
       </div>
 
       {!isFull && (

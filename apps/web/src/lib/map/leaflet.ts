@@ -24,7 +24,7 @@ declare global {
   }
 }
 
-interface LeafletNamespace {
+export interface LeafletNamespace {
   map: (el: HTMLElement, opts?: Record<string, unknown>) => LeafletMap;
   tileLayer: (url: string, opts?: Record<string, unknown>) => { addTo: (m: LeafletMap) => void };
   marker: (ll: [number, number], opts?: Record<string, unknown>) => LeafletMarker;
@@ -35,8 +35,15 @@ interface LeafletNamespace {
 }
 
 export interface LeafletMap {
-  setView: (ll: [number, number], zoom?: number) => LeafletMap;
+  setView: (
+    ll: [number, number],
+    zoom?: number,
+    options?: { animate?: boolean; duration?: number },
+  ) => LeafletMap;
   on: (event: string, handler: (e: LeafletEvent) => void) => void;
+  off?: (event: string, handler: (e: LeafletEvent) => void) => void;
+  panTo?: (ll: [number, number], opts?: Record<string, unknown>) => void;
+  getCenter?: () => { lat: number; lng: number };
   remove: () => void;
   invalidateSize: () => void;
   fitBounds: (b: unknown, opts?: Record<string, unknown>) => void;
@@ -104,15 +111,18 @@ export function loadLeaflet(): Promise<LeafletNamespace> {
 /**
  * Basemaps.
  *
- * CARTO's Voyager and Positron are the clean, light, ride-hailing-grade
- * cartography this app wants. Since 2026 CARTO stamps every tile served
- * without a valid key with an "API KEY REQUIRED" watermark, so a keyless
- * Voyager is not shippable — it paints a diagonal advert across the map.
+ * The app's map is dark: CARTO Dark Matter is the dark, low-chrome cartography
+ * that lets a bright aqua brand colour and the green markers read at a glance,
+ * and it matches the modern on-demand apps this product follows. Voyager and
+ * Positron (the light options) are still exported so a screen can switch, and
+ * the keyless OSM raster is the no-key fallback.
  *
- * The key is free, needs no CARTO account, and is requested at
- * https://carto.com/basemaps/apikey/. Supply it as `NEXT_PUBLIC_CARTO_API_KEY`
- * and Voyager is used. Without a key we fall back to the keyless OSM raster
- * style, which is clean enough to ship and never watermarked.
+ * Since 2026 CARTO stamps every tile served without a valid key with an
+ * "API KEY REQUIRED" watermark, so keyless CARTO is not shippable — it paints a
+ * diagonal advert across the map. The key is free, needs no CARTO account, and
+ * is requested at https://carto.com/basemaps/apikey/. Supply it as
+ * `NEXT_PUBLIC_CARTO_API_KEY` and the CARTO styles are used; without a key we
+ * fall back to OSM, which is light but never watermarked.
  *
  * CARTO reads the key from `?key=`. `?api_key=` is accepted by the dashboard
  * examples but is **ignored** by the raster CDN — verified by rendering both,
@@ -121,7 +131,7 @@ export function loadLeaflet(): Promise<LeafletNamespace> {
  * `{r}` lets Leaflet append `@2x` on retina displays, which is what keeps the
  * labels crisp on phones.
  */
-export type MapStyle = 'voyager' | 'positron' | 'osm';
+export type MapStyle = 'dark' | 'voyager' | 'positron' | 'osm';
 
 /** A CARTO style needs a key only because CARTO demands one. */
 function cartoUrl(path: string): string {
@@ -136,6 +146,7 @@ const OSM_ATTRIBUTION =
 const CARTO_ATTRIBUTION = `${OSM_ATTRIBUTION} &copy; <a href="https://carto.com/attributions">CARTO</a>`;
 
 export const TILE_STYLES: Record<MapStyle, { url: string; attribution: string }> = {
+  dark: { url: cartoUrl('dark_all'), attribution: CARTO_ATTRIBUTION },
   voyager: { url: cartoUrl('rastertiles/voyager'), attribution: CARTO_ATTRIBUTION },
   positron: { url: cartoUrl('light_all'), attribution: CARTO_ATTRIBUTION },
   osm: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: OSM_ATTRIBUTION },
@@ -145,10 +156,10 @@ export const TILE_STYLES: Record<MapStyle, { url: string; attribution: string }>
 export const HAS_CARTO_KEY = Boolean((process.env.NEXT_PUBLIC_CARTO_API_KEY ?? '').trim());
 
 /**
- * Default basemap. Voyager when a CARTO key is present, otherwise the keyless
- * OSM style — never the watermarked one.
+ * Default basemap: Dark Matter when a CARTO key is present, otherwise the
+ * keyless OSM style — never the watermarked one.
  */
-export const DEFAULT_MAP_STYLE: MapStyle = HAS_CARTO_KEY ? 'voyager' : 'osm';
+export const DEFAULT_MAP_STYLE: MapStyle = HAS_CARTO_KEY ? 'dark' : 'osm';
 
 // `TILE_URL`/`TILE_ATTRIBUTION` are kept for callers that only need a URL; they
 // follow the same key-aware default so nobody accidentally loads a watermark.
@@ -195,14 +206,28 @@ export function useLeaflet() {
 /**
  * Attach a map to `containerRef`, run `setup` once Leaflet is ready, and
  * always tear the map down on unmount so Fast Refresh cannot leak instances.
+ *
+ * `style` only drives the chrome class (dark vs light controls); the tiles are
+ * added by the caller through `addTileLayer`.
  */
 export function useMap(
   containerRef: React.RefObject<HTMLElement | null>,
   setup: (L: LeafletNamespace, map: LeafletMap) => void | (() => void),
   deps: unknown[] = [],
+  options: { style?: MapStyle } = {},
 ) {
   const setupRef = useRef(setup);
   setupRef.current = setup;
+  const style = options.style ?? DEFAULT_MAP_STYLE;
+  const isDark = style === 'dark';
+
+  // Paint the chrome dark before Leaflet even mounts, so the controls never
+  // flash light on a dark map.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.classList.toggle('map-canvas--dark', isDark);
+  }, [containerRef, isDark]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -215,7 +240,7 @@ export function useMap(
       if (!alive || !containerRef.current) return;
       // Keep Leaflet's own zoom control (it handles enable/disable and touch
       // behaviour), but move it out of the top-left default into the
-      // bottom-right inset; globals.css restyles it into a white pill.
+      // bottom-right inset; globals.css restyles it.
       map = L.map(containerRef.current, { zoomControl: true, attributionControl: true });
       map.zoomControl?.setPosition('bottomright');
       const result = setupRef.current(L, map);
