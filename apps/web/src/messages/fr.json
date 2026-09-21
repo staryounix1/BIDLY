@@ -540,7 +540,11 @@
     "payouts": "Retraits",
     "noPayouts": "Aucun retrait.",
     "payoutRequested": "Retrait demandé. Les fonds sont réservés jusqu'au traitement.",
-    "paymentFailed": "Le paiement a échoué. Vous pouvez réessayer."
+    "paymentFailed": "Le paiement a échoué. Vous pouvez réessayer.",
+    "topUp": "Recharger",
+    "topUpHint": "Vous avez besoin d'un solde pour régler la commission de la plateforme lorsque vous vous accordez sur un prix.",
+    "topUpAmount": "Montant (MAD)",
+    "topUpDone": "Portefeuille rechargé avec succès."
   },
   "wallet": {
     "title": "Portefeuille",
