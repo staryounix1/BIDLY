@@ -77,8 +77,19 @@ export function detentSnapPoints(
   return DETENTS.map((d) => 1 - heights[d]);
 }
 
-/** Index of a detent inside the snap-point array. */
+/**
+ * Index of a detent as react-modal-sheet addresses it.
+ *
+ * The library prepends a `0` (closed) snap point to whatever we pass, so its
+ * snap indices are our indices shifted by one. Returning the shifted value here
+ * keeps that quirk in a single place instead of at the call site.
+ */
 export function detentSnapIndex(detent: SheetDetent): number {
+  return DETENTS.indexOf(detent) + 1;
+}
+
+/** Index of a detent inside our own (unshifted) snap-point array. */
+export function detentPointIndex(detent: SheetDetent): number {
   return DETENTS.indexOf(detent);
 }
 
@@ -133,8 +144,8 @@ export function BottomSheet({
   const initialSnap = detentSnapIndex(initial);
 
   const onSnap = useCallback((index: number) => {
-    // Snap points are in detent order, so the index maps straight across.
-    const next = DETENTS[index];
+    // `onSnap` also reports the library's (shifted) index.
+    const next = DETENTS[index - 1];
     if (next) setActive(next);
   }, []);
 
