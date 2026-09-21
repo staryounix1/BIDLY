@@ -672,7 +672,11 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
               up.full_name, up.display_name
          from users u
          left join user_profiles up on up.user_id = u.id
+         left join admins a on a.user_id = u.id
         where u.deleted_at is null and u.identity_review_status = $1::bidly_verification_status
+          -- Staff are exempt from activation, so they never belong in the queue:
+          -- listing them would ask an admin to review their own account.
+          and u.role <> 'ADMIN' and a.id is null
         order by u.identity_submitted_at desc nulls last
         limit 100`,
       [status],
