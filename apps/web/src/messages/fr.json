@@ -44,7 +44,8 @@
     "yes": "Oui",
     "no": "Non",
     "required": "Requis",
-    "km": "km"
+    "km": "km",
+    "delete": "Retirer"
   },
   "auth": {
     "email": "Adresse e-mail",
@@ -810,5 +811,35 @@
       "title": "Nouveau message",
       "body": "Vous avez un nouveau message."
     }
+  },
+  "rating": {
+    "titleCustomer": "Notez l'artisan",
+    "titleProvider": "Notez le client",
+    "subCustomer": "Votre note est publique et construit sa réputation.",
+    "subProvider": "Votre note est interne — seule la plateforme la voit.",
+    "dim": {
+      "punctuality": "Ponctualité",
+      "quality": "Qualité",
+      "communication": "Communication",
+      "value": "Rapport qualité-prix"
+    },
+    "commentPlaceholder": "Ajouter un commentaire (facultatif)",
+    "submit": "Envoyer la note",
+    "needStars": "Choisissez d'abord une note.",
+    "done": "Vous avez noté cette mission",
+    "bothDone": "Les deux parties ont noté. La mission est clôturée.",
+    "waitingOther": "Enregistré. L'autre partie n'a pas encore noté — vous pouvez partir.",
+    "otherRatedYou": "L'autre partie vous a déjà noté. Ajoutez la vôtre pour clôturer."
+  },
+  "photos": {
+    "before": "Photos avant",
+    "after": "Photos après",
+    "add": "Ajouter",
+    "tooBig": "Photo trop lourde. Retirez-en une et réessayez.",
+    "failed": "Impossible de lire cette image.",
+    "title": "Photos de la mission",
+    "none": "Aucune photo sur cette mission.",
+    "remove": "Retirer",
+    "afterHint": "Les photos sont enregistrées avec la mission comme preuve du travail."
   }
 }
