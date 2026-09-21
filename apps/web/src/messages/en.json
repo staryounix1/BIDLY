@@ -776,5 +776,39 @@
     "chatOpen": "Open the chat",
     "searching": "You declined {name} — your request is still searching for a craftsman.",
     "agreedHint": "Did you settle on the price?"
+  },
+  "notif": {
+    "requestPublished": {
+      "title": "Request published",
+      "body": "Your request is now live and receiving offers."
+    },
+    "requestStatus": {
+      "title": "Request updated",
+      "body": "Your request is now {status}."
+    },
+    "offerReceived": {
+      "title": "New offer received",
+      "body": "A craftsman sent you an offer."
+    },
+    "offerAccepted": {
+      "title": "Offer accepted",
+      "body": "You accepted an offer. The job is confirmed."
+    },
+    "offerRejected": {
+      "title": "Offer declined",
+      "body": "You declined an offer. The search continues."
+    },
+    "offerWithdrawn": {
+      "title": "Offer withdrawn",
+      "body": "A craftsman withdrew their offer."
+    },
+    "jobStatus": {
+      "title": "Job update",
+      "body": "Your job is now {status}."
+    },
+    "messageNew": {
+      "title": "New message",
+      "body": "You have a new message."
+    }
   }
 }
