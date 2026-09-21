@@ -622,7 +622,8 @@
     "noProviders": "No providers visible in your area right now.",
     "providerCount": "{count} provider(s) nearby",
     "trackTitle": "Track the provider's arrival",
-    "offline": "Last known position"
+    "offline": "Last known position",
+    "recenter": "Recenter"
   },
   "search": {
     "title": "Finding providers…",
