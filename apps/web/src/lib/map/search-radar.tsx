@@ -9,14 +9,22 @@ import { CategoryIcon } from '@/lib/icons';
 /**
  * The "finding craftsmen" screen.
  *
- * The inDrive moment: the request is published, matching is fanning out, and
- * the customer watches a radar while offers stream in one after another. The
- * screen decides nothing — it makes an otherwise invisible server-side process
- * feel alive and honest about how long the search runs.
+ * The inDrive moment: the request is published, matching fans out, and the
+ * customer watches a radar over a full-bleed map while offers stream in. The
+ * screen decides nothing — it makes an invisible server-side process feel alive
+ * and honest about how long the search runs.
+ *
+ * The map owns the whole viewport and the panel floats over it as a dark sheet,
+ * which is what makes this read as a live request rather than a form result.
  */
 
 export interface RadarOffer {
   id: string;
+  price_minor?: number;
+  currency?: string;
+  status?: string;
+  provider_name?: string;
+  provider_avatar?: string | null;
 }
 
 export interface SearchRadarProps {
@@ -26,24 +34,36 @@ export interface SearchRadarProps {
   expiresAt?: string | null;
   radiusKm?: number;
   candidateCount?: number;
+  priceMinor?: number | null;
+  currency?: string;
+  pickupLabel?: string | null;
   onViewOffers: () => void;
   onStop?: () => void;
+  /** Quick price adjustment straight from the sheet. */
+  onPriceChange?: (nextMinor: number) => void;
 }
+
+const RADIUS_MIN_KM = 5;
+const RADIUS_MAX_KM = 25;
 
 export function SearchRadar({
   requestId,
   offers,
   point,
   expiresAt,
-  radiusKm = 25,
   candidateCount = 0,
+  priceMinor = null,
+  currency = 'MAD',
+  pickupLabel = null,
   onViewOffers,
   onStop,
+  onPriceChange,
 }: SearchRadarProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [now, setNow] = useState(() => Date.now());
   const [flash, setFlash] = useState(false);
   const [liveOffers, setLiveOffers] = useState<RadarOffer[]>(offers);
+  const [autoAccept, setAutoAccept] = useState(false);
   const seenOffers = useRef<number>(offers.length);
 
   // A new offer is the payoff for the whole screen, so pulse the counter and
@@ -87,68 +107,203 @@ export function SearchRadar({
 
   const expired = remainingMs !== null && remainingMs === 0;
 
+  /**
+   * The search window is 72 hours, so a mm:ss clock would read "4319:53". Show
+   * hours once the window is longer than an hour, and the elapsed clock only
+   * while the search is genuinely in its first minutes.
+   */
+  const timeLabel = useMemo(() => {
+    if (remainingMs !== null) return formatRemaining(Math.ceil(remainingMs / 1000));
+    return formatClock(elapsedSeconds);
+  }, [remainingMs, elapsedSeconds]);
+
+  /**
+   * The bar is the search's own progress, not a countdown to the deadline:
+   * filling it over 72 hours would look stuck. It tracks how far the search has
+   * widened from the initial radius toward the maximum, so it visibly moves.
+   */
+  const progress = useMemo(() => {
+    if (expired) return 1;
+    if (remainingMs === null) return 0.35;
+    // Reaches full over roughly the first 6 minutes, then waits.
+    const window = 6 * 60 * 1000;
+    const elapsedMs = window - Math.min(window, remainingMs % window || 0);
+    return Math.min(0.92, 0.12 + (elapsedMs / window) * 0.8);
+  }, [remainingMs, expired]);
+
+  const radiusKm = useMemo(() => {
+    const span = RADIUS_MAX_KM - RADIUS_MIN_KM;
+    return Math.round(RADIUS_MIN_KM + span * progress);
+  }, [progress]);
+
+  const price = priceMinor != null ? formatMoney(priceMinor, currency, locale) : null;
+
   return (
-    <div className="flex min-h-[68vh] flex-col">
-      {/* Radar stage */}
-      <div className="relative flex flex-1 items-center justify-center overflow-hidden">
-        <RadarStage active={!expired} />
+    <div className="live-stage">
+      {/* The map is the screen. */}
+      <div className="live-map">
+        {point ? (
+          <MapView
+            center={[point.lat, point.lng]}
+            zoom={14}
+            style={DEFAULT_MAP_STYLE}
+            className="h-full w-full"
+          >
+            <ThemedMarker position={[point.lat, point.lng]} kind="me" />
+            {liveOffers.map((o, i) => {
+              const angle = (i / Math.max(liveOffers.length, 1)) * Math.PI * 2;
+              return (
+                <ThemedMarker
+                  key={o.id}
+                  position={[
+                    point.lat + Math.cos(angle) * 0.012,
+                    point.lng + Math.sin(angle) * 0.012,
+                  ]}
+                  kind="provider"
+                  dim
+                />
+              );
+            })}
+          </MapView>
+        ) : (
+          <div className="live-map-blank" />
+        )}
 
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <CounterPill count={liveOffers.length} flash={flash} />
-
-          {/* Moving dots imply the search is still running. */}
-          <p className="mt-6 flex items-center gap-1.5 text-[0.9375rem] font-bold">
-            {expired ? t('search.expired') : t('searching.looking')}
-            {!expired && <Dots />}
-          </p>
-
-          {!expired && (
-            <p className="tnum mt-2 text-xs font-semibold text-[rgb(var(--fg-subtle))]">
-              {t('searching.elapsed', { seconds: elapsedSeconds })}
-            </p>
-          )}
-
-          <p className="mt-3 text-xs text-[rgb(var(--fg-subtle))]">
-            {t('search.scanning', { km: radiusKm })}
-            {candidateCount > 0 && <> · {t('search.found', { count: candidateCount })}</>}
-          </p>
-
-          <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[rgb(var(--fg-subtle))]">
+        {/* The radar sweep, centred on the request point. */}
+        <div className="live-radar" aria-hidden>
+          {[0, 1, 2].map((i) => (
             <span
-              className={`inline-block h-2 w-2 rounded-full ${
-                connected ? 'bg-[rgb(var(--brand-600))]' : 'bg-[rgb(var(--warn))]'
-              }`}
+              key={i}
+              className="live-radar-ring"
+              style={{ animationDelay: `${i * 0.9}s` }}
             />
-            {connected ? t('search.waiting') : t('common.loading')}
-          </span>
+          ))}
         </div>
       </div>
 
-      {point && <MiniMap point={point} offers={liveOffers} height={160} />}
+      {/* Partners strip, floating just above the sheet. */}
+      <div className="live-partners">
+        <DriverStack offers={liveOffers} />
+        <p className="live-partners-text">
+          {liveOffers.length === 1
+            ? t('searching.partnersOne')
+            : t('searching.partners', { count: liveOffers.length })}
+        </p>
+      </div>
 
-      {/* Bottom actions: the loud path is offers, the quiet one is cancel. */}
-      <div className="mt-4 space-y-2.5">
-        {liveOffers.length > 0 ? (
-          <button type="button" onClick={onViewOffers} className="btn btn-primary btn-block">
-            {t('searching.viewOffers')}
-            <span className="tnum rounded-full bg-[rgb(var(--brand-ink)/0.16)] px-2.5 py-0.5 text-sm">
-              {liveOffers.length}
-            </span>
-          </button>
-        ) : (
-          <div className="card p-4 text-center">
-            <p className="text-sm text-[rgb(var(--fg-muted))]">
-              {expired
-                ? t('search.expired')
-                : t('search.noOneYet', { expires: expiresAt ? formatWhen(expiresAt) : '—' })}
+      {/* The dark sheet. */}
+      <div className="live-sheet">
+        <div className="live-grip" aria-hidden />
+
+        <div className="live-row-head">
+          <span className="live-clock tnum">{expired ? '0:00' : timeLabel}</span>
+          <div className="live-status">
+            <p className="live-status-title">
+              {expired ? t('search.expired') : t('searching.waitingReplies')}
             </p>
+            <p className="live-status-sub">
+              {expired ? '' : t('searching.youChoose')}
+            </p>
+          </div>
+        </div>
+
+        <div className="live-progress" aria-hidden>
+          <span className="live-progress-fill" style={{ width: `${progress * 100}%` }} />
+        </div>
+
+        <p className="live-hint">
+          {expired ? t('search.expired') : t('searching.expanding')}
+        </p>
+
+        {/* Price with steppers — the inDrive bargaining affordance. */}
+        {priceMinor != null && (
+          <div className="live-price">
+            <button
+              type="button"
+              className="live-step"
+              disabled={!onPriceChange}
+              onClick={() => onPriceChange?.(Math.max(100, priceMinor - 500))}
+              aria-label={t('offer.price')}
+            >
+              <CategoryIcon name="minus" size={20} />
+            </button>
+            <div className="live-price-value">
+              <span className="live-price-label">{t('searching.offerPrice')}</span>
+              <span className="live-price-amount tnum">{price}</span>
+            </div>
+            <button
+              type="button"
+              className="live-step"
+              disabled={!onPriceChange}
+              onClick={() => onPriceChange?.(priceMinor + 500)}
+              aria-label={t('offer.price')}
+            >
+              <CategoryIcon name="plus" size={20} />
+            </button>
           </div>
         )}
 
+        <button
+          type="button"
+          onClick={onViewOffers}
+          disabled={liveOffers.length === 0}
+          className="live-confirm"
+        >
+          {liveOffers.length > 0
+            ? `${t('searching.confirm')} · ${liveOffers.length}`
+            : t('searching.confirm')}
+        </button>
+
+        {/* Auto-accept: the switch from the reference screen. */}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={autoAccept}
+          onClick={() => setAutoAccept((v) => !v)}
+          className="live-toggle-row"
+        >
+          <span className={`live-switch ${autoAccept ? 'is-on' : ''}`} aria-hidden>
+            <span className="live-switch-knob" />
+          </span>
+          <span className="live-toggle-text">
+            {price
+              ? t('searching.autoAccept', { price })
+              : t('searching.autoAccept', { price: '—' })}
+          </span>
+          <CategoryIcon name="arrow" size={19} className="live-toggle-icon" />
+        </button>
+
+        <div className="live-facts">
+          {price && (
+            <div className="live-fact">
+              <span className="live-fact-icon live-fact-icon--cash">
+                <CategoryIcon name="wallet" size={17} />
+              </span>
+              <span className="live-fact-text tnum">
+                {price} {t('searching.cash')}
+              </span>
+            </div>
+          )}
+          {pickupLabel && (
+            <div className="live-fact live-fact--wide">
+              <span className="live-fact-icon">
+                <CategoryIcon name="pin" size={17} />
+              </span>
+              <span className="live-fact-text live-fact-text--strong">{pickupLabel}</span>
+            </div>
+          )}
+        </div>
+
+        <p className="live-scanning">
+          {t('search.scanning', { km: radiusKm })}
+          {candidateCount > 0 && <> · {t('search.found', { count: candidateCount })}</>}
+          {' · '}
+          <span className={connected ? 'live-dot is-on' : 'live-dot'} aria-hidden />
+        </p>
+
         {onStop && !expired && (
-          <button type="button" onClick={onStop} className="btn btn-secondary btn-block">
-            <CategoryIcon name="x" size={18} />
-            {t('searching.cancel')}
+          <button type="button" onClick={onStop} className="live-cancel">
+            {t('searching.cancelRequest')}
           </button>
         )}
       </div>
@@ -156,123 +311,29 @@ export function SearchRadar({
   );
 }
 
-/** Concentric rings pulsing out from the customer's dot. */
-function RadarStage({ active }: { active: boolean }) {
-  return (
-    <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="absolute rounded-full border-2"
-          style={{
-            width: 120,
-            height: 120,
-            borderColor: 'rgb(50 244 186 / 0.45)',
-            animation: active ? `khdemli-pulse 2.4s ${i * 0.8}s cubic-bezier(0.24,0,0.38,1) infinite` : 'none',
-          }}
-        />
-      ))}
-
-      {/* The customer's own position. */}
-      <span
-        className="relative grid h-16 w-16 place-items-center rounded-full"
-        style={{ background: 'rgb(50 244 186 / 0.18)' }}
-      >
-        <span
-          className="grid h-11 w-11 place-items-center rounded-full text-[rgb(var(--brand-ink))]"
-          style={{ background: 'rgb(50 244 186)' }}
-        >
-          <CategoryIcon name="pin" size={22} strokeWidth={2.2} />
-        </span>
+/** Overlapping avatars, newest first, capped so the row never wraps. */
+function DriverStack({ offers }: { offers: RadarOffer[] }) {
+  const shown = offers.slice(0, 4);
+  if (shown.length === 0) {
+    return (
+      <span className="live-stack live-stack--empty" aria-hidden>
+        <CategoryIcon name="radar" size={18} />
       </span>
-    </div>
-  );
-}
-
-function CounterPill({ count, flash }: { count: number; flash: boolean }) {
-  const { t } = useI18n();
+    );
+  }
   return (
-    <div
-      className="inline-flex items-baseline gap-2 rounded-2xl px-5 py-3 transition-all duration-300"
-      style={{
-        background: flash ? 'rgb(50 244 186 / 0.28)' : 'rgb(var(--surface))',
-        boxShadow: flash
-          ? '0 0 0 4px rgb(50 244 186 / 0.35), var(--shadow-md)'
-          : 'var(--shadow-md)',
-      }}
-    >
-      <span className="tnum text-4xl font-black tracking-tight">{count}</span>
-      <span className="text-sm font-bold text-[rgb(var(--fg-muted))]">{t('offer.offers')}</span>
-    </div>
-  );
-}
-
-/** Three animated dots — "still working" without a spinner. */
-function Dots() {
-  return (
-    <span className="inline-flex items-end gap-0.5" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="bounce-soft inline-block h-1.5 w-1.5 rounded-full bg-[rgb(var(--brand-600))]"
-          style={{ animationDelay: `${i * 0.18}s` }}
-        />
+    <span className="live-stack" aria-hidden>
+      {shown.map((o, i) => (
+        <span key={o.id} className="live-avatar" style={{ zIndex: shown.length - i }}>
+          {o.provider_avatar ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={o.provider_avatar} alt="" />
+          ) : (
+            (o.provider_name ?? '?').trim().charAt(0)
+          )}
+        </span>
       ))}
     </span>
-  );
-}
-
-/** Small map showing the request point and every offer fanning around it. */
-function MiniMap({
-  point,
-  offers,
-  height = 160,
-}: {
-  point: { lat: number; lng: number };
-  offers: RadarOffer[];
-  height?: number;
-}) {
-  // Offers carry no coordinates: an offer is a price, and the provider's
-  // position lives in `provider_locations`. Until tracking feeds real pins in,
-  // draw one marker per offer fanned around the request point so the map still
-  // communicates "N providers engaged".
-  const ring = useMemo(() => {
-    const n = Math.max(offers.length, 0);
-    const out: Array<{ lat: number; lng: number }> = [];
-    for (let i = 0; i < n; i++) {
-      const angle = (i / n) * Math.PI * 2;
-      out.push({
-        lat: point.lat + Math.cos(angle) * 0.012,
-        lng: point.lng + Math.sin(angle) * 0.012,
-      });
-    }
-    return out;
-  }, [offers.length, point.lat, point.lng]);
-
-  return (
-    <div
-      className="map-canvas mt-4 w-full overflow-hidden rounded-2xl border border-[rgb(var(--line))]"
-      style={{ height }}
-    >
-      <MapView
-        center={[point.lat, point.lng]}
-        zoom={13}
-        style={DEFAULT_MAP_STYLE}
-        className="h-full w-full"
-      >
-        {/* The request point reads as "you", and each engaged provider as a disc
-            fanned around it, so the map says "N providers are looking at this". */}
-        <ThemedMarker position={[point.lat, point.lng]} kind="me" />
-        {ring.map((p, i) => (
-          <ThemedMarker
-            key={`${i}-${p.lat.toFixed(5)}-${p.lng.toFixed(5)}`}
-            position={[p.lat, p.lng]}
-            kind="provider"
-            dim
-          />
-        ))}
-      </MapView>
-    </div>
   );
 }
 
@@ -282,8 +343,28 @@ function formatClock(totalSeconds: number): string {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function formatWhen(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
-  return formatClock(Math.max(0, Math.ceil((d.getTime() - Date.now()) / 1000)));
+/**
+ * A remaining window, at the scale it deserves: the deadline is 72 hours out, so
+ * mm:ss is meaningless. Under an hour stays a clock; above that reads in hours.
+ */
+export function formatRemaining(totalSeconds: number): string {
+  const safe = Math.max(0, totalSeconds);
+  if (safe < 3600) return formatClock(safe);
+  const hours = Math.floor(safe / 3600);
+  if (hours < 24) return `${hours}:${String(Math.floor((safe % 3600) / 60)).padStart(2, '0')}`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h`;
+}
+
+/** Minor units to a short localized label, e.g. "52 د.م.". */
+function formatMoney(minor: number, currency: string, locale: string): string {
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: minor % 100 === 0 ? 0 : 2,
+    }).format(minor / 100);
+  } catch {
+    return `${minor / 100} ${currency}`;
+  }
 }

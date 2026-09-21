@@ -143,6 +143,27 @@ function RequestDetailView() {
     }
   }
 
+  /**
+   * The sheet's price steppers adjust the customer's offer while the search
+   * runs, so a request can be made more attractive without cancelling it.
+   */
+  async function onChangePrice(nextMinor: number) {
+    if (!data || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await requestsApi.update(data.request.id, {
+        budgetMinMinor: nextMinor,
+        budgetMaxMinor: nextMinor,
+      });
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="app-shell container-page flex items-center justify-center py-24">
@@ -164,7 +185,6 @@ function RequestDetailView() {
       </div>
     );
   }
-
   const { request, offers, media, answers } = data;
   const canCancel = CANCELABLE.includes(request.status);
   const canSelectOffer = [
@@ -195,6 +215,55 @@ function RequestDetailView() {
     return a.price_minor - b.price_minor;
   });
 
+  // The searching state is its own full-screen instrument: the map owns the
+  // viewport and the panel floats over it. Returning early keeps it out of the
+  // document flow below (offers list, details, actions), which would otherwise
+  // scroll behind the fixed stage.
+  if (searching) {
+    return (
+      <>
+        <SearchRadar
+          requestId={request.id}
+          offers={offers}
+          point={requestPoint}
+          expiresAt={request.expires_at}
+          candidateCount={offers.length}
+          priceMinor={request.budget_max_minor ?? request.budget_min_minor ?? null}
+          currency={request.currency}
+          pickupLabel={
+            request.pickup_line1 || [request.pickup_district, request.pickup_city_name].filter(Boolean).join(', ') || null
+          }
+          onViewOffers={() => router.push(`/${locale}/requests`)}
+          onStop={canCancel ? () => setShowCancel(true) : undefined}
+          onPriceChange={onChangePrice}
+        />
+
+        {showCancel && (
+          <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4">
+            <div className="sheet sheet-up w-full max-w-sm p-5 sm:rounded-2xl">
+              <div className="sheet-handle sm:hidden" />
+              <h3 className="mt-3 font-bold sm:mt-0">{t('request.cancelConfirm')}</h3>
+              <input
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder={t('request.cancelReason')}
+                className="input mt-3"
+              />
+              <div className="mt-4 flex gap-2">
+                <button onClick={() => setShowCancel(false)} className="btn btn-secondary flex-1">
+                  {t('common.close')}
+                </button>
+                <button onClick={onCancel} disabled={busy} className="btn btn-danger flex-1">
+                  {t('request.cancel')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="app-shell container-page py-4">
       {/* Compact header: what, where, status. */}
@@ -217,21 +286,6 @@ function RequestDetailView() {
         </div>
         <StatusBadge status={request.status} />
       </div>
-
-      {/* Live search radar. */}
-      {searching && (
-        <SearchRadar
-          requestId={request.id}
-          offers={offers}
-          point={requestPoint}
-          expiresAt={request.expires_at}
-          candidateCount={offers.length}
-          onViewOffers={() => {
-            document.getElementById('khdemli-offers')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onStop={canCancel ? () => setShowCancel(true) : undefined}
-        />
-      )}
 
       {/* Chosen craftsman: tracking map. */}
       {selectedOffer && request.job_id && (

@@ -1056,7 +1056,438 @@
   }
 }
 
-/* Offers arrive one after another, so they enter from the edge. */
+  /* --- live: the searching screen (full-bleed map + dark sheet) ---------- */
+
+  /*
+   * The request page normally scrolls as a document, but the searching state is
+   * a full-screen instrument: the map owns the viewport and the panel floats on
+   * it, the way a ride-hailing app shows a live search. Scoped to `.live-stage`
+   * so the offers/document layout is untouched.
+   *
+   * The locale layout reserves 4.5rem of bottom padding for the nav, so the
+   * stage cancels it with a matching negative margin; otherwise a 100dvh stage
+   * would push the nav off screen and add a scrollbar.
+   */
+  .live-stage {
+    position: relative;
+    /* Fill what is left after the sticky header, and give back the padding the
+       layout reserves for the bottom nav so the sheet reaches the real bottom
+       edge instead of stopping short of it. */
+    height: calc(100dvh - 3.75rem);
+    margin-bottom: calc(-1 * (4.5rem + env(safe-area-inset-bottom)));
+    overflow: hidden;
+    background: #0a0e10;
+    color: #f2f7f8;
+    color-scheme: dark;
+  }
+
+  .live-map {
+    position: absolute;
+    inset: 0;
+    /* The map is scenery for the sheet, so keep it legible but quiet. */
+    filter: saturate(0.85) brightness(0.86);
+  }
+
+  .live-map-blank {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(680px 420px at 50% 26%, #14313a 0%, transparent 62%),
+      #0a0e10;
+  }
+
+  /* The map's own zoom/attribution furniture must not fight the sheet. */
+  .live-map .leaflet-control-zoom,
+  .live-map .leaflet-control-attribution {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Radar sweep, centred on the request point. */
+  .live-radar {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .live-radar-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 300px;
+    margin: -150px 0 0 -150px;
+    border-radius: 999px;
+    background: rgb(50 244 186 / 0.09);
+    border: 1.5px solid rgb(50 244 186 / 0.32);
+    animation: khdemli-sweep 3.4s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  }
+
+  /* Partners strip, floating immediately above the sheet. */
+  .live-partners {
+    position: absolute;
+    z-index: 20;
+    inset-inline: 0;
+    bottom: var(--live-sheet-h, 62dvh);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.15rem 1.15rem;
+    background: linear-gradient(to top, rgb(10 14 16 / 0.96) 55%, rgb(10 14 16 / 0));
+  }
+
+  .live-partners-text {
+    flex: 1;
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-align: start;
+    color: #eaf4f5;
+  }
+
+  .live-stack {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    min-width: 2.5rem;
+  }
+
+  .live-stack--empty {
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.1);
+    color: #9fb6bc;
+  }
+
+  .live-avatar {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-inline-start: -0.7rem;
+    border: 2px solid #0a0e10;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgb(var(--brand-500));
+    color: rgb(var(--brand-ink));
+    font-size: 0.875rem;
+    font-weight: 800;
+  }
+
+  .live-avatar:first-child {
+    margin-inline-start: 0;
+  }
+
+  .live-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The dark sheet. */
+  .live-sheet {
+    position: absolute;
+    z-index: 30;
+    inset-inline: 0;
+    bottom: 0;
+    height: var(--live-sheet-h, 62dvh);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.7rem 1.15rem calc(1rem + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 1.75rem 1.75rem 0 0;
+    background: #10171a;
+    box-shadow: 0 -18px 44px -12px rgb(0 0 0 / 0.72);
+  }
+
+  .live-grip {
+    flex: none;
+    width: 2.75rem;
+    height: 0.3125rem;
+    margin: 0.15rem auto 0.35rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.22);
+  }
+
+  .live-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+  }
+
+  .live-clock {
+    flex: none;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .live-status {
+    min-width: 0;
+    text-align: end;
+  }
+
+  .live-status-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .live-status-sub {
+    margin: 0.15rem 0 0;
+    font-size: 0.8125rem;
+    color: #93aab1;
+  }
+
+  .live-progress {
+    flex: none;
+    height: 0.1875rem;
+    margin-top: 0.15rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.14);
+    overflow: hidden;
+  }
+
+  .live-progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: #eef6f7;
+    transition: width 1s linear;
+  }
+
+  .live-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #8ba2a9;
+    text-align: center;
+  }
+
+  /* Price with steppers — the bargaining affordance from the reference. */
+  .live-price {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.2rem;
+    padding: 0.5rem;
+    border-radius: 1.25rem;
+    background: #171f23;
+  }
+
+  .live-price-value {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .live-price-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #8ba2a9;
+  }
+
+  .live-price-amount {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .live-step {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 1rem;
+    background: #232d32;
+    color: #eaf4f5;
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+
+  .live-step:active:not(:disabled) {
+    transform: scale(0.94);
+    background: #2c383e;
+  }
+
+  .live-step:disabled {
+    opacity: 0.4;
+  }
+
+  .live-confirm {
+    flex: none;
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 1.1rem;
+    border: 0;
+    border-radius: 1.25rem;
+    background: rgb(var(--brand-500));
+    color: rgb(var(--brand-ink));
+    font-size: 1rem;
+    font-weight: 800;
+    transition: opacity 0.15s ease, transform 0.12s ease;
+  }
+
+  .live-confirm:disabled {
+    background: #232d32;
+    color: #5f747c;
+  }
+
+  .live-confirm:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  .live-toggle-row {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 0.9rem;
+    border: 0;
+    border-radius: 1.25rem;
+    background: #171f23;
+    text-align: start;
+    color: #eaf4f5;
+  }
+
+  .live-switch {
+    flex: none;
+    display: flex;
+    align-items: center;
+    width: 3rem;
+    height: 1.75rem;
+    padding: 0.1875rem;
+    border-radius: 999px;
+    background: #33424a;
+    transition: background 0.18s ease;
+  }
+
+  .live-switch.is-on {
+    background: rgb(var(--brand-500));
+    justify-content: flex-end;
+  }
+
+  .live-switch-knob {
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 999px;
+    background: #f4fbfc;
+    transition: transform 0.18s ease;
+  }
+
+  .live-toggle-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .live-toggle-icon {
+    flex: none;
+    color: #9fb6bc;
+  }
+
+  .live-facts {
+    flex: none;
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+  }
+
+  .live-fact {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 1rem;
+    background: #171f23;
+  }
+
+  .live-fact-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
+    background: #232d32;
+    color: #cfe0e4;
+  }
+
+  /* Cash keeps the reference screen's green note. */
+  .live-fact-icon--cash {
+    background: rgb(50 244 186 / 0.16);
+    color: rgb(var(--brand-500));
+  }
+
+  .live-fact-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-align: start;
+  }
+
+  .live-fact--wide .live-fact-text--strong {
+    font-weight: 800;
+  }
+
+  .live-scanning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    color: #8ba2a9;
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 999px;
+    background: rgb(var(--warn));
+  }
+
+  .live-dot.is-on {
+    background: rgb(var(--brand-500));
+  }
+
+  .live-cancel {
+    flex: none;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.95rem;
+    border: 0;
+    border-radius: 1.25rem;
+    background: transparent;
+    color: #ff6b78;
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  .live-cancel:active {
+    background: rgb(255 107 120 / 0.1);
+  }
+
+  /* Offers arrive one after another, so they enter from the edge. */
 @keyframes khdemli-slide {
   from {
     opacity: 0;
@@ -1074,6 +1505,21 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* The radar on the searching screen widening out from the request point. */
+@keyframes khdemli-sweep {
+  0% {
+    transform: scale(0.28);
+    opacity: 0.75;
+  }
+  70% {
+    opacity: 0.28;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
   }
 }
 
