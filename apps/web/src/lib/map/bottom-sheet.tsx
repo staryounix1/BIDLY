@@ -1,23 +1,23 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Sheet } from 'react-modal-sheet';
 
 /**
- * A draggable bottom sheet with snap points.
+ * A draggable bottom sheet with snap points, built on react-modal-sheet.
  *
  * This is the inDrive/food-app shape: the map owns the screen and the form
  * lives on a tray you can pull up. Three detents are supported —
  * `peek` (a sliver with the primary action visible), `half` (the working
  * height) and `full` (everything).
  *
- * Drag is pointer-based (mouse + touch + pen) rather than touch-only, so the
- * same component behaves on a laptop. While dragging we write the transform
- * directly and disable transitions; on release we snap to the nearest detent
- * and re-enable them. That split is what keeps the tray glued to the finger
- * instead of lagging a frame behind it.
+ * react-modal-sheet supplies the hard parts: touch/mouse drag with velocity and
+ * rubber-banding, snap-point resolution, scroll-vs-drag arbitration inside the
+ * content, and keyboard avoidance. We keep only what is product-specific — the
+ * detent names, the Khdemli styling and the desktop side-card behaviour.
  *
- * On wide screens the sheet is a static side card (see `.compose-sheet`), so
- * all drag/snap work is skipped there — it would only fight the layout.
+ * `unstyled` is on purpose: the sheet ships opinionated visuals that would fight
+ * the app theme, so we take the behaviour and paint it ourselves in globals.css.
  */
 
 export type SheetDetent = 'peek' | 'half' | 'full';
@@ -46,7 +46,29 @@ const DEFAULT_HEIGHTS: Record<SheetDetent, number> = {
   full: 0.92,
 };
 
-const DETENTS: SheetDetent[] = ['peek', 'half', 'full'];
+export const DETENTS: SheetDetent[] = ['peek', 'half', 'full'];
+
+/**
+ * Translate screen-share detents into react-modal-sheet snap points.
+ *
+ * The library measures snap points as a distance from the *bottom* of the sheet
+ * as a share of the sheet's height, so a detent covering 40% of the screen is
+ * `1 - 0.4 = 0.6`. Points must ascend and include 0 and 1, which is why the
+ * detents are listed shortest-first and the closed/open ends are added.
+ *
+ * Extracted as a pure function so the mapping is unit-testable without a DOM.
+ */
+export function detentSnapPoints(
+  heights: Record<SheetDetent, number> = DEFAULT_HEIGHTS,
+): number[] {
+  const points = DETENTS.map((d) => 1 - heights[d]);
+  return [0, ...points, 1].sort((a, b) => a - b);
+}
+
+/** Index of a detent inside the snap-point array (the leading 0 shifts it by 1). */
+export function detentSnapIndex(detent: SheetDetent): number {
+  return DETENTS.indexOf(detent) + 1;
+}
 
 export function BottomSheet({
   heights,
@@ -58,14 +80,12 @@ export function BottomSheet({
   label,
   className,
 }: BottomSheetProps) {
-  const sheetHeight = { ...DEFAULT_HEIGHTS, ...heights };
-  const ref = useRef<HTMLDivElement | null>(null);
+  const sheetHeight = useMemo(() => ({ ...DEFAULT_HEIGHTS, ...heights }), [heights]);
+  const [active, setActive] = useState<SheetDetent>(initial);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [viewportH, setViewportH] = useState(() =>
     typeof window === 'undefined' ? 800 : window.innerHeight,
   );
-  const [active, setActive] = useState<SheetDetent>(initial);
-  const [dragY, setDragY] = useState<number | null>(null);
-  const [isDesktop, setIsDesktop] = useState(false);
 
   // Track viewport height so `peek`/`half` keep the same visual share when the
   // mobile keyboard or browser chrome changes the available space.
@@ -82,11 +102,6 @@ export function BottomSheet({
     };
   }, []);
 
-  const toY = useCallback(
-    (d: SheetDetent) => Math.max(0, viewportH * (1 - sheetHeight[d]) - bottomOffset),
-    [viewportH, sheetHeight, bottomOffset],
-  );
-
   // An external `detent` prop wins over internal state.
   useEffect(() => {
     if (detent) setActive(detent);
@@ -96,91 +111,74 @@ export function BottomSheet({
     onDetentChange?.(active);
   }, [active, onDetentChange]);
 
-  const startDrag = useCallback(
-    (event: React.PointerEvent) => {
-      if (isDesktop) return;
-      event.preventDefault();
-      const startPointerY = event.clientY;
-      const startY = toY(active);
-      let moved = false;
+  /**
+   * Snap points are distances from the bottom of the viewport, as a share of
+   * the sheet's own height. The sheet is sized to the viewport (minus any
+   * offset) so the three detents land at the intended screen shares.
+   */
+  const snapPoints = useMemo(() => detentSnapPoints(sheetHeight), [sheetHeight]);
 
-      const onMove = (e: PointerEvent) => {
-        const delta = e.clientY - startPointerY;
-        if (Math.abs(delta) > 3) moved = true;
-        // Clamp between the tallest and shortest detents so the tray cannot be
-        // flung off either edge.
-        const min = toY('full');
-        const max = toY('peek');
-        setDragY(Math.min(max, Math.max(min, startY + delta)));
-      };
+  const initialSnap = detentSnapIndex(initial);
 
-      const onUp = (e: PointerEvent) => {
-        window.removeEventListener('pointermove', onMove);
-        window.removeEventListener('pointerup', onUp);
-        window.removeEventListener('pointercancel', onUp);
-        setDragY(null);
-        if (!moved) return;
+  const onSnap = useCallback((index: number) => {
+    // Index 0 is the closed snap and the last is fully open; the detents sit
+    // between them, so shift back by one to map onto the named detents.
+    const next = DETENTS[index - 1];
+    if (next) setActive(next);
+  }, []);
 
-        // Snap to whichever detent the release point is closest to; ties go to
-        // the direction of travel so a flick forwards always advances.
-        const releasedY = startY + (e.clientY - startPointerY);
-        let best: SheetDetent = active;
-        let bestDist = Infinity;
-        for (const d of DETENTS) {
-          const dist = Math.abs(toY(d) - releasedY);
-          if (dist < bestDist) {
-            bestDist = dist;
-            best = d;
-          }
-        }
-        setActive(best);
-      };
-
-      window.addEventListener('pointermove', onMove);
-      window.addEventListener('pointerup', onUp);
-      window.addEventListener('pointercancel', onUp);
-    },
-    [active, isDesktop, toY],
-  );
-
-  const toggle = useCallback(() => {
-    if (isDesktop) return;
-    setActive((prev) => (prev === 'peek' ? 'half' : prev === 'half' ? 'full' : 'peek'));
-  }, [isDesktop]);
-
-  const y = dragY ?? toY(active);
+  // On wide screens the sheet is a static side card (see `.compose-sheet`), so
+  // the modal is not rendered at all — it would only fight the layout.
+  if (isDesktop) {
+    return (
+      <div
+        role="region"
+        aria-label={label}
+        className={['compose-sheet', 'compose-sheet--desktop', className ?? '']
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <div className="compose-sheet-grip" aria-hidden />
+        <div className="compose-sheet-body">{children}</div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      ref={ref}
-      role="region"
-      aria-label={label}
-      className={[
-        'compose-sheet',
-        isDesktop ? 'compose-sheet--desktop' : '',
-        dragY === null ? 'compose-sheet--settling' : 'compose-sheet--dragging',
-        className ?? '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      style={isDesktop ? undefined : { height: `${sheetHeight.full * 100}%`, transform: `translateY(${y}px)` }}
+    <Sheet
+      isOpen
+      unstyled
+      disableDismiss
+      disableScrollLocking
+      detent="full"
+      initialSnap={initialSnap}
+      snapPoints={snapPoints}
+      onSnap={onSnap}
+      onClose={() => {
+        /* The tray is persistent on this screen: it has no closed state, so a
+           dismissal request (which `disableDismiss` already blocks) is a no-op. */
+      }}
+      className={['compose-sheet', className ?? ''].filter(Boolean).join(' ')}
+      style={{
+        // The sheet spans the viewport minus whatever chrome sits below it, so
+        // `peek`/`half`/`full` map to the same screen shares as before.
+        ['--compose-sheet-bottom' as string]: `${bottomOffset}px`,
+        ['--compose-sheet-vh' as string]: `${viewportH - bottomOffset}px`,
+        bottom: bottomOffset,
+        height: viewportH - bottomOffset,
+      }}
     >
-      <div
-        className="compose-sheet-grip"
-        role="button"
-        tabIndex={0}
-        aria-label={label}
-        aria-expanded={active !== 'peek'}
-        onPointerDown={startDrag}
-        onDoubleClick={toggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggle();
-          }
-        }}
-      />
-      <div className="compose-sheet-body">{children}</div>
-    </div>
+      <Sheet.Container className="compose-sheet-panel">
+        <Sheet.Header className="compose-sheet-head">
+          <div className="compose-sheet-grip" />
+        </Sheet.Header>
+        <Sheet.Content
+          className="compose-sheet-body"
+          disableDrag={({ scrollPosition }) => scrollPosition !== 'top'}
+        >
+          <div className="compose-sheet-scroll">{children}</div>
+        </Sheet.Content>
+      </Sheet.Container>
+    </Sheet>
   );
 }

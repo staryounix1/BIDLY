@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
-import { useMap, addTileLayer, DEFAULT_MAP_STYLE } from './leaflet';
-import { createMeMarker, createMarker } from './markers';
+import { MapView, ThemedMarker, DEFAULT_MAP_STYLE } from './map-view';
 import { useNearbyProviders, type NearbyProvider } from './provider-location';
 
 /**
@@ -26,8 +25,6 @@ export function NearbyProvidersMap({
   const { t } = useI18n();
   const [point, setPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [geoState, setGeoState] = useState<'idle' | 'asking' | 'denied' | 'ready'>('idle');
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Ask for the location once on mount. Without a point there is nothing to
   // centre on, and defaulting to a city centre would show a lie.
@@ -53,32 +50,6 @@ export function NearbyProvidersMap({
     enabled: geoState === 'ready',
   });
 
-  useMap(
-    mapRef,
-    (L, map) => {
-      if (!point) return undefined;
-      const map2 = map;
-      addTileLayer(L, map2, DEFAULT_MAP_STYLE);
-      map2.setView([point.lat, point.lng], 13, { animate: false });
-
-      // "You are here" is a distinct marker from the providers, so the customer
-      // can always tell their own position from supply.
-      createMeMarker(L, [point.lat, point.lng], { label: t('map.myLocation') }).addTo(map2);
-
-      for (const p of providers) {
-        createMarker(L, [Number(p.lat), Number(p.lng)], 'provider', {
-          dim: !p.is_online,
-          ...(p.display_name ? { label: p.display_name } : {}),
-        })
-          .addTo(map2)
-          .bindPopup(p.display_name ?? '');
-      }
-      return undefined;
-    },
-    [point?.lat, point?.lng, providers.map((p) => p.id).join('|')],
-    { style: DEFAULT_MAP_STYLE },
-  );
-
   if (geoState === 'denied') {
     return (
       <p className="rounded-2xl border border-dashed border-black/15 p-5 text-sm opacity-70 dark:border-white/15">
@@ -88,7 +59,7 @@ export function NearbyProvidersMap({
   }
 
   return (
-    <div className="space-y-2" ref={containerRef}>
+    <div className="space-y-2">
       <div className="flex items-center justify-between gap-2 text-xs">
         <span className="font-semibold">{t('map.providersNearby')}</span>
         <span className="opacity-60">
@@ -100,11 +71,33 @@ export function NearbyProvidersMap({
         </span>
       </div>
       <div
-        ref={mapRef}
         style={{ height }}
         className="w-full overflow-hidden rounded-2xl border border-black/10 dark:border-white/15"
-        dir="ltr"
-      />
+      >
+        {point && (
+          <MapView
+            center={[point.lat, point.lng]}
+            zoom={13}
+            style={DEFAULT_MAP_STYLE}
+            className="h-full w-full"
+          >
+            {/* "You are here" is a distinct marker from the providers, so the
+                customer can always tell their own position from supply. */}
+            <ThemedMarker position={[point.lat, point.lng]} kind="me" label={t('map.myLocation')} />
+
+            {providers.map((p) => (
+              <ThemedMarker
+                key={p.id}
+                position={[Number(p.lat), Number(p.lng)]}
+                kind="provider"
+                dim={!p.is_online}
+                {...(p.display_name ? { label: p.display_name } : {})}
+                {...(p.display_name ? { popup: p.display_name } : {})}
+              />
+            ))}
+          </MapView>
+        )}
+      </div>
       {providers.length > 0 && (
         <ul className="grid gap-2 sm:grid-cols-2">
           {providers.slice(0, 6).map((p) => (

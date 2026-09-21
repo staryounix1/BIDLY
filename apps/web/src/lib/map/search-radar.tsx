@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { useRealtime } from '@/lib/realtime-client';
-import { useMap, addTileLayer, DEFAULT_MAP_STYLE } from '@/lib/map/leaflet';
-import { createMeMarker, createMarker } from '@/lib/map/markers';
+import { MapView, ThemedMarker, DEFAULT_MAP_STYLE } from '@/lib/map/map-view';
 import { CategoryIcon } from '@/lib/icons';
 
 /**
@@ -233,8 +232,6 @@ function MiniMap({
   offers: RadarOffer[];
   height?: number;
 }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-
   // Offers carry no coordinates: an offer is a price, and the provider's
   // position lives in `provider_locations`. Until tracking feeds real pins in,
   // draw one marker per offer fanned around the request point so the map still
@@ -251,33 +248,31 @@ function MiniMap({
     }
     return out;
   }, [offers.length, point.lat, point.lng]);
-  const ringKey = ring.map((p) => `${p.lat.toFixed(5)},${p.lng.toFixed(5)}`).join('|');
-
-  useMap(
-    ref,
-    (L, map) => {
-      addTileLayer(L, map, DEFAULT_MAP_STYLE);
-      map.setView([point.lat, point.lng], 13, { animate: false });
-
-      // The request point reads as "you", and each engaged provider as a disc
-      // fanned around it, so the map says "N providers are looking at this".
-      createMeMarker(L, [point.lat, point.lng]).addTo(map);
-
-      for (const p of ring) {
-        createMarker(L, [p.lat, p.lng], 'provider', { dim: true }).addTo(map);
-      }
-      return undefined;
-    },
-    [point.lat, point.lng, ringKey],
-    { style: DEFAULT_MAP_STYLE },
-  );
 
   return (
     <div
-      ref={ref}
       className="map-canvas mt-4 w-full overflow-hidden rounded-2xl border border-[rgb(var(--line))]"
       style={{ height }}
-    />
+    >
+      <MapView
+        center={[point.lat, point.lng]}
+        zoom={13}
+        style={DEFAULT_MAP_STYLE}
+        className="h-full w-full"
+      >
+        {/* The request point reads as "you", and each engaged provider as a disc
+            fanned around it, so the map says "N providers are looking at this". */}
+        <ThemedMarker position={[point.lat, point.lng]} kind="me" />
+        {ring.map((p, i) => (
+          <ThemedMarker
+            key={`${i}-${p.lat.toFixed(5)}-${p.lng.toFixed(5)}`}
+            position={[p.lat, p.lng]}
+            kind="provider"
+            dim
+          />
+        ))}
+      </MapView>
+    </div>
   );
 }
 

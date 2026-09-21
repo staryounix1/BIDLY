@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Map as LeafletMap } from 'leaflet';
 import { useI18n } from '@/lib/i18n-provider';
 import { api } from '@/lib/auth-api';
 import { CategoryIcon } from '@/lib/icons';
-import { useMap, addTileLayer, DEFAULT_MAP_STYLE, type LeafletMap } from './leaflet';
-import { createMarker } from './markers';
+import { MapView, ThemedMarker, DEFAULT_MAP_STYLE } from './map-view';
 import { useFollow } from './use-follow';
 
 /**
@@ -14,11 +14,11 @@ import { useFollow } from './use-follow';
  * The customer watches the awarded provider's pin move toward the job site.
  * The provider app publishes its position with POST /providers/me/location;
  * here we poll GET /providers/:id/location and also refresh on job-status
- * realtime events, which is when the pin matters most.
+ * realtime events (the `refreshKey` prop), which is when the pin matters most.
  *
- * Polling rather than a socket is deliberate: positions change on a human
- * timescale (a moving vehicle), and a request every few seconds costs far less
- * than a dedicated streaming channel per viewer.
+ * Both data paths are unchanged from the previous implementation — only the map
+ * plumbing moved to react-leaflet. The pin is a `ThemedMarker` whose position
+ * prop changes, so it moves without the map remounting and without a tile flash.
  */
 
 export interface TrackProviderProps {
@@ -40,6 +40,8 @@ interface ProviderLocation {
   recorded_at: string | null;
 }
 
+const MOROCCO_CENTER: [number, number] = [33.5731, -7.5898];
+
 export function TrackProvider({
   providerId,
   destination,
@@ -51,8 +53,7 @@ export function TrackProvider({
   const { t } = useI18n();
   const [location, setLocation] = useState<ProviderLocation | null>(null);
   const [stale, setStale] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const markerRef = useRef<{ setLatLng: (ll: [number, number]) => void } | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -85,51 +86,22 @@ export function TrackProvider({
     };
   }, [providerId, pollMs, refreshKey]);
 
-  // Move the pin without rebuilding the map — recreating Leaflet on every poll
-  // would flash the tiles and lose the user's pan/zoom.
-  useEffect(() => {
-    if (!location) return;
-    markerRef.current?.setLatLng([location.lat, location.lng]);
-  }, [location?.lat, location?.lng]);
-
   // The incoming provider is the subject of this screen, so the map follows
   // them: smoothly while they move, and only until the customer pans away.
   const follow = useFollow({ point: location, zoom: 14, enabled: true });
 
-  useMap(
-    containerRef,
-    (L, map: LeafletMap) => {
-      addTileLayer(L, map, DEFAULT_MAP_STYLE);
+  const onMapReady = useCallback(
+    (map: LeafletMap) => {
+      mapRef.current = map;
       follow.onMapReady(map);
-      const centre = location ?? destination;
-      map.setView(centre ? [centre.lat, centre.lng] : [33.5731, -7.5898], 14, { animate: false });
-
-      if (destination) {
-        createMarker(L, [destination.lat, destination.lng], 'pin', {
-          label: t('map.destinationPoint'),
-        }).addTo(map);
-      }
-      const marker = createMarker(
-        L,
-        location
-          ? [location.lat, location.lng]
-          : destination
-            ? [destination.lat, destination.lng]
-            : [33.5731, -7.5898],
-        'provider',
-        {
-          ...(providerName ? { label: providerName } : {}),
-          opacity: location ? 1 : 0,
-        },
-      ).addTo(map);
-      markerRef.current = marker;
-      return () => {
-        markerRef.current = null;
-      };
     },
-    [follow.onMapReady, t, providerName],
-    { style: DEFAULT_MAP_STYLE },
+    [follow.onMapReady],
   );
+
+  const centre = location ?? destination;
+  const startCenter: [number, number] = centre
+    ? [centre.lat, centre.lng]
+    : MOROCCO_CENTER;
 
   return (
     <div className="space-y-2">
@@ -145,12 +117,39 @@ export function TrackProvider({
         )}
       </div>
       <div className="relative overflow-hidden rounded-2xl border border-[rgb(var(--line))]">
-        <div
-          ref={containerRef}
-          style={{ height }}
-          className="map-canvas w-full"
-          dir="ltr"
-        />
+        <div style={{ height }} className="map-canvas w-full">
+          <MapView
+            center={startCenter}
+            zoom={14}
+            style={DEFAULT_MAP_STYLE}
+            className="h-full w-full"
+            onReady={onMapReady}
+          >
+            {destination && (
+              <ThemedMarker
+                position={[destination.lat, destination.lng]}
+                kind="pin"
+                label={t('map.destinationPoint')}
+              />
+            )}
+
+            {/* The provider pin. Keyed on the marker's identity, not position,
+                so react-leaflet moves it rather than recreating it. */}
+            <ThemedMarker
+              position={
+                location
+                  ? [location.lat, location.lng]
+                  : destination
+                    ? [destination.lat, destination.lng]
+                    : MOROCCO_CENTER
+              }
+              kind="provider"
+              opacity={location ? 1 : 0}
+              {...(providerName ? { label: providerName } : {})}
+            />
+          </MapView>
+        </div>
+
         {/* Reappears only after the customer has panned away from the provider,
             so following is one tap to restore but never automatic again. */}
         {follow.userMoved && !follow.following && location && (

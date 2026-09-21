@@ -7,6 +7,11 @@ import { AppHeader, BottomNav } from '@/lib/app-header';
 import { ActivationGate } from '@/lib/activation-gate';
 import { isAppLocale, locales } from '@/lib/locales';
 import '@/app/globals.css';
+// Leaflet's own stylesheet, so the map chrome (panes, zoom control, attribution)
+// is laid out correctly. Imported here rather than inside the map component:
+// a component-level CSS import still ends up in the same chunk, and this keeps
+// the dependency explicit and in one place.
+import 'leaflet/dist/leaflet.css';
 
 export const metadata: Metadata = {
   title: {

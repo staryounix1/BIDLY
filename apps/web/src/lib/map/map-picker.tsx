@@ -1,27 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Marker as LeafletMarker } from 'leaflet';
 import { useI18n } from '@/lib/i18n-provider';
 import { CategoryIcon } from '@/lib/icons';
-import {
-  useMap,
-  addTileLayer,
-  DEFAULT_MAP_STYLE,
-  type LeafletMap,
-  type LeafletMarker,
-  type MapStyle,
-} from './leaflet';
-import { createPinMarker, createMeMarker } from './markers';
+import { MapView, ThemedMarker, DEFAULT_MAP_STYLE, type MapStyle } from './map-view';
 import { useMyLocation, NEIGHBOURHOOD_ZOOM, type LatLng } from './use-my-location';
-
-/** A pin with no chosen point yet stays invisible instead of sitting at the default centre. */
-function hideMarker(marker: LeafletMarker) {
-  marker.setOpacity(0);
-}
-
-function showMarker(marker: LeafletMarker) {
-  marker.setOpacity(1);
-}
 
 /**
  * Pick a point on a map.
@@ -82,10 +66,8 @@ export function MapPicker({
   onReady,
 }: MapPickerProps) {
   const { t } = useI18n();
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<LeafletMarker | null>(null);
-  const meRef = useRef<LeafletMarker | null>(null);
+  const [picked, setPicked] = useState<PickedPoint | null>(value);
   const [geoError, setGeoError] = useState<string | null>(null);
   const [reverseBusy, setReverseBusy] = useState(false);
 
@@ -97,73 +79,29 @@ export function MapPicker({
   // The centre the map is committed to at mount: an explicit default wins,
   // otherwise the remembered/device position resolved synchronously.
   const startRef = useRef<LatLng>(fallback ?? geo.initialCenter);
-  const startZoom = useRef<number>(value ? NEIGHBOURHOOD_ZOOM : NEIGHBOURHOOD_ZOOM);
 
-  // The change handler is called from Leaflet's own event loop, outside React's
-  // render, so keep the latest callback in a ref instead of re-creating the map.
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const initialValueRef = useRef(value);
 
-  useMap(
-    containerRef,
-    (L, map) => {
-      mapRef.current = map;
-      addTileLayer(L, map, mapStyle);
+  // `MapContainer` props are immutable, so capture the starting view once.
+  const startCenter: [number, number] = useRef<[number, number]>(
+    value
+      ? [value.lat, value.lng]
+      : [startRef.current.lat, startRef.current.lng],
+  ).current;
 
-      const start = initialValueRef.current ?? startRef.current;
-
-      // Open at the final position and zoom, in one call. No `flyTo`, no
-      // intermediate country view: this is the first and only view the user sees.
-      map.setView([start.lat, start.lng], startZoom.current, { animate: false });
-      onReady?.();
-
-      // The draggable pin, created up front and hidden until a point is chosen.
-      const marker = createPinMarker(L, [start.lat, start.lng], { draggable: true })
-        .addTo(map)
-        .on('dragend', () => {
-          const ll = marker.getLatLng();
-          onChangeRef.current({ lat: ll.lat, lng: ll.lng });
-        });
-      markerRef.current = marker;
-      if (!initialValueRef.current) hideMarker(marker);
-
-      // "You are here" — a pulsing dot separate from the chosen pin, so the
-      // user can see both their own position and the point they picked.
-      const me = createMeMarker(L, [geo.initialCenter.lat, geo.initialCenter.lng]).addTo(map);
-      meRef.current = me;
-
-      map.on('click', (e) => {
-        const point = { lat: e.latlng.lat, lng: e.latlng.lng };
-        marker.setLatLng([point.lat, point.lng]);
-        showMarker(marker);
-        onChangeRef.current(point);
-      });
-
-      return () => {
-        markerRef.current = null;
-        meRef.current = null;
-        mapRef.current = null;
-      };
-    },
-    [mapStyle],
-    { style: mapStyle },
-  );
+  const handlePick = useCallback((lat: number, lng: number) => {
+    const point = { lat, lng };
+    setPicked(point);
+    onChangeRef.current(point);
+  }, []);
 
   // Keep the pin in sync when the parent sets a point (e.g. after geolocation).
   useEffect(() => {
     if (!value) return;
-    markerRef.current?.setLatLng([value.lat, value.lng]);
-    if (markerRef.current) showMarker(markerRef.current);
-    mapRef.current?.setView([value.lat, value.lng], NEIGHBOURHOOD_ZOOM, { animate: true });
+    setPicked(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value?.lat, value?.lng]);
-
-  // Move the "you are here" dot as the fix refreshes or the user moves.
-  useEffect(() => {
-    const p = geo.position;
-    if (!p || !meRef.current) return;
-    meRef.current.setLatLng([p.lat, p.lng]);
-  }, [geo.position?.lat, geo.position?.lng]);
 
   const locate = useCallback(() => {
     setGeoError(null);
@@ -179,10 +117,10 @@ export function MapPicker({
   }, [geo.status, t]);
 
   const reverse = useCallback(async () => {
-    if (!value || !onAddressChange) return;
+    if (!picked || !onAddressChange) return;
     setReverseBusy(true);
     try {
-      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${value.lat}&lon=${value.lng}&accept-language=${encodeURIComponent(document.documentElement.lang || 'ar')}`;
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${picked.lat}&lon=${picked.lng}&accept-language=${encodeURIComponent(document.documentElement.lang || 'ar')}`;
       const res = await fetch(url, { headers: { Accept: 'application/json' } });
       const data = (await res.json()) as { display_name?: string };
       if (data.display_name) onAddressChange(data.display_name);
@@ -191,7 +129,7 @@ export function MapPicker({
     } finally {
       setReverseBusy(false);
     }
-  }, [value?.lat, value?.lng, onAddressChange]);
+  }, [picked?.lat, picked?.lng, onAddressChange]);
 
   const isFull = variant === 'full';
 
@@ -207,11 +145,46 @@ export function MapPicker({
         {/* Edge-to-edge canvas: Leaflet's own chrome (zoom, attribution) floats
             over the tiles, so the map occupies the full box. */}
         <div
-          ref={containerRef}
-          className={isFull ? 'map-canvas h-full w-full' : 'map-canvas'}
+          className={isFull ? 'compose-map-canvas' : 'map-canvas'}
           style={isFull ? undefined : { height }}
-          dir="ltr"
-        />
+        >
+          <MapView
+            center={startCenter}
+            zoom={NEIGHBOURHOOD_ZOOM}
+            style={mapStyle}
+            className={isFull ? 'h-full w-full' : 'h-full w-full'}
+            onReady={() => {
+              startRef.current = fallback ?? geo.initialCenter;
+              onReady?.();
+            }}
+            onMapClick={handlePick}
+            view={
+              value
+                ? { center: [value.lat, value.lng], zoom: NEIGHBOURHOOD_ZOOM, animate: true }
+                : undefined
+            }
+          >
+            {/* The draggable pin, hidden until a point is chosen. */}
+            <ThemedMarker
+              position={picked ? [picked.lat, picked.lng] : startCenter}
+              kind="pin"
+              opacity={picked ? 1 : 0}
+              draggable
+              markerRef={(m) => {
+                markerRef.current = m;
+              }}
+              onDragEnd={handlePick}
+            />
+
+            {/* "You are here" — a pulsing dot separate from the chosen pin, so
+                the user can see both their own position and the point they
+                picked. */}
+            <ThemedMarker
+              position={[geo.position?.lat ?? startRef.current.lat, geo.position?.lng ?? startRef.current.lng]}
+              kind="me"
+            />
+          </MapView>
+        </div>
 
         {/* While the first fix is pending, a small pill explains the wait rather
             than leaving a blank or grey map. It fades the moment we have a
@@ -251,7 +224,7 @@ export function MapPicker({
       {!isFull && (
         <>
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            {value && onAddressChange && (
+            {picked && onAddressChange && (
               <button
                 type="button"
                 onClick={reverse}
@@ -262,15 +235,15 @@ export function MapPicker({
               </button>
             )}
 
-            {value && (
+            {picked && (
               <span className="font-mono text-[11px] opacity-60" dir="ltr">
-                {value.lat.toFixed(5)}, {value.lng.toFixed(5)}
+                {picked.lat.toFixed(5)}, {picked.lng.toFixed(5)}
               </span>
             )}
           </div>
 
           {geoError && <p className="text-xs text-amber-600">{geoError}</p>}
-          {!value && <p className="text-xs opacity-60">{t('map.tapHint')}</p>}
+          {!picked && <p className="text-xs opacity-60">{t('map.tapHint')}</p>}
           {address && <p className="text-xs opacity-60">{address}</p>}
         </>
       )}

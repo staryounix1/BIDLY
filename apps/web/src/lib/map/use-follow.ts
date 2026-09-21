@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { LeafletMap } from './leaflet';
+import type { Map as LeafletMap } from 'leaflet';
 import type { LatLng } from './use-my-location';
 
 /**
