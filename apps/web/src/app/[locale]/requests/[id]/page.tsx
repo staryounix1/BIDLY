@@ -89,6 +89,12 @@ function RequestDetailView() {
   const [deal, setDeal] = useState<{
     jobCode: string; commissionMinor: number; currency: string; providerUserId?: string;
   } | null>(null);
+  /**
+   * The chat with the chosen craftsman. Accepting already opens one; keeping
+   * the id lets the card's "message" button go straight into that thread
+   * instead of dropping the customer on an empty inbox.
+   */
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -195,6 +201,7 @@ function RequestDetailView() {
         currency: result.currency,
         providerUserId: counterpartId ?? undefined,
       });
+      setConversationId(conversationId);
       await load(true);
 
       if (conversationId) {
@@ -252,6 +259,39 @@ function RequestDetailView() {
       await load(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /**
+   * Open the chat with the chosen craftsman.
+   *
+   * The customer may land on this card without having accepted through
+   * onAcceptOffer (a reload, or an acceptance made elsewhere), so the
+   * conversation is resolved on demand from the provider's user id and cached.
+   * A failure keeps the customer here with a notice rather than navigating to
+   * an empty inbox.
+   */
+  async function onOpenChat(providerUserId?: string | null) {
+    const target = providerUserId ?? deal?.providerUserId ?? undefined;
+    setError(null);
+    setNotice(null);
+    if (conversationId) {
+      router.push(`/${locale}/messages/${conversationId}`);
+      return;
+    }
+    if (!target) {
+      setNotice(t('chat.openFailed'));
+      return;
+    }
+    setBusy(true);
+    try {
+      const id = (await openConversation(target)).id;
+      setConversationId(id);
+      router.push(`/${locale}/messages/${id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('chat.openFailed'));
     } finally {
       setBusy(false);
     }
@@ -474,10 +514,15 @@ function RequestDetailView() {
             )}
 
             <div className="mt-3 flex gap-2">
-              <Link href={`/${locale}/messages`} className="btn btn-primary flex-1">
+              <button
+                type="button"
+                className="btn btn-primary flex-1"
+                disabled={busy}
+                onClick={() => onOpenChat(selectedOffer.provider_user_id)}
+              >
                 <CategoryIcon name="chat" size={18} />
                 {t('tracking.message')}
-              </Link>
+              </button>
               <Link href={`/${locale}/jobs`} className="btn btn-secondary flex-1">
                 {t('job.details')}
               </Link>
