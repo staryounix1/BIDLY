@@ -483,7 +483,8 @@
     "withProvider": "avec votre prestataire",
     "withCustomer": "avec votre client",
     "connected": "En direct",
-    "reconnecting": "Reconnexion…"
+    "reconnecting": "Reconnexion…",
+    "openFailed": "Impossible d'ouvrir la conversation. Réessayez."
   },
   "notifications": {
     "title": "Notifications",
@@ -713,7 +714,8 @@
     "copy": "Copier",
     "copied": "Copié",
     "revoke": "Arrêter",
-    "views": "{count} vues"
+    "views": "{count} vues",
+    "message": "Contacter le prestataire"
   },
   "home": {
     "greeting": "Bonjour {name}",
