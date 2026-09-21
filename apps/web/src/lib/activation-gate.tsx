@@ -6,6 +6,7 @@ import { useI18n } from './i18n-provider';
 import { authApi, ApiError } from './auth-api';
 import { CategoryIcon, KhdemliMark } from './icons';
 import { Spinner } from './ui';
+import { useRealtime } from './realtime-client';
 
 /**
  * Account activation gate.
@@ -46,6 +47,20 @@ export function ActivationGate() {
   }, [reviewing]);
 
   const open = ready && user != null && !isActivated(user) && !(reviewing && dismissed);
+
+  // Approval arrives over the live socket. Re-reading the account is what makes
+  // the gate lift on its own: an approved user should never have to know to
+  // reload a page they cannot see past.
+  useRealtime({}, { onNotification: () => void reload() });
+
+  // A socket can drop while the phone sleeps, so also re-check on a slow timer
+  // while the gate is actually blocking. Cheap, and it means a missed event
+  // costs a minute rather than a manual reload.
+  useEffect(() => {
+    if (!open) return;
+    const id = setInterval(() => void reload(), 60_000);
+    return () => clearInterval(id);
+  }, [open, reload]);
 
   // The header banner reopens the sheet after a dismissal.
   useEffect(() => {

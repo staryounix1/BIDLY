@@ -19,17 +19,20 @@ export function NotificationBell() {
   const { user } = useAuth();
   const [count, setCount] = useState(0);
 
-  useEffect(() => {
-    let active = true;
-    if (!user) return;
+  const refresh = useCallback(() => {
+    // Re-read the count rather than incrementing a local one: the server owns
+    // the number, and an approval or a read elsewhere must not drift it.
     fetchUnreadCount()
-      .then((n) => { if (active) setCount(n); })
+      .then(setCount)
       .catch(() => {});
-    return () => { active = false; };
-  }, [user]);
+  }, []);
 
-  const onNotification = useCallback(() => setCount((c) => c + 1), []);
-  useRealtime({}, { onNotification });
+  useEffect(() => {
+    if (!user) return;
+    refresh();
+  }, [user, refresh]);
+
+  useRealtime({}, { onNotification: refresh });
 
   if (!user) return null;
 
