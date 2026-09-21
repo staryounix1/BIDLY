@@ -72,6 +72,15 @@ function useHeaderOffset() {
  * Pure, so the submit handler can call it directly and never race the effect
  * that mirrors it into state.
  */
+/**
+ * Values for required selects that the API declares without any options. The
+ * server accepts these (they mirror the constants sent in the payload), and
+ * without them the order is rejected on a question the screen no longer asks.
+ */
+const SELECT_FALLBACK: Record<string, string> = {
+  urgency: 'NORMAL',
+};
+
 function seedRequiredAnswers(
   fields: ServiceField[],
   answers: Record<string, unknown>,
@@ -93,9 +102,24 @@ function seedRequiredAnswers(
       case 'SELECT': {
         const options = f.options ?? [];
         const chosen = options.find((o) => o.value === f.default_value) ?? options[0];
-        if (chosen) seeded[f.key] = chosen.value;
+        // Some required selects ship with no options at all (the launch
+        // service's `urgency` is the live example). `validateServiceAnswers`
+        // still rejects an empty required field, so fall back to the value the
+        // payload already sends rather than refusing the order.
+        seeded[f.key] = chosen ? chosen.value : SELECT_FALLBACK[f.key] ?? '';
+        if (seeded[f.key] === '') delete seeded[f.key];
         break;
       }
+      case 'MULTISELECT': {
+        const options = f.options ?? [];
+        const chosen = options.find((o) => o.value === f.default_value) ?? options[0];
+        seeded[f.key] = chosen ? [chosen.value] : [];
+        break;
+      }
+      case 'PHONE':
+        // Not collected on this screen; any placeholder would be a lie, and the
+        // customer is reachable through the account.
+        break;
       case 'DATETIME':
       case 'DATE':
         seeded[f.key] = new Date().toISOString();
@@ -108,8 +132,14 @@ function seedRequiredAnswers(
       case 'BOOLEAN':
         seeded[f.key] = false;
         break;
-      default:
+      case 'TEXT':
+      case 'TEXTAREA':
         if (text) seeded[f.key] = f.type === 'TEXTAREA' ? text : text.slice(0, 120);
+        break;
+      default:
+        // PHOTO, VIDEO, LOCATION and anything the API adds later are not
+        // answerable from this screen. Seeding the description into them would
+        // send garbage, so leave them for the server to judge.
         break;
     }
   }
@@ -232,12 +262,24 @@ function NewRequestView() {
   );
   useEffect(() => {
     if (!addressFieldKey) return;
+    // Fall back to the coordinate label for the same reason submit does: the
+    // address comes from reverse-geocoding, which is slow and may return
+    // nothing, and a required ADDRESS answer left empty blocks the send.
+    const point = service?.requires_location ? pickupPoint : destinationPoint;
     const line1 = (service?.requires_location ? pickup : destination).line1.trim();
-    if (!line1) return;
+    const value = line1 || coordLabel(point);
+    if (!value) return;
     setAnswers((prev) =>
-      prev[addressFieldKey] === line1 ? prev : { ...prev, [addressFieldKey]: line1 },
+      prev[addressFieldKey] === value ? prev : { ...prev, [addressFieldKey]: value },
     );
-  }, [addressFieldKey, service?.requires_location, pickup, destination]);
+  }, [
+    addressFieldKey,
+    service?.requires_location,
+    pickup,
+    destination,
+    pickupPoint,
+    destinationPoint,
+  ]);
 
   // The compose tray no longer asks the service's custom questions: the map
   // supplies the location and everything else travels to the craftsman in the
