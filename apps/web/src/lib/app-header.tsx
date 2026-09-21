@@ -87,6 +87,20 @@ export function AppHeader() {
 
       {/* A thin aqua progress hairline keeps the bar from feeling dead. */}
       {!isHome && <div className="h-0.5 w-full bg-[rgb(var(--brand-500)/0.35)]" />}
+
+      {/* A pending identity review is a visible state, not a silent one: the
+          user may browse while they wait, and this is how they get back to the
+          gate after dismissing it. */}
+      {ready && user && user.activation?.identityPending && (
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event('khdemli:open-activation'))}
+          className="flex w-full items-center justify-center gap-2 bg-[rgb(var(--brand-500)/0.12)] px-4 py-2 text-xs font-bold text-[rgb(var(--brand-700))]"
+        >
+          <CategoryIcon name="clock" size={15} />
+          {t('activation.reviewBanner')}
+        </button>
+      )}
     </header>
   );
 }

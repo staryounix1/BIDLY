@@ -727,6 +727,7 @@
     "locked": "The platform stays locked until activation is complete. Sign-out is always available.",
     "uploadFailed": "We couldn't read that image. Try another one.",
     "selfie": "A photo of you (selfie)",
-    "selfieHint": "Take a photo of your face now so we can match it to the ID."
+    "selfieHint": "Take a photo of your face now so we can match it to the ID.",
+    "reviewBanner": "Your identity review is with admin — tap to continue"
   }
 }

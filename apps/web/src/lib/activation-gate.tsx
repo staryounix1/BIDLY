@@ -32,7 +32,27 @@ export function ActivationGate() {
   const { user, ready, signOut, reload } = useAuth();
   const { t } = useI18n();
 
-  const open = ready && user != null && !isActivated(user);
+  // While a review is pending the account may browse, so "under review" is a
+  // dismissible state: the gate reopens on demand, not on every render. Without
+  // this, dismissing it looked like a dead button — the sheet simply reappeared,
+  // because a pending review is not "activated".
+  const reviewing =
+    ready && user != null && !isActivated(user) && user.activation?.identityPending === true;
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => {
+    // Reset when the state changes, so a fresh submission or an approval is not
+    // hidden by a dismissal from the previous state.
+    setDismissed(false);
+  }, [reviewing]);
+
+  const open = ready && user != null && !isActivated(user) && !(reviewing && dismissed);
+
+  // The header banner reopens the sheet after a dismissal.
+  useEffect(() => {
+    const reopen = () => setDismissed(false);
+    window.addEventListener('khdemli:open-activation', reopen);
+    return () => window.removeEventListener('khdemli:open-activation', reopen);
+  }, []);
 
   // While a sheet is open the page behind must not scroll.
   useEffect(() => {
@@ -66,7 +86,15 @@ export function ActivationGate() {
       aria-labelledby="activation-title"
       className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgb(var(--fg)/0.62)] px-4 py-6 backdrop-blur-sm"
     >
-      <ActivationCard onDone={() => void reload()} onSignOut={() => void signOut()} />
+      <ActivationCard
+        onDone={() => {
+          void reload();
+          // A pending review is a browsing state, not a dead end: releasing the
+          // sheet here is what makes "فهمت، كمل" do what it says.
+          setDismissed(true);
+        }}
+        onSignOut={() => void signOut()}
+      />
     </div>
   );
 }
