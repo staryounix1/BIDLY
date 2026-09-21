@@ -776,5 +776,39 @@
     "chatOpen": "Ouvrir la discussion",
     "searching": "Vous avez refusé {name} — votre demande cherche toujours un artisan.",
     "agreedHint": "Vous êtes-vous mis d’accord sur le prix ?"
+  },
+  "notif": {
+    "requestPublished": {
+      "title": "Demande publiée",
+      "body": "Votre demande est en ligne et reçoit des offres."
+    },
+    "requestStatus": {
+      "title": "Demande mise à jour",
+      "body": "Votre demande est maintenant {status}."
+    },
+    "offerReceived": {
+      "title": "Nouvelle offre reçue",
+      "body": "Un artisan vous a envoyé une offre."
+    },
+    "offerAccepted": {
+      "title": "Offre acceptée",
+      "body": "Vous avez accepté une offre. La mission est confirmée."
+    },
+    "offerRejected": {
+      "title": "Offre refusée",
+      "body": "Vous avez refusé une offre. La recherche continue."
+    },
+    "offerWithdrawn": {
+      "title": "Offre retirée",
+      "body": "Un artisan a retiré son offre."
+    },
+    "jobStatus": {
+      "title": "Mise à jour de la mission",
+      "body": "Votre mission est maintenant {status}."
+    },
+    "messageNew": {
+      "title": "Nouveau message",
+      "body": "Vous avez un nouveau message."
+    }
   }
 }
