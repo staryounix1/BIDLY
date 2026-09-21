@@ -5,6 +5,7 @@ import { buildPage, parsePagination } from '../../core/pagination.js';
 import { LOG_EVENTS, logEvent } from '../../core/logger.js';
 import { enqueue, OUTBOX_TOPICS } from '../../core/outbox.js';
 import { resolveCommission } from '../../core/commission.js';
+import { formatMinor } from '@bidly/money';
 
 /**
  * /offers — provider bids and the negotiation thread.
@@ -732,8 +733,11 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
 
       const balanceMinor = Number(wallet.available_minor);
       if (balanceMinor < commissionMinor) {
+        // Amounts are stored in minor units; the message is for a human, so
+        // both figures are rendered as real currency (1800 minor -> 18.00 MAD).
         throw businessRule(
-          `The provider wallet does not cover the commission of ${commissionMinor} ${currency}.`,
+          `The provider wallet does not cover the commission of ${formatMinor(commissionMinor, currency)} ` +
+          `(balance ${formatMinor(balanceMinor, currency)}).`,
         );
       }
 
