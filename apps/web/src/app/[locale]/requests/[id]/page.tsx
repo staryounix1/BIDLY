@@ -46,8 +46,23 @@ const CANCELABLE = [
   'IN_PROGRESS',
 ];
 
-/** The request is still being worked on, so the screen polls while it is open. */
-const LIVE_STATUSES = ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED', 'CONFIRMED', 'IN_PROGRESS'];
+/**
+ * Statuses whose screen should keep refreshing on its own.
+ *
+ * DRAFT is included on purpose: a draft is exactly the state that turns into a
+ * live search (the customer publishes, or an admin does), and the screen has to
+ * follow that transition without a manual reload. Terminal states are excluded
+ * because nothing more will change.
+ */
+const LIVE_STATUSES = [
+  'DRAFT',
+  'PUBLISHED',
+  'MATCHING',
+  'RECEIVING_OFFERS',
+  'PROVIDER_SELECTED',
+  'CONFIRMED',
+  'IN_PROGRESS',
+];
 
 function RequestDetailView() {
   const { t, locale } = useI18n();
@@ -101,7 +116,13 @@ function RequestDetailView() {
   const refresh = useCallback(() => load(true), [load]);
   useAutoRefresh(refresh, {
     enabled: Boolean(data) && status !== undefined && LIVE_STATUSES.includes(status),
-    intervalMs: status === 'PUBLISHED' || status === 'MATCHING' || status === 'RECEIVING_OFFERS' ? 8_000 : 45_000,
+    // SSE cannot be trusted through a buffering proxy, so the poll carries the
+    // screen: fast while offers are landing, relaxed once a provider is chosen.
+    intervalMs: status === 'PUBLISHED' || status === 'MATCHING' || status === 'RECEIVING_OFFERS'
+      ? 5_000
+      : status === 'DRAFT'
+        ? 8_000
+        : 30_000,
     bump: liveBump,
   });
 

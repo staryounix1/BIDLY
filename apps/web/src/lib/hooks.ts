@@ -257,12 +257,17 @@ function parseJson<T>(raw: string): T {
  *
  * The refresh is deliberately *silent*: `refresh` is the screen's own loader,
  * and callers pass one that does not toggle the full-page loading state, so new
- * data slides in without the screen blanking or scrolling to the top. Two
- * triggers drive it — a realtime event (`bump`, called from the SSE handler)
- * and a slow safety poll for when the stream is down or an event was dropped.
+ * data slides in without the screen blanking or scrolling to the top.
+ *
+ * Polling is the mechanism that must always work. Realtime (`bump`) is treated
+ * as a latency bonus: when SSE is buffered by a proxy or a frame is dropped, the
+ * interval alone still brings the screen up to date. Never make correctness
+ * depend on `bump` firing.
  *
  * Polling pauses entirely while the tab is hidden, and does one immediate
  * refresh on return so the user never sees stale numbers after switching back.
+ * Refreshes never overlap: a slow response suppresses the next tick instead of
+ * queueing another request.
  */
 export function useAutoRefresh(
   refresh: () => void | Promise<void>,
@@ -275,6 +280,18 @@ export function useAutoRefresh(
     refreshRef.current = refresh;
   }, [refresh]);
 
+  // One refresh at a time: a slow response must not let ticks pile up.
+  const inFlight = useRef(false);
+  const runRefresh = useCallback(async (): Promise<void> => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    try {
+      await refreshRef.current();
+    } finally {
+      inFlight.current = false;
+    }
+  }, []);
+
   // A realtime event refreshes at once. Debounced so a burst (an offer plus its
   // notification) collapses into one request rather than a stampede.
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -283,13 +300,13 @@ export function useAutoRefresh(
     if (debounce.current) clearTimeout(debounce.current);
     debounce.current = setTimeout(() => {
       debounce.current = null;
-      void refreshRef.current();
+      void runRefresh();
     }, 250);
     return () => {
       if (debounce.current) clearTimeout(debounce.current);
       debounce.current = null;
     };
-  }, [bump, enabled]);
+  }, [bump, enabled, runRefresh]);
 
   useEffect(() => {
     if (!enabled || typeof window === 'undefined') return;
@@ -299,7 +316,7 @@ export function useAutoRefresh(
     const start = (): void => {
       if (timer) return;
       timer = setInterval(() => {
-        if (document.visibilityState === 'visible') void refreshRef.current();
+        if (document.visibilityState === 'visible') void runRefresh();
       }, intervalMs);
     };
     const stop = (): void => {
@@ -309,7 +326,7 @@ export function useAutoRefresh(
 
     const onVisibility = (): void => {
       if (document.visibilityState === 'visible') {
-        void refreshRef.current();
+        void runRefresh();
         start();
       } else {
         stop();
@@ -322,5 +339,5 @@ export function useAutoRefresh(
       document.removeEventListener('visibilitychange', onVisibility);
       stop();
     };
-  }, [enabled, intervalMs]);
+  }, [enabled, intervalMs, runRefresh]);
 }
