@@ -1845,3 +1845,34 @@
   color: rgb(var(--fg-muted));
   text-align: center;
 }
+
+/* The partners strip doubles as the way into the decision card. */
+.live-partners-text.is-tappable {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  color: #eaf4f5;
+  cursor: pointer;
+  text-align: start;
+}
+
+.live-partners-text.is-tappable > span {
+  display: inline-block;
+}
+
+/* The agreement receipt floats over the map on the searching screen, where
+   there is no document flow to sit in. */
+.offer-deal--float {
+  position: fixed;
+  left: 50%;
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  z-index: 65;
+  width: min(30rem, calc(100% - 1.5rem));
+  transform: translateX(-50%);
+  margin: 0;
+}

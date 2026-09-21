@@ -193,15 +193,24 @@ export function SearchRadar({
           nobody to show yet, so the strip states the request instead. */}
       <div className="live-partners">
         <DriverStack offers={liveOffers} />
-        <p className={`live-partners-text${flash ? ' is-flash' : ''}`}>
-          {draft
-            ? t('searching.draftReady')
-            : liveOffers.length === 0
-              ? t('searching.expanding')
-              : liveOffers.length === 1
+        {!draft && liveOffers.length > 0 ? (
+          // Tapping the strip is the shortest path to the decision card, which
+          // is what a customer with offers actually wants to do.
+          <button type="button" onClick={onViewOffers} className="live-partners-text is-tappable">
+            <span className={flash ? 'is-flash' : undefined}>
+              {liveOffers.length === 1
                 ? t('searching.partnersOne')
                 : t('searching.partners', { count: liveOffers.length })}
-        </p>
+            </span>
+            <CategoryIcon name="arrow" size={16} />
+          </button>
+        ) : (
+          <p className={`live-partners-text${flash ? ' is-flash' : ''}`}>
+            {draft
+              ? t('searching.draftReady')
+              : t('searching.expanding')}
+          </p>
+        )}
         {!draft && candidateCount > 0 && (
           <span className="live-partners-count tnum">
             {t('search.found', { count: candidateCount })}
@@ -318,7 +327,7 @@ export function SearchRadar({
             className="live-confirm"
           >
             {liveOffers.length > 0
-              ? `${t('searching.confirm')} · ${liveOffers.length}`
+              ? `${t('searching.reviewOffers')} · ${liveOffers.length}`
               : t('searching.confirm')}
           </button>
         )}

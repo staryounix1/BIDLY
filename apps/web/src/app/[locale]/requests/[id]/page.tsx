@@ -357,10 +357,44 @@ function RequestDetailView() {
           notice={notice}
           busy={busy}
           onPublish={onPublish}
-          onViewOffers={() => router.push(`/${locale}/requests`)}
+          onViewOffers={() => {
+            // Offers exist but the searching screen has no list, so the confirm
+            // action opens the decision card for the newest pending offer.
+            const first = sortedOffers.find((o) => o.status === 'PENDING') ?? sortedOffers[0];
+            if (first) setReviewing(first);
+          }}
           onStop={canCancel ? () => setShowCancel(true) : undefined}
           onPriceChange={onChangePrice}
         />
+
+        {deal && (
+          <div className="offer-deal offer-deal--float">
+            <span className="offer-deal-icon">
+              <CategoryIcon name="check" size={20} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="offer-deal-title">{t('offerCard.dealTitle')}</p>
+              <p className="offer-deal-body">
+                {t('offerCard.dealBody', {
+                  amount: `${(deal.commissionMinor / 100).toFixed(0)} ${deal.currency}`,
+                })}
+              </p>
+              <p className="offer-deal-code">{deal.jobCode}</p>
+            </div>
+          </div>
+        )}
+
+        {reviewing && (
+          <ProviderOfferCard
+            offer={reviewing}
+            locale={locale}
+            requestCode={request.code}
+            busy={busy}
+            onAccept={() => onAcceptOffer(reviewing)}
+            onReject={() => onRejectOffer(reviewing)}
+            onClose={() => setReviewing(null)}
+          />
+        )}
 
         {showCancel && (
           <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4">
