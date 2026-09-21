@@ -16,6 +16,8 @@ import { registerJobRoutes } from './modules/jobs/jobs.routes.js';
 import { registerMessageRoutes } from './modules/messages/messages.routes.js';
 import { registerPaymentRoutes } from './modules/payments/payments.routes.js';
 import { registerReviewRoutes } from './modules/reviews/reviews.routes.js';
+import { registerReferralRoutes } from './modules/referrals/referrals.routes.js';
+import { registerExtrasRoutes } from './modules/extras/extras.routes.js';
 import { registerDisputeRoutes } from './modules/disputes/disputes.routes.js';
 import { registerNotificationRoutes } from './modules/notifications/notifications.routes.js';
 import { registerRealtimeRoutes } from './modules/realtime/realtime.routes.js';
@@ -185,6 +187,8 @@ export async function buildApp(
       await api.register(registerMessageRoutes);
       await api.register(registerPaymentRoutes);
       await api.register(registerReviewRoutes);
+      await api.register(registerReferralRoutes);
+      await api.register(registerExtrasRoutes);
       await api.register(registerDisputeRoutes);
       await api.register(registerNotificationRoutes);
       await api.register(registerRealtimeRoutes, { authService });

@@ -6,6 +6,7 @@ import { generateOtp, hashToken, timingSafeEqualString } from '../../core/tokens
 import { assertJobTransition, type JobStatus } from '@bidly/state-machines';
 import { LOG_EVENTS, logEvent } from '../../core/logger.js';
 import { enqueue, OUTBOX_TOPICS } from '../../core/outbox.js';
+import { releaseReferralReward } from '../referrals/referrals.routes.js';
 
 /**
  * /jobs — execution lifecycle.
@@ -318,6 +319,10 @@ export async function registerJobRoutes(app: FastifyInstance): Promise<void> {
         [id, job.request_id, job.status, auth.userId],
       );
       await clientQuery(client).query(`update requests set status = 'COMPLETED', completed_at = now() where id = $1`, [job.request_id]);
+
+      // A completed job is what qualifies an invite code: pay both sides once.
+      // Never fatal to the completion — a referral problem must not undo work.
+      await releaseReferralReward(clientQuery(client), String(job.customer_id), id).catch(() => undefined);
       await enqueue(
         {
           topic: OUTBOX_TOPICS.JOB_STATUS_CHANGED,
