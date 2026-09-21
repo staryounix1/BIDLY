@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
+import { useAutoRefresh } from '@/lib/hooks';
+import { useRealtime } from '@/lib/realtime-client';
 import { providersApi, type FeedRequest, type ProviderProfile } from '@/lib/providers-api';
 import { StatusBadge } from '@/lib/status-badge';
 import { CategoryIcon } from '@/lib/icons';
@@ -33,8 +35,8 @@ function FeedView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const me = await providersApi.me();
@@ -44,15 +46,32 @@ function FeedView() {
         setRequests(feed.items ?? []);
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t('common.error'));
+      if (!silent) setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [t]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // New requests matching this provider's services appear without a reload.
+  // A provider room carries the event; the poll covers a dropped stream.
+  const [liveBump, setLiveBump] = useState(0);
+  useRealtime({}, {
+    onEvent: (env) => {
+      if (env.event === 'request:updated' || env.event === 'notification:new') {
+        setLiveBump((n) => n + 1);
+      }
+    },
+  });
+  const refresh = useCallback(() => load(true), [load]);
+  useAutoRefresh(refresh, {
+    enabled: Boolean(profile),
+    intervalMs: 20_000,
+    bump: liveBump,
+  });
 
   if (loading) {
     return (

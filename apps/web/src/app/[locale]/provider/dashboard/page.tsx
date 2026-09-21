@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
+import { useAutoRefresh } from '@/lib/hooks';
+import { useRealtime } from '@/lib/realtime-client';
 import { providersApi, type ProviderProfile, type FeedRequest } from '@/lib/providers-api';
 import { offersApi, type OfferOnRequest } from '@/lib/offers-api';
 import { jobsApi, providerNextAction, type JobSummary } from '@/lib/jobs-api';
@@ -52,8 +54,8 @@ function ProviderDashboardView() {
   const [error, setError] = useState<string | null>(null);
   const [togglingAvailability, setTogglingAvailability] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const me = await providersApi.me();
@@ -71,15 +73,32 @@ function ProviderDashboardView() {
         setRecentJobs(jobs.filter((j) => !ACTIVE_JOB_STATUSES.includes(j.status)).slice(0, 5));
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t('common.error'));
+      if (!silent) setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [t]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // The dashboard is a summary of things other people are doing: offers land,
+  // jobs advance, new requests match. Keep it current without a reload.
+  const [liveBump, setLiveBump] = useState(0);
+  useRealtime({}, {
+    onEvent: (env) => {
+      if (env.event === 'notification:new' || env.event === 'job:status') {
+        setLiveBump((n) => n + 1);
+      }
+    },
+  });
+  const refresh = useCallback(() => load(true), [load]);
+  useAutoRefresh(refresh, {
+    enabled: Boolean(profile),
+    intervalMs: 20_000,
+    bump: liveBump,
+  });
 
   async function setOnline(next: boolean) {
     setTogglingAvailability(true);

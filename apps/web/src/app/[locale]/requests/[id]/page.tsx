@@ -6,6 +6,8 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
+import { useAutoRefresh } from '@/lib/hooks';
+import { useRealtime } from '@/lib/realtime-client';
 import { requestsApi, type RequestDetail } from '@/lib/requests-api';
 import { offersApi } from '@/lib/offers-api';
 import { SearchRadar } from '@/lib/map/search-radar';
@@ -44,6 +46,9 @@ const CANCELABLE = [
   'IN_PROGRESS',
 ];
 
+/** The request is still being worked on, so the screen polls while it is open. */
+const LIVE_STATUSES = ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS', 'PROVIDER_SELECTED', 'CONFIRMED', 'IN_PROGRESS'];
+
 function RequestDetailView() {
   const { t, locale } = useI18n();
   const router = useRouter();
@@ -62,8 +67,8 @@ function RequestDetailView() {
   const [cancelReason, setCancelReason] = useState('');
   const [showDetails, setShowDetails] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       setData(await requestsApi.get(id));
@@ -72,13 +77,33 @@ function RequestDetailView() {
       else if (err instanceof ApiError && err.status === 404) setError(t('request.notFound'));
       else setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [id, t]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Keep the screen current while the server works in the background: offers
+  // arrive over SSE without a reload, and the slow poll covers a dropped stream.
+  const [liveBump, setLiveBump] = useState(0);
+  const status = data?.request.status;
+  const { connected: liveConnected } = useRealtime(
+    { requestId: id },
+    { onEvent: (env) => {
+        if (env.event === 'offer:created' || env.event === 'offer:updated'
+          || env.event === 'request:updated' || env.event === 'job:status') {
+          setLiveBump((n) => n + 1);
+        }
+      } },
+  );
+  const refresh = useCallback(() => load(true), [load]);
+  useAutoRefresh(refresh, {
+    enabled: Boolean(data) && status !== undefined && LIVE_STATUSES.includes(status),
+    intervalMs: status === 'PUBLISHED' || status === 'MATCHING' || status === 'RECEIVING_OFFERS' ? 8_000 : 45_000,
+    bump: liveBump,
+  });
 
   async function onPublish() {
     if (!data) return;
@@ -235,6 +260,7 @@ function RequestDetailView() {
           point={requestPoint}
           expiresAt={request.expires_at}
           candidateCount={offers.length}
+          connected={liveConnected}
           priceMinor={request.budget_max_minor ?? request.budget_min_minor ?? null}
           currency={request.currency}
           pickupLabel={shortPlace(request)}
