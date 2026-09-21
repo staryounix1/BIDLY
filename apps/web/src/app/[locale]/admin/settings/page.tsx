@@ -46,8 +46,14 @@ const VERIFICATION_KEYS = [
   'verification.identity_enabled',
 ] as const;
 
-/** Label for a verification setting, e.g. `whatsapp_enabled` → the WhatsApp check. */
-function settingLabel(key: string): string {
+/**
+ * Label for a setting. Prefers a translated `admin.setting_<key>` entry and
+ * falls back to a humanized leaf, so a newly seeded setting is still readable
+ * before anyone writes its translation.
+ */
+function settingLabel(key: string, t: (k: never) => string): string {
+  const translated = t(`admin.setting_${key}` as never);
+  if (translated && translated !== `admin.setting_${key}`) return translated;
   const leaf = key.split('.').pop() ?? key;
   return leaf === 'email_enabled'
     ? 'تحقق الإيميل'
@@ -195,7 +201,7 @@ function SettingsView() {
     setSettings((prev) => prev.map((x) => (x.key === s.key ? { ...x, value: next } : x)));
     try {
       await adminApi.updateSetting(s.key, next);
-      setNotice(`${settingLabel(s.key)} — ${next ? t('admin.enabled') : t('admin.disabled')}`);
+      setNotice(`${settingLabel(s.key, t)} — ${next ? t('admin.enabled') : t('admin.disabled')}`);
     } catch (err) {
       setSettings((prev) => prev.map((x) => (x.key === s.key ? { ...x, value: s.value } : x)));
       setError(err instanceof ApiError ? err.message : t('common.error'));
@@ -219,7 +225,7 @@ function SettingsView() {
         delete next[s.key];
         return next;
       });
-      setNotice(`${humanize(s.key)} — ${t('admin.saved')}`);
+      setNotice(`${settingLabel(s.key, t)} — ${t('admin.saved')}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
@@ -283,7 +289,7 @@ function SettingsView() {
               flags={flags}
               busy={busyFlag}
               onToggle={toggleFlag}
-              labelForKey={humanizeFlag}
+              labelForKey={(k) => t(`admin.flag_${k}` as never) || humanizeFlag(k)}
             />
           )}
 
@@ -380,7 +386,7 @@ function VerificationSection({
               }`}
             >
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold">{settingLabel(s.key)}</span>
+                <span className="block text-sm font-semibold">{settingLabel(s.key, t)}</span>
                 <span
                   className={`mt-0.5 block text-xs ${
                     enabled ? 'text-[rgb(var(--brand-500))]' : 'text-[rgb(var(--fg-muted))]'
@@ -670,7 +676,7 @@ function SettingRow({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
       <label className="min-w-0 flex-1">
-        <span className="block text-xs font-semibold">{humanize(setting.key)}</span>
+        <span className="block text-xs font-semibold">{settingLabel(setting.key, t)}</span>
         <span className="block truncate text-[10px] text-[rgb(var(--fg-subtle))]" dir="ltr">
           {setting.key}
         </span>
