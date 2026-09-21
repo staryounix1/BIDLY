@@ -691,7 +691,8 @@
     "draftReady": "Your request is ready — publish it to start",
     "draftTitle": "This request is a draft",
     "draftSub": "Publish it to start the search",
-    "publishNow": "Publish and start the search"
+    "publishNow": "Publish and start the search",
+    "reviewOffers": "Review offers"
   },
   "offers": {
     "title": "Offers",

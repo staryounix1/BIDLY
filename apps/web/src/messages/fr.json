@@ -691,7 +691,8 @@
     "draftReady": "Votre demande est prête — publiez-la pour commencer",
     "draftTitle": "Cette demande est un brouillon",
     "draftSub": "Publiez-la pour lancer la recherche",
-    "publishNow": "Publier et lancer la recherche"
+    "publishNow": "Publier et lancer la recherche",
+    "reviewOffers": "Voir les offres"
   },
   "offers": {
     "title": "Offres",
