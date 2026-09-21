@@ -671,6 +671,202 @@
     text-decoration: underline;
   }
 
+  /* --- dark basemap chrome --------------------------------------------- */
+
+  /* Dark Matter tiles are near-black; the light controls above would glare.
+     These rules darken the map's own chrome only — never the app chrome. */
+  .map-canvas--dark {
+    background: #0b1418;
+  }
+
+  .map-canvas--dark .leaflet-control-zoom a,
+  .map-canvas--dark .leaflet-bar a {
+    color: #e9f4f2;
+    background: rgb(18 28 32 / 0.9);
+    border-bottom-color: rgb(255 255 255 / 0.09);
+  }
+
+  .map-canvas--dark .leaflet-control-zoom a:hover,
+  .map-canvas--dark .leaflet-bar a:hover {
+    background: rgb(30 44 49 / 0.95);
+    color: #fff;
+  }
+
+  .map-canvas--dark .leaflet-bar a.leaflet-disabled {
+    background: rgb(18 28 32 / 0.6);
+    color: rgb(255 255 255 / 0.35);
+  }
+
+  .map-canvas--dark .leaflet-control-attribution {
+    color: rgb(210 226 224 / 0.72);
+    background: rgb(11 20 24 / 0.7);
+  }
+
+  .map-canvas--dark .leaflet-control-attribution a {
+    color: rgb(210 226 224 / 0.86);
+  }
+
+  /* --- custom markers --------------------------------------------------- */
+
+  .map-canvas .bidly-marker {
+    background: none;
+    border: 0;
+  }
+
+  /* A hidden marker stays in the DOM (Leaflet keeps the layer) but reads as
+     absent; opacity is driven from JS via setOpacity. */
+
+  /* "You are here": an aqua dot under a slow halo. */
+  .bidly-me {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+  }
+
+  .bidly-me-dot {
+    position: relative;
+    z-index: 1;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: rgb(var(--brand-500));
+    border: 2.5px solid #063d30;
+    box-shadow: 0 0 0 2px rgb(50 244 186 / 0.35);
+  }
+
+  .bidly-me-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: rgb(50 244 186 / 0.55);
+    animation: bidly-me-pulse 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  }
+
+  @keyframes bidly-me-pulse {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.85;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+
+  /* A pin or provider marker drops in rather than appearing. */
+  .bidly-marker--pin,
+  .bidly-marker--provider {
+    animation: bidly-marker-drop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes bidly-marker-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Optional caption bubble above a marker. */
+  .bidly-marker-label {
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #e9f4f2;
+    background: rgb(11 20 24 / 0.86);
+    box-shadow: var(--shadow-sm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bidly-me-pulse,
+    .bidly-marker--pin,
+    .bidly-marker--provider {
+      animation: none;
+    }
+  }
+
+  /* A small pill explaining why the map is not centred yet, instead of a blank
+     canvas. Sits above the map, clear of the FAB and the sheet. */
+  .map-status {
+    position: absolute;
+    z-index: 450;
+    inset-block-start: 0.75rem;
+    inset-inline: 0;
+    margin-inline: auto;
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #e9f4f2;
+    background: rgb(11 20 24 / 0.82);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .map-status-spinner,
+  .map-fab-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: bidly-spin 0.7s linear infinite;
+  }
+
+  .map-fab-spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @keyframes bidly-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* The recenter control that reappears once the user pans away. */
+  .map-recenter {
+    position: absolute;
+    z-index: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 2.5rem;
+    padding-inline: 0.9rem;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #e9f4f2;
+    background: rgb(18 28 32 / 0.92);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    animation: bidly-marker-drop 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .map-recenter:active {
+    transform: scale(0.96);
+  }
+
   /* Floating circular action button (e.g. "my location") over the map. */
   .map-fab {
     position: absolute;
