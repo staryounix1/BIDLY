@@ -217,7 +217,9 @@
     "BLOCKED": "محظور",
     "VERIFIED": "موثّق",
     "PENDING_REVIEW": "قيد المراجعة",
-    "DEACTIVATED": "معطّل"
+    "DEACTIVATED": "معطّل",
+    "UNVERIFIED": "غير موثّق",
+    "REJECTED": "مرفوض"
   },
   "urgency": {
     "LOW": "منخفض",

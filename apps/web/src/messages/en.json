@@ -217,7 +217,9 @@
     "BLOCKED": "Blocked",
     "VERIFIED": "Verified",
     "PENDING_REVIEW": "Under review",
-    "DEACTIVATED": "Deactivated"
+    "DEACTIVATED": "Deactivated",
+    "UNVERIFIED": "Unverified",
+    "REJECTED": "Rejected"
   },
   "urgency": {
     "LOW": "Low",
