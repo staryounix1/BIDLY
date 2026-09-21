@@ -257,6 +257,7 @@
     "details": "Offer details",
     "history": "Negotiation history",
     "round": "Round",
+    "notActive": "Your provider account is not active yet.",
     "invalidPrice": "Enter a valid price.",
     "alreadyOffered": "You already have an active offer on this request.",
     "bestPrice": "Best price",

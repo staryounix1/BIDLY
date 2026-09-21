@@ -257,6 +257,7 @@
     "details": "Détails de l'offre",
     "history": "Historique",
     "round": "Tour",
+    "notActive": "Votre compte prestataire n’est pas encore actif.",
     "invalidPrice": "Saisissez un prix valide.",
     "alreadyOffered": "Vous avez déjà une offre active sur cette demande.",
     "bestPrice": "Meilleur prix",
