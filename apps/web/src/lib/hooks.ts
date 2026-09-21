@@ -246,3 +246,81 @@ function parseJson<T>(raw: string): T {
     return undefined as unknown as T;
   }
 }
+
+/**
+ * Keep a screen's data quietly current.
+ *
+ * Screens here are long-lived: a customer watches a request while offers land,
+ * a provider waits for jobs, a chat thread grows. Fetching once on mount leaves
+ * those screens frozen at whatever the server said at open time, which is how a
+ * waiting screen ends up claiming "0 partners" long after three replied.
+ *
+ * The refresh is deliberately *silent*: `refresh` is the screen's own loader,
+ * and callers pass one that does not toggle the full-page loading state, so new
+ * data slides in without the screen blanking or scrolling to the top. Two
+ * triggers drive it — a realtime event (`bump`, called from the SSE handler)
+ * and a slow safety poll for when the stream is down or an event was dropped.
+ *
+ * Polling pauses entirely while the tab is hidden, and does one immediate
+ * refresh on return so the user never sees stale numbers after switching back.
+ */
+export function useAutoRefresh(
+  refresh: () => void | Promise<void>,
+  options: { enabled?: boolean; intervalMs?: number; bump?: number } = {},
+): void {
+  const { enabled = true, intervalMs = 15_000, bump = 0 } = options;
+  const refreshRef = useRef(refresh);
+
+  useLayoutEffect(() => {
+    refreshRef.current = refresh;
+  }, [refresh]);
+
+  // A realtime event refreshes at once. Debounced so a burst (an offer plus its
+  // notification) collapses into one request rather than a stampede.
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!enabled || bump === 0) return;
+    if (debounce.current) clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => {
+      debounce.current = null;
+      void refreshRef.current();
+    }, 250);
+    return () => {
+      if (debounce.current) clearTimeout(debounce.current);
+      debounce.current = null;
+    };
+  }, [bump, enabled]);
+
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined') return;
+
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    const start = (): void => {
+      if (timer) return;
+      timer = setInterval(() => {
+        if (document.visibilityState === 'visible') void refreshRef.current();
+      }, intervalMs);
+    };
+    const stop = (): void => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    };
+
+    const onVisibility = (): void => {
+      if (document.visibilityState === 'visible') {
+        void refreshRef.current();
+        start();
+      } else {
+        stop();
+      }
+    };
+
+    if (document.visibilityState === 'visible') start();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      stop();
+    };
+  }, [enabled, intervalMs]);
+}

@@ -1165,6 +1165,12 @@
     color: #eaf4f5;
   }
 
+  /* A new offer lands: pulse the sentence so the eye is drawn to the change
+     even though the number beside it updated without a page reload. */
+  .live-partners-text.is-flash {
+    animation: khdemli-flash 1.4s ease-out;
+  }
+
   .live-partners-count {
     flex: none;
     padding: 0.25rem 0.6rem;
@@ -1621,5 +1627,21 @@
   .marker-bob,
   .skeleton {
     animation: none !important;
+  }
+}
+
+/* A new offer arrived: draw the eye to the sentence that just changed. */
+@keyframes khdemli-flash {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }

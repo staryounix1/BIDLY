@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
-import { useRealtime } from '@/lib/realtime-client';
 import { MapView, ThemedMarker, DEFAULT_MAP_STYLE } from '@/lib/map/map-view';
 import { CategoryIcon } from '@/lib/icons';
 
@@ -47,6 +46,8 @@ export interface SearchRadarProps {
   onStop?: () => void;
   /** Quick price adjustment straight from the sheet. */
   onPriceChange?: (nextMinor: number) => void;
+  /** Live connection state of the request room, owned by the parent screen. */
+  connected?: boolean;
 }
 
 const RADIUS_MIN_KM = 5;
@@ -68,6 +69,7 @@ export function SearchRadar({
   onViewOffers,
   onStop,
   onPriceChange,
+  connected = false,
 }: SearchRadarProps) {
   const { t, locale } = useI18n();
   const [now, setNow] = useState(() => Date.now());
@@ -76,30 +78,21 @@ export function SearchRadar({
   const [autoAccept, setAutoAccept] = useState(false);
   const seenOffers = useRef<number>(offers.length);
 
-  // A new offer is the payoff for the whole screen, so pulse the counter and
-  // re-seed the list when realtime pushes one in.
+  // A new offer is the payoff for the whole screen, so pulse the sentence and
+  // re-seed the list. The parent refreshes `offers`; this only animates it.
   useEffect(() => {
     setLiveOffers(offers);
     if (offers.length > seenOffers.current) {
-      seenOffers.current = offers.length;
       setFlash(true);
       const id = setTimeout(() => setFlash(false), 1400);
+      seenOffers.current = offers.length;
       return () => clearTimeout(id);
     }
     seenOffers.current = offers.length;
   }, [offers]);
 
-  const { connected } = useRealtime(
-    { requestId },
-    {
-      onEvent: (env) => {
-        if (env.event === 'offer:created' || env.event === 'offer:updated') {
-          setFlash(true);
-          setTimeout(() => setFlash(false), 1400);
-        }
-      },
-    },
-  );
+  // The parent owns the request-room subscription and refreshes the data this
+  // sheet renders; `connected` arrives as a prop.
 
   // Tick once a second so the elapsed time reads as motion, not a stall.
   useEffect(() => {
@@ -200,12 +193,14 @@ export function SearchRadar({
           nobody to show yet, so the strip states the request instead. */}
       <div className="live-partners">
         <DriverStack offers={liveOffers} />
-        <p className="live-partners-text">
+        <p className={`live-partners-text${flash ? ' is-flash' : ''}`}>
           {draft
             ? t('searching.draftReady')
-            : liveOffers.length === 1
-              ? t('searching.partnersOne')
-              : t('searching.partners', { count: liveOffers.length })}
+            : liveOffers.length === 0
+              ? t('searching.expanding')
+              : liveOffers.length === 1
+                ? t('searching.partnersOne')
+                : t('searching.partners', { count: liveOffers.length })}
         </p>
         {!draft && candidateCount > 0 && (
           <span className="live-partners-count tnum">
