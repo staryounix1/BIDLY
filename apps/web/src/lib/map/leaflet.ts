@@ -114,6 +114,10 @@ export function loadLeaflet(): Promise<LeafletNamespace> {
  * and Voyager is used. Without a key we fall back to the keyless OSM raster
  * style, which is clean enough to ship and never watermarked.
  *
+ * CARTO reads the key from `?key=`. `?api_key=` is accepted by the dashboard
+ * examples but is **ignored** by the raster CDN — verified by rendering both,
+ * where only `?key=` clears the watermark.
+ *
  * `{r}` lets Leaflet append `@2x` on retina displays, which is what keeps the
  * labels crisp on phones.
  */
@@ -122,7 +126,7 @@ export type MapStyle = 'voyager' | 'positron' | 'osm';
 /** A CARTO style needs a key only because CARTO demands one. */
 function cartoUrl(path: string): string {
   const key = (process.env.NEXT_PUBLIC_CARTO_API_KEY ?? '').trim();
-  const suffix = key ? `?api_key=${encodeURIComponent(key)}` : '';
+  const suffix = key ? `?key=${encodeURIComponent(key)}` : '';
   return `https://{s}.basemaps.cartocdn.com/${path}/{z}/{x}/{y}{r}.png${suffix}`;
 }
 
