@@ -540,7 +540,11 @@
     "payouts": "Payouts",
     "noPayouts": "No payouts yet.",
     "payoutRequested": "Payout requested. Funds are reserved until it is processed.",
-    "paymentFailed": "The payment failed. You can try again."
+    "paymentFailed": "The payment failed. You can try again.",
+    "topUp": "Add funds",
+    "topUpHint": "You need a balance to settle the platform commission when you agree on a price with a customer.",
+    "topUpAmount": "Amount (MAD)",
+    "topUpDone": "Wallet topped up successfully."
   },
   "wallet": {
     "title": "Wallet",
