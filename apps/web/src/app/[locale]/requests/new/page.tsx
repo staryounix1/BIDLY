@@ -116,6 +116,16 @@ function seedRequiredAnswers(
   return seeded;
 }
 
+/**
+ * A human-readable stand-in for a picked point whose street address could not
+ * be resolved. The API requires a non-empty `line1`, and the exact coordinates
+ * travel alongside it, so this is a label rather than a fallback location.
+ */
+function coordLabel(point: { lat: number; lng: number } | null): string {
+  if (!point) return '';
+  return `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+}
+
 export default function NewRequestPage() {
   return (
     <RequireAuth roles={['CUSTOMER']}>
@@ -270,15 +280,27 @@ function NewRequestView() {
     setSubmitError(null);
 
     // Client-side required checks; the API re-validates everything.
+    //
+    // The location is now given by tapping the map, not typed, so a picked
+    // point satisfies it on its own. Requiring a reverse-geocoded street here
+    // would send the customer in a circle: Nominatim is slow, rate-limited and
+    // may return nothing for a valid point, and there is no text field left to
+    // fill in by hand.
     const nextErrors: Record<string, string> = {};
-    if (service.requires_location && !pickup.line1.trim()) nextErrors.pickup = t('request.answerRequired');
-    if (service.requires_destination && !destination.line1.trim()) {
-      nextErrors.destination = t('request.answerRequired');
+    const hasPickup = Boolean(pickupPoint) || pickup.line1.trim().length > 0;
+    const hasDestination = Boolean(destinationPoint) || destination.line1.trim().length > 0;
+    if (service.requires_location && !hasPickup) nextErrors.pickup = t('compose.needPickup');
+    if (service.requires_destination && !hasDestination) {
+      nextErrors.destination = t('compose.needDestination');
     }
     if (price <= 0) nextErrors.price = t('request.answerRequired');
     if (Object.keys(nextErrors).length > 0) {
       setFormErrors(nextErrors);
-      setSubmitError(t('request.answerRequired'));
+      // Name the missing thing: "fill the required fields" on a screen with no
+      // empty fields reads as a bug.
+      setSubmitError(
+        nextErrors.pickup ?? nextErrors.destination ?? t('request.answerRequired'),
+      );
       return;
     }
     setFormErrors({});
@@ -296,6 +318,13 @@ function NewRequestView() {
     setAnswerErrors({});
 
     const priceMinor = Math.round(price * 100);
+    // The API's location schema requires a non-empty `line1`, but the address
+    // itself now comes from reverse-geocoding, which can be slow or return
+    // nothing. Fall back to the coordinate label so a picked point is always
+    // submittable; the craftsman still receives the exact lat/lng either way.
+    const pickupLine1 = pickup.line1.trim() || coordLabel(pickupPoint);
+    const destinationLine1 = destination.line1.trim() || coordLabel(destinationPoint);
+
     const payload = {
       serviceId: service.id,
       ...(title ? { title } : {}),
@@ -308,10 +337,10 @@ function NewRequestView() {
       ...(scheduledAt ? { scheduledAt: new Date(scheduledAt).toISOString() } : {}),
       ...(itemCount ? { itemCount: Number(itemCount) } : {}),
       requiresHelper,
-      ...(service.requires_location && pickup.line1
+      ...(service.requires_location && (pickupPoint || pickupLine1)
         ? {
             pickup: {
-              line1: pickup.line1,
+              line1: pickupLine1,
               ...(pickup.district ? { district: pickup.district } : {}),
               ...(pickup.cityId ? { cityId: pickup.cityId } : {}),
               ...(pickupPoint ? { lat: pickupPoint.lat, lng: pickupPoint.lng } : {}),
@@ -319,10 +348,10 @@ function NewRequestView() {
             },
           }
         : {}),
-      ...(service.requires_destination && destination.line1
+      ...(service.requires_destination && (destinationPoint || destinationLine1)
         ? {
             destination: {
-              line1: destination.line1,
+              line1: destinationLine1,
               ...(destination.cityId ? { cityId: destination.cityId } : {}),
               ...(destinationPoint ? { lat: destinationPoint.lat, lng: destinationPoint.lng } : {}),
               ...(destination.notes ? { notes: destination.notes } : {}),

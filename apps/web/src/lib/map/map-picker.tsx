@@ -237,6 +237,17 @@ export function MapPicker({
             )}
           </button>
         )}
+
+        {/* Full-screen mode has no room for a hint below the map, but the point
+            is required before the request can be sent. Say so on the map, and
+            keep saying it until a point exists, so the send button is never the
+            first place the customer learns a location is missing. */}
+        {isFull && !picked && (
+          <div className="map-prompt" role="status" aria-live="polite">
+            <CategoryIcon name="pin" size={17} strokeWidth={2.2} />
+            {t('map.tapHint')}
+          </div>
+        )}
       </div>
 
       {!isFull && (

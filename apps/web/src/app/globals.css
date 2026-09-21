@@ -894,6 +894,31 @@
     animation: bidly-spin 0.7s linear infinite;
   }
 
+  /* Centred call to action for the full-screen map, shown until a point is
+     picked. The point is required to submit, and there is no other place to
+     learn that, so it stays until the customer taps the map. */
+  .map-prompt {
+    position: absolute;
+    z-index: 460;
+    inset-inline: 0;
+    top: 38%;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: calc(100% - 2rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-align: center;
+    color: rgb(var(--brand-ink));
+    background: rgb(var(--brand-500));
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+    pointer-events: none;
+  }
+
   .map-fab-spinner {
     width: 1.25rem;
     height: 1.25rem;
