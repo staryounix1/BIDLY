@@ -622,7 +622,8 @@
     "noProviders": "Aucun prestataire visible dans votre zone pour le moment.",
     "providerCount": "{count} prestataire(s) proche(s)",
     "trackTitle": "Suivi de l'arrivée",
-    "offline": "Dernière position connue"
+    "offline": "Dernière position connue",
+    "recenter": "Recentrer"
   },
   "search": {
     "title": "Recherche de prestataires…",
