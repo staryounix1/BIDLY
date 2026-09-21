@@ -259,7 +259,8 @@
     "alreadyOffered": "You already have an active offer on this request.",
     "bestPrice": "Best price",
     "customerOffer": "Customer's offer",
-    "counterWith": "Counter with your price"
+    "counterWith": "Counter with your price",
+    "offers": "offers"
   },
   "provider": {
     "title": "Provider profile",
@@ -669,7 +670,21 @@
     "elapsed": "{seconds}s elapsed",
     "cancel": "Cancel",
     "offersSoFar": "{count} offers received",
-    "viewOffers": "View offers"
+    "viewOffers": "View offers",
+    "partners": "{count} driver partners are viewing your request",
+    "partnersOne": "One driver partner is viewing your request",
+    "waitingReplies": "Waiting for replies",
+    "youChoose": "You pick the driver",
+    "expanding": "Expanding the search area",
+    "expandingShort": "Continuing the search",
+    "offerPrice": "Your offer",
+    "confirm": "Confirm",
+    "autoAccept": "Accept the nearest driver partner for {price} automatically",
+    "cash": "cash",
+    "pickup": "Pickup",
+    "cancelRequest": "Cancel request",
+    "hoursLeft": "{hours}h left",
+    "minutesLeft": "{minutes}m left"
   },
   "offers": {
     "title": "Offers",

@@ -259,7 +259,8 @@
     "alreadyOffered": "لديك عرض فعّال على هذا الطلب بالفعل.",
     "bestPrice": "أفضل سعر",
     "customerOffer": "السعر المقترح من الزبون",
-    "counterWith": "اقترح سعرك"
+    "counterWith": "اقترح سعرك",
+    "offers": "عروض"
   },
   "provider": {
     "title": "ملف المزوّد",
@@ -730,7 +731,21 @@
     "elapsed": "مرّ {seconds} ثانية",
     "cancel": "إلغاء",
     "offersSoFar": "{count} عرض توصل",
-    "viewOffers": "شوف العروض"
+    "viewOffers": "شوف العروض",
+    "partners": "يعرض {count} شركاء سائقين طلبك",
+    "partnersOne": "يعرض شريك سائق واحد طلبك",
+    "waitingReplies": "في انتظار تلقي ردود",
+    "youChoose": "أنت من تختار السائق",
+    "expanding": "جار توسيع منطقة البحث",
+    "expandingShort": "مواصلة البحث",
+    "offerPrice": "السعر المقترح",
+    "confirm": "تأكيد",
+    "autoAccept": "قبول أقرب شريك سائق مقابل {price} تلقائيًا",
+    "cash": "نقدًا",
+    "pickup": "موقع الطلب",
+    "cancelRequest": "إلغاء الطلب",
+    "hoursLeft": "باقي {hours} ساعة",
+    "minutesLeft": "باقي {minutes} دقيقة"
   },
   "offers": {
     "title": "العروض",

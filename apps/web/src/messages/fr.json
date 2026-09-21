@@ -259,7 +259,8 @@
     "alreadyOffered": "Vous avez déjà une offre active sur cette demande.",
     "bestPrice": "Meilleur prix",
     "customerOffer": "Offre du client",
-    "counterWith": "Proposez votre prix"
+    "counterWith": "Proposez votre prix",
+    "offers": "offres"
   },
   "provider": {
     "title": "Profil prestataire",
@@ -669,7 +670,21 @@
     "elapsed": "{seconds}s écoulées",
     "cancel": "Annuler",
     "offersSoFar": "{count} offres reçues",
-    "viewOffers": "Voir les offres"
+    "viewOffers": "Voir les offres",
+    "partners": "{count} chauffeurs partenaires consultent votre demande",
+    "partnersOne": "Un chauffeur partenaire consulte votre demande",
+    "waitingReplies": "En attente de réponses",
+    "youChoose": "C'est vous qui choisissez le chauffeur",
+    "expanding": "Élargissement de la zone de recherche",
+    "expandingShort": "Poursuite de la recherche",
+    "offerPrice": "Votre offre",
+    "confirm": "Confirmer",
+    "autoAccept": "Accepter automatiquement le chauffeur partenaire le plus proche pour {price}",
+    "cash": "espèces",
+    "pickup": "Prise en charge",
+    "cancelRequest": "Annuler la demande",
+    "hoursLeft": "{hours} h restantes",
+    "minutesLeft": "{minutes} min restantes"
   },
   "offers": {
     "title": "Offres",
