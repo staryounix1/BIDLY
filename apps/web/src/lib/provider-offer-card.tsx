@@ -1,7 +1,7 @@
 'use client';
 
 import { useI18n } from '@/lib/i18n-provider';
-import { Avatar, Price, Stars } from '@/lib/ui';
+import { Avatar, Price, Stars, toNumber } from '@/lib/ui';
 import { CategoryIcon } from '@/lib/icons';
 import type { RequestDetail } from '@/lib/requests-api';
 
@@ -48,7 +48,8 @@ export function ProviderOfferCard({
 
   const city = pick(locale, offer.city_name_ar, offer.city_name_en, offer.city_name_fr);
   const craft = pick(locale, offer.craft_name_ar, offer.craft_name_en, offer.craft_name_fr);
-  const years = offer.experience_years ?? null;
+  const years = toNumber(offer.experience_years);
+  const etaMinutes = toNumber(offer.eta_minutes);
 
   return (
     <div
@@ -93,10 +94,10 @@ export function ProviderOfferCard({
                   <span>{t('offerCard.experience', { years })}</span>
                 </li>
               )}
-              {offer.eta_minutes != null && (
+              {etaMinutes != null && (
                 <li>
                   <CategoryIcon name="clock" size={14} />
-                  <span>{t('offerCard.eta', { minutes: offer.eta_minutes })}</span>
+                  <span>{t('offerCard.eta', { minutes: etaMinutes })}</span>
                 </li>
               )}
             </ul>

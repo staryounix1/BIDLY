@@ -19,7 +19,8 @@ import { CategoryIcon } from '@/lib/icons';
 
 export interface RadarOffer {
   id: string;
-  price_minor?: number;
+  /** bigint arrives as a string over JSON. */
+  price_minor?: number | string;
   currency?: string;
   status?: string;
   provider_name?: string;

@@ -16,7 +16,7 @@ import { SearchRadar } from '@/lib/map/search-radar';
 import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
 import { CategoryIcon } from '@/lib/icons';
-import { Avatar, Price, SectionTitle, Spinner, Stars } from '@/lib/ui';
+import { Avatar, Price, SectionTitle, Spinner, Stars, toNumber } from '@/lib/ui';
 
 /**
  * Request detail for the owning customer.
@@ -333,7 +333,7 @@ function RequestDetailView() {
   const sortedOffers = [...offers].sort((a, b) => {
     const rank = (s: string) => (s === 'PENDING' ? 0 : s === 'ACCEPTED' ? 1 : 2);
     if (rank(a.status) !== rank(b.status)) return rank(a.status) - rank(b.status);
-    return a.price_minor - b.price_minor;
+    return (toNumber(a.price_minor) ?? 0) - (toNumber(b.price_minor) ?? 0);
   });
 
   // The searching state is its own full-screen instrument: the map owns the

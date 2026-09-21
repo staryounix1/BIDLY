@@ -165,7 +165,7 @@ function JobsView() {
                       {t('job.provider')}: {j.provider_name}
                     </span>
                     <span className="tnum">
-                      {t('job.price')}: {(j.final_price_minor / 100).toFixed(2)} {j.currency}
+                      {t('job.price')}: <Price minor={j.final_price_minor} currency={j.currency} size="sm" />
                     </span>
                     <span>{new Date(j.created_at).toLocaleDateString(locale)}</span>
                   </div>

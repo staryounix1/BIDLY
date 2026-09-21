@@ -12,18 +12,35 @@ import { StarIcon } from './icons';
 
 /* --- stars -------------------------------------------------------------- */
 
+/**
+ * Coerce a numeric value that may have arrived as a string.
+ *
+ * PostgreSQL `bigint` and `numeric` columns are serialised by the API as
+ * strings to avoid precision loss, so `price_minor` and `rating_avg` are
+ * frequently `"10000"` and `"0.00"`. Calling `.toFixed` on those throws and
+ * takes the whole screen down, so every numeric prop funnels through here.
+ */
+export function toNumber(value: number | string | null | undefined): number | null {
+  if (value == null) return null;
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 export function Stars({
   value,
   count,
   size = 15,
   showValue = true,
 }: {
-  value: number | null | undefined;
-  count?: number | null;
+  // PostgreSQL `numeric` arrives over JSON as a string, so every numeric prop
+  // is coerced before any arithmetic.
+  value: number | string | null | undefined;
+  count?: number | string | null;
   size?: number;
   showValue?: boolean;
 }) {
-  const rating = value ?? 0;
+  const rating = toNumber(value) ?? 0;
+  const reviewCount = toNumber(count);
 
   if (!value) {
     return <span className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">—</span>;
@@ -39,8 +56,8 @@ export function Stars({
       {showValue && (
         <span className="tnum text-xs font-bold text-[rgb(var(--fg))]">{rating.toFixed(1)}</span>
       )}
-      {count != null && count > 0 && (
-        <span className="tnum text-xs text-[rgb(var(--fg-subtle))]">({count})</span>
+      {reviewCount != null && reviewCount > 0 && (
+        <span className="tnum text-xs text-[rgb(var(--fg-subtle))]">({reviewCount})</span>
       )}
     </span>
   );
@@ -98,7 +115,7 @@ export function Price({
   currency,
   size = 'md',
 }: {
-  minor: number | null | undefined;
+  minor: number | string | null | undefined;
   currency?: string | null;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }) {
@@ -109,8 +126,9 @@ export function Price({
     xl: 'text-3xl',
   } as const;
 
-  if (minor == null) return null;
-  const whole = Math.round(minor / 100);
+  const amount = toNumber(minor);
+  if (amount == null) return null;
+  const whole = Math.round(amount / 100);
 
   return (
     <span className="inline-flex items-baseline gap-1">
