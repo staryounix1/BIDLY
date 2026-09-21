@@ -518,7 +518,7 @@ function NewRequestView() {
           {submitError && (
             <p
               role="alert"
-              className="sticky bottom-[4.25rem] z-10 mt-1 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]"
+              className="fixed inset-x-4 bottom-[5.5rem] z-50 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger))] px-4 py-3 text-sm font-bold text-white shadow-lg"
             >
               {submitError}
             </p>
