@@ -544,7 +544,7 @@
     "activeProviders": "المزودون النشطون",
     "activeUsers": "المستخدمون النشطون",
     "adjust": "تعديل الرصيد",
-    "approve": "قبول",
+    "approve": "موافقة",
     "audit": "سجل التدقيق",
     "auditLog": "سجل التدقيق",
     "credit": "إيداع",
@@ -600,7 +600,12 @@
     "transactions": "الحركات",
     "verificationHint": "فعّل أو ألغِ التحقق لجميع الحسابات",
     "verificationSection": "التحقق من الحسابات",
-    "wallets": "المحافظ"
+    "wallets": "المحافظ",
+    "identityQueue": "طلبات التحقق من الهوية",
+    "identityQueueHint": "راجع الوثائق وقارن الوجه مع البطاقة قبل الموافقة.",
+    "identityQueueEmpty": "ما كاينش طلبات فالانتظار دابا.",
+    "rejectReason": "علاش الرفض؟ (إلزامي)",
+    "confirmReject": "تأكيد الرفض"
   },
   "map": {
     "title": "حدّد الموقع على الخريطة",

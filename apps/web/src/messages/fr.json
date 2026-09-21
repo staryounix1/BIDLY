@@ -600,7 +600,12 @@
     "transactions": "Transactions",
     "verificationHint": "Activez ou désactivez chaque vérification pour tout le site",
     "verificationSection": "Vérification des comptes",
-    "wallets": "Portefeuilles"
+    "wallets": "Portefeuilles",
+    "identityQueue": "Demandes d'identité",
+    "identityQueueHint": "Examinez les documents et comparez le visage à la carte avant d'approuver.",
+    "identityQueueEmpty": "Rien en attente pour le moment.",
+    "rejectReason": "Motif du rejet ? (obligatoire)",
+    "confirmReject": "Confirmer le rejet"
   },
   "map": {
     "title": "Choisissez l'emplacement sur la carte",

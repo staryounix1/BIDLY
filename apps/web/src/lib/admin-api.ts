@@ -187,7 +187,45 @@ export const adminApi = {
   async updateSetting(key: string, value: unknown) {
     return (await api.put(`/admin/settings/${encodeURIComponent(key)}`, { value })).data;
   },
+
+  /** Identity submissions awaiting review, newest first. */
+  async identityReviews(status: 'PENDING' | 'VERIFIED' | 'REJECTED' = 'PENDING'): Promise<AdminIdentityReview[]> {
+    const qs = `?status=${encodeURIComponent(status)}`;
+    return (await api.get<AdminIdentityReview[]>(`/admin/identity-reviews${qs}`)).data;
+  },
+
+  /** Approve or reject one submission. A reason is required to reject. */
+  async decideIdentityReview(id: string, decision: 'APPROVE' | 'REJECT', reason?: string) {
+    const body: { decision: 'APPROVE' | 'REJECT'; reason?: string } = { decision };
+    if (reason) body.reason = reason;
+    return (await api.post(`/admin/identity-reviews/${encodeURIComponent(id)}`, body)).data;
+  },
 };
+
+/**
+ * One account's identity submission from `GET /admin/identity-reviews`.
+ *
+ * The three image fields are data URLs (or links) as submitted; the review step
+ * shows them side by side so a face can be compared to the document.
+ */
+export interface AdminIdentityReview {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  role: string;
+  status: string;
+  locale: string | null;
+  whatsapp_number: string | null;
+  whatsapp_verified_at: string | null;
+  identity_review_status: string;
+  identity_recto_url: string | null;
+  identity_verso_url: string | null;
+  identity_selfie_url: string | null;
+  identity_submitted_at: string | null;
+  identity_review_notes: string | null;
+  full_name: string | null;
+  display_name: string | null;
+}
 
 /**
  * A platform setting as returned by `GET /admin/settings`.

@@ -600,7 +600,12 @@
     "transactions": "Transactions",
     "verificationHint": "Enable or disable each check for the whole site",
     "verificationSection": "Account verification",
-    "wallets": "Wallets"
+    "wallets": "Wallets",
+    "identityQueue": "Identity submissions",
+    "identityQueueHint": "Review the documents and match the face to the ID before approving.",
+    "identityQueueEmpty": "Nothing waiting for review right now.",
+    "rejectReason": "Why is it rejected? (required)",
+    "confirmReject": "Confirm rejection"
   },
   "map": {
     "title": "Pick the location on the map",

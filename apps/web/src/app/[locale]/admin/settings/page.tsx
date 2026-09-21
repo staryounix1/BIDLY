@@ -7,6 +7,7 @@ import { ApiError } from '@/lib/auth-api';
 import {
   adminApi,
   type AdminFeatureFlag,
+  type AdminIdentityReview,
   type AdminSetting,
 } from '@/lib/admin-api';
 import { CategoryIcon } from '@/lib/icons';
@@ -403,7 +404,181 @@ function VerificationSection({
           );
         })}
       </div>
+
+      {/* The switches above decide whether identity is required; this is where
+          the submissions it produces are actually reviewed. They belong
+          together: a switch with no queue is a promise nobody can keep. */}
+      <IdentityReviewQueue />
     </section>
+  );
+}
+
+/**
+ * Identity submissions awaiting a decision.
+ *
+ * The reviewer sees the three photos side by side — the two document faces and
+ * the selfie — because the decision is a face match, and paging between images
+ * is how even a careful reviewer approves the wrong person.
+ *
+ * Rejection asks for a reason; approval does not, so the common path stays one
+ * tap. Both clear the row, which is what makes the queue self-draining.
+ */
+function IdentityReviewQueue() {
+  const { t } = useI18n();
+  const [rows, setRows] = useState<AdminIdentityReview[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<string | null>(null);
+  const [reason, setReason] = useState('');
+
+  const load = useCallback(async () => {
+    setError(null);
+    try {
+      setRows(await adminApi.identityReviews('PENDING'));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('common.error'));
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function decide(id: string, decision: 'APPROVE' | 'REJECT', note?: string) {
+    setBusy(id);
+    setError(null);
+    try {
+      await adminApi.decideIdentityReview(id, decision, note);
+      setRows((prev) => (prev ?? []).filter((r) => r.id !== id));
+      setRejecting(null);
+      setReason('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('common.error'));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="mt-6">
+      <SectionTitle>
+        <div>
+          <h2 className="text-base font-bold">{t('admin.identityQueue')}</h2>
+          <p className="text-xs text-[rgb(var(--fg-muted))]">
+            {t('admin.identityQueueHint')}
+            {rows ? ` (${rows.length})` : ''}
+          </p>
+        </div>
+      </SectionTitle>
+
+      {error && (
+        <p role="alert" className="mb-3 rounded-xl border border-[rgb(var(--danger)/0.35)] bg-[rgb(var(--danger)/0.08)] px-4 py-3 text-sm font-semibold text-[rgb(var(--danger))]">
+          {error}
+        </p>
+      )}
+
+      {rows === null ? (
+        <div className="flex justify-center py-6"><Spinner size={20} /></div>
+      ) : rows.length === 0 ? (
+        <div className="card p-5 text-center text-sm text-[rgb(var(--fg-muted))]">
+          {t('admin.identityQueueEmpty')}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {rows.map((r) => (
+            <div key={r.id} className="card p-4">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold">{r.display_name || r.full_name || r.email}</p>
+                  <p className="truncate text-xs text-[rgb(var(--fg-muted))]" dir="ltr">
+                    {r.email} · {r.role} · {r.whatsapp_number ?? '—'}
+                  </p>
+                </div>
+                <span className="chip chip-neutral">{r.identity_review_status}</span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <PhotoThumb label={t('activation.recto')} src={r.identity_recto_url} />
+                <PhotoThumb label={t('activation.verso')} src={r.identity_verso_url} />
+                <PhotoThumb label={t('activation.selfie')} src={r.identity_selfie_url} />
+              </div>
+
+              {rejecting === r.id ? (
+                <div className="mt-3 flex flex-col gap-2">
+                  <input
+                    className="input"
+                    placeholder={t('admin.rejectReason')}
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={busy === r.id || !reason.trim()}
+                      onClick={() => void decide(r.id, 'REJECT', reason.trim())}
+                      className="btn btn-primary flex-1 disabled:opacity-50"
+                    >
+                      {busy === r.id ? <Spinner size={16} /> : null}
+                      {t('admin.confirmReject')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setRejecting(null); setReason(''); }}
+                      className="btn btn-secondary"
+                    >
+                      {t('common.cancel')}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    disabled={busy === r.id}
+                    onClick={() => void decide(r.id, 'APPROVE')}
+                    className="btn btn-primary flex-1 disabled:opacity-50"
+                  >
+                    {busy === r.id ? <Spinner size={16} /> : <CategoryIcon name="check" size={17} />}
+                    {t('admin.approve')}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy === r.id}
+                    onClick={() => setRejecting(r.id)}
+                    className="btn btn-secondary flex-1 disabled:opacity-50"
+                  >
+                    {t('admin.reject')}
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** One submitted image, with a fallback for a missing or unloadable file. */
+function PhotoThumb({ label, src }: { label: string; src: string | null }) {
+  return (
+    <figure className="min-w-0">
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt={label}
+          className="h-24 w-full rounded-lg border border-[rgb(var(--line))] object-cover"
+        />
+      ) : (
+        <div className="flex h-24 w-full items-center justify-center rounded-lg border border-dashed border-[rgb(var(--line-strong))] text-[rgb(var(--fg-subtle))]">
+          —
+        </div>
+      )}
+      <figcaption className="mt-1 truncate text-center text-[11px] text-[rgb(var(--fg-muted))]">
+        {label}
+      </figcaption>
+    </figure>
   );
 }
 
