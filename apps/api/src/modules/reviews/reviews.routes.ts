@@ -101,10 +101,74 @@ export async function registerReviewRoutes(app: FastifyInstance): Promise<void> 
       }
 
       logEvent(LOG_EVENTS.REVIEW_CREATED, { userId: auth.userId, jobId: b.jobId, rating: b.rating, direction });
-      return review;
+
+      // Two-sided completion tracker. The job is only "fully rated" once both
+      // directions exist; either side may rate without waiting for the other.
+      await c.query(
+        `insert into job_rating_completion (job_id, ${isCustomer ? 'customer_rated_at' : 'provider_rated_at'})
+         values ($1, now())
+         on conflict (job_id) do update
+           set ${isCustomer ? 'customer_rated_at' : 'provider_rated_at'} = now(),
+               updated_at = now()`,
+        [b.jobId],
+      );
+      const completion = await c.one<{ fully_rated_at: string | null; customer_rated_at: string | null; provider_rated_at: string | null }>(
+        `update job_rating_completion
+            set fully_rated_at = coalesce(fully_rated_at, case when customer_rated_at is not null and provider_rated_at is not null then now() end),
+                updated_at = now()
+          where job_id = $1
+          returning fully_rated_at, customer_rated_at, provider_rated_at`,
+        [b.jobId],
+      );
+
+      return { ...review, fullyRatedAt: completion?.fully_rated_at ?? null, isCustomer };
     });
 
     return reply.status(201).send({ success: true, data: result });
+  });
+
+  app.get('/reviews/job/:jobId/status', {
+    preHandler: [app.authenticate],
+    schema: {
+      tags: ['reviews'], summary: 'Whether each side has rated a job', security: [{ bearerAuth: [] }],
+      params: { type: 'object', required: ['jobId'], properties: { jobId: { type: 'string', format: 'uuid' } } },
+    },
+  }, async (request, reply) => {
+    const { jobId } = request.params as { jobId: string };
+    const auth = request.auth!;
+    const job = await queryOne<{ customer_id: string; provider_user_id: string | null }>(
+      `select j.customer_id, p.user_id as provider_user_id
+         from jobs j left join providers p on p.id = j.provider_id
+        where j.id = $1`,
+      [jobId],
+    );
+    if (!job) throw notFound('Job');
+    const isCustomer = job.customer_id === auth.userId;
+    const isProvider = job.provider_user_id === auth.userId;
+    if (!isCustomer && !isProvider && auth.role !== 'ADMIN') throw forbidden();
+
+    const row = await queryOne<{
+      customer_rated_at: string | null; provider_rated_at: string | null; fully_rated_at: string | null;
+    }>(
+      `select customer_rated_at, provider_rated_at, fully_rated_at
+         from job_rating_completion where job_id = $1`,
+      [jobId],
+    );
+
+    const mine = isCustomer ? row?.customer_rated_at : row?.provider_rated_at;
+    const theirs = isCustomer ? row?.provider_rated_at : row?.customer_rated_at;
+
+    return reply.send({
+      success: true,
+      data: {
+        role: isCustomer ? 'CUSTOMER' : isProvider ? 'PROVIDER' : 'ADMIN',
+        // What the caller still has to do, and whether the counterparty has.
+        iRated: Boolean(mine),
+        theyRated: Boolean(theirs),
+        fullyRated: Boolean(row?.fully_rated_at),
+        canRate: Boolean(isCustomer || isProvider) && !mine,
+      },
+    });
   });
 
   app.get('/reviews/job/:jobId', {

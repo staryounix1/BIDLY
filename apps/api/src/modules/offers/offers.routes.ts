@@ -4,6 +4,7 @@ import { clientQuery, queryMany, queryOne, transaction } from '../../db/pool.js'
 import { buildPage, parsePagination } from '../../core/pagination.js';
 import { LOG_EVENTS, logEvent } from '../../core/logger.js';
 import { enqueue, OUTBOX_TOPICS } from '../../core/outbox.js';
+import { resolveCommission } from '../../core/commission.js';
 
 /**
  * /offers — provider bids and the negotiation thread.
@@ -292,43 +293,41 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
 
       const price = Number(offer.price_minor);
 
-      // Commission resolution: service override > category rule > global rule.
-      const rule = await c.one<{
-        model: string; percent_bps: number | null; fixed_minor: string | null;
-        min_fee_minor: string | null; max_fee_minor: string | null; id: string;
-      }>(
-        `select id, model, percent_bps, fixed_minor, min_fee_minor, max_fee_minor
-         from commission_rules
-         where is_active and effective_from <= now() and (effective_to is null or effective_to > now())
-           and (
-             (service_id = $1) or
-             (service_id is null and category_id = (select category_id from requests where id = $2)) or
-             (service_id is null and category_id is null and scope = 'GLOBAL')
-           )
-         order by
-           case scope when 'SERVICE' then 1 when 'CATEGORY' then 2 when 'GLOBAL' then 3 else 4 end,
-           priority desc
-         limit 1`,
-        [offer.service_id, offer.request_id],
-      );
+      // Commission: scoped `commission_rules` override first, otherwise the
+      // tiered `commission.tiers` schedule (15% to 450 MAD, 20% above), with
+      // SOS surcharge, Premium discount and first-job-free layered on top.
+      const isSos = await c
+        .one<{ is_sos: boolean }>('select is_sos from requests where id = $1', [offer.request_id])
+        .then((r) => Boolean(r?.is_sos));
+      // Premium membership is optional and may not be modelled yet; treat a
+      // live boost as the same paid tier so the discounted rate still applies.
+      const isPremium = await c
+        .one<{ is_premium: boolean }>(
+          `select (p.boosted_until is not null and p.boosted_until > now()) as is_premium
+             from providers p where p.id = $1`,
+          [offer.provider_id],
+        )
+        .then((r) => Boolean(r?.is_premium));
+      const resolved = await resolveCommission(client, {
+        priceMinor: price,
+        serviceId: offer.service_id,
+        requestId: offer.request_id,
+        providerUserId: offer.provider_user_id,
+        isSos,
+        isPremium,
+      });
 
-      const percentBps = rule?.percent_bps ?? offer.commission_bps ?? 1500;
-      let commissionMinor = Math.round((price * percentBps) / 10000);
-      if (rule?.fixed_minor) commissionMinor += Number(rule.fixed_minor);
-      if (rule?.min_fee_minor) commissionMinor = Math.max(commissionMinor, Number(rule.min_fee_minor));
-      if (rule?.max_fee_minor) commissionMinor = Math.min(commissionMinor, Number(rule.max_fee_minor));
-      commissionMinor = Math.min(Math.max(commissionMinor, 0), price);
-
-      const providerNetMinor = price - commissionMinor;
+      const percentBps = resolved.bps;
+      const commissionMinor = resolved.commissionMinor;
+      const providerNetMinor = resolved.providerNetMinor;
       const commissionSnapshot = {
-        ruleId: rule?.id ?? null,
-        model: rule?.model ?? 'PERCENT',
+        ruleId: resolved.ruleId,
+        model: 'PERCENT',
         percentBps,
-        fixedMinor: rule?.fixed_minor ? Number(rule.fixed_minor) : 0,
-        minFeeMinor: rule?.min_fee_minor ? Number(rule.min_fee_minor) : null,
-        maxFeeMinor: rule?.max_fee_minor ? Number(rule.max_fee_minor) : null,
         commissionMinor,
         providerNetMinor,
+        basis: resolved.basis,
+        ...resolved.snapshot,
         resolvedAt: new Date().toISOString(),
       };
 
