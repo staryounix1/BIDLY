@@ -113,9 +113,27 @@ function NewRequestView() {
     setAnswers((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  // The map owns the pickup address, so a required ADDRESS answer should follow
+  // it instead of asking the customer to type the same street twice.
+  const addressFieldKey = useMemo(
+    () => fields.find((f) => f.type === 'ADDRESS')?.key,
+    [fields],
+  );
+  useEffect(() => {
+    if (!addressFieldKey) return;
+    const line1 = (service?.requires_location ? pickup : destination).line1.trim();
+    if (!line1) return;
+    setAnswers((prev) =>
+      prev[addressFieldKey] === line1 ? prev : { ...prev, [addressFieldKey]: line1 },
+    );
+  }, [addressFieldKey, service?.requires_location, pickup, destination]);
+
   const visibleFields = useMemo(
     () =>
       fields.filter((f) => {
+        // The map already answers the ADDRESS field; showing a second box for
+        // the same street is the kind of duplication that loses a customer.
+        if (f.type === 'ADDRESS') return false;
         if (!f.depends_on_key) return true;
         const dependency = answers[f.depends_on_key];
         return String(dependency ?? '') === String(f.depends_on_value ?? '');
