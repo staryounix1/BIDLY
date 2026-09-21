@@ -483,7 +483,8 @@
     "withProvider": "with your provider",
     "withCustomer": "with your customer",
     "connected": "Live",
-    "reconnecting": "Reconnecting…"
+    "reconnecting": "Reconnecting…",
+    "openFailed": "Could not open the conversation. Please try again."
   },
   "notifications": {
     "title": "Notifications",
@@ -713,7 +714,8 @@
     "copy": "Copy",
     "copied": "Copied",
     "revoke": "Stop",
-    "views": "{count} views"
+    "views": "{count} views",
+    "message": "Message the provider"
   },
   "home": {
     "greeting": "Hi {name}",
