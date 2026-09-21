@@ -39,6 +39,17 @@ function WalletView() {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('BANK_TRANSFER');
   const [busy, setBusy] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const [topUpMethod, setTopUpMethod] = useState('CARD');
+  const [topUpBusy, setTopUpBusy] = useState(false);
+
+  /**
+   * A stable key per top-up attempt, regenerated only after a credit lands, so
+   * a double tap or a retry on a flaky connection cannot credit twice.
+   */
+  const [topUpKeyState, setTopUpKeyState] = useState(
+    () => `topup-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -62,6 +73,31 @@ function WalletView() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  async function onTopUp(e: React.FormEvent) {
+    e.preventDefault();
+    setTopUpBusy(true);
+    setNotice(null);
+    setError(null);
+    try {
+      const amountMinor = Math.round(Number(topUpAmount) * 100);
+      if (!Number.isFinite(amountMinor) || amountMinor <= 0) throw new Error(t('payment.topUpAmount'));
+      await paymentsApi.topUpWallet({
+        amountMinor,
+        method: topUpMethod,
+        idempotencyKey: topUpKeyState,
+      });
+      setNotice(t('payment.topUpDone'));
+      setTopUpAmount('');
+      // Fresh key: the next top-up is a genuinely new charge.
+      setTopUpKeyState(`topup-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : t('common.error'));
+    } finally {
+      setTopUpBusy(false);
+    }
+  }
 
   async function onRequestPayout(e: React.FormEvent) {
     e.preventDefault();
@@ -112,6 +148,57 @@ function WalletView() {
             <Stat label={t('payment.lifetimeIn')} value={formatMinor(wallet?.lifetime_in_minor ?? 0, wallet?.currency, locale)} />
             <Stat label={t('payment.lifetimeOut')} value={formatMinor(wallet?.lifetime_out_minor ?? 0, wallet?.currency, locale)} />
           </section>
+
+          {/*
+            Providers only. A craftsman settles the platform commission from
+            this balance when a deal is agreed, so an empty wallet blocks his
+            first agreement and nothing else can fund it. Customers never see
+            this: a customer's money reaches a provider through the job payment.
+          */}
+          {isProvider && (
+            <section className="card card-featured mb-6 p-5">
+              <SectionTitle>{t('payment.topUp')}</SectionTitle>
+              <p className="mb-3 text-sm text-[rgb(var(--fg-muted))]">{t('payment.topUpHint')}</p>
+              <form onSubmit={onTopUp} className="flex flex-wrap items-end gap-3">
+                <label className="block">
+                  <span className="label">{t('payment.topUpAmount')}</span>
+                  <input
+                    type="number" min="10" step="0.01" required value={topUpAmount}
+                    onChange={(e) => setTopUpAmount(e.target.value)}
+                    className="input tnum w-40"
+                    placeholder="100"
+                  />
+                </label>
+                <label className="block">
+                  <span className="label">{t('payment.method')}</span>
+                  <select
+                    value={topUpMethod} onChange={(e) => setTopUpMethod(e.target.value)}
+                    className="input w-auto"
+                  >
+                    <option value="CARD">CARD</option>
+                    <option value="CASH">CASH</option>
+                    <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+                  </select>
+                </label>
+                <button type="submit" disabled={topUpBusy} className="btn btn-primary">
+                  {topUpBusy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
+                  {topUpBusy ? t('payment.paying') : t('payment.topUp')}
+                </button>
+              </form>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {[50, 100, 200, 500].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    className="chip chip-neutral tnum"
+                    onClick={() => setTopUpAmount(String(v))}
+                  >
+                    +{v}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           {isProvider && (
             <section className="card mb-6 p-5">

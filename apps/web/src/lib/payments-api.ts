@@ -58,10 +58,31 @@ export interface PaymentResult {
   retryable?: boolean;
 }
 
+export interface TopUpResult {
+  transactionId: string;
+  amountMinor: number;
+  currency: string;
+  balanceAfterMinor: number;
+  alreadyCredited: boolean;
+}
+
 export const paymentsApi = {
   /** Customer: authorize + capture the payment for a completed job. Idempotent. */
   async payJob(jobId: string, method = 'CARD'): Promise<PaymentResult> {
     const res = await api.post<PaymentResult>(`/payments/job/${jobId}/pay`, { method });
+    return res.data;
+  },
+
+  /**
+   * Provider: add funds to my own wallet.
+   *
+   * A provider settles the platform commission from this balance when a deal
+   * is agreed, so an empty wallet blocks the first agreement. Provider-only on
+   * the server too. The idempotency key makes a retry after a dropped
+   * connection a no-op rather than a double credit.
+   */
+  async topUpWallet(input: { amountMinor: number; method?: string; idempotencyKey?: string }): Promise<TopUpResult> {
+    const res = await api.post<TopUpResult>('/wallets/me/topup', input);
     return res.data;
   },
 
