@@ -44,7 +44,8 @@
     "yes": "Yes",
     "no": "No",
     "required": "Required",
-    "km": "km"
+    "km": "km",
+    "delete": "Remove"
   },
   "auth": {
     "email": "Email",
@@ -810,5 +811,35 @@
       "title": "New message",
       "body": "You have a new message."
     }
+  },
+  "rating": {
+    "titleCustomer": "Rate the craftsman",
+    "titleProvider": "Rate the customer",
+    "subCustomer": "Your rating is public and builds his reputation.",
+    "subProvider": "Your rating is internal — only the platform sees it.",
+    "dim": {
+      "punctuality": "Punctuality",
+      "quality": "Quality",
+      "communication": "Communication",
+      "value": "Value for money"
+    },
+    "commentPlaceholder": "Add a comment (optional)",
+    "submit": "Send rating",
+    "needStars": "Pick a star rating first.",
+    "done": "You rated this job",
+    "bothDone": "Both sides have rated. The job is now closed.",
+    "waitingOther": "Saved. The other side has not rated yet — you are free to go.",
+    "otherRatedYou": "The other side already rated you. Add yours to close the job."
+  },
+  "photos": {
+    "before": "Before photos",
+    "after": "After photos",
+    "add": "Add",
+    "tooBig": "Photo is too large. Remove one and try again.",
+    "failed": "Could not read that image.",
+    "title": "Job photos",
+    "none": "No photos on this job.",
+    "remove": "Remove",
+    "afterHint": "Photos are saved with the job as proof of the work done."
   }
 }
