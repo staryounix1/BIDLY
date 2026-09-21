@@ -707,13 +707,13 @@
     "review": "Voir l’offre"
   },
   "tracking": {
-    "title": "Suivre l'artisan",
-    "eta": "Arrive dans {minutes} min",
-    "arrived": "Arrivé",
-    "call": "Appeler",
-    "message": "Message",
-    "providerComing": "Votre artisan est en route",
-    "status": "Statut de la demande"
+    "title": "Partager ma position",
+    "hint": "Créez un lien temporaire pour qu'une personne de confiance suive le trajet. Il cesse de fonctionner à l'expiration ou si vous le révoquez.",
+    "create": "Créer un lien",
+    "copy": "Copier",
+    "copied": "Copié",
+    "revoke": "Arrêter",
+    "views": "{count} vues"
   },
   "home": {
     "greeting": "Bonjour {name}",
@@ -841,5 +841,46 @@
     "none": "Aucune photo sur cette mission.",
     "remove": "Retirer",
     "afterHint": "Les photos sont enregistrées avec la mission comme preuve du travail."
+  },
+  "boost": {
+    "title": "Boostez votre visibilité",
+    "hint": "Les artisans boostés apparaissent en premier dans les résultats.",
+    "forHours": "{hours} h",
+    "bought": "Boost activé. Vous apparaissez en premier."
+  },
+  "complaint": {
+    "title": "Garantie de service",
+    "window": "Vous pouvez ouvrir une réclamation pendant {days} jours après la fin de la mission.",
+    "open": "Ouvrir une réclamation",
+    "subject": "Quel est le problème ?",
+    "body": "Décrivez le problème en détail",
+    "submit": "Envoyer la réclamation",
+    "tooShort": "Ajoutez un objet et une courte description.",
+    "opened": "Réclamation {code} ouverte. Le support va suivre.",
+    "alreadyOpen": "Vous avez déjà une réclamation ouverte pour cette mission."
+  },
+  "referral": {
+    "title": "Invitez des amis",
+    "subtitle": "Partagez votre code — vous recevez tous les deux un crédit dès que la personne termine sa première mission.",
+    "myCode": "Votre code d'invitation",
+    "copy": "Copier",
+    "copied": "Copié",
+    "rule": "Les récompenses sont versées quand la personne invitée termine sa première mission.",
+    "youGet": "Vous recevez",
+    "theyGet": "Elle reçoit",
+    "haveCode": "Vous avez un code ?",
+    "apply": "Appliquer",
+    "claimRule": "Un code s'utilise uniquement avant votre première mission terminée.",
+    "invited": "Personnes invitées",
+    "empty": "Aucune invitation.",
+    "claimed": "Code appliqué.",
+    "disabled": "Les invitations ne sont pas disponibles pour le moment.",
+    "rewardedCount": "{count} récompensée(s)",
+    "status": {
+      "PENDING": "En attente",
+      "REWARDED": "Récompensé",
+      "EXPIRED": "Expiré",
+      "CANCELLED": "Annulé"
+    }
   }
 }
