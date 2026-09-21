@@ -724,6 +724,7 @@
     "reviewTitle": "Dossier reçu",
     "reviewSubtitle": "Nous avons vos documents. Ils seront examinés bientôt, et vous pouvez naviguer dès maintenant.",
     "continueBrowsing": "Compris, continuer",
-    "locked": "La plateforme reste bloquée jusqu’à la fin de l’activation. La déconnexion reste disponible."
+    "locked": "La plateforme reste bloquée jusqu’à la fin de l’activation. La déconnexion reste disponible.",
+    "uploadFailed": "Impossible de lire cette image. Essayez-en une autre."
   }
 }

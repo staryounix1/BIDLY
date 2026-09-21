@@ -224,12 +224,14 @@ function ActivationCard({ onDone, onSignOut }: { onDone: () => void; onSignOut: 
               hint={t('activation.rectoHint')}
               value={recto}
               onChange={setRecto}
+              errorText={t('activation.uploadFailed')}
             />
             <DocumentField
               label={t('activation.verso')}
               hint={t('activation.versoHint')}
               value={verso}
               onChange={setVerso}
+              errorText={t('activation.uploadFailed')}
             />
 
             <button
@@ -294,37 +296,95 @@ function StepRow({ done, active, label }: { done: boolean; active: boolean; labe
 }
 
 /**
- * A labelled slot for one document image.
+ * A labelled slot for one document photo.
  *
- * The value is a URL: this deployment has no binary upload service
- * (`STORAGE_DRIVER=local`), and inventing one here would be a lie. The field
- * accepts a link/path, and swapping in a real uploader later only changes this
+ * The user picks or photographs an image; it is downscaled and compressed in the
+ * browser to a data URL before it is sent, so a phone photo becomes a small
+ * payload the API accepts as text. There is no separate binary upload service
+ * (`STORAGE_DRIVER=local`), and this is honest about it: the image travels with
+ * the submission, and swapping in real object storage later only changes this
  * component.
  */
+const MAX_EDGE = 1280;
+const JPEG_QUALITY = 0.72;
+
+async function fileToCompressedDataUrl(file: File): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas unavailable');
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close?.();
+
+  // A card photo is fine as JPEG; it keeps a 1280px image well under the limit.
+  return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+}
+
 function DocumentField({
-  label, hint, value, onChange,
+  label, hint, value, onChange, errorText,
 }: {
   label: string;
   hint: string;
   value: string;
   onChange: (v: string) => void;
+  errorText: string;
 }) {
+  const [reading, setReading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const inputId = `doc-${label.replace(/\s+/g, '-')}`;
+
+  async function pick(file: File | undefined) {
+    if (!file) return;
+    setFailed(false);
+    setReading(true);
+    try {
+      onChange(await fileToCompressedDataUrl(file));
+    } catch {
+      setFailed(true);
+    } finally {
+      setReading(false);
+    }
+  }
+
   return (
-    <label className="block">
+    <div className="block">
       <span className="label">{label}</span>
       <span className="mb-1.5 block text-[11px] text-[rgb(var(--fg-subtle))]">{hint}</span>
-      <div className="flex items-center gap-2 rounded-[var(--radius)] border border-dashed border-[rgb(var(--line-strong))] px-3 py-2.5">
-        <CategoryIcon name="doc" size={18} />
+      <label
+        htmlFor={inputId}
+        className="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-dashed border-[rgb(var(--line-strong))] px-3 py-2.5"
+      >
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt="" className="h-12 w-16 shrink-0 rounded-md object-cover" />
+        ) : (
+          <CategoryIcon name="doc" size={18} />
+        )}
+        <span className="min-w-0 flex-1 text-xs text-[rgb(var(--fg-muted))]">
+          {reading ? '…' : value ? '✓' : '📷'}
+        </span>
+        <span className="shrink-0 rounded-lg bg-[rgb(var(--brand-500)/0.14)] px-2.5 py-1 text-[11px] font-bold text-[rgb(var(--brand-700))]">
+          {label}
+        </span>
         <input
-          className="min-w-0 flex-1 border-0 bg-transparent text-xs outline-none"
-          dir="ltr"
-          placeholder="https://…"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          id={inputId}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          onChange={(e) => void pick(e.target.files?.[0])}
         />
-        {value ? <span className="text-xs font-bold text-[rgb(var(--brand-700))]">✓</span> : null}
-      </div>
-    </label>
+      </label>
+      {failed && (
+        <span className="mt-1 block text-[11px] font-semibold text-[rgb(var(--danger))]">{errorText}</span>
+      )}
+    </div>
   );
 }
 
