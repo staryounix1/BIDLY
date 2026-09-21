@@ -196,10 +196,17 @@ function RequestDetailView() {
   const selectedOffer =
     offers.find((o) => o.id === request.selected_offer_id || o.status === 'ACCEPTED') ?? null;
 
+  /**
+   * A draft is the same screen before the search starts: the map, the price and
+   * the customer's own request, waiting on one tap to publish. Keeping the two
+   * states on one layout means creating a request and waiting for craftsmen
+   * read as one continuous flow instead of two different pages.
+   */
+  const isDraft = request.status === 'DRAFT';
   const searching =
     !selectedOffer &&
     !request.cancelled_at &&
-    ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS'].includes(request.status);
+    (isDraft || ['PUBLISHED', 'MATCHING', 'RECEIVING_OFFERS'].includes(request.status));
 
   const requestPoint =
     request.pickup_lat != null && request.pickup_lng != null
@@ -231,6 +238,10 @@ function RequestDetailView() {
           priceMinor={request.budget_max_minor ?? request.budget_min_minor ?? null}
           currency={request.currency}
           pickupLabel={shortPlace(request)}
+          draft={isDraft}
+          notice={notice}
+          busy={busy}
+          onPublish={onPublish}
           onViewOffers={() => router.push(`/${locale}/requests`)}
           onStop={canCancel ? () => setShowCancel(true) : undefined}
           onPriceChange={onChangePrice}

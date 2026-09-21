@@ -37,6 +37,12 @@ export interface SearchRadarProps {
   priceMinor?: number | null;
   currency?: string;
   pickupLabel?: string | null;
+  /** Before publishing: nothing is being searched yet, so the panel asks to publish. */
+  draft?: boolean;
+  /** A one-off confirmation message, e.g. "request created". */
+  notice?: string | null;
+  busy?: boolean;
+  onPublish?: () => void;
   onViewOffers: () => void;
   onStop?: () => void;
   /** Quick price adjustment straight from the sheet. */
@@ -55,6 +61,10 @@ export function SearchRadar({
   priceMinor = null,
   currency = 'MAD',
   pickupLabel = null,
+  draft = false,
+  notice = null,
+  busy = false,
+  onPublish,
   onViewOffers,
   onStop,
   onPriceChange,
@@ -186,15 +196,18 @@ export function SearchRadar({
         </div>
       </div>
 
-      {/* Partners strip, floating just above the sheet. */}
+      {/* Partners strip, floating just above the sheet. In draft there is
+          nobody to show yet, so the strip states the request instead. */}
       <div className="live-partners">
         <DriverStack offers={liveOffers} />
         <p className="live-partners-text">
-          {liveOffers.length === 1
-            ? t('searching.partnersOne')
-            : t('searching.partners', { count: liveOffers.length })}
+          {draft
+            ? t('searching.draftReady')
+            : liveOffers.length === 1
+              ? t('searching.partnersOne')
+              : t('searching.partners', { count: liveOffers.length })}
         </p>
-        {candidateCount > 0 && (
+        {!draft && candidateCount > 0 && (
           <span className="live-partners-count tnum">
             {t('search.found', { count: candidateCount })}
           </span>
@@ -205,41 +218,63 @@ export function SearchRadar({
       <div className="live-sheet">
         <div className="live-grip" aria-hidden />
 
+        {notice && (
+          <p className="live-notice">
+            <CategoryIcon name="check" size={16} />
+            {notice}
+          </p>
+        )}
+
         {/* The row is LTR so the clock lands on the left, matching the
             reference; the children keep RTL text direction. */}
         <div className="live-row-head">
-          <span className="live-clock tnum">{expired ? '0:00' : timeLabel}</span>
+          <span className="live-clock tnum">
+            {draft ? '—' : expired ? '0:00' : timeLabel}
+          </span>
           <div className="live-status">
             <p className="live-status-title">
-              {expired ? t('search.expired') : t('searching.waitingReplies')}
+              {draft
+                ? t('searching.draftTitle')
+                : expired
+                  ? t('search.expired')
+                  : t('searching.waitingReplies')}
             </p>
             <p className="live-status-sub">
-              {expired ? '' : t('searching.youChoose')}
+              {draft
+                ? t('searching.draftSub')
+                : expired
+                  ? ''
+                  : t('searching.youChoose')}
             </p>
           </div>
         </div>
 
         <div className="live-progress" aria-hidden>
-          <span className="live-progress-fill" style={{ width: `${progress * 100}%` }} />
+          <span
+            className="live-progress-fill"
+            style={{ width: draft ? '0%' : `${progress * 100}%` }}
+          />
         </div>
 
         {/* The status line carries the widening hint, the deadline and the
             connection dot together: three separate lines spent 60px of a sheet
             that has to keep the map on screen. */}
-        <p className="live-scanning">
-          {expired ? (
-            t('search.expired')
-          ) : (
-            <>
-              {t('searching.expanding')}
-              {' · '}
-              {t('search.scanning', { km: radiusKm })}
-              {deadlineHint && <> · {deadlineHint}</>}
-            </>
-          )}
-          {' · '}
-          <span className={connected ? 'live-dot is-on' : 'live-dot'} aria-hidden />
-        </p>
+        {!draft && (
+          <p className="live-scanning">
+            {expired ? (
+              t('search.expired')
+            ) : (
+              <>
+                {t('searching.expanding')}
+                {' · '}
+                {t('search.scanning', { km: radiusKm })}
+                {deadlineHint && <> · {deadlineHint}</>}
+              </>
+            )}
+            {' · '}
+            <span className={connected ? 'live-dot is-on' : 'live-dot'} aria-hidden />
+          </p>
+        )}
 
         {/* Price with steppers — the inDrive bargaining affordance. */}
         {priceMinor != null && (
@@ -269,35 +304,52 @@ export function SearchRadar({
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={onViewOffers}
-          disabled={liveOffers.length === 0}
-          className="live-confirm"
-        >
-          {liveOffers.length > 0
-            ? `${t('searching.confirm')} · ${liveOffers.length}`
-            : t('searching.confirm')}
-        </button>
+        {/* One loud action per state: publish the draft, or pick an offered
+            craftsman. */}
+        {draft ? (
+          <button
+            type="button"
+            onClick={onPublish}
+            disabled={busy || !onPublish}
+            className="live-confirm"
+          >
+            {busy ? t('compose.sending') : t('searching.publishNow')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onViewOffers}
+            disabled={liveOffers.length === 0}
+            className="live-confirm"
+          >
+            {liveOffers.length > 0
+              ? `${t('searching.confirm')} · ${liveOffers.length}`
+              : t('searching.confirm')}
+          </button>
+        )}
 
-        {/* Auto-accept: the switch from the reference screen. */}
-        <button
-          type="button"
-          role="switch"
-          aria-checked={autoAccept}
-          onClick={() => setAutoAccept((v) => !v)}
-          className="live-toggle-row"
-        >
-          <span className={`live-switch ${autoAccept ? 'is-on' : ''}`} aria-hidden>
-            <span className="live-switch-knob" />
-          </span>
-          <span className="live-toggle-text">
-            {price
-              ? t('searching.autoAccept', { price })
-              : t('searching.autoAccept', { price: '—' })}
-          </span>
-          <CategoryIcon name="arrow" size={19} className="live-toggle-icon" />
-        </button>
+        {/* Auto-accept: the switch from the reference screen. Publishing the
+            request is what starts a search, so the switch is only meaningful
+            once it is live. */}
+        {!draft && (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={autoAccept}
+            onClick={() => setAutoAccept((v) => !v)}
+            className="live-toggle-row"
+          >
+            <span className={`live-switch ${autoAccept ? 'is-on' : ''}`} aria-hidden>
+              <span className="live-switch-knob" />
+            </span>
+            <span className="live-toggle-text">
+              {price
+                ? t('searching.autoAccept', { price })
+                : t('searching.autoAccept', { price: '—' })}
+            </span>
+            <CategoryIcon name="arrow" size={19} className="live-toggle-icon" />
+          </button>
+        )}
 
         <div className="live-facts">
           {price && (
