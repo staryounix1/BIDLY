@@ -46,28 +46,40 @@ const DEFAULT_HEIGHTS: Record<SheetDetent, number> = {
   full: 0.92,
 };
 
-export const DETENTS: SheetDetent[] = ['peek', 'half', 'full'];
+/**
+ * Detents in ascending snap-point order.
+ *
+ * react-modal-sheet validates that snap points ascend, and it prepends `0`
+ * (closed) and appends `1` (fully open) on its own. A snap point is the share
+ * of the sheet pushed *down* from fully-open, i.e. `1 - detentHeight`, so the
+ * *tallest* detent produces the *smallest* point. `full` therefore comes first
+ * and `peek` last. With the order fixed, index `i` is just `DETENTS[i]`, which
+ * is what `initialSnap` and `onSnap` rely on.
+ */
+export const DETENTS: SheetDetent[] = ['full', 'half', 'peek'];
 
 /**
  * Translate screen-share detents into react-modal-sheet snap points.
  *
- * The library measures snap points as a distance from the *bottom* of the sheet
- * as a share of the sheet's height, so a detent covering 40% of the screen is
- * `1 - 0.4 = 0.6`. Points must ascend and include 0 and 1, which is why the
- * detents are listed shortest-first and the closed/open ends are added.
+ * The library turns a point into `translateY = (1 - point) * sheetHeight`, so a
+ * detent that should cover 40% of the viewport needs the point `1 - 0.4 = 0.6`.
+ * `heights` therefore describes how much of the screen each detent occupies,
+ * which is the intuitive reading of `peek`/`half`/`full`.
+ *
+ * The result ascends because `DETENTS` is ordered tallest detent first, which
+ * is what the library validates.
  *
  * Extracted as a pure function so the mapping is unit-testable without a DOM.
  */
 export function detentSnapPoints(
   heights: Record<SheetDetent, number> = DEFAULT_HEIGHTS,
 ): number[] {
-  const points = DETENTS.map((d) => 1 - heights[d]);
-  return [0, ...points, 1].sort((a, b) => a - b);
+  return DETENTS.map((d) => 1 - heights[d]);
 }
 
-/** Index of a detent inside the snap-point array (the leading 0 shifts it by 1). */
+/** Index of a detent inside the snap-point array. */
 export function detentSnapIndex(detent: SheetDetent): number {
-  return DETENTS.indexOf(detent) + 1;
+  return DETENTS.indexOf(detent);
 }
 
 export function BottomSheet({
@@ -121,9 +133,8 @@ export function BottomSheet({
   const initialSnap = detentSnapIndex(initial);
 
   const onSnap = useCallback((index: number) => {
-    // Index 0 is the closed snap and the last is fully open; the detents sit
-    // between them, so shift back by one to map onto the named detents.
-    const next = DETENTS[index - 1];
+    // Snap points are in detent order, so the index maps straight across.
+    const next = DETENTS[index];
     if (next) setActive(next);
   }, []);
 
