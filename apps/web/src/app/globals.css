@@ -444,6 +444,149 @@
     margin: 0.625rem auto 0;
   }
 
+  /* --- compose: full-screen map + draggable sheet ----------------------- */
+
+  /* The map owns the viewport below the header, edge to edge, on every side.
+     `inset-block-start` is set inline from the measured header height because
+     the header is global chrome that this screen must not swallow. */
+  .compose-map {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 0;
+  }
+
+  /* The map canvas fills its layer; Leaflet draws its own controls on top. */
+  .compose-map .map-canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Thin translucent title bar floating over the map — not a solid block, so
+     the map still reads as the page background. */
+  .compose-topbar {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgb(var(--surface) / 0.86);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid rgb(var(--line) / 0.7);
+  }
+
+  .compose-topbar-title {
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* Shortcut back to the map centre when the sheet is covering it. */
+  .compose-mapback {
+    position: fixed;
+    inset-inline-end: 0.875rem;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 2.25rem;
+    padding-inline: 0.875rem;
+    border: 0;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgb(var(--fg));
+    background: rgb(var(--surface) / 0.94);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+  }
+
+  /* Draggable sheet: not position:fixed itself, so the inline `transform`
+     that drives the snap points is the only thing moving it. */
+  .compose-sheet {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 45;
+    display: flex;
+    flex-direction: column;
+    background: rgb(var(--surface));
+    border-start-start-radius: 1.25rem;
+    border-start-end-radius: 1.25rem;
+    box-shadow: var(--shadow-lg);
+    will-change: transform;
+  }
+
+  .compose-sheet--settling {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .compose-sheet--dragging {
+    transition: none;
+  }
+
+  /* Wide enough to grab with a thumb without hunting for it. */
+  .compose-sheet-grip {
+    flex: none;
+    padding: 0.625rem 0;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .compose-sheet-grip:active {
+    cursor: grabbing;
+  }
+
+  .compose-sheet-grip::after {
+    content: '';
+    display: block;
+    width: 2.75rem;
+    height: 0.3125rem;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: rgb(var(--line-strong));
+  }
+
+  .compose-sheet-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 1rem;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  /* The sheet is the only scroller on this screen; the page behind it must
+     never scroll away from the map. */
+  .compose-locked {
+    overflow: hidden;
+  }
+
+  /* On desktop the sheet becomes a card anchored to one side instead of a
+     full-width tray, so the map stays usable next to it. */
+  @media (min-width: 900px) {
+    .compose-sheet {
+      inset-inline-start: auto;
+      inset-inline-end: 1.5rem;
+      bottom: 1.5rem;
+      width: 26rem;
+      border-radius: var(--radius-lg);
+      max-height: calc(100vh - 7rem);
+    }
+
+    .compose-sheet--desktop {
+      transform: none !important;
+    }
+  }
+
   /* --- misc ------------------------------------------------------------ */
 
   .skeleton {
@@ -463,6 +606,108 @@
     background: rgb(var(--surface-3));
     position: relative;
     overflow: hidden;
+  }
+
+  /* --- Leaflet overrides ------------------------------------------------ */
+
+  /* Zoom sits in the bottom-right inset, as a white pill with a soft shadow,
+     instead of the stock top-left square. */
+  .map-canvas .leaflet-bottom.leaflet-right {
+    bottom: 0.75rem;
+    right: 1.5rem;
+  }
+
+  .map-canvas .leaflet-control-zoom {
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .map-canvas .leaflet-control-zoom a,
+  .map-canvas .leaflet-bar a {
+    width: 2.5rem;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: rgb(var(--fg));
+    background: rgb(var(--surface) / 0.96);
+    border: 0;
+    border-bottom: 1px solid rgb(var(--line));
+  }
+
+  .map-canvas .leaflet-bar a:last-child {
+    border-bottom: 0;
+  }
+
+  .map-canvas .leaflet-control-zoom a:hover,
+  .map-canvas .leaflet-bar a:hover {
+    background: rgb(var(--surface-3));
+    color: rgb(var(--fg));
+  }
+
+  .map-canvas .leaflet-bar a.leaflet-disabled {
+    background: rgb(var(--surface) / 0.7);
+    color: rgb(var(--fg-subtle));
+  }
+
+  /* Attribution stays legible on the pale Voyager/Positron basemaps. */
+  .map-canvas .leaflet-control-attribution {
+    margin: 0;
+    padding: 0.0625rem 0.375rem;
+    border-top-left-radius: 0.5rem;
+    font-size: 0.625rem;
+    color: rgb(var(--fg-muted));
+    background: rgb(var(--surface) / 0.82);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .map-canvas .leaflet-control-attribution a {
+    color: rgb(var(--fg-muted));
+    text-decoration: underline;
+  }
+
+  /* Floating circular action button (e.g. "my location") over the map. */
+  .map-fab {
+    position: absolute;
+    z-index: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.875rem;
+    height: 2.875rem;
+    border: 0;
+    border-radius: 999px;
+    color: rgb(var(--fg));
+    background: rgb(var(--surface));
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition:
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.18s;
+  }
+
+  .map-fab:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .map-fab:active {
+    transform: scale(0.94);
+  }
+
+  .map-fab:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .map-fab-brand {
+    color: rgb(var(--brand-ink));
+    background: rgb(var(--brand-500));
+    box-shadow: var(--shadow-brand);
   }
 
   .divider {

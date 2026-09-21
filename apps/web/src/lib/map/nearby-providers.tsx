@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
-import { useMap, TILE_URL, TILE_ATTRIBUTION } from './leaflet';
+import { useMap, addTileLayer } from './leaflet';
 import { useNearbyProviders, type NearbyProvider } from './provider-location';
 
 /**
@@ -58,7 +58,7 @@ export function NearbyProvidersMap({
       if (!point) return undefined;
       const map2 = map;
       map2.setView([point.lat, point.lng], 12);
-      L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map2);
+      addTileLayer(L, map2);
       L.marker([point.lat, point.lng]).addTo(map2);
       for (const p of providers) {
         L.circle([Number(p.lat), Number(p.lng)], {

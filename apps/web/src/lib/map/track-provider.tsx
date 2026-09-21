@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { api } from '@/lib/auth-api';
-import { useMap, TILE_URL, TILE_ATTRIBUTION } from './leaflet';
+import { useMap, addTileLayer } from './leaflet';
 
 /**
  * Live arrival tracking.
@@ -92,7 +92,7 @@ export function TrackProvider({
   useMap(
     containerRef,
     (L, map) => {
-      L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map);
+      addTileLayer(L, map);
       const centre = location ?? destination;
       map.setView(centre ? [centre.lat, centre.lng] : [33.5731, -7.5898], 13);
 

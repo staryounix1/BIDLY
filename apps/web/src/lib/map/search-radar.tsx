@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { useRealtime } from '@/lib/realtime-client';
-import { useMap, TILE_URL, TILE_ATTRIBUTION } from '@/lib/map/leaflet';
+import { useMap, addTileLayer } from '@/lib/map/leaflet';
 import { CategoryIcon } from '@/lib/icons';
 
 /**
@@ -255,7 +255,7 @@ function MiniMap({
   useMap(
     ref,
     (L, map) => {
-      L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map);
+      addTileLayer(L, map);
       map.setView([point.lat, point.lng], 12);
 
       L.circle([point.lat, point.lng], {

@@ -31,6 +31,7 @@ interface LeafletNamespace {
   circle: (ll: [number, number], opts?: Record<string, unknown>) => LeafletLayer;
   divIcon: (opts: Record<string, unknown>) => unknown;
   latLng: (lat: number, lng: number) => unknown;
+  control: Record<string, unknown>;
 }
 
 export interface LeafletMap {
@@ -40,6 +41,9 @@ export interface LeafletMap {
   invalidateSize: () => void;
   fitBounds: (b: unknown, opts?: Record<string, unknown>) => void;
   getZoom: () => number;
+  zoomIn: (delta?: number) => LeafletMap;
+  zoomOut: (delta?: number) => LeafletMap;
+  zoomControl?: { setPosition: (pos: string) => void } | undefined;
 }
 
 interface LeafletEvent {
@@ -98,16 +102,74 @@ export function loadLeaflet(): Promise<LeafletNamespace> {
 }
 
 /**
- * Tile layer: OpenStreetMap's own raster tiles.
+ * Basemaps.
  *
- * Deliberately NOT a third-party tile CDN (CARTO, Stadia, Mapbox): several of
- * those now serve an "API KEY REQUIRED" watermark for unregistered domains,
- * which is exactly what a keyless map must avoid. OSM's own tiles need no key
- * and allow light, non-commercial traffic under the tile usage policy.
+ * CARTO's Voyager and Positron are the clean, light, ride-hailing-grade
+ * cartography this app wants. Since 2026 CARTO stamps every tile served
+ * without a valid key with an "API KEY REQUIRED" watermark, so a keyless
+ * Voyager is not shippable — it paints a diagonal advert across the map.
+ *
+ * The key is free, needs no CARTO account, and is requested at
+ * https://carto.com/basemaps/apikey/. Supply it as `NEXT_PUBLIC_CARTO_API_KEY`
+ * and Voyager is used. Without a key we fall back to the keyless OSM raster
+ * style, which is clean enough to ship and never watermarked.
+ *
+ * `{r}` lets Leaflet append `@2x` on retina displays, which is what keeps the
+ * labels crisp on phones.
  */
-export const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-export const TILE_ATTRIBUTION =
+export type MapStyle = 'voyager' | 'positron' | 'osm';
+
+/** A CARTO style needs a key only because CARTO demands one. */
+function cartoUrl(path: string): string {
+  const key = (process.env.NEXT_PUBLIC_CARTO_API_KEY ?? '').trim();
+  const suffix = key ? `?api_key=${encodeURIComponent(key)}` : '';
+  return `https://{s}.basemaps.cartocdn.com/${path}/{z}/{x}/{y}{r}.png${suffix}`;
+}
+
+const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+const CARTO_ATTRIBUTION = `${OSM_ATTRIBUTION} &copy; <a href="https://carto.com/attributions">CARTO</a>`;
+
+export const TILE_STYLES: Record<MapStyle, { url: string; attribution: string }> = {
+  voyager: { url: cartoUrl('rastertiles/voyager'), attribution: CARTO_ATTRIBUTION },
+  positron: { url: cartoUrl('light_all'), attribution: CARTO_ATTRIBUTION },
+  osm: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: OSM_ATTRIBUTION },
+};
+
+/** True when a CARTO key is configured, i.e. the CARTO styles are watermarked-free. */
+export const HAS_CARTO_KEY = Boolean((process.env.NEXT_PUBLIC_CARTO_API_KEY ?? '').trim());
+
+/**
+ * Default basemap. Voyager when a CARTO key is present, otherwise the keyless
+ * OSM style — never the watermarked one.
+ */
+export const DEFAULT_MAP_STYLE: MapStyle = HAS_CARTO_KEY ? 'voyager' : 'osm';
+
+// `TILE_URL`/`TILE_ATTRIBUTION` are kept for callers that only need a URL; they
+// follow the same key-aware default so nobody accidentally loads a watermark.
+export const TILE_URL = TILE_STYLES[DEFAULT_MAP_STYLE].url;
+export const TILE_ATTRIBUTION = TILE_STYLES[DEFAULT_MAP_STYLE].attribution;
+
+/**
+ * Add a basemap to `map`, defaulting to the key-aware default style.
+ *
+ * `crossOrigin` is required for retina subdomains and keeps the tiles
+ * cache-friendly; `subdomains` only applies to the CARTO hosts.
+ */
+export function addTileLayer(
+  L: LeafletNamespace,
+  map: LeafletMap,
+  style: MapStyle = DEFAULT_MAP_STYLE,
+): void {
+  const { url, attribution } = TILE_STYLES[style];
+  L.tileLayer(url, {
+    attribution,
+    maxZoom: 19,
+    ...(style === 'osm' ? {} : { subdomains: 'abcd' }),
+    crossOrigin: true,
+  }).addTo(map);
+}
 
 export function useLeaflet() {
   const [ready, setReady] = useState<boolean>(() => typeof window !== 'undefined' && !!window.L);
@@ -147,7 +209,11 @@ export function useMap(
 
     loadLeaflet().then((L) => {
       if (!alive || !containerRef.current) return;
+      // Keep Leaflet's own zoom control (it handles enable/disable and touch
+      // behaviour), but move it out of the top-left default into the
+      // bottom-right inset; globals.css restyles it into a white pill.
       map = L.map(containerRef.current, { zoomControl: true, attributionControl: true });
+      map.zoomControl?.setPosition('bottomright');
       const result = setupRef.current(L, map);
       cleanup = result ?? undefined;
       // Tiles and the container settle a tick after mount; nudge Leaflet so
