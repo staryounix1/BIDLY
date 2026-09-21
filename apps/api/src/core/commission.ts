@@ -200,9 +200,13 @@ export async function loadRule(
 
 /** A provider is "new" until their first job completes. */
 export async function isFirstJobFor(client: PoolClient, providerUserId: string): Promise<boolean> {
+  // `jobs` stores provider_id (the provider row), not a user id, so the
+  // ownership test has to go through `providers`.
   const row = await clientQuery(client).one<{ n: string }>(
-    `select count(*)::text as n from jobs
-     where provider_user_id = $1 and status = 'COMPLETED'`,
+    `select count(*)::text as n
+       from jobs j
+       join providers p on p.id = j.provider_id
+      where p.user_id = $1 and j.status = 'COMPLETED'`,
     [providerUserId],
   );
   return Number(row?.n ?? 0) === 0;

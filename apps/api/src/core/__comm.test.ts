@@ -31,3 +31,22 @@ describe('tiered commission', () => {
     expect(computeCommission({priceMinor:80000, isPremium:true}, DEFAULT_SCHEDULE, null).commissionMinor).toBe(8000);
   });
 });
+
+describe('commission SQL against the real schema', () => {
+  // `jobs` has no provider_user_id column (only provider_id); ownership must be
+  // resolved through `providers`. A raw `where provider_user_id = $1` compiles
+  // fine and crashes at runtime with 42703, which unit-testing the pure
+  // calculator above cannot catch.
+  it('isFirstJobFor resolves the provider user through providers, not jobs', async () => {
+    const { isFirstJobFor } = await import('./apps/api/src/core/commission');
+    let captured = '';
+    // clientQuery() calls client.query() and takes rows[0].
+    const fake = {
+      query: async (sql: string) => { captured = sql; return { rows: [{ n: '0' }] }; },
+    } as never;
+    await isFirstJobFor(fake as never, 'u1');
+    expect(captured).toMatch(/join providers/i);
+    expect(captured).toMatch(/p\.user_id\s*=/i);
+    expect(captured).not.toMatch(/jobs\s+where\s+provider_user_id/i);
+  });
+});
