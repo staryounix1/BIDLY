@@ -49,32 +49,27 @@ const DEFAULT_HEIGHTS: Record<SheetDetent, number> = {
 /**
  * Detents in ascending snap-point order.
  *
- * react-modal-sheet validates that snap points ascend, and it prepends `0`
- * (closed) and appends `1` (fully open) on its own. A snap point is the share
- * of the sheet pushed *down* from fully-open, i.e. `1 - detentHeight`, so the
- * *tallest* detent produces the *smallest* point. `full` therefore comes first
- * and `peek` last. With the order fixed, index `i` is just `DETENTS[i]`, which
- * is what `initialSnap` and `onSnap` rely on.
+ * A snap point equals the share of the sheet left visible, so `peek` is the
+ * smallest and `full` the largest, which is already ascending. react-modal-sheet
+ * validates that the points ascend and prepends its own `0` (closed) point, so
+ * the order must stay fixed here rather than being sorted at the call site.
  */
-export const DETENTS: SheetDetent[] = ['full', 'half', 'peek'];
+export const DETENTS: SheetDetent[] = ['peek', 'half', 'full'];
 
 /**
  * Translate screen-share detents into react-modal-sheet snap points.
  *
- * The library turns a point into `translateY = (1 - point) * sheetHeight`, so a
- * detent that should cover 40% of the viewport needs the point `1 - 0.4 = 0.6`.
- * `heights` therefore describes how much of the screen each detent occupies,
+ * The library renders the sheet with `translateY = (1 - point) * sheetHeight`,
+ * so a detent that should cover 40% of the viewport takes the point `0.4`.
+ * `heights` is therefore exactly the share of the screen each detent occupies,
  * which is the intuitive reading of `peek`/`half`/`full`.
- *
- * The result ascends because `DETENTS` is ordered tallest detent first, which
- * is what the library validates.
  *
  * Extracted as a pure function so the mapping is unit-testable without a DOM.
  */
 export function detentSnapPoints(
   heights: Record<SheetDetent, number> = DEFAULT_HEIGHTS,
 ): number[] {
-  return DETENTS.map((d) => 1 - heights[d]);
+  return DETENTS.map((d) => heights[d]);
 }
 
 /**
@@ -92,7 +87,6 @@ export function detentSnapIndex(detent: SheetDetent): number {
 export function detentPointIndex(detent: SheetDetent): number {
   return DETENTS.indexOf(detent);
 }
-
 export function BottomSheet({
   heights,
   initial = 'peek',
