@@ -47,6 +47,12 @@ export interface MapPickerProps {
   showLocateButton?: boolean;
   /** Keep the map following the user as they move. Default false. */
   follow?: boolean;
+  /**
+   * Resolve and report the address automatically whenever the picked point
+   * changes. Used by the compose screen, where the map is the only place the
+   * location is entered and there is no address field to fill in.
+   */
+  autoFillAddress?: boolean;
   /** Called once the starting view is committed, so a parent can hide a loader. */
   onReady?: () => void;
 }
@@ -63,6 +69,7 @@ export function MapPicker({
   className,
   showLocateButton = true,
   follow = false,
+  autoFillAddress = false,
   onReady,
 }: MapPickerProps) {
   const { t } = useI18n();
@@ -130,6 +137,17 @@ export function MapPicker({
       setReverseBusy(false);
     }
   }, [picked?.lat, picked?.lng, onAddressChange]);
+
+  // In `autoFillAddress` mode the map is the only place a location is entered,
+  // so resolve the address as soon as the point settles. Nominatim rate-limits,
+  // so debounce: a drag or a few taps collapse into one request.
+  const autoReverse = useRef(reverse);
+  autoReverse.current = reverse;
+  useEffect(() => {
+    if (!autoFillAddress || !picked || !onAddressChange) return;
+    const id = window.setTimeout(() => void autoReverse.current(), 600);
+    return () => window.clearTimeout(id);
+  }, [autoFillAddress, picked?.lat, picked?.lng, onAddressChange]);
 
   const isFull = variant === 'full';
 

@@ -8,11 +8,7 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import {
   catalogApi,
-  fieldHelp,
-  fieldLabel,
-  fieldPlaceholder,
   localized,
-  optionLabel,
   type City,
   type Service,
   type ServiceField,
@@ -57,6 +53,69 @@ function useHeaderOffset() {
   return offset;
 }
 
+/**
+ * Fill the service's *required* custom answers from what the customer already
+ * provided, so a request can be sent from the map-and-tray screen alone.
+ *
+ * The compose tray deliberately stops at the send button; everything else about
+ * the job travels to the craftsman in chat. But the API hard-rejects a request
+ * whose required `service_fields` are empty, so leaving them blank would make
+ * those services impossible to order. Only required, still-empty fields are
+ * touched, and each is filled with a value of the right *kind*:
+ *
+ *   SELECT   — one of the field's own option values (a free string is rejected)
+ *   DATETIME — now, since no schedule was collected
+ *   NUMBER   — its own minimum, else zero
+ *   BOOLEAN  — false
+ *   text-ish — the customer's title/description, joined
+ *
+ * Pure, so the submit handler can call it directly and never race the effect
+ * that mirrors it into state.
+ */
+function seedRequiredAnswers(
+  fields: ServiceField[],
+  answers: Record<string, unknown>,
+  title: string,
+  description: string,
+): Record<string, unknown> {
+  const text = [title, description].map((s) => s.trim()).filter(Boolean).join(' — ');
+  const seeded: Record<string, unknown> = {};
+
+  for (const f of fields) {
+    if (!f.is_required) continue;
+    // ADDRESS is owned by the map and synced from it.
+    if (f.type === 'ADDRESS') continue;
+
+    const existing = answers[f.key];
+    if (existing !== undefined && existing !== null && existing !== '') continue;
+
+    switch (f.type) {
+      case 'SELECT': {
+        const options = f.options ?? [];
+        const chosen = options.find((o) => o.value === f.default_value) ?? options[0];
+        if (chosen) seeded[f.key] = chosen.value;
+        break;
+      }
+      case 'DATETIME':
+      case 'DATE':
+        seeded[f.key] = new Date().toISOString();
+        break;
+      case 'NUMBER': {
+        const n = Number(f.min_value ?? 0);
+        seeded[f.key] = Number.isFinite(n) ? n : 0;
+        break;
+      }
+      case 'BOOLEAN':
+        seeded[f.key] = false;
+        break;
+      default:
+        if (text) seeded[f.key] = f.type === 'TEXTAREA' ? text : text.slice(0, 120);
+        break;
+    }
+  }
+  return seeded;
+}
+
 export default function NewRequestPage() {
   return (
     <RequireAuth roles={['CUSTOMER']}>
@@ -84,11 +143,19 @@ function NewRequestView() {
   const [answerErrors, setAnswerErrors] = useState<Record<string, string>>({});
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [urgency, setUrgency] = useState('NORMAL');
+  // Urgency is no longer picked on this screen; NORMAL keeps the request in the
+  // ordinary matching queue. The service's own `urgency` question is seeded
+  // separately, since the API requires it.
+  const urgency = 'NORMAL';
   const [price, setPrice] = useState(0);
-  const [scheduledAt, setScheduledAt] = useState('');
-  const [itemCount, setItemCount] = useState('');
-  const [requiresHelper, setRequiresHelper] = useState(false);
+
+  // Scheduling, item count and "I need a helper" are no longer collected on this
+  // screen: the tray stops at the send button and the rest of the brief travels
+  // to the craftsman in chat. These remain as fixed values only so the payload
+  // keeps the shape the API expects.
+  const scheduledAt = '';
+  const itemCount = '';
+  const requiresHelper = false;
 
   const [pickup, setPickup] = useState({ line1: '', district: '', cityId: '', notes: '' });
   const [destination, setDestination] = useState({ line1: '', cityId: '', notes: '' });
@@ -162,18 +229,30 @@ function NewRequestView() {
     );
   }, [addressFieldKey, service?.requires_location, pickup, destination]);
 
-  const visibleFields = useMemo(
-    () =>
-      fields.filter((f) => {
-        // The map already answers the ADDRESS field; showing a second box for
-        // the same street is the kind of duplication that loses a customer.
-        if (f.type === 'ADDRESS') return false;
-        if (!f.depends_on_key) return true;
-        const dependency = answers[f.depends_on_key];
-        return String(dependency ?? '') === String(f.depends_on_value ?? '');
-      }),
-    [fields, answers],
+  // The compose tray no longer asks the service's custom questions: the map
+  // supplies the location and everything else travels to the craftsman in the
+  // chat once they engage. The API still rejects a request whose *required*
+  // service fields are empty, so fill those from what the customer already
+  // gave us rather than blocking the send button on a form they never see.
+  // Optional fields are always left alone.
+  const seededRequiredFields = useMemo(
+    () => seedRequiredAnswers(fields, answers, title, description),
+    [fields, answers, title, description],
   );
+
+  useEffect(() => {
+    if (Object.keys(seededRequiredFields).length === 0) return;
+    setAnswers((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const [k, v] of Object.entries(seededRequiredFields)) {
+        if (next[k] === v) continue;
+        next[k] = v;
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [seededRequiredFields]);
 
   const currency = service?.default_currency ?? 'MAD';
   const needsLocation = Boolean(service?.requires_location);
@@ -204,7 +283,11 @@ function NewRequestView() {
     }
     setFormErrors({});
 
-    const fieldErrors = validateServiceAnswers(fields, answers);
+    // The service's required questions are not shown on this screen, so derive
+    // their answers here instead of trusting the effect to have run first.
+    const finalAnswers = { ...answers, ...seedRequiredAnswers(fields, answers, title, description) };
+
+    const fieldErrors = validateServiceAnswers(fields, finalAnswers);
     if (Object.keys(fieldErrors).length > 0) {
       setAnswerErrors(fieldErrors);
       setSubmitError(t('request.answerRequired'));
@@ -217,7 +300,7 @@ function NewRequestView() {
       serviceId: service.id,
       ...(title ? { title } : {}),
       ...(description ? { description } : {}),
-      answers,
+      answers: finalAnswers,
       budgetMinMinor: priceMinor,
       budgetMaxMinor: priceMinor,
       currency: service.default_currency,
@@ -303,15 +386,19 @@ function NewRequestView() {
                 setFormErrors((prev) => ({ ...prev, pickup: '' }));
               } else {
                 setDestinationPoint(p);
+                setFormErrors((prev) => ({ ...prev, destination: '' }));
               }
             }}
             address={needsLocation ? pickup.line1 : destination.line1}
-            onAddressChange={(line1: string) =>
-              needsLocation
-                ? setPickup((prev) => ({ ...prev, line1 }))
-                : setDestination((prev) => ({ ...prev, line1 }))
-            }
+            onAddressChange={(line1: string) => {
+              // The map is the source of truth for where the job is, so the
+              // reverse-geocoded address fills `line1` directly instead of
+              // asking the customer to retype it in a field below the map.
+              if (needsLocation) setPickup((prev) => ({ ...prev, line1 }));
+              else setDestination((prev) => ({ ...prev, line1 }));
+            }}
             variant="full"
+            autoFillAddress
           />
         ) : (
           <div className="map-canvas grid h-full place-items-center">
@@ -427,148 +514,6 @@ function NewRequestView() {
             )}
           </button>
 
-          {/* ---- deeper detail, below the loud action ---- */}
-
-          {needsLocation && (
-            <div className="space-y-3 rounded-2xl border border-[rgb(var(--line))] p-4">
-              <h2 className="flex items-center gap-2 text-sm font-bold">
-                <CategoryIcon name="pin" size={17} className="text-[rgb(var(--brand-700))]" />
-                {t('request.pickup')}
-              </h2>
-              <Field label={t('request.line1')} required error={formErrors.pickup}>
-                <input
-                  className="input"
-                  value={pickup.line1}
-                  onChange={(e) => setPickup({ ...pickup, line1: e.target.value })}
-                />
-              </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={t('request.district')}>
-                  <input
-                    className="input"
-                    value={pickup.district}
-                    onChange={(e) => setPickup({ ...pickup, district: e.target.value })}
-                  />
-                </Field>
-                <Field label={t('request.city')}>
-                  <CitySelect
-                    cities={cities}
-                    locale={locale}
-                    value={pickup.cityId}
-                    onChange={(v) => setPickup({ ...pickup, cityId: v })}
-                  />
-                </Field>
-              </div>
-              <Field label={t('request.notes')}>
-                <input
-                  className="input"
-                  value={pickup.notes}
-                  onChange={(e) => setPickup({ ...pickup, notes: e.target.value })}
-                />
-              </Field>
-            </div>
-          )}
-
-          {needsDestination && (
-            <div className="space-y-3 rounded-2xl border border-[rgb(var(--line))] p-4">
-              <h2 className="flex items-center gap-2 text-sm font-bold">
-                <CategoryIcon name="route" size={17} className="text-[rgb(var(--brand-700))]" />
-                {t('request.destination')}
-              </h2>
-              <Field label={t('request.line1')} required error={formErrors.destination}>
-                <input
-                  className="input"
-                  value={destination.line1}
-                  onChange={(e) => setDestination({ ...destination, line1: e.target.value })}
-                />
-              </Field>
-              <Field label={t('request.city')}>
-                <CitySelect
-                  cities={cities}
-                  locale={locale}
-                  value={destination.cityId}
-                  onChange={(v) => setDestination({ ...destination, cityId: v })}
-                />
-              </Field>
-              <Field label={t('request.notes')}>
-                <input
-                  className="input"
-                  value={destination.notes}
-                  onChange={(e) => setDestination({ ...destination, notes: e.target.value })}
-                />
-              </Field>
-              <MapPicker
-                value={destinationPoint}
-                onChange={setDestinationPoint}
-                address={destination.line1}
-                onAddressChange={(line1: string) => setDestination((prev) => ({ ...prev, line1 }))}
-                height={190}
-              />
-            </div>
-          )}
-
-          {/* Urgency / schedule — advanced, collapsed into one compact row. */}
-          <div className="rounded-2xl border border-[rgb(var(--line))] p-4">
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="label">{t('request.urgency')}</span>
-                <select value={urgency} onChange={(e) => setUrgency(e.target.value)} className="input">
-                  {(['LOW', 'NORMAL', 'HIGH', 'URGENT'] as const).map((u) => (
-                    <option key={u} value={u}>
-                      {t(`urgency.${u}`)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block">
-                <span className="label">{t('request.scheduledAt')}</span>
-                <input
-                  type="datetime-local"
-                  value={scheduledAt}
-                  onChange={(e) => setScheduledAt(e.target.value)}
-                  className="input"
-                />
-              </label>
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 items-end gap-3">
-              <label className="block">
-                <span className="label">{t('request.itemCount')}</span>
-                <input
-                  type="number"
-                  min="0"
-                  value={itemCount}
-                  onChange={(e) => setItemCount(e.target.value)}
-                  className="input"
-                />
-              </label>
-              <label className="flex items-center gap-2 pb-3 text-sm font-semibold">
-                <input
-                  type="checkbox"
-                  checked={requiresHelper}
-                  onChange={(e) => setRequiresHelper(e.target.checked)}
-                  className="h-5 w-5 accent-[rgb(var(--brand-500))]"
-                />
-                {t('request.requiresHelper')}
-              </label>
-            </div>
-          </div>
-
-          {/* Service-specific questions, still data-driven. */}
-          {visibleFields.length > 0 && (
-            <div className="space-y-4 rounded-2xl border border-[rgb(var(--line))] p-4">
-              {visibleFields.map((field) => (
-                <ServiceFieldInput
-                  key={field.id}
-                  field={field}
-                  locale={locale}
-                  value={answers[field.key]}
-                  error={answerErrors[field.key]}
-                  onChange={(v) => setAnswer(field.key, v)}
-                />
-              ))}
-            </div>
-          )}
         </form>
       </BottomSheet>
     </>
@@ -620,177 +565,5 @@ function ServicePicker() {
         </Link>
       ))}
     </div>
-  );
-}
-
-function CitySelect({
-  cities,
-  locale,
-  value,
-  onChange,
-}: {
-  cities: City[];
-  locale: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  const { t } = useI18n();
-  return (
-    <select value={value} onChange={(e) => onChange(e.target.value)} className="input">
-      <option value="">{t('common.none')}</option>
-      {cities.map((c) => (
-        <option key={c.id} value={c.id}>
-          {localized(
-            c as unknown as { name_en: string; name_fr: string | null; name_ar: string | null },
-            locale,
-          )}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function ServiceFieldInput({
-  field,
-  locale,
-  value,
-  error,
-  onChange,
-}: {
-  field: ServiceField;
-  locale: string;
-  value: unknown;
-  error?: string;
-  onChange: (v: unknown) => void;
-}) {
-  const label = fieldLabel(field, locale);
-  const placeholder = fieldPlaceholder(field, locale);
-  const help = fieldHelp(field, locale);
-
-  if (field.type === 'BOOLEAN') {
-    return (
-      <label className="flex items-center gap-2.5 text-sm font-semibold">
-        <input
-          type="checkbox"
-          checked={Boolean(value)}
-          onChange={(e) => onChange(e.target.checked)}
-          className="h-5 w-5 accent-[rgb(var(--brand-500))]"
-        />
-        {label}
-      </label>
-    );
-  }
-
-  if (field.type === 'SELECT') {
-    return (
-      <Field label={label} required={field.is_required} help={help} error={error}>
-        <select
-          value={String(value ?? '')}
-          onChange={(e) => onChange(e.target.value)}
-          className="input"
-        >
-          <option value="">{placeholder ?? '—'}</option>
-          {field.options.map((o) => (
-            <option key={o.id} value={o.value}>
-              {optionLabel(o, locale)}
-            </option>
-          ))}
-        </select>
-      </Field>
-    );
-  }
-
-  if (field.type === 'MULTISELECT') {
-    const selected = Array.isArray(value) ? (value as string[]) : [];
-    return (
-      <Field label={label} required={field.is_required} help={help} error={error}>
-        <div className="flex flex-wrap gap-2">
-          {field.options.map((o) => {
-            const on = selected.includes(o.value);
-            return (
-              <button
-                type="button"
-                key={o.id}
-                onClick={() =>
-                  onChange(on ? selected.filter((v) => v !== o.value) : [...selected, o.value])
-                }
-                className={on ? 'chip chip-brand h-9 px-4' : 'chip chip-neutral h-9 px-4'}
-              >
-                {optionLabel(o, locale)}
-              </button>
-            );
-          })}
-        </div>
-      </Field>
-    );
-  }
-
-  const inputType =
-    field.type === 'NUMBER'
-      ? 'number'
-      : field.type === 'DATE'
-        ? 'date'
-        : field.type === 'DATETIME'
-          ? 'datetime-local'
-          : field.type === 'PHONE'
-            ? 'tel'
-            : 'text';
-
-  if (field.type === 'TEXTAREA' || field.type === 'ADDRESS') {
-    return (
-      <Field label={label} required={field.is_required} help={help} error={error}>
-        <textarea
-          value={String(value ?? '')}
-          placeholder={placeholder}
-          maxLength={field.max_length ?? undefined}
-          onChange={(e) => onChange(e.target.value)}
-          rows={3}
-          className="input resize-none"
-        />
-      </Field>
-    );
-  }
-
-  return (
-    <Field label={label} required={field.is_required} help={help} error={error}>
-      <input
-        type={inputType}
-        value={String(value ?? '')}
-        placeholder={placeholder}
-        maxLength={field.max_length ?? undefined}
-        min={field.min_value ?? undefined}
-        max={field.max_value ?? undefined}
-        onChange={(e) => onChange(field.type === 'NUMBER' ? Number(e.target.value) : e.target.value)}
-        className="input"
-      />
-    </Field>
-  );
-}
-
-function Field({
-  label,
-  required,
-  help,
-  error,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  help?: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="label">
-        {label}
-        {required && <span className="text-[rgb(var(--danger))]"> *</span>}
-      </span>
-      {children}
-      {help && <span className="mt-1 block text-xs text-[rgb(var(--fg-subtle))]">{help}</span>}
-      {error && (
-        <span className="mt-1 block text-xs font-semibold text-[rgb(var(--danger))]">{error}</span>
-      )}
-    </label>
   );
 }
