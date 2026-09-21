@@ -464,9 +464,31 @@
     z-index: 0;
   }
 
-  /* The map canvas fills its layer; Leaflet draws its own controls on top.
-     `absolute` + `inset: 0` reads the layer's resolved box, so it tracks the
-     inline header offset without another measurement. */
+  /* MapPicker's `full` variant nests two wrappers (`relative h-full w-full`
+     then `.map-canvas`), and page.tsx adds a further plain <div> around it.
+     Those Tailwind `h-full` classes resolve against an ancestor that has no
+     height, so the whole stack collapsed to 0px and Leaflet laid its tile
+     grid out for a zero-sized viewport — every tile "loaded" but sat
+     off-canvas, leaving a blank grey box.
+
+     Rather than depend on the utility classes, give the layer a definite
+     height for its children to resolve against. `.compose-map` gets
+     `overflow: hidden` so the map clips to the layer, and `position: relative`
+     on the intermediate wrapper keeps `.map-canvas`'s `inset: 0` anchored to
+     the nearest positioned ancestor instead of reaching past it. */
+  .compose-map {
+    overflow: hidden;
+  }
+
+  .compose-map > * {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  /* The map canvas fills its box; Leaflet draws its own controls on top.
+     `absolute` + `inset: 0` takes the height straight from the nearest
+     positioned ancestor, so it survives any wrapper the picker renders. */
   .compose-map .map-canvas {
     position: absolute;
     inset: 0;
