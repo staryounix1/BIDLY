@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 import { useI18n } from './i18n-provider';
 import { useAuth } from './auth-provider';
 import { useRealtime, fetchUnreadCount } from './realtime-client';
+import { CategoryIcon } from './icons';
 import { useEffect } from 'react';
 
 /**
@@ -39,12 +40,12 @@ export function NotificationBell() {
   return (
     <Link
       href={`/${locale}/notifications`}
-      className="relative opacity-70 hover:opacity-100"
+      className="btn btn-secondary relative h-10 w-10 !p-0"
       aria-label={t('notifications.title')}
     >
-      <span aria-hidden>🔔</span>
+      <CategoryIcon name="bell" size={18} />
       {count > 0 && (
-        <span className="absolute -right-2 -top-2 min-w-4 rounded-full bg-rose-600 px-1 text-center text-[10px] font-bold leading-4 text-white">
+        <span className="absolute -end-1 -top-1 min-w-4 rounded-full bg-[rgb(var(--danger))] px-1 text-center text-[10px] font-bold leading-4 text-white">
           {count > 99 ? '99+' : count}
         </span>
       )}
