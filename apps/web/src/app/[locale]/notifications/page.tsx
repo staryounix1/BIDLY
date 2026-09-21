@@ -8,6 +8,7 @@ import { RequireAuth } from '@/lib/require-auth';
 import { ApiError } from '@/lib/auth-api';
 import {
   listNotifications, markAllRead, markRead, notificationHref, notificationText,
+  isActivationNotification,
   type AppNotification,
 } from '@/lib/notifications-api';
 import { useRealtime } from '@/lib/realtime-client';
@@ -67,6 +68,12 @@ function Centre() {
       } catch {
         /* navigation is the priority */
       }
+    }
+    // An activation decision has no destination page: tapping it reloads so the
+    // gate re-reads `/me` and drops for an approved account.
+    if (isActivationNotification(n)) {
+      if (typeof window !== 'undefined') window.location.reload();
+      return;
     }
     const href = notificationHref(n, locale);
     if (href) {

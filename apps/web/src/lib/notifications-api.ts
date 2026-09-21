@@ -111,7 +111,20 @@ export function notificationHref(n: AppNotification, locale: string): string | n
       const conversationId = n.data?.conversationId as string | undefined;
       return conversationId ? `/${locale}/messages/${conversationId}` : `/${locale}/messages`;
     }
+    // Activation notifications exist to lift the gate. There is no page to
+    // navigate to — the gate is everywhere — so the action is a reload, which
+    // re-reads `/me` and lets the account into the product. Handled by the
+    // notifications page rather than expressed as a route.
+    case 'USER':
+    case 'ACCOUNT_ACTIVATED':
+    case 'IDENTITY_REJECTED':
+      return null;
     default:
       return null;
   }
+}
+
+/** Notification types whose tap should reload the app rather than navigate. */
+export function isActivationNotification(n: AppNotification): boolean {
+  return n.type === 'ACCOUNT_ACTIVATED' || n.type === 'IDENTITY_REJECTED';
 }

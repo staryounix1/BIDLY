@@ -3,6 +3,7 @@ import { notFound, businessRule, forbidden } from '../../core/errors.js';
 import { clientQuery, queryMany, queryOne, transaction } from '../../db/pool.js';
 import { parsePagination, pageMeta } from '../../core/pagination.js';
 import { logEvent, LOG_EVENTS } from '../../core/logger.js';
+import { publishToUser } from '../../core/realtime.js';
 import { resolveCommission } from '../payments/payment-provider.js';
 import { ADMIN_PERMISSIONS } from '../../core/rbac.js';
 import type { CommissionRule, StoredCommissionRule } from '@bidly/money';
@@ -730,10 +731,47 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
 
       await recordAction(client, auth.userId, `IDENTITY_${decision}`, 'user', id,
         before, { identity_review_status: next }, reason);
+
+      // Tell the account holder the decision, in their own language. Approval
+      // is the moment their gate lifts, so this is the one notification they
+      // are waiting for; a rejection names the reason so they can fix it.
+      // Written in the same transaction as the status, so a notification never
+      // describes a decision that rolled back.
+      const approved = next === 'VERIFIED';
+      await c.query(
+        `insert into notifications
+           (user_id, type, title_en, title_fr, title_ar, body_en, body_fr, body_ar,
+            data, channel, status, priority, reference_type, reference_id, dedupe_key)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb,
+                 'IN_APP', 'SENT', 'HIGH', 'USER', $1, $10)
+         on conflict (user_id, dedupe_key) where dedupe_key is not null do nothing`,
+        [
+          id,
+          approved ? 'ACCOUNT_ACTIVATED' : 'IDENTITY_REJECTED',
+          approved ? 'Your account is activated' : 'Your identity was rejected',
+          approved ? 'Votre compte est activé' : 'Votre identité a été rejetée',
+          approved ? 'تم تفعيل حسابك' : 'تم رفض التحقق من هويتك',
+          approved
+            ? 'Your account is now fully active. You can use the platform.'
+            : 'Your identity document was not accepted. Please submit it again.',
+          approved
+            ? 'Votre compte est maintenant actif. Vous pouvez utiliser la plateforme.'
+            : "Votre document d'identité n'a pas été accepté. Merci de le soumettre à nouveau.",
+          approved
+            ? 'حسابك ولا مفعّل كامل. تقدر تستعمل المنصة دابا.'
+            : `ما تقبلناش الوثائق ديالك. عافاك عاود صيفطها من جديد.${reason ? ` (${reason})` : ''}`,
+          JSON.stringify({ decision: next, reason: reason ?? null }),
+          `identity-review:${id}:${next}`,
+        ],
+      );
+
       return { id, identity_review_status: next };
     });
 
     logEvent(LOG_EVENTS.ADMIN_ACTION, { adminId: auth.userId, action: `IDENTITY_${decision}`, entityId: id });
+    // Push over the live socket so an open tab shows the bell immediately. The
+    // notification row is already committed, so the client's refetch finds it.
+    publishToUser(id, 'notification:new', { type: result.identity_review_status });
     return reply.send({ success: true, data: result });
   });
 
