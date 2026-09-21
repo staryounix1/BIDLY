@@ -5,6 +5,7 @@ import { buildPage, parsePagination } from '../../core/pagination.js';
 import { PaymentProviderRegistry } from './payment-provider.js';
 import { LOG_EVENTS, logEvent } from '../../core/logger.js';
 import { env } from '@bidly/config';
+import { randomUUID } from 'node:crypto';
 
 /**
  * /payments, /wallets, /payouts — money movement.
@@ -278,6 +279,21 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
     );
   }
 
+  /** Same lookup, but inside the caller's transaction so it sees its own writes. */
+  async function walletForUserTx(
+    c: ReturnType<typeof clientQuery>,
+    userId: string,
+  ) {
+    return c.one<{ id: string; currency: string; available_minor: string }>(
+      `select w.id, w.currency, w.available_minor from wallets w
+       where (w.owner_type = 'PROVIDER' and w.owner_id = (select id from providers where user_id = $1))
+          or (w.owner_type = 'USER' and w.owner_id = $1)
+       order by (w.owner_type = 'PROVIDER') desc
+       limit 1`,
+      [userId],
+    );
+  }
+
   app.get('/wallets/me', {
     preHandler: [app.requireUser],
     schema: { tags: ['payments'], summary: 'My wallet', security: [{ bearerAuth: [] }] },
@@ -285,6 +301,104 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
     const auth = request.auth!;
     const wallet = await walletForUser(auth.userId);
     return reply.send({ success: true, data: wallet });
+  });
+
+  // -------- top up the provider wallet -----------------------------------
+  // A craftsman pays the platform commission out of his wallet the moment a
+  // customer and he agree on a price, so a provider with an empty wallet can
+  // never close his first deal and has no other way to fund it — only a
+  // completed job credits a provider, which is the thing being blocked. This
+  // endpoint is that missing funding step, and it is deliberately
+  // provider-only: a customer's money reaches a provider through the job
+  // payment, not by topping the provider up directly.
+  app.post('/wallets/me/topup', {
+    preHandler: [app.requireProvider],
+    schema: {
+      tags: ['payments'],
+      summary: 'Provider: add funds to my own wallet',
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object', additionalProperties: false, required: ['amountMinor'],
+        properties: {
+          amountMinor: { type: 'integer', minimum: 1000, maximum: 5000000 },
+          method: { type: 'string', enum: ['CARD', 'CASH', 'BANK_TRANSFER', 'WALLET'] },
+          idempotencyKey: { type: 'string', minLength: 8, maxLength: 100 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const b = (request.body ?? {}) as { amountMinor: number; method?: string; idempotencyKey?: string };
+    const amountMinor = b.amountMinor;
+    const method = b.method ?? 'CARD';
+    // A supplied key makes a retry after a dropped connection a no-op instead
+    // of a second credit; without one each call is a deliberately new top-up.
+    const idempotencyKey = b.idempotencyKey ?? randomUUID();
+
+    const result = await transaction(async (client) => {
+      const c = clientQuery(client);
+
+      const provider = await c.one<{ id: string; user_id: string; status: string }>(
+        `select id, user_id, status::text from providers where user_id = $1`,
+        [auth.userId],
+      );
+      if (!provider) throw notFound('Provider profile');
+
+      // Replay guard: the ledger row for this key already exists, so report the
+      // original outcome rather than crediting twice.
+      const existing = await c.one<{ id: string; balance_after_minor: string }>(
+        `select id, balance_after_minor from wallet_transactions
+          where reference_type = 'wallet_topup' and reference_id = $1 limit 1`,
+        [idempotencyKey],
+      );
+      if (existing) {
+        const w = await walletForUserTx(c, auth.userId);
+        return {
+          transactionId: existing.id, amountMinor, currency: w?.currency ?? 'MAD',
+          balanceAfterMinor: Number(w?.available_minor ?? existing.balance_after_minor),
+          alreadyCredited: true,
+        };
+      }
+
+      const wallet = await c.one<{ id: string; currency: string; available_minor: string; is_frozen: boolean }>(
+        `insert into wallets (owner_type, owner_id, currency)
+         values ('PROVIDER', $1, $2)
+         on conflict (owner_type, owner_id, currency) do update set updated_at = now()
+         returning id, currency, available_minor, is_frozen`,
+        [auth.userId, 'MAD'],
+      );
+      if (!wallet) throw notFound('Wallet');
+      if (wallet.is_frozen) throw businessRule('Your wallet is frozen.');
+
+      // The payment provider is bookkeeping-only here (it does not move real
+      // money); the ledger row below is what actually changes the balance.
+      const afterMinor = Number(wallet.available_minor) + amountMinor;
+
+      const txn = await c.one<{ id: string }>(
+        `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency,
+                                          balance_after_minor, reference_type, reference_id, description)
+         values ($1, 'TOPUP', 'CREDIT', $2, $3, $4, 'wallet_topup', $5, $6)
+         returning id`,
+        [
+          wallet.id, amountMinor, wallet.currency, afterMinor, idempotencyKey,
+          `Wallet top-up via ${method}`,
+        ],
+      );
+
+      // No `payments` row on purpose: that table is per-job (`job_id` is NOT
+      // NULL and a foreign key) and a wallet top-up is not tied to a job. The
+      // ledger row inserted above is the authoritative record of the credit.
+      logEvent(LOG_EVENTS.WALLET_TOPPED_UP, {
+        userId: auth.userId, providerId: provider.id, amountMinor, method,
+      });
+
+      return {
+        transactionId: txn!.id, amountMinor, currency: wallet.currency,
+        balanceAfterMinor: afterMinor, alreadyCredited: false,
+      };
+    });
+
+    return reply.status(201).send({ success: true, data: result });
   });
 
   app.get('/wallets/me/transactions', {

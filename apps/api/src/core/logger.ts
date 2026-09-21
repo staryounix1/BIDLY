@@ -143,6 +143,7 @@ export const LOG_EVENTS = {
   REFUND_REQUESTED: 'refund.requested',
   REFUND_COMPLETED: 'refund.completed',
   WALLET_CREDITED: 'wallet.credited',
+  WALLET_TOPPED_UP: 'wallet.topped_up',
   PAYOUT_REQUESTED: 'payout.requested',
   PAYOUT_PAID: 'payout.paid',
   WEBHOOK_RECEIVED: 'webhook.received',
