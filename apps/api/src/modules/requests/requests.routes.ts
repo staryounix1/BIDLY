@@ -459,10 +459,28 @@ export async function registerRequestRoutes(app: FastifyInstance): Promise<void>
     const media = await queryMany('select * from request_media where request_id = $1 and deleted_at is null order by sort_order', [id]);
     const offers = isOwner || isAdmin
       ? await queryMany(
+          // The customer picks a craftsman from this list, so it carries the
+          // identity facts the decision needs: who they are, where they work,
+          // what they do and how long they have done it. `city_name` and
+          // `craft_name` are resolved here rather than by a second round trip
+          // per card.
           `select o.id, o.provider_id, o.price_minor, o.currency, o.message, o.eta_minutes,
                   o.status, o.is_counter, o.version, o.expires_at, o.created_at,
-                  p.display_name as provider_name, p.avatar_url as provider_avatar, p.rating_avg, p.completed_jobs
-           from offers o join providers p on p.id = o.provider_id
+                  p.display_name as provider_name, p.avatar_url as provider_avatar,
+                  p.user_id as provider_user_id,
+                  p.rating_avg, p.rating_count, p.completed_jobs, p.bio,
+                  coalesce(ci.name_ar, rc.name_ar) as city_name_ar,
+                  coalesce(ci.name_en, rc.name_en) as city_name_en,
+                  coalesce(ci.name_fr, rc.name_fr) as city_name_fr,
+                  s.name_ar as craft_name_ar, s.name_en as craft_name_en, s.name_fr as craft_name_fr,
+                  ps.experience_years
+           from offers o
+           join providers p on p.id = o.provider_id
+           left join cities ci on ci.id = p.city_id
+           left join cities rc on rc.id = (select pickup_city_id from requests where id = o.request_id)
+           left join provider_services ps
+             on ps.provider_id = p.id and ps.service_id = (select service_id from requests where id = o.request_id)
+           left join services s on s.id = ps.service_id
            where o.request_id = $1 order by o.created_at desc`,
           [id],
         )

@@ -448,6 +448,9 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
         currency: offer.currency,
         commissionMinor,
         providerNetMinor,
+        // The customer is taken straight into a chat with the chosen craftsman,
+        // so the accepted offer hands back the counterpart's user id.
+        providerUserId: offer.provider_user_id,
       };
     });
 
@@ -634,5 +637,176 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
       [id],
     );
     return reply.send({ success: true, data: { history, negotiations } });
+  });
+
+  // -------- agree ------------------------------------------------------
+  //
+  // The two sides confirm the deal they negotiated. Agreeing is the moment the
+  // platform is owed its commission, so it is charged here and not at payment
+  // capture: the commission is debited from the provider's wallet straight away
+  // (15% by default, e.g. 1500 minor out of a 10000 minor / 100 MAD offer).
+  //
+  // Idempotent by design: `commission_charged_at` on the job is the guard, so a
+  // retry, a double tap or a stale client cannot charge the wallet twice.
+  app.post('/offers/:id/agree', {
+    preHandler: [app.authenticate],
+    schema: {
+      tags: ['offers'], summary: 'Confirm agreement; charges the platform commission',
+      security: [{ bearerAuth: [] }],
+      params: { type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } },
+      body: { type: 'object', additionalProperties: false, properties: {} },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const { id } = request.params as { id: string };
+
+    const result = await transaction(async (client) => {
+      const c = clientQuery(client);
+
+      const offer = await c.one<{
+        id: string; request_id: string; status: string; price_minor: string; currency: string;
+        customer_id: string; provider_id: string; provider_user_id: string; job_id: string | null;
+      }>(
+        `select o.id, o.request_id, o.status, o.price_minor, o.currency,
+                r.customer_id, r.job_id, p.id as provider_id, p.user_id as provider_user_id
+         from offers o
+         join requests r on r.id = o.request_id
+         join providers p on p.id = o.provider_id
+         where o.id = $1 for update`,
+        [id],
+      );
+      if (!offer) throw notFound('Offer');
+      if (offer.status !== 'ACCEPTED') throw businessRule('Only an accepted offer can be agreed on.');
+
+      const isCustomer = offer.customer_id === auth.userId;
+      const isProvider = offer.provider_user_id === auth.userId;
+      if (!isCustomer && !isProvider && auth.role !== 'ADMIN') throw forbidden();
+
+      if (!offer.job_id) throw businessRule('This offer has no job yet.');
+
+      const job = await c.one<{
+        id: string; code: string; commission_minor: string; provider_net_minor: string; currency: string;
+      }>(
+        `select id, code, commission_minor, provider_net_minor, currency
+         from jobs where id = $1 for update`,
+        [offer.job_id],
+      );
+      if (!job) throw notFound('Job');
+
+      const commissionMinor = Number(job.commission_minor);
+      const currency = job.currency || offer.currency;
+      const finalPriceMinor = Number(offer.price_minor);
+
+      // The ledger row is the charge record, so its presence is the guard: the
+      // `PLATFORM_COMMISSION` entry for this job exists at most once, which
+      // makes a retry or a double tap a no-op instead of a second debit.
+      const already = await c.one<{ id: string }>(
+        `select wt.id from wallet_transactions wt
+         where wt.job_id = $1 and wt.type = 'PLATFORM_COMMISSION'
+         limit 1`,
+        [job.id],
+      );
+      if (already) {
+        const wallet = await c.one<{ available_minor: string }>(
+          `select available_minor from wallets
+           where owner_type = 'PROVIDER' and owner_id = $1 and currency = $2`,
+          [offer.provider_user_id, currency],
+        );
+        return {
+          jobId: job.id, jobCode: job.code, alreadyCharged: true,
+          commissionMinor, providerNetMinor: Number(job.provider_net_minor),
+          finalPriceMinor, currency,
+          walletBalanceMinor: wallet ? Number(wallet.available_minor) : null,
+        };
+      }
+
+      // The provider pays the commission. A frozen or short wallet must fail the
+      // whole agreement rather than leave a job confirmed and unpaid.
+      const wallet = await c.one<{ id: string; available_minor: string; is_frozen: boolean }>(
+        `insert into wallets (owner_type, owner_id, currency) values ('PROVIDER', $1, $2)
+         on conflict (owner_type, owner_id, currency) do update set updated_at = now()
+         returning id, available_minor, is_frozen`,
+        [offer.provider_user_id, currency],
+      );
+      if (!wallet) throw notFound('Wallet');
+      if (wallet.is_frozen) throw businessRule('The provider wallet is frozen.');
+
+      const balanceMinor = Number(wallet.available_minor);
+      if (balanceMinor < commissionMinor) {
+        throw businessRule(
+          `The provider wallet does not cover the commission of ${commissionMinor} ${currency}.`,
+        );
+      }
+
+      // Insert the ledger row only: the validate/apply triggers own the balance,
+      // and `balance_after_minor` must be the value before this movement.
+      const afterMinor = balanceMinor - commissionMinor;
+      await c.query(
+        `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency, balance_after_minor,
+                                          reference_type, reference_id, job_id, description)
+         values ($1,'PLATFORM_COMMISSION','DEBIT',$2,$3,$4,'job',$5,$5,$6)`,
+        [
+          wallet.id, commissionMinor, currency, afterMinor, job.id,
+          `Platform commission for job ${job.code}`,
+        ],
+      );
+
+      // Commission is already recorded on the job from the accept step; this
+      // row is the platform's revenue view of the same charge.
+      await c.query(
+        `insert into platform_earnings (job_id, currency, gross_minor, commission_minor)
+         values ($1, $2, $3, $4)`,
+        [job.id, currency, finalPriceMinor, commissionMinor],
+      );
+
+      await c.query(
+        `insert into negotiations (request_id, offer_id, root_offer_id, actor_id, actor_role, side, type, price_minor, currency, resulting_offer_id, payload)
+         values ($1,$2,$2,$3,$4,$4,'SYSTEM',$5,$6,$2,$7::jsonb)`,
+        [
+          offer.request_id, offer.id, auth.userId,
+          isCustomer ? 'CUSTOMER' : 'PROVIDER',
+          finalPriceMinor, currency,
+          JSON.stringify({ event: 'AGREEMENT', commissionMinor, walletBalanceMinor: afterMinor }),
+        ],
+      );
+
+      await enqueue(
+        {
+          topic: OUTBOX_TOPICS.OFFER_ACCEPTED,
+          aggregateType: 'OFFER',
+          aggregateId: offer.id,
+          payload: {
+            requestId: offer.request_id,
+            offerId: offer.id,
+            jobId: job.id,
+            jobCode: job.code,
+            status: 'AGREED',
+            commissionMinor,
+            recipients: [
+              { userId: offer.customer_id, role: 'CUSTOMER' },
+              { userId: offer.provider_user_id, role: 'PROVIDER' },
+            ],
+          },
+        },
+        client,
+      );
+
+      logEvent(LOG_EVENTS.OFFER_ACCEPTED, {
+        userId: auth.userId, offerId: offer.id, jobId: job.id, commissionMinor,
+      });
+
+      return {
+        jobId: job.id,
+        jobCode: job.code,
+        alreadyCharged: false,
+        commissionMinor,
+        providerNetMinor: Number(job.provider_net_minor),
+        finalPriceMinor,
+        currency,
+        walletBalanceMinor: afterMinor,
+      };
+    });
+
+    return reply.status(201).send({ success: true, data: result });
   });
 }
