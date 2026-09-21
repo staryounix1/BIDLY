@@ -5,11 +5,11 @@
   "rewrites": [
     {
       "source": "/api/v1/auth/:path*",
-      "destination": "https://bye-rides-forecast-values.trycloudflare.com/api/v1/:path*"
+      "destination": "https://distributed-fine-fioricet-suites.trycloudflare.com/api/v1/:path*"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://bye-rides-forecast-values.trycloudflare.com/api/:path*"
+      "destination": "https://distributed-fine-fioricet-suites.trycloudflare.com/api/:path*"
     }
   ]
 }
