@@ -625,6 +625,141 @@
     overflow: hidden;
   }
 
+  /* ---- customer home: map is the page -------------------------------- */
+
+  /* Same contract as `.compose-map`: fixed, full viewport, starting under the
+     global header. The map is the background, never a card in a scroll. */
+  .home-map {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .home-map > * {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  .home-map .map-canvas,
+  .home-map-canvas {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+  }
+
+  /* The floating search / bell / profile chips that sit on the map. */
+  .home-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(var(--line) / 0.9);
+    background: rgb(var(--surface) / 0.94);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    box-shadow: 0 10px 30px -14px rgb(0 0 0 / 0.6);
+    padding: 0.6rem 0.95rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: rgb(var(--fg));
+  }
+
+  .home-pill--icon {
+    height: 2.875rem;
+    width: 2.875rem;
+    justify-content: center;
+    padding: 0;
+  }
+
+  /* A service bubble pinned over the map. The active one reads as chosen:
+     brand tint, brand ring and a soft glow, like the reference design. */
+  .home-bubble {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    height: 3.5rem;
+    width: 3.5rem;
+    border-radius: 1.1rem;
+    border: 1px solid rgb(var(--line) / 0.9);
+    background: rgb(var(--surface) / 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.75);
+    color: rgb(var(--fg));
+    transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+  }
+
+  .home-bubble:active {
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+
+  .home-bubble--active {
+    background: rgb(var(--brand-500));
+    border-color: rgb(var(--brand-500));
+    color: #04231b;
+    box-shadow: 0 0 0 1px rgb(var(--brand-500) / 0.5),
+                0 0 34px -6px rgb(var(--brand-500) / 0.85);
+  }
+
+  /* The "you are here" dot at the centre of the map. */
+  .home-here {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .home-here-dot {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 9999px;
+    background: #34d399;
+    box-shadow: 0 0 0 4px rgb(52 211 153 / 0.22), 0 0 26px 6px rgb(52 211 153 / 0.5);
+  }
+
+  /* The category row on the tray: hexagonal-feel tiles, label underneath. */
+  .home-cat {
+    display: flex;
+    min-width: 4.25rem;
+    flex: 1 0 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgb(var(--fg-muted));
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .home-cat-tile {
+    display: grid;
+    place-items: center;
+    height: 3.25rem;
+    width: 3.25rem;
+    border-radius: 1rem;
+    border: 1px solid rgb(var(--line) / 0.9);
+    background: rgb(var(--surface-3) / 0.75);
+    color: rgb(var(--fg));
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+
+  .home-cat--active .home-cat-tile,
+  .home-cat-tile:hover {
+    background: rgb(var(--brand-500));
+    border-color: rgb(var(--brand-500));
+    color: #04231b;
+  }
+
+  .home-cat--active {
+    color: rgb(var(--brand-700));
+  }
+
   /* On desktop the sheet becomes a static card anchored to one side instead of
      a full-width tray, so the map stays usable next to it. Nothing snaps, so
      the library is not involved at all. */
