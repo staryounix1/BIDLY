@@ -363,14 +363,30 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
       );
       if (!job) throw notFound('Job');
 
+      // The DB state machine only permits RECEIVING_OFFERS -> PROVIDER_SELECTED
+      // -> CONFIRMED. An offer can be accepted while the request is still
+      // PUBLISHED or MATCHING (offers are allowed from those states), so step
+      // it through the states it must legally pass rather than jumping straight
+      // from PUBLISHED to PROVIDER_SELECTED, which the trigger rejects with
+      // 23514 "Illegal request transition PUBLISHED -> PROVIDER_SELECTED".
+      const st = await c.one<{ status: string }>('select status from requests where id = $1', [offer.request_id]);
+      if (st?.status === 'PUBLISHED') {
+        await c.query(`update requests set status = 'MATCHING' where id = $1`, [offer.request_id]);
+      }
+      if (st?.status === 'PUBLISHED' || st?.status === 'MATCHING') {
+        await c.query(
+          `update requests set status = 'RECEIVING_OFFERS', matched_at = coalesce(matched_at, now()) where id = $1`,
+          [offer.request_id],
+        );
+      }
+
       await c.query(
         `update requests set status = 'PROVIDER_SELECTED', selected_offer_id = $2, job_id = $3 where id = $1`,
         [offer.request_id, offer.id, job.id],
       );
 
-      // The DB state machine only allows RECEIVING_OFFERS -> PROVIDER_SELECTED
-      // -> CONFIRMED. Accepting an offer is both transitions in one atomic
-      // operation: the provider is chosen and the job is immediately confirmed.
+      // Accepting an offer is both transitions in one atomic operation: the
+      // provider is chosen and the job is immediately confirmed.
       await c.query(
         `update requests set status = 'CONFIRMED' where id = $1`,
         [offer.request_id],
