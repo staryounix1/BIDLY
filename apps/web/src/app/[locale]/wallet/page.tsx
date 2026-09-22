@@ -5,7 +5,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { RequireAuth } from '@/lib/require-auth';
 import { useAuth } from '@/lib/auth-provider';
 import { ApiError } from '@/lib/auth-api';
-import { paymentsApi, formatMinor, type LedgerEntry, type Payout, type Wallet } from '@/lib/payments-api';
+import { paymentsApi, formatMinor, type LedgerEntry, type Payout, type TopUpPackage, type TopUpRequest, type Wallet } from '@/lib/payments-api';
 import { CategoryIcon } from '@/lib/icons';
 import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
 
@@ -39,17 +39,13 @@ function WalletView() {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('BANK_TRANSFER');
   const [busy, setBusy] = useState(false);
+  const [packages, setPackages] = useState<TopUpPackage[]>([]);
+  const [topUps, setTopUps] = useState<TopUpRequest[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [topUpAmount, setTopUpAmount] = useState('');
-  const [topUpMethod, setTopUpMethod] = useState('CARD');
+  const [topUpMethod, setTopUpMethod] = useState('BANK_TRANSFER');
+  const [topUpRef, setTopUpRef] = useState('');
   const [topUpBusy, setTopUpBusy] = useState(false);
-
-  /**
-   * A stable key per top-up attempt, regenerated only after a credit lands, so
-   * a double tap or a retry on a flaky connection cannot credit twice.
-   */
-  const [topUpKeyState, setTopUpKeyState] = useState(
-    () => `topup-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,26 +70,76 @@ function WalletView() {
     void load();
   }, [load]);
 
+  /**
+   * Top-ups are requests, not charges: money is credited only once an operator
+   * confirms it was received. Loading the catalogue and my own requests is
+   * therefore part of drawing the card, not of submitting it.
+   */
+  useEffect(() => {
+    if (!isProvider) return;
+    let alive = true;
+    (async () => {
+      try {
+        const [pk, ru] = await Promise.all([
+          paymentsApi.topUpPackages(),
+          paymentsApi.myTopUpRequests(),
+        ]);
+        if (!alive) return;
+        setPackages(pk ?? []);
+        setTopUps(ru ?? []);
+      } catch {
+        // The card degrades to the free-amount form; no need to scare the user.
+      }
+    })();
+    return () => { alive = false; };
+  }, [isProvider, wallet?.available_minor]);
+
+  const openTopUp = topUps.find((r) => r.status === 'PENDING') ?? null;
+  const chosenPack = packages.find((p) => p.id === selectedPackage) ?? null;
+  const packLabel = (p: TopUpPackage) =>
+    (locale === 'ar' ? p.label_ar : locale === 'fr' ? p.label_fr : p.label_en) || p.code;
+
   async function onTopUp(e: React.FormEvent) {
     e.preventDefault();
     setTopUpBusy(true);
     setNotice(null);
     setError(null);
     try {
-      const amountMinor = Math.round(Number(topUpAmount) * 100);
-      if (!Number.isFinite(amountMinor) || amountMinor <= 0) throw new Error(t('payment.topUpAmount'));
-      await paymentsApi.topUpWallet({
-        amountMinor,
-        method: topUpMethod,
-        idempotencyKey: topUpKeyState,
-      });
-      setNotice(t('payment.topUpDone'));
+      if (chosenPack) {
+        await paymentsApi.requestTopUp({
+          packageId: chosenPack.id,
+          method: topUpMethod,
+          reference: topUpRef || undefined,
+        });
+      } else {
+        const amountMinor = Math.round(Number(topUpAmount) * 100);
+        if (!Number.isFinite(amountMinor) || amountMinor < 1000) throw new Error(t('payment.topUpAmount'));
+        await paymentsApi.requestTopUp({
+          amountMinor,
+          method: topUpMethod,
+          reference: topUpRef || undefined,
+        });
+      }
+      setNotice(t('payment.topUpRequested'));
       setTopUpAmount('');
-      // Fresh key: the next top-up is a genuinely new charge.
-      setTopUpKeyState(`topup-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      setTopUpRef('');
+      setSelectedPackage(null);
       await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : t('common.error'));
+    } finally {
+      setTopUpBusy(false);
+    }
+  }
+
+  async function onCancelTopUp(id: string) {
+    setTopUpBusy(true);
+    setError(null);
+    try {
+      await paymentsApi.cancelTopUpRequest(id);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('common.error'));
     } finally {
       setTopUpBusy(false);
     }
@@ -159,44 +205,148 @@ function WalletView() {
             <section className="card card-featured mb-6 p-5">
               <SectionTitle>{t('payment.topUp')}</SectionTitle>
               <p className="mb-3 text-sm text-[rgb(var(--fg-muted))]">{t('payment.topUpHint')}</p>
-              <form onSubmit={onTopUp} className="flex flex-wrap items-end gap-3">
-                <label className="block">
-                  <span className="label">{t('payment.topUpAmount')}</span>
-                  <input
-                    type="number" min="10" step="0.01" required value={topUpAmount}
-                    onChange={(e) => setTopUpAmount(e.target.value)}
-                    className="input tnum w-40"
-                    placeholder="100"
-                  />
-                </label>
-                <label className="block">
-                  <span className="label">{t('payment.method')}</span>
-                  <select
-                    value={topUpMethod} onChange={(e) => setTopUpMethod(e.target.value)}
-                    className="input w-auto"
-                  >
-                    <option value="CARD">CARD</option>
-                    <option value="CASH">CASH</option>
-                    <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-                  </select>
-                </label>
-                <button type="submit" disabled={topUpBusy} className="btn btn-primary">
-                  {topUpBusy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
-                  {topUpBusy ? t('payment.paying') : t('payment.topUp')}
-                </button>
-              </form>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {[50, 100, 200, 500].map((v) => (
+
+              {openTopUp ? (
+                /*
+                  One request at a time: while it waits, the form is replaced by
+                  the request's own status so nobody files a duplicate. The admin
+                  queue approves against this exact row.
+                */
+                <div className="rounded-xl border border-[rgb(var(--line))] bg-[rgb(var(--surface-2))] p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="chip chip-pending">{t('payment.topUpPending')}</span>
+                    <span className="tnum font-black">
+                      {formatMinor(openTopUp.credit_minor, openTopUp.currency, locale)}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-[rgb(var(--fg-muted))]">
+                    {t('payment.topUpRequestedOn')}{' '}
+                    {new Date(openTopUp.created_at).toLocaleDateString(locale)}
+                    {openTopUp.method ? ` · ${openTopUp.method}` : ''}
+                  </p>
                   <button
-                    key={v}
-                    type="button"
-                    className="chip chip-neutral tnum"
-                    onClick={() => setTopUpAmount(String(v))}
+                    type="button" disabled={topUpBusy}
+                    onClick={() => void onCancelTopUp(openTopUp.id)}
+                    className="btn btn-ghost mt-3"
                   >
-                    +{v}
+                    {t('payment.topUpCancel')}
                   </button>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <form onSubmit={onTopUp} className="space-y-3">
+                  {packages.length > 0 && (
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {packages.map((p) => {
+                        const active = selectedPackage === p.id;
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedPackage(active ? null : p.id);
+                              setTopUpAmount('');
+                            }}
+                            className={`relative rounded-xl border p-3 text-start transition ${
+                              active
+                                ? 'border-[rgb(var(--brand))] bg-[rgb(var(--brand)/0.08)]'
+                                : 'border-[rgb(var(--line))] hover:border-[rgb(var(--brand)/0.5)]'
+                            }`}
+                          >
+                            {p.bonus_minor > 0 && (
+                              <span className="absolute end-2 top-2 chip chip-ok text-[0.625rem]">
+                                +{formatMinor(p.bonus_minor, p.currency, locale)}
+                              </span>
+                            )}
+                            <p className="text-xs font-semibold text-[rgb(var(--fg-muted))]">{packLabel(p)}</p>
+                            <p className="tnum mt-1 text-lg font-black">
+                              {formatMinor(p.pay_minor, p.currency, locale)}
+                            </p>
+                            <p className="tnum text-xs text-[rgb(var(--ok))]">
+                              → {formatMinor(p.credit_minor, p.currency, locale)}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {!chosenPack && (
+                    <div className="flex flex-wrap items-end gap-3">
+                      <label className="block">
+                        <span className="label">{t('payment.topUpAmount')}</span>
+                        <input
+                          type="number" min="10" step="0.01" value={topUpAmount}
+                          onChange={(e) => setTopUpAmount(e.target.value)}
+                          className="input tnum w-40"
+                          placeholder="100"
+                        />
+                      </label>
+                      <div className="flex flex-wrap gap-2 pb-2">
+                        {[50, 100, 200, 500].map((v) => (
+                          <button
+                            key={v} type="button"
+                            className="chip chip-neutral tnum"
+                            onClick={() => setTopUpAmount(String(v))}
+                          >
+                            +{v}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-end gap-3">
+                    <label className="block">
+                      <span className="label">{t('payment.method')}</span>
+                      <select
+                        value={topUpMethod} onChange={(e) => setTopUpMethod(e.target.value)}
+                        className="input w-auto"
+                      >
+                        <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+                        <option value="CASH">CASH</option>
+                        <option value="CARD">CARD</option>
+                      </select>
+                    </label>
+                    <label className="block flex-1 min-w-[10rem]">
+                      <span className="label">{t('payment.topUpReference')}</span>
+                      <input
+                        type="text" value={topUpRef} maxLength={100}
+                        onChange={(e) => setTopUpRef(e.target.value)}
+                        className="input"
+                        placeholder={t('payment.topUpReferenceHint')}
+                      />
+                    </label>
+                    <button type="submit" disabled={topUpBusy} className="btn btn-primary">
+                      {topUpBusy ? <Spinner size={18} /> : <CategoryIcon name="wallet" size={18} />}
+                      {topUpBusy ? t('payment.paying') : t('payment.topUpSubmit')}
+                    </button>
+                  </div>
+                  <p className="text-xs text-[rgb(var(--fg-subtle))]">{t('payment.topUpApprovalNote')}</p>
+                </form>
+              )}
+
+              {topUps.length > 0 && (
+                <div className="mt-4 border-t border-[rgb(var(--line))] pt-3">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                    {t('payment.topUpHistory')}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {topUps.map((r) => (
+                      <li key={r.id} className="flex items-center justify-between gap-3 text-sm">
+                        <span className="tnum font-bold">
+                          {formatMinor(r.credit_minor, r.currency, locale)}
+                        </span>
+                        <span className="text-xs text-[rgb(var(--fg-subtle))]">
+                          {new Date(r.created_at).toLocaleDateString(locale)}
+                        </span>
+                        <span className={r.status === 'COMPLETED' ? 'chip chip-ok' : r.status === 'PENDING' ? 'chip chip-pending' : 'chip chip-neutral'}>
+                          {t(`payment.topUpStatus.${r.status}`)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </section>
           )}
 
