@@ -1,25 +1,306 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import type { Map as LeafletMap } from 'leaflet';
 import { useI18n } from '@/lib/i18n-provider';
 import { useAuth } from '@/lib/auth-provider';
-import { catalogApi, localized, type Category, type Service } from '@/lib/catalog-api';
+import { catalogApi, localized, type Category } from '@/lib/catalog-api';
 import { CategoryIcon, iconForSlug, KhdemliMark } from '@/lib/icons';
+import { useMyLocation } from '@/lib/map/use-my-location';
+import { MapView, DEFAULT_MAP_STYLE } from '@/lib/map/map-view';
+import { BottomSheet } from '@/lib/map/bottom-sheet';
 
 /**
- * Khdemli home.
+ * Customer home — the map IS the page.
  *
- * One promise, one action, then proof that real craftsmen are on the platform:
- * the category tiles are the database's own categories with live availability
- * counts, so the first screen a customer sees is never a mockup.
+ * The design puts supply, location and the one action (ask for something) on a
+ * single screen instead of a scroll: a full-bleed map behind a floating tray.
+ * That is the same contract as `/requests/new`, so both screens inherit the
+ * same CSS and the same "the map never scrolls away" behaviour.
+ *
+ * Only a signed-in customer sees this. A provider or an admin gets the
+ * stacked dashboard home, because their job is not to request a service.
  */
+
+/** Header height is measured, because the header is global chrome, not ours. */
+function useHeaderOffset() {
+  const [offset, setOffset] = useState(0);
+  useEffect(() => {
+    const measure = () => {
+      const header = document.querySelector('header');
+      setOffset(header ? header.getBoundingClientRect().height : 0);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    // The header grows once auth resolves (notifications, profile, sign-out).
+    const timer = window.setTimeout(measure, 400);
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.clearTimeout(timer);
+    };
+  }, []);
+  return offset;
+}
+
 export default function HomePage() {
   const { t, locale } = useI18n();
   const { user, ready } = useAuth();
 
+  const isCustomer = ready && user?.role === 'CUSTOMER';
+  if (!isCustomer) return <StackedHome />;
+  return <MapHome />;
+}
+
+/* ------------------------------------------------------------------ */
+/* The customer's screen                                               */
+/* ------------------------------------------------------------------ */
+
+function MapHome() {
+  const { t, locale } = useI18n();
+  const { user } = useAuth();
+  const router = useRouter();
+  const headerOffset = useHeaderOffset();
+
   const [categories, setCategories] = useState<Category[]>([]);
-  const [popular, setPopular] = useState<Service[]>([]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [active, setActive] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const mapRef = useRef<LeafletMap | null>(null);
+
+  // The customer's own position drives the map centre and the bubble ring.
+  const { position, center, status } = useMyLocation({ watch: true });
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [tree, providerCounts] = await Promise.all([
+          catalogApi.tree(),
+          catalogApi.providerCounts(),
+        ]);
+        if (!alive) return;
+        setCategories(tree.categories ?? []);
+        setCounts(providerCounts.byCategory ?? {});
+      } catch {
+        // A failed catalogue must not blank the map.
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // The tiles are the database's own top-level categories, capped so the row
+  // stays one thumb-swipe wide and the bubbles over the map never crowd.
+  const tiles = useMemo(() => categories.slice(0, 6), [categories]);
+
+  // Bubbles are laid out on a fixed ring around the customer's dot. Positions
+  // are deterministic (angle by index) so pins do not jump between renders.
+  const bubbles = useMemo(() => {
+    const n = tiles.length || 1;
+    return tiles.map((c, i) => {
+      const angle = (-90 + (360 / n) * i) * (Math.PI / 180);
+      const radius = 27; // percent of the shorter edge
+      return {
+        category: c,
+        left: 50 + Math.cos(angle) * radius * 1.15,
+        top: 46 + Math.sin(angle) * radius * 0.85,
+      };
+    });
+  }, [tiles]);
+
+  const onMapReady = useCallback((map: LeafletMap) => {
+    mapRef.current = map;
+  }, []);
+
+  const totalProviders = useMemo(
+    () => Object.values(counts).reduce((a, b) => a + b, 0),
+    [counts],
+  );
+
+  const startCenter: [number, number] = [center.lat, center.lng];
+
+  function onSubmitSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = query.trim();
+    router.push(`/${locale}/services${q ? `?q=${encodeURIComponent(q)}` : ''}`);
+  }
+
+  function requestService(slug?: string | null) {
+    router.push(
+      slug
+        ? `/${locale}/requests/new?service=${encodeURIComponent(slug)}`
+        : `/${locale}/services`,
+    );
+  }
+
+  return (
+    <>
+      {/* The map fills the viewport, starting under the global header. */}
+      <div className="home-map" style={{ insetBlockStart: headerOffset }}>
+        <MapView
+          center={startCenter}
+          zoom={14}
+          style={DEFAULT_MAP_STYLE}
+          className="h-full w-full"
+          onReady={onMapReady}
+        >
+        </MapView>
+
+        {/* Service bubbles float over the map, laid out around the dot. */}
+        {bubbles.map(({ category, left, top }) => {
+          const isActive = active === category.id;
+          return (
+            <button
+              key={category.id}
+              type="button"
+              className={`home-bubble ${isActive ? 'home-bubble--active' : ''}`}
+              style={{ left: `${left}%`, top: `${top}%` }}
+              aria-label={localized(category, locale)}
+              aria-pressed={isActive}
+              onClick={() => setActive(isActive ? null : category.id)}
+            >
+              <CategoryIcon name={iconForSlug(category.slug, category.icon)} size={24} />
+            </button>
+          );
+        })}
+
+        {/* "You are here" — the centre of the ring. */}
+        <span className="home-here" aria-hidden>
+          <span className="home-here-dot" />
+        </span>
+      </div>
+
+      {/* Floating chrome over the map: bell, brand, profile. */}
+      <div
+        className="pointer-events-none fixed inset-x-0 z-30 flex items-center justify-between px-3"
+        style={{ top: headerOffset + 10 }}
+      >
+        <button
+          type="button"
+          className="home-pill home-pill--icon pointer-events-auto"
+          onClick={() => router.push(`/${locale}/notifications`)}
+          aria-label={t('nav.notifications')}
+        >
+          <CategoryIcon name="bell" size={20} />
+        </button>
+
+        <span className="home-pill pointer-events-auto">
+          <KhdemliMark size={20} />
+          <span className="font-black tracking-tight">{t('app.name')}</span>
+        </span>
+
+        <Link
+          href={`/${locale}/profile`}
+          className="home-pill home-pill--icon pointer-events-auto"
+          aria-label={t('nav.profile')}
+        >
+          <CategoryIcon name="user" size={20} />
+        </Link>
+      </div>
+
+      {/* Recenter on the customer's dot once we know where they are. */}
+      {position && (
+        <button
+          type="button"
+          className="home-pill home-pill--icon fixed start-3 z-20"
+          style={{ bottom: 'calc(52vh + 0.75rem)' }}
+          aria-label={t('map.recenter')}
+          onClick={() => mapRef.current?.flyTo([position.lat, position.lng], 14, { duration: 0.6 })}
+        >
+          <CategoryIcon name="nav" size={19} />
+        </button>
+      )}
+
+      <BottomSheet
+        initial="peek"
+        bottomOffset={headerOffset}
+        label={t('home.askTitle')}
+        className="compose-sheet"
+      >
+        <div className="space-y-4 pt-1">
+          <div className="text-center">
+            <h1 className="text-2xl font-black tracking-tight">{t('home.askTitle')}</h1>
+            <p className="mx-auto mt-1.5 max-w-sm text-sm text-[rgb(var(--fg-muted))]">
+              {t('home.askSubtitle')}
+            </p>
+          </div>
+
+          <form onSubmit={onSubmitSearch} className="relative">
+            <CategoryIcon
+              name="search"
+              size={19}
+              className="pointer-events-none absolute inset-y-0 start-4 my-auto text-[rgb(var(--fg-subtle))]"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('home.searchPlaceholder')}
+              className="input !ps-11 !py-3.5"
+              aria-label={t('home.searchPlaceholder')}
+            />
+          </form>
+
+          {tiles.length > 0 && (
+            <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+              {tiles.map((c) => {
+                const isActive = active === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`home-cat ${isActive ? 'home-cat--active' : ''}`}
+                    onClick={() => {
+                      setActive(isActive ? null : c.id);
+                      mapRef.current?.flyTo([center.lat, center.lng], 14, { duration: 0.5 });
+                    }}
+                  >
+                    <span className="home-cat-tile">
+                      <CategoryIcon name={iconForSlug(c.slug, c.icon)} size={22} />
+                    </span>
+                    <span className="max-w-[4.75rem] truncate">{localized(c, locale)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="btn btn-primary btn-block !text-base"
+            onClick={() => requestService(active ? tiles.find((c) => c.id === active)?.slug : null)}
+          >
+            <CategoryIcon name="plus" size={20} />
+            {active
+              ? t('home.requestCategory', { name: localized(tiles.find((c) => c.id === active)!, locale) })
+              : t('catalog.requestNow')}
+          </button>
+
+          <p className="flex items-center justify-center gap-2 text-xs font-semibold text-[rgb(var(--fg-subtle))]">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            {t('home.providersNearbyActive', { count: totalProviders.toLocaleString('ar-MA') })}
+          </p>
+
+          {status === 'denied' && (
+            <p className="text-center text-xs text-[rgb(var(--fg-subtle))]">{t('map.denied')}</p>
+          )}
+        </div>
+      </BottomSheet>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Provider / admin / signed-out home — the previous stacked page       */
+/* ------------------------------------------------------------------ */
+
+function StackedHome() {
+  const { t, locale } = useI18n();
+  const { user, ready } = useAuth();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -32,12 +313,7 @@ export default function HomePage() {
         ]);
         if (!alive) return;
         setCategories(tree.categories ?? []);
-        setCounts(providerCounts.byCategory);
-        setPopular(
-          (tree.categories ?? [])
-            .flatMap((c) => c.subcategories.flatMap((s) => s.services))
-            .slice(0, 8),
-        );
+        setCounts(providerCounts.byCategory ?? {});
       } catch {
         // A failed catalogue must not blank the landing page.
       }
@@ -49,7 +325,6 @@ export default function HomePage() {
 
   return (
     <div className="app-shell container-page py-5">
-      {/* Hero */}
       <section className="mb-5">
         <div className="flex items-center gap-3">
           <span className="grid h-14 w-14 place-items-center rounded-2xl bg-[rgb(var(--brand-500)/0.16)]">
@@ -64,7 +339,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Primary action */}
       <section className="mb-5 space-y-2.5">
         <Link href={`/${locale}/services`} className="btn btn-primary btn-block !text-base">
           <CategoryIcon name="plus" size={21} />
@@ -97,19 +371,14 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Categories — the same card language as the service picker. */}
       {categories.length > 0 && (
         <section className="mb-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-extrabold tracking-tight">{t('catalog.allCategories')}</h2>
-            <Link
-              href={`/${locale}/services`}
-              className="text-sm font-bold text-[rgb(var(--brand-700))]"
-            >
+            <Link href={`/${locale}/services`} className="text-sm font-bold text-[rgb(var(--brand-700))]">
               {t('common.continue')}
             </Link>
           </div>
-
           <div className="grid gap-2.5">
             {categories.map((category, i) => {
               const count = counts[category.id] ?? 0;
@@ -145,30 +414,6 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Popular services — a shortcut past the catalogue. */}
-      {popular.length > 0 && (
-        <section className="mb-6">
-          <h2 className="mb-3 text-lg font-extrabold tracking-tight">{t('catalog.popular')}</h2>
-          <div className="no-scrollbar -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1">
-            {popular.map((service) => (
-              <Link
-                key={service.id}
-                href={`/${locale}/requests/new?service=${encodeURIComponent(service.slug)}`}
-                className="card card-tap flex w-[9.5rem] flex-none flex-col gap-2.5 p-3.5"
-              >
-                <span className="icon-tile h-11 w-11">
-                  <CategoryIcon name={iconForSlug(service.slug)} size={22} />
-                </span>
-                <span className="line-clamp-2 text-sm font-bold leading-snug">
-                  {localized(service, locale)}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* How it works — three steps, same card language. */}
       <section className="mb-5">
         <h2 className="mb-3 text-lg font-extrabold tracking-tight">{t('home.howItWorks')}</h2>
         <div className="grid gap-2.5">
@@ -197,7 +442,9 @@ export default function HomePage() {
         <div className="mb-2 flex justify-center">
           <KhdemliMark size={28} />
         </div>
-        <p className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">{t('app.copyright', { year: new Date().getFullYear() })}</p>
+        <p className="text-xs font-semibold text-[rgb(var(--fg-subtle))]">
+          {t('app.copyright', { year: new Date().getFullYear() })}
+        </p>
       </footer>
     </div>
   );
