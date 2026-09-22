@@ -12,6 +12,7 @@ import {
   type AdminPayout,
   type AdminRequest,
   type AdminStats,
+  type AdminTopUpRequest,
   type AdminTransaction,
   type AdminWallet,
   type PendingProvider,
@@ -31,7 +32,7 @@ import { EmptyState, SectionTitle, Spinner } from '@/lib/ui';
  * simply shows the error — the UI never pretends to have authority.
  */
 
-type Tab = 'overview' | 'payments' | 'transactions' | 'wallets' | 'payouts' | 'providers' | 'requests' | 'audit';
+type Tab = 'overview' | 'payments' | 'transactions' | 'wallets' | 'topups' | 'payouts' | 'providers' | 'requests' | 'audit';
 
 export default function AdminPage() {
   return (
@@ -52,12 +53,15 @@ function AdminView() {
   const [payments, setPayments] = useState<AdminPayment[]>([]);
   const [transactions, setTransactions] = useState<AdminTransaction[]>([]);
   const [wallets, setWallets] = useState<AdminWallet[]>([]);
+  const [topUps, setTopUps] = useState<AdminTopUpRequest[]>([]);
+  const [topUpPending, setTopUpPending] = useState(0);
+  const [topUpFilter, setTopUpFilter] = useState<string>('PENDING');
   const [payouts, setPayouts] = useState<AdminPayout[]>([]);
   const [providers, setProviders] = useState<PendingProvider[]>([]);
   const [requests, setRequests] = useState<AdminRequest[]>([]);
   const [audit, setAudit] = useState<AdminAuditEntry[]>([]);
 
-  const load = useCallback(async (which: Tab) => {
+  const load = useCallback(async (which: Tab, filter?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -66,6 +70,14 @@ function AdminView() {
         case 'payments': setPayments(await adminApi.payments()); break;
         case 'transactions': setTransactions(await adminApi.transactions()); break;
         case 'wallets': setWallets(await adminApi.wallets()); break;
+        case 'topups': {
+          const { rows, pending } = await adminApi.topUpRequests({
+            status: (filter ?? topUpFilter) === 'ALL' ? undefined : (filter ?? topUpFilter),
+          });
+          setTopUps(rows);
+          setTopUpPending(pending);
+          break;
+        }
         case 'payouts': setPayouts(await adminApi.payouts()); break;
         case 'providers': setProviders(await adminApi.pendingProviders()); break;
         case 'requests': setRequests(await adminApi.requests()); break;
@@ -76,6 +88,9 @@ function AdminView() {
     } finally {
       setLoading(false);
     }
+    // topUpFilter is read but intentionally not a dependency: switching the
+    // filter triggers an explicit reload so we never double-fetch on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
   useEffect(() => {
@@ -94,7 +109,7 @@ function AdminView() {
     }
   }
 
-  const tabs: Tab[] = ['overview', 'payments', 'transactions', 'wallets', 'payouts', 'providers', 'requests', 'audit'];
+  const tabs: Tab[] = ['overview', 'payments', 'transactions', 'wallets', 'topups', 'payouts', 'providers', 'requests', 'audit'];
 
   return (
     <div className="app-shell container-page py-5">
@@ -107,6 +122,11 @@ function AdminView() {
             className={`chip ${tab === x ? 'chip-brand' : 'chip-neutral'}`}
           >
             {t(`admin.${x}`)}
+            {x === 'topups' && topUpPending > 0 && (
+              <span className="ms-1 rounded-full bg-[rgb(var(--warn))] px-1.5 text-[0.625rem] font-bold text-white">
+                {topUpPending}
+              </span>
+            )}
           </button>
         ))}
         {/* Settings lives on its own page: it is an editor, not a table view. */}
@@ -224,6 +244,135 @@ function AdminView() {
                 ))}
               </ul>
             )
+          )}
+
+          {tab === 'topups' && (
+            <div>
+              {/*
+                The queue spans hundreds of requests over time, so a status
+                filter replaces paging: operators triage PENDING, and the other
+                buckets are for lookups.
+              */}
+              <div className="mb-4 flex flex-wrap gap-2">
+                {['PENDING', 'COMPLETED', 'FAILED', 'CANCELLED', 'ALL'].map((s) => (
+                  <button
+                    key={s}
+                    className={`chip ${topUpFilter === s ? 'chip-brand' : 'chip-neutral'}`}
+                    onClick={() => {
+                      setTopUpFilter(s);
+                      void load('topups', s);
+                    }}
+                  >
+                    {s === 'ALL' ? t('admin.all') : t(`payment.topUpStatus.${s}`)}
+                    {s === 'PENDING' && topUpPending > 0 ? ` (${topUpPending})` : ''}
+                  </button>
+                ))}
+              </div>
+
+              {topUps.length === 0 ? (
+                <EmptyState title={t('admin.empty')} icon={<CategoryIcon name="wallet" size={26} />} />
+              ) : (
+                <ul className="space-y-2">
+                  {topUps.map((r, index) => (
+                    <li
+                      key={r.id}
+                      className="card card-tap slide-in p-4 text-sm"
+                      style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate font-bold">
+                            {r.provider_name ?? r.user_email ?? r.user_id.slice(0, 8)}
+                          </p>
+                          <p className="truncate text-xs text-[rgb(var(--fg-muted))]">
+                            {r.user_email}{r.user_phone ? ` · ${r.user_phone}` : ''}
+                          </p>
+                        </div>
+                        <span className={
+                          r.status === 'COMPLETED' ? 'chip chip-ok'
+                            : r.status === 'PENDING' ? 'chip chip-pending'
+                            : 'chip chip-neutral'
+                        }>
+                          {t(`payment.topUpStatus.${r.status}`)}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 grid grid-cols-3 gap-3">
+                        <div>
+                          <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                            {t('admin.topUpPaid')}
+                          </p>
+                          <p className="tnum mt-0.5 font-bold">{formatMinor(r.pay_minor, r.currency, locale)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                            {t('admin.topUpCredit')}
+                          </p>
+                          <p className="tnum mt-0.5 font-bold text-[rgb(var(--ok))]">
+                            {formatMinor(r.credit_minor, r.currency, locale)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[rgb(var(--fg-subtle))]">
+                            {t('payment.method')}
+                          </p>
+                          <p className="mt-0.5">{r.method}</p>
+                        </div>
+                      </div>
+
+                      <p className="mt-2 text-xs text-[rgb(var(--fg-subtle))]">
+                        {new Date(r.created_at).toLocaleString(locale)}
+                        {r.reference ? ` · ${r.reference}` : ''}
+                        {r.package_code ? ` · ${r.package_code}` : ''}
+                      </p>
+
+                      {r.status === 'PENDING' && (
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            className="btn btn-primary flex-1"
+                            onClick={() => {
+                              // Operatives often receive a different amount than
+                              // was asked; the default is the requested credit
+                              // but it can be corrected before it hits the ledger.
+                              const input = window.prompt(
+                                `${t('admin.topUpCredit')} (MAD)`,
+                                String(r.credit_minor / 100),
+                              );
+                              if (input === null) return;
+                              const creditMinor = Math.round(Number(input) * 100);
+                              if (!Number.isFinite(creditMinor) || creditMinor <= 0) return;
+                              const ref = window.prompt(t('admin.topUpExternalRef')) ?? undefined;
+                              void act(
+                                () => adminApi.processTopUpRequest(r.id, 'APPROVE', {
+                                  creditMinor, externalRef: ref || undefined,
+                                }),
+                                t('admin.topUpApproved'),
+                              );
+                            }}
+                          >
+                            <CategoryIcon name="check" size={16} />
+                            {t('admin.approve')}
+                          </button>
+                          <button
+                            className="btn btn-danger flex-1"
+                            onClick={() => {
+                              const reason = window.prompt(t('admin.reason')) ?? 'Rejected';
+                              void act(
+                                () => adminApi.processTopUpRequest(r.id, 'REJECT', { reason }),
+                                t('admin.topUpRejected'),
+                              );
+                            }}
+                          >
+                            <CategoryIcon name="x" size={16} />
+                            {t('admin.reject')}
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           )}
 
           {tab === 'payouts' && (
