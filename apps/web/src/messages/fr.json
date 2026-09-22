@@ -915,5 +915,19 @@
       "EXPIRED": "Expiré",
       "CANCELLED": "Annulé"
     }
+  },
+  "media": {
+    "attachedTitle": "Photos et vidéo du client",
+    "enlarge": "Agrandir la photo",
+    "title": "Photos ou vidéo du problème",
+    "hint": "Ajoutez des photos ou une courte vidéo pour que l'artisan voie la tâche et l'évalue correctement.",
+    "addPhoto": "Ajouter une photo",
+    "addVideo": "Ajouter une vidéo ({seconds} s)",
+    "videoAttached": "Courte vidéo jointe",
+    "videoTooLong": "Cette vidéo est trop longue. Limitez-la à {seconds} secondes.",
+    "videoTooBig": "Cette vidéo est trop volumineuse. Enregistrez-en une plus courte.",
+    "photoTooBig": "Ces photos sont trop volumineuses. Retirez-en une et réessayez.",
+    "failed": "Nous n'avons pas pu lire ce fichier.",
+    "remove": "Retirer"
   }
 }
