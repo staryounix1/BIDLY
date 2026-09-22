@@ -542,9 +542,24 @@
     "payoutRequested": "Retrait demandé. Les fonds sont réservés jusqu'au traitement.",
     "paymentFailed": "Le paiement a échoué. Vous pouvez réessayer.",
     "topUp": "Recharger",
-    "topUpHint": "Vous avez besoin d'un solde pour régler la commission de la plateforme lorsque vous vous accordez sur un prix.",
+    "topUpHint": "Vous avez besoin d'un solde pour régler la commission de la plateforme lorsque vous vous accordez sur un prix. Les demandes sont approuvées par un administrateur.",
     "topUpAmount": "Montant (MAD)",
-    "topUpDone": "Portefeuille rechargé avec succès."
+    "topUpDone": "Portefeuille rechargé avec succès.",
+    "topUpSubmit": "Demander une recharge",
+    "topUpRequested": "Demande envoyée. Un administrateur va l'examiner.",
+    "topUpRequestedOn": "Demandée le",
+    "topUpApprovalNote": "Votre solde est crédité dès que le paiement est confirmé par un administrateur.",
+    "topUpReference": "Référence du paiement",
+    "topUpReferenceHint": "Numéro de virement / reçu",
+    "topUpHistory": "Mes demandes",
+    "topUpCancel": "Annuler la demande",
+    "topUpPending": "En attente d'approbation",
+    "topUpStatus": {
+      "PENDING": "En attente",
+      "COMPLETED": "Terminée",
+      "FAILED": "Refusée",
+      "CANCELLED": "Annulée"
+    }
   },
   "wallet": {
     "title": "Portefeuille",
@@ -615,7 +630,14 @@
     "identityQueueHint": "Examinez les documents et comparez le visage à la carte avant d'approuver.",
     "identityQueueEmpty": "Rien en attente pour le moment.",
     "rejectReason": "Motif du rejet ? (obligatoire)",
-    "confirmReject": "Confirmer le rejet"
+    "confirmReject": "Confirmer le rejet",
+    "topups": "Demandes de recharge",
+    "topUpPaid": "Montant payé",
+    "topUpCredit": "Montant à créditer",
+    "topUpExternalRef": "Référence de l'opération (optionnel)",
+    "topUpApproved": "Demande approuvée et portefeuille crédité.",
+    "topUpRejected": "Demande refusée.",
+    "all": "Tout"
   },
   "map": {
     "title": "Choisissez l'emplacement sur la carte",
