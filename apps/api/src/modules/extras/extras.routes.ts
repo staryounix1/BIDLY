@@ -68,6 +68,10 @@ export async function registerExtrasRoutes(app: FastifyInstance): Promise<void> 
     if (!(await flagEnabled('provider_boost'))) throw businessRule('Boosts are not available right now.');
 
     const price = await boostPrice(hours);
+    // A zero (or negative) boost price is a misconfiguration, and the ledger
+    // rejects a zero movement (`wallet_transactions_amount_minor_check`), so
+    // fail with a clear message instead of a 23514 from the insert below.
+    if (!(price > 0)) throw businessRule('Boosts are not available right now.');
 
     const result = await transaction(async (client) => {
       const c = clientQuery(client);
