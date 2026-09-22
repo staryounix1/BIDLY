@@ -677,9 +677,12 @@
   }
 
   /* A service bubble pinned over the map. The active one reads as chosen:
-     brand tint, brand ring and a soft glow, like the reference design. */
+     brand tint, brand ring and a soft glow, like the reference design.
+     Leaflet's own panes climb to z-index 800 (controls), so anything we draw
+     over the map must clear that ladder or it renders behind the tiles. */
   .home-bubble {
     position: absolute;
+    z-index: 900;
     transform: translate(-50%, -50%);
     display: grid;
     place-items: center;
@@ -710,6 +713,7 @@
   /* The "you are here" dot at the centre of the map. */
   .home-here {
     position: absolute;
+    z-index: 900;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
