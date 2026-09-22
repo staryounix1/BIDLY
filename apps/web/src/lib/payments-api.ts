@@ -58,12 +58,33 @@ export interface PaymentResult {
   retryable?: boolean;
 }
 
-export interface TopUpResult {
-  transactionId: string;
-  amountMinor: number;
+export interface TopUpPackage {
+  id: string;
+  code: string;
+  pay_minor: number;
+  credit_minor: number;
+  bonus_minor: number;
   currency: string;
-  balanceAfterMinor: number;
-  alreadyCredited: boolean;
+  label_en: string | null;
+  label_fr: string | null;
+  label_ar: string | null;
+  sort_order: number;
+}
+
+export type TopUpStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+
+export interface TopUpRequest {
+  id: string;
+  status: TopUpStatus;
+  pay_minor: number;
+  credit_minor: number;
+  bonus_minor: number;
+  currency: string;
+  method: string;
+  reference: string | null;
+  note: string | null;
+  completed_at: string | null;
+  created_at: string;
 }
 
 export const paymentsApi = {
@@ -73,16 +94,39 @@ export const paymentsApi = {
     return res.data;
   },
 
+  /** Active top-up packages (pay X, get X + bonus) for the wallet tiles. */
+  async topUpPackages(): Promise<TopUpPackage[]> {
+    const res = await api.get<TopUpPackage[]>('/wallets/topup-packages');
+    return res.data;
+  },
+
   /**
-   * Provider: add funds to my own wallet.
+   * Provider: file a top-up request for an admin to settle.
    *
-   * A provider settles the platform commission from this balance when a deal
-   * is agreed, so an empty wallet blocks the first agreement. Provider-only on
-   * the server too. The idempotency key makes a retry after a dropped
-   * connection a no-op rather than a double credit.
+   * Money is credited only after an operator confirms it was received, so this
+   * creates a PENDING request rather than adding balance. One open request per
+   * provider is enforced server-side.
    */
-  async topUpWallet(input: { amountMinor: number; method?: string; idempotencyKey?: string }): Promise<TopUpResult> {
-    const res = await api.post<TopUpResult>('/wallets/me/topup', input);
+  async requestTopUp(input: {
+    packageId?: string;
+    amountMinor?: number;
+    method?: string;
+    reference?: string;
+    note?: string;
+  }): Promise<TopUpRequest> {
+    const res = await api.post<TopUpRequest>('/wallets/me/topup-requests', input);
+    return res.data;
+  },
+
+  /** Provider: my top-up requests, newest first. */
+  async myTopUpRequests(limit = 20): Promise<TopUpRequest[]> {
+    const res = await api.get<TopUpRequest[]>(`/wallets/me/topup-requests?limit=${limit}`);
+    return res.data;
+  },
+
+  /** Provider: cancel a request that is still PENDING. */
+  async cancelTopUpRequest(id: string): Promise<TopUpRequest> {
+    const res = await api.post<TopUpRequest>(`/wallets/me/topup-requests/${id}/cancel`, {});
     return res.data;
   },
 
