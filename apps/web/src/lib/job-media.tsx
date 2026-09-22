@@ -3,32 +3,35 @@
 import { useId, useState } from 'react';
 import { useI18n } from './i18n-provider';
 import { CategoryIcon } from './icons';
+import { mediaApi } from './media-api';
 
 /**
- * Job media — photos and a short video, captured by the customer when they
- * describe the problem.
+ * Job media — photos and a video, captured by the customer when they describe
+ * the problem.
  *
  * The craftsman's price is the point of this: a wall that needs plastering and
  * a wall that needs washing look identical in words and completely different in
  * a photo, so the brief travels with evidence and the offer is priced against
  * what is actually there. Nothing here is a link field — the customer picks
- * files from their phone and the browser does the work, which is the only
- * interaction that is realistic on a phone camera roll.
+ * files from their phone or computer, which is the only interaction that is
+ * realistic on a camera roll.
  *
- * There is no binary upload service yet (see `job-photos.tsx`): photos are
- * downscaled to a compact JPEG data URL and the video is kept only if it fits
- * the request body, so the API's `mediaUrls` array carries everything and
- * swapping in object storage later changes only this file.
+ * **Everything here is optional.** A request with no photos and no video is a
+ * perfectly good request, so nothing in this file is ever allowed to block
+ * submission; a failure to attach a file reports itself and leaves the rest of
+ * the brief alone.
+ *
+ * Photos are downscaled to a compact JPEG and sent as a data URL in the request
+ * body, because at that size it is simpler than a round trip. A video is posted
+ * as its own bytes to `/media` and comes back as a URL, because the API's JSON
+ * body cap could never hold a clip.
  */
 
 const MAX_EDGE = 1280;
 const JPEG_QUALITY = 0.72;
 const MAX_PHOTOS = 6;
-/** Photos ride in `mediaUrls`; ~6 of this size stay well under 1 MB total. */
+/** Photos ride inside the JSON body, so keep the total well under its cap. */
 const MAX_PHOTO_BYTES = 900_000;
-/** Videos are far heavier, so one short clip with a hard ceiling. */
-const MAX_VIDEO_BYTES = 2_400_000;
-const MAX_VIDEO_SECONDS = 20;
 
 async function toCompressedDataUrl(file: File): Promise<string> {
   const bitmap = await createImageBitmap(file);
@@ -51,31 +54,10 @@ function approxBytes(dataUrl: string): number {
   return Math.round(((dataUrl.length - comma - 1) * 3) / 4);
 }
 
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error('read failed'));
-    reader.readAsDataURL(file);
-  });
-}
-
-/** Video duration, read from metadata so an over-long clip is refused up front. */
-function videoDuration(file: File): Promise<number> {
-  return new Promise((resolve) => {
-    const url = URL.createObjectURL(file);
-    const el = document.createElement('video');
-    el.preload = 'metadata';
-    el.onloadedmetadata = () => {
-      URL.revokeObjectURL(url);
-      resolve(Number.isFinite(el.duration) ? el.duration : 0);
-    };
-    el.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(0);
-    };
-    el.src = url;
-  });
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export function JobMedia({
@@ -83,22 +65,28 @@ export function JobMedia({
   video,
   onPhotosChange,
   onVideoChange,
+  onUploadingChange,
 }: {
   photos: string[];
+  /** A URL once uploaded, or a local object URL while it is still going up. */
   video: string | null;
   onPhotosChange: (next: string[]) => void;
   onVideoChange: (next: string | null) => void;
+  /** Lets the tray hold the send button while a clip is still uploading. */
+  onUploadingChange?: (uploading: boolean) => void;
 }) {
   const { t } = useI18n();
   const photoId = useId();
   const videoId = useId();
-  const [busy, setBusy] = useState(false);
+  const [busyPhotos, setBusyPhotos] = useState(false);
+  const [videoState, setVideoState] = useState<{ name: string; size: number } | null>(null);
+  const [progress, setProgress] = useState<'idle' | 'uploading' | 'done'>('idle');
   const [error, setError] = useState<string | null>(null);
 
   async function pickPhotos(files: FileList | null) {
     if (!files?.length) return;
     setError(null);
-    setBusy(true);
+    setBusyPhotos(true);
     try {
       const next = [...photos];
       let spent = photos.reduce((n, p) => n + approxBytes(p), 0);
@@ -116,33 +104,46 @@ export function JobMedia({
     } catch {
       setError(t('media.failed'));
     } finally {
-      setBusy(false);
+      setBusyPhotos(false);
     }
   }
 
+  /**
+   * A video of any size: the file goes to the server as bytes, so there is no
+   * client-side ceiling to hit. The row shows locally the moment it is picked,
+   * then keeps that preview until the returned URL replaces it.
+   */
   async function pickVideo(files: FileList | null) {
     const file = files?.[0];
     if (!file) return;
     setError(null);
-    setBusy(true);
+    const localPreview = URL.createObjectURL(file);
+    setVideoState({ name: file.name, size: file.size });
+    setProgress('uploading');
+    onUploadingChange?.(true);
     try {
-      const seconds = await videoDuration(file);
-      if (seconds && seconds > MAX_VIDEO_SECONDS + 1) {
-        setError(t('media.videoTooLong', { seconds: MAX_VIDEO_SECONDS }));
-        return;
-      }
-      const dataUrl = await fileToDataUrl(file);
-      if (approxBytes(dataUrl) > MAX_VIDEO_BYTES) {
-        setError(t('media.videoTooBig'));
-        return;
-      }
-      onVideoChange(dataUrl);
+      const { url } = await mediaApi.upload(file);
+      URL.revokeObjectURL(localPreview);
+      onVideoChange(url);
+      setProgress('done');
     } catch {
-      setError(t('media.failed'));
+      URL.revokeObjectURL(localPreview);
+      setVideoState(null);
+      setProgress('idle');
+      setError(t('media.uploadFailed'));
     } finally {
-      setBusy(false);
+      onUploadingChange?.(false);
     }
   }
+
+  function clearVideo() {
+    onVideoChange(null);
+    setVideoState(null);
+    setProgress('idle');
+    setError(null);
+  }
+
+  const showVideoRow = Boolean(video) || Boolean(videoState);
 
   return (
     <div className="rounded-2xl border border-[rgb(var(--line))] p-3.5">
@@ -157,7 +158,7 @@ export function JobMedia({
           </p>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold text-[rgb(var(--accent))]">
             <CategoryIcon name="upload" size={13} />
-            {t('media.fromDevice')}
+            {t('media.optional')}
           </p>
         </div>
       </div>
@@ -193,7 +194,7 @@ export function JobMedia({
               color: 'rgb(var(--fg-muted))',
             }}
           >
-            {busy ? (
+            {busyPhotos ? (
               <span className="tnum">…</span>
             ) : (
               <>
@@ -223,26 +224,36 @@ export function JobMedia({
         )}
       </div>
 
-      {/* Video: one clip, or none. A poster frame is not available without
-          decoding the file, so this shows a compact "attached" row with a
-          play-through preview instead of a thumbnail. */}
+      {/* Video: one clip, any size. While it uploads the local preview is shown
+          so the pick feels instant, then the server URL takes over. */}
       <div className="mt-3">
-        {video ? (
+        {showVideoRow ? (
           <div className="flex items-center gap-2.5 rounded-xl border border-[rgb(var(--line))] p-2">
             {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-            <video src={video} className="h-14 w-20 rounded-lg object-cover" muted playsInline />
+            <video
+              src={video ?? undefined}
+              className="h-14 w-20 rounded-lg object-cover"
+              muted
+              playsInline
+            />
             <span className="min-w-0 flex-1 truncate text-xs font-semibold">
-              {t('media.videoAttached')}
+              {progress === 'uploading'
+                ? `${t('media.uploading')} — ${videoState ? formatSize(videoState.size) : ''}`
+                : videoState?.name || t('media.videoAttached')}
             </span>
-            <button
-              type="button"
-              aria-label={t('media.remove')}
-              onClick={() => onVideoChange(null)}
-              className="flex h-7 w-7 flex-none items-center justify-center rounded-full"
-              style={{ background: 'rgb(var(--danger))', color: '#fff' }}
-            >
-              <CategoryIcon name="x" size={13} />
-            </button>
+            {progress === 'uploading' ? (
+              <span className="tnum flex-none text-[11px] text-[rgb(var(--fg-subtle))]">…</span>
+            ) : (
+              <button
+                type="button"
+                aria-label={t('media.remove')}
+                onClick={clearVideo}
+                className="flex h-7 w-7 flex-none items-center justify-center rounded-full"
+                style={{ background: 'rgb(var(--danger))', color: '#fff' }}
+              >
+                <CategoryIcon name="x" size={13} />
+              </button>
+            )}
           </div>
         ) : (
           <label
@@ -254,7 +265,7 @@ export function JobMedia({
             }}
           >
             <CategoryIcon name="upload" size={16} />
-            {busy ? t('common.loading') : t('media.addVideo', { seconds: MAX_VIDEO_SECONDS })}
+            {t('media.addVideo')}
             <input
               id={videoId}
               type="file"

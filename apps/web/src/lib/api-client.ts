@@ -112,4 +112,20 @@ export class ApiClient {
   delete<T>(path: string, init?: RequestInit) {
     return this.request<T>(path, { ...init, method: 'DELETE' });
   }
+
+  /**
+   * Send a file as its own bytes rather than as JSON.
+   *
+   * A video cannot travel inside a JSON body: the API parses JSON under a
+   * 1 MB cap, and base64 would inflate it further. Posting the blob directly
+   * keeps the ceiling where it belongs (on the document routes) and lets a
+   * clip of any realistic size through.
+   */
+  upload<T>(path: string, file: Blob) {
+    return this.request<T>(path, {
+      method: 'POST',
+      headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      body: file,
+    });
+  }
 }
