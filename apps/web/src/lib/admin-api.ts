@@ -79,6 +79,27 @@ export interface AdminPayout {
   processed_at: string | null;
 }
 
+export interface AdminTopUpRequest {
+  id: string;
+  status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+  pay_minor: number;
+  credit_minor: number;
+  bonus_minor: number;
+  currency: string;
+  method: string;
+  reference: string | null;
+  note: string | null;
+  package_code: string | null;
+  wallet_txn_id: string | null;
+  completed_at: string | null;
+  created_at: string;
+  user_id: string;
+  user_email: string | null;
+  user_phone: string | null;
+  provider_name: string | null;
+  reviewed_by_email: string | null;
+}
+
 export interface PendingProvider {
   id: string;
   display_name: string | null;
@@ -160,6 +181,23 @@ export const adminApi = {
   },
   async processPayout(id: string, decision: 'APPROVE' | 'REJECT', reason?: string, externalRef?: string) {
     return (await api.post(`/admin/payouts/${id}/process`, { decision, reason, externalRef })).data;
+  },
+  /** Wallet top-up requests awaiting (or past) review, newest first. */
+  async topUpRequests(params: { status?: string; search?: string; page?: number } = {}): Promise<{
+    rows: AdminTopUpRequest[];
+    pending: number;
+  }> {
+    const res = await api.get<AdminTopUpRequest[]>(`/admin/topup-requests${qs({ ...params, limit: 50 })}`);
+    const meta = (res.meta ?? {}) as { pending?: number };
+    return { rows: res.data, pending: Number(meta.pending ?? 0) };
+  },
+  /** Credit or reject a top-up request. `creditMinor` corrects the amount actually received. */
+  async processTopUpRequest(
+    id: string,
+    decision: 'APPROVE' | 'REJECT',
+    opts: { reason?: string; creditMinor?: number; externalRef?: string } = {},
+  ) {
+    return (await api.post(`/admin/topup-requests/${id}/process`, { decision, ...opts })).data;
   },
   async requests(params: { page?: number; status?: string; q?: string } = {}): Promise<AdminRequest[]> {
     return (await api.get<AdminRequest[]>(`/admin/requests${qs({ ...params, limit: 50 })}`)).data;
