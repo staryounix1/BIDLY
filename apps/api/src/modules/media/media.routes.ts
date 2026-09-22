@@ -57,12 +57,11 @@ export async function registerMediaRoutes(app: FastifyInstance): Promise<void> {
     });
   };
 
-  for (const type of ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'video/mp4', 'video/quicktime', 'video/webm', 'video/3gpp', 'application/octet-stream']) {
-    // The catch-all keeps an unknown-but-real phone mime type from being a hard
-    // failure; the handler still checks the family before storing.
-    app.addContentTypeParser(type, binaryParser);
-  }
-  app.addContentTypeParser('*', binaryParser);
+  // Any other `image/*` or `video/*` subtype — a phone may send `video/x-m4v`
+  // or `image/jpg` — is claimed by pattern rather than by the finite list
+  // above, so an unusual but genuine camera format still uploads. JSON and the
+  // application types are deliberately left alone.
+  app.addContentTypeParser(/^(image|video)\//, binaryParser);
 
   app.post('/media', {
     preHandler: [app.authenticate],
