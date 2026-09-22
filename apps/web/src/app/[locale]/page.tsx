@@ -10,7 +10,7 @@ import { catalogApi, localized, type Category } from '@/lib/catalog-api';
 import { CategoryIcon, iconForSlug, KhdemliMark } from '@/lib/icons';
 import { useMyLocation } from '@/lib/map/use-my-location';
 import { MapView, DEFAULT_MAP_STYLE } from '@/lib/map/map-view';
-import { BottomSheet } from '@/lib/map/bottom-sheet';
+import { BottomSheet, type SheetDetent } from '@/lib/map/bottom-sheet';
 
 /**
  * Customer home — the map IS the page.
@@ -96,17 +96,30 @@ function MapHome() {
   // stays one thumb-swipe wide and the bubbles over the map never crowd.
   const tiles = useMemo(() => categories.slice(0, 6), [categories]);
 
-  // Bubbles are laid out on a fixed ring around the customer's dot. Positions
-  // are deterministic (angle by index) so pins do not jump between renders.
+  /**
+   * Bubbles ride the *visible* band of map, not the whole viewport.
+   *
+   * The tray covers the lower part of the screen, so a fixed percentage of the
+   * viewport would put half the bubbles underneath it — which is exactly what
+   * happened first: three pins, one visible. The band is measured from the
+   * mapped area under the header down to the top of the sheet, and it shrinks
+   * as the sheet is dragged up (`detent`), so nothing is ever hidden.
+   */
+  const [detent, setDetent] = useState<SheetDetent>('peek');
+  const sheetShare = detent === 'full' ? 0.92 : detent === 'half' ? 0.66 : 0.4;
+
   const bubbles = useMemo(() => {
     const n = tiles.length || 1;
+    // Ring geometry as a share of the band, so it scales with the screen.
     return tiles.map((c, i) => {
       const angle = (-90 + (360 / n) * i) * (Math.PI / 180);
-      const radius = 27; // percent of the shorter edge
       return {
         category: c,
-        left: 50 + Math.cos(angle) * radius * 1.15,
-        top: 46 + Math.sin(angle) * radius * 0.85,
+        // x/y are percentages of the map band; see the wrapper's geometry.
+        x: 50 + Math.cos(angle) * 32,
+        y: 50 + Math.sin(angle) * 30,
+        // A slight stagger keeps neighbouring bubbles from overlapping.
+        scale: 1 - (i % 3) * 0.04,
       };
     });
   }, [tiles]);
@@ -149,28 +162,34 @@ function MapHome() {
         >
         </MapView>
 
-        {/* Service bubbles float over the map, laid out around the dot. */}
-        {bubbles.map(({ category, left, top }) => {
-          const isActive = active === category.id;
-          return (
-            <button
-              key={category.id}
-              type="button"
-              className={`home-bubble ${isActive ? 'home-bubble--active' : ''}`}
-              style={{ left: `${left}%`, top: `${top}%` }}
-              aria-label={localized(category, locale)}
-              aria-pressed={isActive}
-              onClick={() => setActive(isActive ? null : category.id)}
-            >
-              <CategoryIcon name={iconForSlug(category.slug, category.icon)} size={24} />
-            </button>
-          );
-        })}
+        {/*
+          The bubbles live inside a band that stops where the tray begins, so
+          every pin stays on visible map however far the sheet is dragged up.
+          The dot marks the customer's own position at the band's centre.
+        */}
+        <div className="home-band" style={{ bottom: `${sheetShare * 100}%` }}>
+          {bubbles.map(({ category, x, y, scale }) => {
+            const isActive = active === category.id;
+            return (
+              <button
+                key={category.id}
+                type="button"
+                className={`home-bubble ${isActive ? 'home-bubble--active' : ''}`}
+                style={{ left: `${x}%`, top: `${y}%`, transform: `translate(-50%, -50%) scale(${scale})` }}
+                aria-label={localized(category, locale)}
+                aria-pressed={isActive}
+                onClick={() => setActive(isActive ? null : category.id)}
+              >
+                <CategoryIcon name={iconForSlug(category.slug, category.icon)} size={24} />
+              </button>
+            );
+          })}
 
-        {/* "You are here" — the centre of the ring. */}
-        <span className="home-here" aria-hidden>
-          <span className="home-here-dot" />
-        </span>
+          {/* "You are here" — the centre of the ring. */}
+          <span className="home-here" aria-hidden>
+            <span className="home-here-dot" />
+          </span>
+        </div>
       </div>
 
       {/* Floating chrome over the map: bell, brand, profile. */}
@@ -205,8 +224,8 @@ function MapHome() {
       {position && (
         <button
           type="button"
-          className="home-pill home-pill--icon fixed start-3 z-20"
-          style={{ bottom: 'calc(52vh + 0.75rem)' }}
+          className="home-pill home-pill--icon fixed start-3 z-[910]"
+          style={{ bottom: `calc(${sheetShare * 100}vh + 0.75rem)` }}
           aria-label={t('map.recenter')}
           onClick={() => mapRef.current?.flyTo([position.lat, position.lng], 14, { duration: 0.6 })}
         >
@@ -219,6 +238,7 @@ function MapHome() {
         bottomOffset={headerOffset}
         label={t('home.askTitle')}
         className="compose-sheet"
+        onDetentChange={setDetent}
       >
         <div className="space-y-4 pt-1">
           <div className="text-center">

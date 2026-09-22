@@ -676,6 +676,22 @@
     padding: 0;
   }
 
+  /* The band of map the bubbles may use: the mapped area minus the tray.
+     `bottom` is set inline from the live sheet detent, so dragging the sheet
+     up shrinks the band and no pin can ever sit under the tray. */
+  .home-band {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    z-index: 900;
+    pointer-events: none;
+    transition: bottom 0.18s ease;
+  }
+
+  .home-band > * {
+    pointer-events: auto;
+  }
+
   /* A service bubble pinned over the map. The active one reads as chosen:
      brand tint, brand ring and a soft glow, like the reference design.
      Leaflet's own panes climb to z-index 800 (controls), so anything we draw
@@ -683,7 +699,6 @@
   .home-bubble {
     position: absolute;
     z-index: 900;
-    transform: translate(-50%, -50%);
     display: grid;
     place-items: center;
     height: 3.5rem;
@@ -695,11 +710,11 @@
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.75);
     color: rgb(var(--fg));
-    transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
   }
 
   .home-bubble:active {
-    transform: translate(-50%, -50%) scale(0.94);
+    filter: brightness(0.95);
   }
 
   .home-bubble--active {
@@ -710,13 +725,17 @@
                 0 0 34px -6px rgb(var(--brand-500) / 0.85);
   }
 
-  /* The "you are here" dot at the centre of the map. */
+  /* The "you are here" dot at the centre of the band. */
   .home-here {
     position: absolute;
     z-index: 900;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .home-band .home-here {
     pointer-events: none;
   }
 
