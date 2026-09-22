@@ -542,9 +542,24 @@
     "payoutRequested": "Payout requested. Funds are reserved until it is processed.",
     "paymentFailed": "The payment failed. You can try again.",
     "topUp": "Add funds",
-    "topUpHint": "You need a balance to settle the platform commission when you agree on a price with a customer.",
+    "topUpHint": "You need a balance to settle the platform commission when you agree on a price with a customer. Requests are approved by an administrator.",
     "topUpAmount": "Amount (MAD)",
-    "topUpDone": "Wallet topped up successfully."
+    "topUpDone": "Wallet topped up successfully.",
+    "topUpSubmit": "Request top-up",
+    "topUpRequested": "Request sent. An administrator will review it.",
+    "topUpRequestedOn": "Requested",
+    "topUpApprovalNote": "Your balance is credited once the payment is confirmed by an administrator.",
+    "topUpReference": "Payment reference",
+    "topUpReferenceHint": "Transfer / receipt number",
+    "topUpHistory": "My requests",
+    "topUpCancel": "Cancel request",
+    "topUpPending": "Awaiting approval",
+    "topUpStatus": {
+      "PENDING": "Pending",
+      "COMPLETED": "Completed",
+      "FAILED": "Rejected",
+      "CANCELLED": "Cancelled"
+    }
   },
   "wallet": {
     "title": "Wallet",
@@ -615,7 +630,14 @@
     "identityQueueHint": "Review the documents and match the face to the ID before approving.",
     "identityQueueEmpty": "Nothing waiting for review right now.",
     "rejectReason": "Why is it rejected? (required)",
-    "confirmReject": "Confirm rejection"
+    "confirmReject": "Confirm rejection",
+    "topups": "Top-up requests",
+    "topUpPaid": "Amount paid",
+    "topUpCredit": "Amount to credit",
+    "topUpExternalRef": "Transaction reference (optional)",
+    "topUpApproved": "Request approved and wallet credited.",
+    "topUpRejected": "Request rejected.",
+    "all": "All"
   },
   "map": {
     "title": "Pick the location on the map",
