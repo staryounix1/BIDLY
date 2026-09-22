@@ -14,6 +14,7 @@ import {
   type ServiceField,
 } from '@/lib/catalog-api';
 import { requestsApi } from '@/lib/requests-api';
+import { JobMedia } from '@/lib/job-media';
 import { MapPicker } from '@/lib/map/map-picker';
 import { BottomSheet, type SheetDetent } from '@/lib/map/bottom-sheet';
 import { createRequestSchema, validateServiceAnswers } from '@bidly/validation';
@@ -211,6 +212,12 @@ function NewRequestView() {
   // separately, since the API requires it.
   const urgency = 'NORMAL';
   const [price, setPrice] = useState(0);
+
+  // Evidence the craftsman prices against. Photos are compact JPEG data URLs
+  // and the video (if any) rides in the same list marked by its own mime type,
+  // so the API's single `mediaUrls` array carries both.
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [video, setVideo] = useState<string | null>(null);
 
   // Scheduling, item count and "I need a helper" are no longer collected on this
   // screen: the tray stops at the send button and the rest of the brief travels
@@ -432,6 +439,7 @@ function NewRequestView() {
             },
           }
         : {}),
+      ...(photos.length || video ? { mediaUrls: [...photos, ...(video ? [video] : [])] } : {}),
     };
 
     const parsed = createRequestSchema.safeParse(payload);
@@ -577,6 +585,15 @@ function NewRequestView() {
               </p>
             )}
           </div>
+
+          {/* Evidence, so the craftsman prices what is actually there rather
+              than what the words suggest. */}
+          <JobMedia
+            photos={photos}
+            video={video}
+            onPhotosChange={setPhotos}
+            onVideoChange={setVideo}
+          />
 
           <label className="block">
             <span className="label">{t('request.description')}</span>

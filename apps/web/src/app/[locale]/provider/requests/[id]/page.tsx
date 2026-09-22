@@ -21,6 +21,7 @@ function offerErrorMessage(err: unknown, t: (key: string) => string): string {
   return t('common.error');
 }
 import { StatusBadge } from '@/lib/status-badge';
+import { JobMediaGallery } from '@/lib/job-media-gallery';
 import { CategoryIcon } from '@/lib/icons';
 import { Price, PriceStepper, SectionTitle, Spinner } from '@/lib/ui';
 
@@ -238,8 +239,11 @@ function ProviderRequestView() {
         </div>
       )}
 
-      {data.answers.length > 0 && (
-        <div className="card mb-4 p-4">
+      {/* The evidence the customer attached, above the questions, because it
+          is what the price is actually for. */}
+      <JobMediaGallery media={data.media} />
+
+      {data.answers.length > 0 && (        <div className="card mb-4 p-4">
           <h2 className="label">{t('providerReq.questionAnswers')}</h2>
           <dl className="mt-2 grid gap-3 sm:grid-cols-2">
             {data.answers.map((a) => (

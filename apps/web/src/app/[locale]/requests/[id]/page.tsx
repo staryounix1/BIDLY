@@ -16,6 +16,7 @@ import { SearchRadar } from '@/lib/map/search-radar';
 import { TrackProvider } from '@/lib/map/track-provider';
 import { StatusBadge } from '@/lib/status-badge';
 import { CategoryIcon } from '@/lib/icons';
+import { JobMediaGallery } from '@/lib/job-media-gallery';
 import { Avatar, Price, SectionTitle, Spinner, Stars, toNumber } from '@/lib/ui';
 
 /**
@@ -762,24 +763,7 @@ function RequestDetailView() {
             </div>
           )}
 
-          {media.length > 0 && (
-            <div className="card p-4">
-              <h2 className="label">{t('request.detailsTitle')}</h2>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {media.map((m) => (
-                  <a
-                    key={m.id}
-                    href={m.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="chip chip-neutral"
-                  >
-                    {m.kind}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
+          <JobMediaGallery media={media} />
         </div>
       )}
 
