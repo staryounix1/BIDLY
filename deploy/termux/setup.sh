@@ -19,7 +19,7 @@ PARTS=91
 # Bump this whenever a new bundle is published. It is appended to every part
 # URL as a cache-buster so neither GitHub's raw CDN nor any intermediate cache
 # can hand back a stale part under the same filename.
-BUNDLE_VERSION="2026-09-22-6"
+BUNDLE_VERSION="2026-09-22-7"
 DIR="$HOME/bidly-api"
 PARTS_DIR="$DIR/parts"
 
@@ -82,9 +82,25 @@ while [ "$i" -lt "$PARTS" ]; do
   num=$(printf "%03d" "$i")
   out="$PARTS_DIR/c$num.bin"
   if [ ! -s "$out" ]; then
-    url="https://raw.githubusercontent.com/${REPO}/${REF}/bundle2/c${num}.bin?v=${BUNDLE_VERSION}"
-    curl -fsSL --retry 3 --retry-delay 2 -o "$out" "$url" \
-      || { echo ""; echo "Failed to download part $num. Check your connection and run this again."; exit 1; }
+    # The parts are published as cNNN.bin; older bundles used cNNN.b64 and some
+    # hosts keep both. Try .bin first, then .b64, so a stray extension change
+    # upstream can never strand an update. A part that is served but empty is
+    # treated as a miss too, because a truncated CDN response would otherwise
+    # corrupt the archive silently.
+    ok=0
+    for ext in bin b64; do
+      url="https://raw.githubusercontent.com/${REPO}/${REF}/bundle2/c${num}.${ext}?v=${BUNDLE_VERSION}"
+      if curl -fsSL --retry 4 --retry-delay 2 --retry-all-errors -o "$out" "$url" && [ -s "$out" ]; then
+        ok=1
+        break
+      fi
+    done
+    if [ "$ok" -ne 1 ]; then
+      rm -f "$out"
+      echo ""
+      echo "Failed to download part $num. Check your connection and run this again."
+      exit 1
+    fi
   fi
   printf "\r  part %s/%s" "$((i+1))" "$PARTS"
   i=$((i+1))
@@ -96,7 +112,23 @@ echo "==> Unpacking"
 # The parts are base64 text; decode before extracting. Joining them in shell
 # order (c000, c001, ...) reconstructs the original archive byte for byte.
 cat "$PARTS_DIR"/c*.bin > bundle.b64
-base64 -d bundle.b64 > bundle.tar.gz
+
+# A damaged or mismatched part set must fail here, loudly, rather than after a
+# half-finished extraction. base64 rejects bad input, and gzip verifies its own
+# CRC, so both guards together prove the archive is the one we published.
+if ! base64 -d bundle.b64 > bundle.tar.gz 2>/dev/null; then
+  echo "!! The downloaded parts are not valid base64."
+  echo "   Removing them; run this script again to re-download."
+  rm -rf "$PARTS_DIR" bundle.b64 bundle.tar.gz
+  exit 1
+fi
+if ! gzip -t bundle.tar.gz 2>/dev/null; then
+  echo "!! The bundle archive is corrupt (a part may be stale or truncated)."
+  echo "   Removing the parts; run this script again to re-download."
+  rm -rf "$PARTS_DIR" bundle.b64 bundle.tar.gz
+  exit 1
+fi
+
 rm -rf "$PARTS_DIR" bundle.b64
 # The archive contains no hard links (they are unsupported on Android storage),
 # so a plain extraction works. --no-same-owner avoids chown failures.
