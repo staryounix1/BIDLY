@@ -97,6 +97,16 @@ export default function ServicesPage() {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+  // The home screen's search box lands here with `?q=`, so the term the
+  // customer already typed must survive the navigation instead of showing a
+  // full catalogue and making them type it again. Read from `location` rather
+  // than `useSearchParams()` so the route keeps prerendering (the hook forces
+  // a Suspense boundary, and this page is static).
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q) setQuery(q);
+  }, []);
+
   useEffect(() => {
     let alive = true;
     (async () => {
