@@ -915,5 +915,19 @@
       "EXPIRED": "Expired",
       "CANCELLED": "Cancelled"
     }
+  },
+  "media": {
+    "attachedTitle": "Photos and video from the customer",
+    "enlarge": "Enlarge photo",
+    "title": "Photos or video of the problem",
+    "hint": "Add photos or a short video so the craftsman sees the job and prices it properly.",
+    "addPhoto": "Add photo",
+    "addVideo": "Add video ({seconds}s)",
+    "videoAttached": "Short video attached",
+    "videoTooLong": "That video is too long. Keep it to {seconds} seconds or less.",
+    "videoTooBig": "That video is too large. Record a shorter one.",
+    "photoTooBig": "Those photos are too large. Remove one and try again.",
+    "failed": "We could not read that file.",
+    "remove": "Remove"
   }
 }
