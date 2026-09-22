@@ -155,6 +155,10 @@ export function JobMedia({
           <p className="mt-0.5 text-xs leading-relaxed text-[rgb(var(--fg-subtle))]">
             {t('media.hint')}
           </p>
+          <p className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold text-[rgb(var(--accent))]">
+            <CategoryIcon name="upload" size={13} />
+            {t('media.fromDevice')}
+          </p>
         </div>
       </div>
 
@@ -193,7 +197,7 @@ export function JobMedia({
               <span className="tnum">…</span>
             ) : (
               <>
-                <CategoryIcon name="camera" size={18} />
+                <CategoryIcon name="upload" size={18} />
                 {t('media.addPhoto')}
                 <span className="tnum text-[10px] text-[rgb(var(--fg-subtle))]">
                   {photos.length}/{MAX_PHOTOS}
@@ -203,8 +207,11 @@ export function JobMedia({
             <input
               id={photoId}
               type="file"
-              accept="image/*"
-              capture="environment"
+              // No `capture` attribute: on a phone that attribute forces the
+              // camera open and hides the gallery, so a customer who already
+              // has a photo of the wall could not pick it. Without it the OS
+              // offers both "take a photo" and "choose from files".
+              accept="image/*,.heic,.heif"
               multiple
               className="hidden"
               onChange={(e) => {
@@ -246,13 +253,12 @@ export function JobMedia({
               color: 'rgb(var(--fg-muted))',
             }}
           >
-            <CategoryIcon name="play" size={16} />
+            <CategoryIcon name="upload" size={16} />
             {busy ? t('common.loading') : t('media.addVideo', { seconds: MAX_VIDEO_SECONDS })}
             <input
               id={videoId}
               type="file"
               accept="video/*"
-              capture="environment"
               className="hidden"
               onChange={(e) => {
                 void pickVideo(e.target.files);

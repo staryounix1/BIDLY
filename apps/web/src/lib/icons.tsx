@@ -130,6 +130,7 @@ export type IconName =
   | 'arrow'
   | 'camera'
   | 'play'
+  | 'upload'
   | 'doc'
   | 'crown'
   | 'badge'
@@ -332,6 +333,13 @@ const PATHS: Record<IconName, ReactElement> = {
     <>
       <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
       <path d="M10 9.2v5.6l4.5-2.8z" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 16V4" />
+      <path d="m7.5 8.5 4.5-4.5 4.5 4.5" />
+      <path d="M4 15v3.5a1.5 1.5 0 0 0 1.5 1.5h13a1.5 1.5 0 0 0 1.5-1.5V15" />
     </>
   ),
   doc: (
