@@ -812,7 +812,12 @@
     "step2": "الحرفيين يتنافسو",
     "step2Hint": "توصلك عروض من القريبين منك",
     "step3": "اختر وأكّد",
-    "step3Hint": "تتبّع الحرفي حتى يوصل"
+    "step3Hint": "تتبّع الحرفي حتى يوصل",
+    "askTitle": "شنو محتاج اليوم؟",
+    "askSubtitle": "اختار الخدمة، حدّد الثمن، والحرفيين القريبين غادي يتنافسو",
+    "searchPlaceholder": "قلّب على خدمة…",
+    "requestCategory": "اطلب {name}",
+    "providersNearbyActive": "+{count} حرفي نشيط فمنطقتك هذا الأسبوع"
   },
   "providerHome": {
     "online": "متاح",
