@@ -33,9 +33,31 @@ import { PriceStepper, Spinner } from '@/lib/ui';
  * from a long scroll into a tray with snap points.
  */
 
+/**
+ * Load the compose form for whatever the URL named.
+ *
+ * `?service=` may be an offerable service (`wall-plastering`) or one of the
+ * home screen's crafts (`plasterer`). The service slug is tried first, and only
+ * a 404 falls through to the catalogue to find the craft's first service — a
+ * genuine server error must still surface rather than being swallowed.
+ */
+async function loadServiceForm(slug: string) {
+  try {
+    return catalogApi.serviceForm(slug);
+  } catch (err) {
+    if (!(err instanceof ApiError) || err.status !== 404) throw err;
+  }
+  const { categories } = await catalogApi.tree();
+  const sub = categories
+    .flatMap((c) => c.subcategories)
+    .find((s) => s.slug === slug);
+  const first = sub?.services?.[0];
+  if (!first) throw new ApiError(404, null, 'Service not found');
+  return catalogApi.serviceForm(first.slug);
+}
+
 /** Header height is measured, because the header is global chrome, not ours. */
-function useHeaderOffset() {
-  const [offset, setOffset] = useState(0);
+function useHeaderOffset() {  const [offset, setOffset] = useState(0);
   useEffect(() => {
     const measure = () => {
       const header = document.querySelector('header');
@@ -225,7 +247,16 @@ function NewRequestView() {
         const [cityList] = await Promise.all([catalogApi.cities()]);
         if (!cancelled) setCities(cityList);
         if (serviceSlug) {
-          const form = await catalogApi.serviceForm(serviceSlug);
+          /**
+           * The home screen's craft tiles link to a *subcategory* slug
+           * (`plasterer`), because a craft is not a single offerable service —
+           * a plasterer does walls, ceilings and decorative work. The compose
+           * API only knows service slugs, so a subcategory path is resolved to
+           * that craft's first service instead of 404ing with "Service not
+           * found". A real service slug still wins, so nothing changes for the
+           * links that already worked.
+           */
+          const form = await loadServiceForm(serviceSlug);
           if (!cancelled) {
             setService(form.service);
             setFields(form.fields);
