@@ -751,7 +751,12 @@
     "step2": "Craftsmen compete",
     "step2Hint": "Offers arrive from providers near you",
     "step3": "Pick and confirm",
-    "step3Hint": "Track the craftsman until arrival"
+    "step3Hint": "Track the craftsman until arrival",
+    "askTitle": "What do you need today?",
+    "askSubtitle": "Pick a service, set your price, and nearby craftsmen will compete",
+    "searchPlaceholder": "Search for a service…",
+    "requestCategory": "Request {name}",
+    "providersNearbyActive": "+{count} craftsmen active near you this week"
   },
   "providerHome": {
     "online": "Available",
