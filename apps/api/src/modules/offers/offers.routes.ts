@@ -762,11 +762,15 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
         [job.id, currency, finalPriceMinor, commissionMinor],
       );
 
+      // `actor_role` and `side` are two different enums, so they must not share
+      // one placeholder: Postgres deduces a single type per parameter and
+      // rejects `$4` feeding both (`inconsistent types deduced for parameter $4`).
       await c.query(
         `insert into negotiations (request_id, offer_id, root_offer_id, actor_id, actor_role, side, type, price_minor, currency, resulting_offer_id, payload)
-         values ($1,$2,$2,$3,$4,$4,'SYSTEM',$5,$6,$2,$7::jsonb)`,
+         values ($1,$2,$2,$3,$4::bidly_actor_role,$5::bidly_actor_side,'SYSTEM',$6,$7,$2,$8::jsonb)`,
         [
           offer.request_id, offer.id, auth.userId,
+          isCustomer ? 'CUSTOMER' : 'PROVIDER',
           isCustomer ? 'CUSTOMER' : 'PROVIDER',
           finalPriceMinor, currency,
           JSON.stringify({ event: 'AGREEMENT', commissionMinor, walletBalanceMinor: afterMinor }),
