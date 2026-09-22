@@ -71,7 +71,7 @@ export async function registerRequestRoutes(app: FastifyInstance): Promise<void>
               notes: { type: 'string', maxLength: 300 },
             },
           },
-          mediaUrls: { type: 'array', maxItems: 10, items: { type: 'string', maxLength: 2048 } },
+          mediaUrls: { type: 'array', maxItems: 10, items: { type: 'string', maxLength: 4_000_000 } },
         },
       },
     },
@@ -190,10 +190,19 @@ export async function registerRequestRoutes(app: FastifyInstance): Promise<void>
       }
 
       if (Array.isArray(b.mediaUrls)) {
+        // A customer attaches evidence so the craftsman can price the real job,
+        // not the description of it. Photos arrive as compressed JPEG data URLs
+        // and a clip as a video data URL, so the kind is read off the mime type
+        // rather than assumed — `request_media.kind` drives whether the viewer
+        // renders an <img> or a <video>.
+        let sort = 0;
         for (const url of b.mediaUrls) {
+          const kind = /^data:video\//.test(url) ? 'VIDEO' : 'IMAGE';
+          const mime = /^data:([^;,]+)/.exec(url)?.[1] ?? null;
           await c.query(
-            `insert into request_media (request_id, uploader_id, kind, url) values ($1,$2,'IMAGE',$3)`,
-            [request_.id, auth.userId, url],
+            `insert into request_media (request_id, uploader_id, kind, url, mime_type, sort_order)
+             values ($1,$2,$3,$4,$5,$6)`,
+            [request_.id, auth.userId, kind, url, mime, sort++],
           );
         }
       }

@@ -46,7 +46,11 @@ export const createRequestSchema = z
     requiresHelper: z.boolean().optional(),
     pickup: requestLocationSchema.optional(),
     destination: requestDestinationSchema.optional(),
-    mediaUrls: z.array(z.string().url().max(2048)).max(10).optional(),
+    // Evidence attached to the brief. A photo is a client-compressed JPEG data
+    // URL and a clip is a video data URL, so `url()` cannot be used — a data
+    // URL is not a fetchable URL but it is exactly what the browser can send
+    // without an object-storage service.
+    mediaUrls: z.array(z.string().max(4_000_000)).max(10).optional(),
   })
   .refine(
     (v) =>
