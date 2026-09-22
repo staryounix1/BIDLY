@@ -542,9 +542,24 @@
     "payoutRequested": "تم طلب السحب. ستبقى الأموال محجوزة حتى المعالجة.",
     "paymentFailed": "فشل الدفع. يمكنك المحاولة مجددًا.",
     "topUp": "عمّر المحفظة",
-    "topUpHint": "خاصك رصيد فالمحفظة باش تخلّص عمولة المنصة ملي تتفق مع الزبون.",
+    "topUpHint": "عمّر المحفظة باش تخلّص عمولة المنصة ملي تتفق مع الزبون. الطلب كيتصادق من طرف الإدارة.",
     "topUpAmount": "المبلغ (درهم)",
-    "topUpDone": "تعمّرات المحفظة بنجاح."
+    "topUpDone": "تعمّرات المحفظة بنجاح.",
+    "topUpSubmit": "طلب تعمير",
+    "topUpRequested": "تصيفط طلبك. غادي يتراجع من طرف الإدارة.",
+    "topUpRequestedOn": "تصيفط فـ",
+    "topUpApprovalNote": "الرصيد كيتزاد من بعد ما تتأكد الإدارة من الأداء.",
+    "topUpReference": "مرجع الأداء",
+    "topUpReferenceHint": "رقم التحويل / الوصل",
+    "topUpHistory": "طلباتي",
+    "topUpCancel": "إلغاء الطلب",
+    "topUpPending": "كتسنى الموافقة",
+    "topUpStatus": {
+      "PENDING": "كتسنى",
+      "COMPLETED": "تم",
+      "FAILED": "مرفوض",
+      "CANCELLED": "ملغى"
+    }
   },
   "wallet": {
     "title": "المحفظة",
@@ -676,7 +691,14 @@
     "flag_sos_requests": "طلبات الطوارئ",
     "flag_two_way_ratings": "التقييم الثنائي",
     "flag_wallet": "المحفظة",
-    "flag_wallet_topup_packages": "باقات تعبئة المحفظة"
+    "flag_wallet_topup_packages": "باقات تعبئة المحفظة",
+    "topups": "طلبات التعمير",
+    "topUpPaid": "المبلغ المدفوع",
+    "topUpCredit": "المبلغ المعتمد",
+    "topUpExternalRef": "مرجع العملية (اختياري)",
+    "topUpApproved": "تم اعتماد الطلب وتعمير المحفظة.",
+    "topUpRejected": "تم رفض الطلب.",
+    "all": "الكل"
   },
   "map": {
     "title": "حدّد الموقع على الخريطة",
