@@ -94,7 +94,7 @@ function MapHome() {
   const mapRef = useRef<LeafletMap | null>(null);
 
   // The customer's own position drives the map centre and the bubble ring.
-  const { position, center, status } = useMyLocation({ watch: true });
+  const { position, center, initialCenter, status } = useMyLocation({ watch: true });
 
   useEffect(() => {
     let alive = true;
@@ -170,7 +170,11 @@ function MapHome() {
     [counts],
   );
 
-  const startCenter: [number, number] = [center.lat, center.lng];
+  // The map mounts at the remembered centre straight away, then follows the
+  // live fix. `MapContainer` only reads `center`/`zoom` once, so the live
+  // position has to arrive through `view`, or the map keeps showing wherever
+  // the customer happened to be last time (and stays there for the session).
+  const startCenter: [number, number] = [initialCenter.lat, initialCenter.lng];
 
   function onSubmitSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -196,6 +200,7 @@ function MapHome() {
           style={DEFAULT_MAP_STYLE}
           className="h-full w-full"
           onReady={onMapReady}
+          view={position ? { center: [position.lat, position.lng], zoom: 14, animate: true } : undefined}
         >
         </MapView>
 
