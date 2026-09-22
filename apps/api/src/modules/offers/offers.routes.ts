@@ -759,16 +759,25 @@ export async function registerOfferRoutes(app: FastifyInstance): Promise<void> {
 
       // Insert the ledger row only: the validate/apply triggers own the balance,
       // and `balance_after_minor` must be the value before this movement.
+      //
+      // A zero commission is legitimate (first job free / a 0% rule), and
+      // `wallet_transactions` rejects it with `CHECK (amount_minor > 0)` — which
+      // surfaced as the generic 23514 "This action violates a platform rule" and
+      // made every provider's FIRST job impossible to agree on. There is nothing
+      // to debit, so skip the ledger row entirely and only record the (zero)
+      // platform revenue below.
       const afterMinor = balanceMinor - commissionMinor;
-      await c.query(
-        `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency, balance_after_minor,
-                                          reference_type, reference_id, job_id, description)
-         values ($1,'PLATFORM_COMMISSION','DEBIT',$2,$3,$4,'job',$5,$5,$6)`,
-        [
-          wallet.id, commissionMinor, currency, afterMinor, job.id,
-          `Platform commission for job ${job.code}`,
-        ],
-      );
+      if (commissionMinor > 0) {
+        await c.query(
+          `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency, balance_after_minor,
+                                            reference_type, reference_id, job_id, description)
+           values ($1,'PLATFORM_COMMISSION','DEBIT',$2,$3,$4,'job',$5,$5,$6)`,
+          [
+            wallet.id, commissionMinor, currency, afterMinor, job.id,
+            `Platform commission for job ${job.code}`,
+          ],
+        );
+      }
 
       // Commission is already recorded on the job from the accept step; this
       // row is the platform's revenue view of the same charge.
