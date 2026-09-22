@@ -133,7 +133,13 @@ export type IconName =
   | 'crown'
   | 'badge'
   | 'radar'
-  | 'route';
+  | 'route'
+  | 'roller'
+  | 'trowel'
+  | 'bricks'
+  | 'tiles'
+  | 'needle'
+  | 'plunger';
 
 type IconProps = SVGProps<SVGSVGElement> & { name: IconName | string; size?: number };
 
@@ -348,6 +354,54 @@ const PATHS: Record<IconName, ReactElement> = {
       <path d="M8.5 18h5a4 4 0 0 0 0-8h-3a4 4 0 0 1 0-8h5" />
     </>
   ),
+
+  /* The six crafts the customer picks from on the home screen. Same 24x24
+     grid and round joins as the rest of the set so they read as one family. */
+  roller: (
+    <>
+      <rect x="4" y="4" width="12" height="5" rx="1.4" />
+      <path d="M16 6.5h2.5a1.5 1.5 0 0 1 1.5 1.5v2.5a1.5 1.5 0 0 1-1.5 1.5H10v2" />
+      <path d="M8.5 14h3v6h-3z" />
+    </>
+  ),
+  trowel: (
+    <>
+      <path d="M3.5 19 9 10.5l4.5 3z" />
+      <path d="M13.5 13.5 19 5.5a1 1 0 0 1 1.6 1.2l-4.6 8.4z" />
+      <path d="M4.5 20.5h5" />
+    </>
+  ),
+  bricks: (
+    <>
+      <rect x="3" y="5" width="8" height="4.5" rx="1" />
+      <rect x="13" y="5" width="8" height="4.5" rx="1" />
+      <rect x="3" y="14.5" width="8" height="4.5" rx="1" />
+      <rect x="13" y="14.5" width="8" height="4.5" rx="1" />
+    </>
+  ),
+  tiles: (
+    <>
+      <path d="M3.5 3.5h8v8h-8z" />
+      <path d="M12.5 3.5h8v8h-8z" />
+      <path d="M3.5 12.5h8v8h-8z" />
+      <path d="M12.5 12.5h8v8h-8z" />
+    </>
+  ),
+  needle: (
+    <>
+      <path d="M20.5 3.5 9 15" />
+      <path d="M5.5 18.5 9 15" />
+      <path d="M4.5 20.9c1.6.3 3.1-.3 4.2-1.3 1-1 1.4-1.9 1.9-2.9.5-1-.2-1.9-1.2-1.9s-1.8.6-2.3 1.4c-.9 1.3-.9 2.6-2.6 4.7z" />
+      <circle cx="17.8" cy="6.2" r="1.05" />
+    </>
+  ),
+  plunger: (
+    <>
+      <path d="M4.5 12.5a7.5 5.5 0 0 1 15 0z" />
+      <path d="M12 12.5V21" />
+      <path d="M9.5 21h5" />
+    </>
+  ),
 };
 
 /** DB icon name -> component. Unknown names fall back to a neutral glyph. */
@@ -395,14 +449,18 @@ export function StarIcon({ size = 16, filled = false }: { size?: number; filled?
  * Keyword-based so newly seeded rows still look intentional.
  */
 const SLUG_ICONS: Array<[RegExp, IconName]> = [
-  [/plumb|leak|drain|pipe|faucet|siphon|water-heater/, 'water'],
+  [/painting|paint|wall-paint/, 'roller'],
+  [/plaster|jabs|stucco|ceiling/, 'trowel'],
+  [/mason|masonry|brick|macon|build|construct|renovat|cement/, 'bricks'],
+  [/tiling|tile|tiler|zellige/, 'tiles'],
+  [/tailor|coutur|sew|garment|alteration|curtain|upholster/, 'needle'],
+  [/plumb|leak|drain|pipe|faucet|siphon|water-heater/, 'plunger'],
   [/electric|outlet|lighting|panel|switch|socket|wiring/, 'bolt'],
   [/handyman|assembly|mounting|general|tool|repair/, 'wrench'],
   [/washing|washer/, 'washer'],
   [/refrigerat|fridge/, 'fridge'],
   [/oven|stove|cooker/, 'oven'],
   [/appliance|dishwasher|microwave/, 'plug'],
-  [/paint|plaster|coating|wall-paint/, 'paint'],
   [/clean|housekeep|maid|sanit|deep-clean/, 'sparkles'],
   [/furniture|sofa|couch/, 'sofa'],
   [/move|mover|relocat|apartment-move/, 'truck'],
@@ -411,7 +469,7 @@ const SLUG_ICONS: Array<[RegExp, IconName]> = [
   [/grocer|shopping|market|pharmac/, 'cart'],
   [/errand|queue|waiting|hour/, 'clock'],
   [/assist|elder|help|care|carry|support/, 'shield'],
-  [/build|construct|renovat|mason|cement|drill/, 'hammer'],
+  [/build|construct|renovat|mason|cement|drill/, 'drill'],
   [/home|house|apartment|villa|studio/, 'home'],
   [/task|checklist|inspection|survey/, 'checklist'],
   [/city|area|location|map/, 'pin'],

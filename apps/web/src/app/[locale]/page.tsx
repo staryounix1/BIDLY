@@ -24,9 +24,33 @@ import { BottomSheet, type SheetDetent } from '@/lib/map/bottom-sheet';
  * stacked dashboard home, because their job is not to request a service.
  */
 
+/**
+ * The six crafts the customer can ask for, in display order.
+ *
+ * Each one is a real subcategory in the database (`slug`), so tapping through
+ * lands on a filter that actually has services behind it, and the icon is the
+ * craft's own glyph — not a guess from the name.
+ */
+const CRAFTS = [
+  { slug: 'painting', icon: 'roller', ar: 'صباغ', en: 'Painter', fr: 'Peintre' },
+  { slug: 'plasterer', icon: 'trowel', ar: 'جباص', en: 'Plasterer', fr: 'Plâtrier' },
+  { slug: 'mason', icon: 'bricks', ar: 'طريسيان', en: 'Mason', fr: 'Maçon' },
+  { slug: 'plumbing', icon: 'plunger', ar: 'بلومبي', en: 'Plumber', fr: 'Plombier' },
+  { slug: 'tiler', icon: 'tiles', ar: 'زليج', en: 'Tiler', fr: 'Carreleur' },
+  { slug: 'tailor', icon: 'needle', ar: 'خياط', en: 'Tailor', fr: 'Couturier' },
+] as const;
+
+type CraftTile = {
+  id: string;
+  slug: string;
+  icon: string;
+  name_ar: string;
+  name_en: string;
+  name_fr: string;
+};
+
 /** Header height is measured, because the header is global chrome, not ours. */
-function useHeaderOffset() {
-  const [offset, setOffset] = useState(0);
+function useHeaderOffset() {  const [offset, setOffset] = useState(0);
   useEffect(() => {
     const measure = () => {
       const header = document.querySelector('header');
@@ -92,9 +116,22 @@ function MapHome() {
     };
   }, []);
 
-  // The tiles are the database's own top-level categories, capped so the row
-  // stays one thumb-swipe wide and the bubbles over the map never crowd.
-  const tiles = useMemo(() => categories.slice(0, 6), [categories]);
+  // The tiles are the six customer-facing crafts, in the order the business
+  // wants them, matching the icon set one-to-one. The database's own
+  // top-level categories (home / moving / personal) are too coarse to pick a
+  // tradesman from, so this list is data-owned here rather than by `categories`.
+  const tiles = useMemo<CraftTile[]>(
+    () =>
+      CRAFTS.map((c) => ({
+        id: c.slug,
+        slug: c.slug,
+        icon: c.icon,
+        name_ar: c.ar,
+        name_en: c.en,
+        name_fr: c.fr,
+      })),
+    [],
+  );
 
   /**
    * Bubbles ride the *visible* band of map, not the whole viewport.
