@@ -129,6 +129,7 @@ export type IconName =
   | 'chevron'
   | 'arrow'
   | 'camera'
+  | 'play'
   | 'doc'
   | 'crown'
   | 'badge'
@@ -325,6 +326,12 @@ const PATHS: Record<IconName, ReactElement> = {
     <>
       <path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-2h7l1.2 2h1.8A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z" />
       <circle cx="12" cy="12.5" r="3.4" />
+    </>
+  ),
+  play: (
+    <>
+      <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+      <path d="M10 9.2v5.6l4.5-2.8z" />
     </>
   ),
   doc: (
