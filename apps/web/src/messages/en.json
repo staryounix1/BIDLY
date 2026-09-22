@@ -922,13 +922,16 @@
     "title": "Photos or video of the problem",
     "hint": "Photograph the problem or choose photos from your phone or computer, so the craftsman sees the job and prices it properly.",
     "addPhoto": "Add photos",
-    "addVideo": "Add video ({seconds}s)",
+    "addVideo": "Add video",
     "videoAttached": "Short video attached",
-    "videoTooLong": "That video is too long. Keep it to {seconds} seconds or less.",
-    "videoTooBig": "That video is too large. Record a shorter one.",
+    "videoTooLong": "Optional — you can send the request without a video.",
+    "videoTooBig": "Optional — you can send the request without a video.",
     "photoTooBig": "Those photos are too large. Remove one and try again.",
     "failed": "We could not read that file.",
     "remove": "Remove",
-    "fromDevice": "From your phone or computer"
+    "fromDevice": "From your phone or computer",
+    "optional": "Optional — you can send the request without any photos",
+    "uploading": "Uploading",
+    "uploadFailed": "We could not upload that video. Please try again."
   }
 }
