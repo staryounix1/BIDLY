@@ -372,6 +372,13 @@
     border-color: rgb(var(--warn) / 0.34);
   }
 
+  /* "Waiting on someone" — an admin review, a pending top-up or payout. */
+  .chip-pending {
+    background: rgb(var(--brand-500) / 0.14);
+    color: rgb(67 56 202);
+    border-color: rgb(var(--brand-500) / 0.32);
+  }
+
   .chip-danger {
     background: rgb(var(--danger) / 0.13);
     color: rgb(185 28 28);
@@ -384,6 +391,9 @@
     }
     .chip-ok {
       color: rgb(52 211 153);
+    }
+    .chip-pending {
+      color: rgb(var(--brand-200));
     }
     .chip-warn {
       color: rgb(252 211 77);
