@@ -553,6 +553,193 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     return reply.send({ success: true, data: result });
   });
 
+  // -------- wallet top-up requests ---------------------------------------
+  //
+  // Money enters the platform only when an operator confirms it was received,
+  // so a provider files a request and this queue is where it is settled. The
+  // list is shaped for triage: newest first, filterable by status, and each row
+  // carries who asked and what they claim to have paid.
+
+  app.get('/admin/topup-requests', {
+    preHandler: paymentsRead,
+    schema: {
+      tags: ['admin'], summary: 'Wallet top-up request queue', security: [{ bearerAuth: [] }],
+      querystring: {
+        type: 'object', additionalProperties: false,
+        properties: {
+          status: { type: 'string', enum: ['PENDING', 'COMPLETED', 'FAILED', 'CANCELLED'] },
+          search: { type: 'string', maxLength: 120 },
+          page: { type: 'integer', minimum: 1 },
+          limit: { type: 'integer', minimum: 1, maximum: 100 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const q = request.query as Record<string, unknown>;
+    const page = parsePagination(q);
+    const params: unknown[] = [];
+    const clauses: string[] = [];
+
+    if (q.status) { params.push(q.status); clauses.push(`t.status = $${params.length}`); }
+    if (q.search) {
+      params.push(`%${String(q.search).toLowerCase()}%`);
+      const i = params.length;
+      clauses.push(`(lower(u.email) like $${i} or lower(coalesce(u.phone,'')) like $${i}
+                     or lower(coalesce(pp.display_name,'')) like $${i}
+                     or lower(coalesce(t.reference,'')) like $${i})`);
+    }
+    const where = clauses.length ? `where ${clauses.join(' and ')}` : '';
+
+    const rows = await queryMany(
+      `select t.id, t.status::text, t.pay_minor, t.credit_minor, t.bonus_minor, t.currency,
+              t.method, t.reference, t.note, t.completed_at, t.created_at, t.wallet_txn_id,
+              t.user_id, u.email as user_email, u.phone as user_phone,
+              coalesce(pp.display_name, u.email) as provider_name,
+              tp.code as package_code,
+              ab.email as reviewed_by_email
+         from wallet_topups t
+         join users u on u.id = t.user_id
+         left join providers p on p.user_id = t.user_id
+         left join user_profiles pp on pp.user_id = u.id
+         left join topup_packages tp on tp.id = t.package_id
+         left join admins abr on abr.id = t.created_by
+         left join users ab on ab.id = abr.user_id
+         ${where}
+        order by (t.status = 'PENDING') desc, t.created_at desc
+        limit $${params.length + 1} offset $${params.length + 2}`,
+      [...params, page.limit, page.offset],
+    );
+
+    // Queue tallies so the screen can show badge counts without a second call.
+    const counts = await queryOne<{ pending: string; completed: string; cancelled: string; failed: string }>(
+      `select
+         count(*) filter (where status = 'PENDING')::text   as pending,
+         count(*) filter (where status = 'COMPLETED')::text as completed,
+         count(*) filter (where status = 'CANCELLED')::text as cancelled,
+         count(*) filter (where status = 'FAILED')::text    as failed
+       from wallet_topups`,
+    );
+
+    return reply.send({
+      success: true,
+      data: rows,
+      meta: {
+        ...page,
+        count: rows.length,
+        pending: Number(counts?.pending ?? 0),
+        completed: Number(counts?.completed ?? 0),
+        cancelled: Number(counts?.cancelled ?? 0),
+        failed: Number(counts?.failed ?? 0),
+      },
+    });
+  });
+
+  app.post('/admin/topup-requests/:id/process', {
+    preHandler: paymentsWrite,
+    schema: {
+      tags: ['admin'], summary: 'Approve / reject a wallet top-up request', security: [{ bearerAuth: [] }],
+      params: { type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } },
+      body: {
+        type: 'object', required: ['decision'], additionalProperties: false,
+        properties: {
+          decision: { type: 'string', enum: ['APPROVE', 'REJECT'] },
+          reason: { type: 'string', maxLength: 500 },
+          // Operators routinely receive a slightly different amount than was
+          // requested (fees, a bank charge). The credited amount is what was
+          // actually confirmed, so it can be corrected at approval time.
+          creditMinor: { type: 'integer', minimum: 0, maximum: 5000000 },
+          externalRef: { type: 'string', maxLength: 100 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const { id } = request.params as { id: string };
+    const b = request.body as {
+      decision: 'APPROVE' | 'REJECT'; reason?: string; creditMinor?: number; externalRef?: string;
+    };
+
+    const result = await transaction(async (client) => {
+      const c = clientQuery(client);
+
+      const adminRow = await c.one<{ id: string }>('select id from admins where user_id = $1 limit 1', [auth.userId]);
+      const adminRowId = adminRow?.id ?? null;
+
+      const topup = await c.one<{
+        id: string; wallet_id: string; user_id: string; status: string;
+        pay_minor: string; credit_minor: string; bonus_minor: string; currency: string;
+      }>(
+        `select id, wallet_id, user_id, status::text, pay_minor, credit_minor, bonus_minor, currency
+           from wallet_topups where id = $1 for update`,
+        [id],
+      );
+      if (!topup) throw notFound('Top-up request');
+      // The row lock above serialises concurrent approvals, so this is the
+      // guard that makes a double-click or two open tabs harmless.
+      if (topup.status !== 'PENDING') {
+        throw businessRule(`This top-up request is already ${topup.status}.`);
+      }
+
+      if (b.decision === 'REJECT') {
+        await c.query(
+          `update wallet_topups set status = 'FAILED', note = coalesce($2, note), reference = coalesce($3, reference),
+                  created_by = $4, completed_at = now(), updated_at = now()
+           where id = $1`,
+          [id, b.reason ?? null, b.externalRef ?? null, adminRowId],
+        );
+        await recordAction(client, auth.userId, 'TOPUP_REJECT', 'wallet_topup', id,
+          { status: 'PENDING' }, { status: 'FAILED' }, b.reason);
+        return { id, status: 'FAILED', creditedMinor: 0 };
+      }
+
+      const creditMinor = b.creditMinor ?? Number(topup.credit_minor);
+      if (creditMinor <= 0) throw businessRule('The credited amount must be greater than zero.');
+
+      const wallet = await c.one<{ id: string; available_minor: string; currency: string; is_frozen: boolean }>(
+        `select id, available_minor, currency, is_frozen from wallets where id = $1 for update`,
+        [topup.wallet_id],
+      );
+      if (!wallet) throw notFound('Wallet');
+      // A wallet frozen between request and approval must not be credited: the
+      // operator's intent cannot override a compliance hold.
+      if (wallet.is_frozen) throw businessRule('This wallet is frozen; unfreeze it before crediting.');
+
+      const afterMinor = Number(wallet.available_minor) + creditMinor;
+
+      const txn = await c.one<{ id: string }>(
+        `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency,
+                                          balance_after_minor, reference_type, reference_id, description)
+         values ($1,'TOPUP','CREDIT',$2,$3,$4,'wallet_topup',$5,$6)
+         returning id`,
+        [
+          wallet.id, creditMinor, wallet.currency, afterMinor, id,
+          `Wallet top-up approved${topup.bonus_minor && Number(topup.bonus_minor) > 0 ? ` (incl. bonus ${Number(topup.bonus_minor) / 100})` : ''}`,
+        ],
+      );
+
+      await c.query(
+        `update wallet_topups set status = 'COMPLETED', credit_minor = $2, wallet_txn_id = $3,
+                reference = coalesce($4, reference), created_by = $5, completed_at = now(), updated_at = now()
+         where id = $1`,
+        [id, creditMinor, txn!.id, b.externalRef ?? null, adminRowId],
+      );
+
+      await recordAction(client, auth.userId, 'TOPUP_APPROVE', 'wallet_topup', id,
+        { status: 'PENDING' }, { status: 'COMPLETED', creditMinor }, b.reason);
+
+      logEvent(LOG_EVENTS.TOPUP_COMPLETED, {
+        adminId: auth.userId, topupId: id, userId: topup.user_id, creditMinor,
+      });
+
+      return { id, status: 'COMPLETED', creditedMinor: creditMinor, balanceAfterMinor: afterMinor };
+    });
+
+    logEvent(LOG_EVENTS.ADMIN_ACTION, {
+      adminId: auth.userId, action: `TOPUP_${b.decision}`, entityId: id,
+    });
+    return reply.send({ success: true, data: result });
+  });
+
   // -------- settings & catalog management -------------------------------
   app.get('/admin/settings', {
     preHandler: settingsRead,
