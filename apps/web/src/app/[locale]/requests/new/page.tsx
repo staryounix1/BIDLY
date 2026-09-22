@@ -37,21 +37,22 @@ import { PriceStepper, Spinner } from '@/lib/ui';
  * Load the compose form for whatever the URL named.
  *
  * `?service=` may be an offerable service (`wall-plastering`) or one of the
- * home screen's crafts (`plasterer`). The service slug is tried first, and only
- * a 404 falls through to the catalogue to find the craft's first service — a
- * genuine server error must still surface rather than being swallowed.
+ * home screen's crafts (`plasterer`). A craft is not one offerable service —
+ * a plasterer does walls, ceilings and decorative work — so the slug is
+ * resolved against the catalogue and the craft's first service is opened,
+ * instead of 404ing with "Service not found".
+ *
+ * Resolution goes through the catalogue, not through a failed service call:
+ * that keeps it to one round trip, and it cannot be broken by how a thrown
+ * error happens to be typed. A slug that matches nothing is still an error.
  */
 async function loadServiceForm(slug: string) {
-  try {
-    return catalogApi.serviceForm(slug);
-  } catch (err) {
-    if (!(err instanceof ApiError) || err.status !== 404) throw err;
-  }
   const { categories } = await catalogApi.tree();
-  const sub = categories
-    .flatMap((c) => c.subcategories)
-    .find((s) => s.slug === slug);
-  const first = sub?.services?.[0];
+  const subs = categories.flatMap((c) => c.subcategories);
+  const byService = subs.flatMap((s) => s.services).find((s) => s.slug === slug);
+  if (byService) return catalogApi.serviceForm(slug);
+  const craft = subs.find((s) => s.slug === slug);
+  const first = craft?.services?.[0];
   if (!first) throw new ApiError(404, null, 'Service not found');
   return catalogApi.serviceForm(first.slug);
 }
