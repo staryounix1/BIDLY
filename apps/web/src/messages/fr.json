@@ -751,7 +751,12 @@
     "step2": "Les artisans concurrencent",
     "step2Hint": "Les offres arrivent des prestataires proches",
     "step3": "Choisissez et confirmez",
-    "step3Hint": "Suivez l'artisan jusqu'à l'arrivée"
+    "step3Hint": "Suivez l'artisan jusqu'à l'arrivée",
+    "askTitle": "De quoi avez-vous besoin aujourd'hui ?",
+    "askSubtitle": "Choisissez un service, fixez le prix, les artisans proches vont se concurrencer",
+    "searchPlaceholder": "Rechercher un service…",
+    "requestCategory": "Demander {name}",
+    "providersNearbyActive": "+{count} artisans actifs près de vous cette semaine"
   },
   "providerHome": {
     "online": "Disponible",
