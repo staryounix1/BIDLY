@@ -15,11 +15,11 @@ set -e
 
 REPO="staryounix1/BIDLY"
 REF="main"
-PARTS=62
+PARTS=91
 # Bump this whenever a new bundle is published. It is appended to every part
 # URL as a cache-buster so neither GitHub's raw CDN nor any intermediate cache
 # can hand back a stale part under the same filename.
-BUNDLE_VERSION="2026-09-21-5"
+BUNDLE_VERSION="2026-09-22-6"
 DIR="$HOME/bidly-api"
 PARTS_DIR="$DIR/parts"
 
