@@ -218,6 +218,10 @@ function NewRequestView() {
   // so the API's single `mediaUrls` array carries both.
   const [photos, setPhotos] = useState<string[]>([]);
   const [video, setVideo] = useState<string | null>(null);
+  // True only while a video is still going up. Media is optional, so this never
+  // blocks a request that has none — it just stops a send racing an upload and
+  // losing the clip.
+  const [mediaUploading, setMediaUploading] = useState(false);
 
   // Scheduling, item count and "I need a helper" are no longer collected on this
   // screen: the tray stops at the send button and the rest of the brief travels
@@ -593,6 +597,7 @@ function NewRequestView() {
             video={video}
             onPhotosChange={setPhotos}
             onVideoChange={setVideo}
+            onUploadingChange={setMediaUploading}
           />
 
           <label className="block">
@@ -618,7 +623,7 @@ function NewRequestView() {
           {/* One loud button, pinned in thumb reach above the safe area. */}
           <button
             type="submit"
-            disabled={submitting || price <= 0}
+            disabled={submitting || price <= 0 || mediaUploading}
             className="btn btn-primary btn-block sticky bottom-0"
           >
             {submitting ? (
