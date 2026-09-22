@@ -922,13 +922,16 @@
     "title": "Photos ou vidéo du problème",
     "hint": "Photographiez le problème ou choisissez des photos depuis votre téléphone ou votre ordinateur, pour que l'artisan voie la tâche et l'évalue correctement.",
     "addPhoto": "Ajouter des photos",
-    "addVideo": "Ajouter une vidéo ({seconds} s)",
+    "addVideo": "Ajouter une vidéo",
     "videoAttached": "Courte vidéo jointe",
-    "videoTooLong": "Cette vidéo est trop longue. Limitez-la à {seconds} secondes.",
-    "videoTooBig": "Cette vidéo est trop volumineuse. Enregistrez-en une plus courte.",
+    "videoTooLong": "Facultatif — vous pouvez envoyer la demande sans vidéo.",
+    "videoTooBig": "Facultatif — vous pouvez envoyer la demande sans vidéo.",
     "photoTooBig": "Ces photos sont trop volumineuses. Retirez-en une et réessayez.",
     "failed": "Nous n'avons pas pu lire ce fichier.",
     "remove": "Retirer",
-    "fromDevice": "Depuis votre téléphone ou ordinateur"
+    "fromDevice": "Depuis votre téléphone ou ordinateur",
+    "optional": "Facultatif — vous pouvez envoyer la demande sans photos",
+    "uploading": "Envoi en cours",
+    "uploadFailed": "Nous n'avons pas pu téléverser cette vidéo. Réessayez."
   }
 }
