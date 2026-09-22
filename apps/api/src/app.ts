@@ -11,6 +11,7 @@ import { registerUserRoutes } from './modules/users/users.routes.js';
 import { registerProviderRoutes } from './modules/providers/providers.routes.js';
 import { registerCatalogRoutes } from './modules/catalog/catalog.routes.js';
 import { registerRequestRoutes } from './modules/requests/requests.routes.js';
+import { registerMediaRoutes } from './modules/media/media.routes.js';
 import { registerOfferRoutes } from './modules/offers/offers.routes.js';
 import { registerJobRoutes } from './modules/jobs/jobs.routes.js';
 import { registerMessageRoutes } from './modules/messages/messages.routes.js';
@@ -182,6 +183,7 @@ export async function buildApp(
       await api.register(registerProviderRoutes);
       await api.register(registerCatalogRoutes);
       await api.register(registerRequestRoutes);
+      await api.register(registerMediaRoutes);
       await api.register(registerOfferRoutes);
       await api.register(registerJobRoutes);
       await api.register(registerMessageRoutes);
