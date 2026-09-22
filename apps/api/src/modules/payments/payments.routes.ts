@@ -307,102 +307,182 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
     return reply.send({ success: true, data: wallet });
   });
 
-  // -------- top up the provider wallet -----------------------------------
-  // A craftsman pays the platform commission out of his wallet the moment a
-  // customer and he agree on a price, so a provider with an empty wallet can
-  // never close his first deal and has no other way to fund it — only a
-  // completed job credits a provider, which is the thing being blocked. This
-  // endpoint is that missing funding step, and it is deliberately
-  // provider-only: a customer's money reaches a provider through the job
-  // payment, not by topping the provider up directly.
-  app.post('/wallets/me/topup', {
+  // -------- top-up packages (public catalogue) ----------------------------
+  // Packages are admin-defined bundles (pay X, get X + bonus). Reading them is
+  // open to any signed-in account so the wallet screen can render the tiles.
+  app.get('/wallets/topup-packages', {
+    preHandler: [app.requireUser],
+    schema: { tags: ['payments'], summary: 'Active top-up packages', security: [{ bearerAuth: [] }] },
+  }, async (_request, reply) => {
+    const rows = await queryMany(
+      `select id, code, pay_minor, credit_minor, (credit_minor - pay_minor) as bonus_minor, currency,
+              label_en, label_fr, label_ar, sort_order
+         from topup_packages
+        where is_active and effective_from <= now() and (effective_to is null or effective_to > now())
+        order by sort_order, pay_minor`,
+    );
+    return reply.send({ success: true, data: rows });
+  });
+
+  // -------- request a top-up (provider) -----------------------------------
+  //
+  // Money enters the platform when an admin confirms it was actually received,
+  // so a provider *requests* a top-up and an operator settles it. Crediting on
+  // the provider's own word would let anyone mint balance. The row lives in
+  // `wallet_topups` from the moment it is requested, which is what gives the
+  // admin queue something to work and what makes a second approval a no-op.
+  app.post('/wallets/me/topup-requests', {
     preHandler: [app.requireProvider],
     schema: {
       tags: ['payments'],
-      summary: 'Provider: add funds to my own wallet',
+      summary: 'Provider: request a wallet top-up (settled by an admin)',
       security: [{ bearerAuth: [] }],
       body: {
-        type: 'object', additionalProperties: false, required: ['amountMinor'],
+        type: 'object', additionalProperties: false,
         properties: {
           amountMinor: { type: 'integer', minimum: 1000, maximum: 5000000 },
-          method: { type: 'string', enum: ['CARD', 'CASH', 'BANK_TRANSFER', 'WALLET'] },
-          idempotencyKey: { type: 'string', minLength: 8, maxLength: 100 },
+          packageId: { type: 'string', format: 'uuid' },
+          method: { type: 'string', enum: ['CARD', 'CASH', 'BANK_TRANSFER'] },
+          reference: { type: 'string', maxLength: 100 },
+          note: { type: 'string', maxLength: 500 },
         },
       },
     },
   }, async (request, reply) => {
     const auth = request.auth!;
-    const b = (request.body ?? {}) as { amountMinor: number; method?: string; idempotencyKey?: string };
-    const amountMinor = b.amountMinor;
-    const method = b.method ?? 'CARD';
-    // A supplied key makes a retry after a dropped connection a no-op instead
-    // of a second credit; without one each call is a deliberately new top-up.
-    const idempotencyKey = b.idempotencyKey ?? randomUUID();
+    const b = (request.body ?? {}) as {
+      amountMinor?: number; packageId?: string; method?: string; reference?: string; note?: string;
+    };
+    const method = b.method ?? 'BANK_TRANSFER';
 
-    const result = await transaction(async (client) => {
+    const row = await transaction(async (client) => {
       const c = clientQuery(client);
 
-      const provider = await c.one<{ id: string; user_id: string; status: string }>(
-        `select id, user_id, status::text from providers where user_id = $1`,
-        [auth.userId],
-      );
+      const provider = await c.one<{ id: string }>('select id from providers where user_id = $1', [auth.userId]);
       if (!provider) throw notFound('Provider profile');
 
-      // Replay guard: the ledger row for this key already exists, so report the
-      // original outcome rather than crediting twice.
-      const existing = await c.one<{ id: string; balance_after_minor: string }>(
-        `select id, balance_after_minor from wallet_transactions
-          where reference_type = 'wallet_topup' and reference_id = $1 limit 1`,
-        [idempotencyKey],
-      );
-      if (existing) {
-        const w = await walletForUserTx(c, auth.userId);
-        return {
-          transactionId: existing.id, amountMinor, currency: w?.currency ?? 'MAD',
-          balanceAfterMinor: Number(w?.available_minor ?? existing.balance_after_minor),
-          alreadyCredited: true,
-        };
-      }
-
-      const wallet = await c.one<{ id: string; currency: string; available_minor: string; is_frozen: boolean }>(
-        `insert into wallets (owner_type, owner_id, currency)
-         values ('PROVIDER', $1, $2)
+      const wallet = await c.one<{ id: string; currency: string; is_frozen: boolean }>(
+        `insert into wallets (owner_type, owner_id, currency) values ('PROVIDER', $1, 'MAD')
          on conflict (owner_type, owner_id, currency) do update set updated_at = now()
-         returning id, currency, available_minor, is_frozen`,
-        [auth.userId, 'MAD'],
+         returning id, currency, is_frozen`,
+        [auth.userId],
       );
       if (!wallet) throw notFound('Wallet');
-      if (wallet.is_frozen) throw businessRule('Your wallet is frozen.');
+      if (wallet.is_frozen) throw businessRule('Your wallet is frozen. Contact support.');
 
-      // The payment provider is bookkeeping-only here (it does not move real
-      // money); the ledger row below is what actually changes the balance.
-      const afterMinor = Number(wallet.available_minor) + amountMinor;
+      // A package fixes both what is paid and what is credited (it may carry a
+      // bonus); a free amount credits exactly what is paid.
+      let payMinor: number;
+      let creditMinor: number;
+      let bonusMinor = 0;
+      let packageId: string | null = null;
 
-      const txn = await c.one<{ id: string }>(
-        `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency,
-                                          balance_after_minor, reference_type, reference_id, description)
-         values ($1, 'TOPUP', 'CREDIT', $2, $3, $4, 'wallet_topup', $5, $6)
-         returning id`,
+      if (b.packageId) {
+        const pack = await c.one<{ id: string; pay_minor: string; credit_minor: string; bonus_minor: string; currency: string }>(
+          `select id, pay_minor, credit_minor, (credit_minor - pay_minor) as bonus_minor, currency from topup_packages
+            where id = $1 and is_active
+              and effective_from <= now() and (effective_to is null or effective_to > now())`,
+          [b.packageId],
+        );
+        if (!pack) throw businessRule('That top-up package is not available.');
+        packageId = pack.id;
+        payMinor = Number(pack.pay_minor);
+        creditMinor = Number(pack.credit_minor);
+        bonusMinor = Number(pack.bonus_minor);
+      } else {
+        if (!b.amountMinor) throw businessRule('Enter an amount or choose a package.');
+        payMinor = b.amountMinor;
+        creditMinor = b.amountMinor;
+      }
+
+      // One open request at a time: without this a provider could stack several
+      // pending requests and an operator approving a stale list would credit
+      // each of them.
+      const open = await c.one<{ id: string }>(
+        `select id from wallet_topups where user_id = $1 and status = 'PENDING' limit 1`,
+        [auth.userId],
+      );
+      if (open) {
+        throw businessRule('You already have a top-up request awaiting review.');
+      }
+
+      const inserted = await c.one<{ id: string; created_at: string }>(
+        `insert into wallet_topups (wallet_id, user_id, package_id, pay_minor, credit_minor, bonus_minor,
+                                    currency, status, method, reference, note)
+         values ($1,$2,$3,$4,$5,$6,$7,'PENDING',$8,$9,$10)
+         returning id, created_at`,
         [
-          wallet.id, amountMinor, wallet.currency, afterMinor, idempotencyKey,
-          `Wallet top-up via ${method}`,
+          wallet.id, auth.userId, packageId, payMinor, creditMinor, bonusMinor,
+          wallet.currency, method, b.reference ?? null, b.note ?? null,
         ],
       );
 
-      // No `payments` row on purpose: that table is per-job (`job_id` is NOT
-      // NULL and a foreign key) and a wallet top-up is not tied to a job. The
-      // ledger row inserted above is the authoritative record of the credit.
-      logEvent(LOG_EVENTS.WALLET_TOPPED_UP, {
-        userId: auth.userId, providerId: provider.id, amountMinor, method,
+      logEvent(LOG_EVENTS.TOPUP_REQUESTED, {
+        userId: auth.userId, topupId: inserted!.id, payMinor, creditMinor, method,
       });
 
       return {
-        transactionId: txn!.id, amountMinor, currency: wallet.currency,
-        balanceAfterMinor: afterMinor, alreadyCredited: false,
+        id: inserted!.id, status: 'PENDING', payMinor, creditMinor, bonusMinor,
+        currency: wallet.currency, method, requestedAt: inserted!.created_at,
       };
     });
 
-    return reply.status(201).send({ success: true, data: result });
+    return reply.status(201).send({ success: true, data: row });
+  });
+
+  app.get('/wallets/me/topup-requests', {
+    preHandler: [app.requireProvider],
+    schema: {
+      tags: ['payments'], summary: 'Provider: my top-up requests', security: [{ bearerAuth: [] }],
+      querystring: {
+        type: 'object', additionalProperties: false,
+        properties: { limit: { type: 'integer', minimum: 1, maximum: 100 } },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const q = request.query as { limit?: number };
+    const rows = await queryMany(
+      `select id, status, pay_minor, credit_minor, bonus_minor, currency, method,
+              reference, note, completed_at, created_at
+         from wallet_topups where user_id = $1
+        order by created_at desc limit $2`,
+      [auth.userId, q.limit ?? 20],
+    );
+    return reply.send({ success: true, data: rows });
+  });
+
+  /**
+   * Provider: cancel my own pending request.
+   *
+   * Only PENDING can be cancelled — once an admin has completed it the money is
+   * in the wallet and the ledger row exists, so reversing it would need a real
+   * refund rather than a status flip.
+   */
+  app.post('/wallets/me/topup-requests/:id/cancel', {
+    preHandler: [app.requireProvider],
+    schema: {
+      tags: ['payments'], summary: 'Provider: cancel my pending top-up request', security: [{ bearerAuth: [] }],
+      params: { type: 'object', required: ['id'], properties: { id: { type: 'string', format: 'uuid' } } },
+    },
+  }, async (request, reply) => {
+    const auth = request.auth!;
+    const { id } = request.params as { id: string };
+    const updated = await transaction(async (client) => {
+      const c = clientQuery(client);
+      const row = await c.one<{ id: string; status: string; user_id: string }>(
+        `select id, status::text, user_id from wallet_topups where id = $1 for update`,
+        [id],
+      );
+      if (!row) throw notFound('Top-up request');
+      if (row.user_id !== auth.userId) throw forbidden();
+      if (row.status !== 'PENDING') throw businessRule(`This request is already ${row.status}.`);
+      return c.one(
+        `update wallet_topups set status = 'CANCELLED', updated_at = now() where id = $1 returning id, status::text`,
+        [id],
+      );
+    });
+    return reply.send({ success: true, data: updated });
   });
 
   app.get('/wallets/me/transactions', {
