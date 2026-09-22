@@ -530,13 +530,19 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
           const amount = Number(payout.amount_minor);
           const newBalance = Number(wallet.available_minor) + amount;
           const newReserved = Math.max(Number(wallet.reserved_minor) - amount, 0);
-          await c.query(
-            `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency, balance_after_minor,
-                                              reference_type, reference_id, description)
-             values ($1,'PAYOUT_REVERSAL','CREDIT',$2,$3,$4,'payout',$5,$6)`,
-            [payout.wallet_id, amount, payout.currency, newBalance, payout.id,
-              `Payout ${b.decision === 'REJECT' ? 'rejected' : 'failed'} — funds returned`],
-          );
+          // `wallet_transactions` rejects a zero movement
+          // (`CHECK (amount_minor > 0)`), so a zero-value payout must not be
+          // written to the ledger — skip the credit and just release the
+          // reservation below.
+          if (amount > 0) {
+            await c.query(
+              `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency, balance_after_minor,
+                                                reference_type, reference_id, description)
+               values ($1,'PAYOUT_REVERSAL','CREDIT',$2,$3,$4,'payout',$5,$6)`,
+              [payout.wallet_id, amount, payout.currency, newBalance, payout.id,
+                `Payout ${b.decision === 'REJECT' ? 'rejected' : 'failed'} — funds returned`],
+            );
+          }
           await c.query(
             `update wallets set available_minor = $2, reserved_minor = $3, updated_at = now() where id = $1`,
             [payout.wallet_id, newBalance, newReserved],

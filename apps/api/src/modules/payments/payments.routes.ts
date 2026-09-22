@@ -196,7 +196,10 @@ export async function registerPaymentRoutes(app: FastifyInstance): Promise<void>
              returning id, available_minor`,
             [providerUserId.user_id, payment.currency],
           );
-          if (wallet) {
+          // A zero net earning is legitimate (e.g. a 100% commission job) and
+          // `wallet_transactions` rejects a zero movement, so only write the
+          // ledger row when there is something to credit.
+          if (wallet && providerNetMinor > 0) {
             const newBalance = Number(wallet.available_minor) + providerNetMinor;
             await c.query(
               `insert into wallet_transactions (wallet_id, type, direction, amount_minor, currency, balance_after_minor,
