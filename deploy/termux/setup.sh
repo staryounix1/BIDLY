@@ -19,7 +19,7 @@ PARTS=63
 # Bump this whenever a new bundle is published. It is appended to every part
 # URL as a cache-buster so neither GitHub's raw CDN nor any intermediate cache
 # can hand back a stale part under the same filename.
-BUNDLE_VERSION="2026-09-22-11"
+BUNDLE_VERSION="2026-09-22-13"
 DIR="$HOME/bidly-api"
 PARTS_DIR="$DIR/parts"
 
